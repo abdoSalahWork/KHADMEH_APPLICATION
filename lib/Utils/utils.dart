@@ -2,6 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:material_dialogs/dialogs.dart';
+import 'package:material_dialogs/shared/types.dart';
 import 'package:sizer/sizer.dart';
 // import 'dart:io';
 
@@ -16,7 +18,7 @@ import 'package:sizer/sizer.dart';
 // import 'package:path_provider/path_provider.dart';
 
 // /
-// class Utils {
+class Utils {
 //   // static Future<void> takeContainer(
 //   //     ScreenshotController controller, String imageName) async {
 //   //   controller.capture().then((value) async {
@@ -59,7 +61,39 @@ import 'package:sizer/sizer.dart';
 //     return false;
 //     // }
 //   }
-// }
+
+  static void customDialog(
+      {TextStyle? titleStyle,
+      CustomViewPosition? customViewPosition,
+      required Widget child,
+      String? title,
+      Color? color,
+      List<Widget>? actions,
+      required BuildContext context,
+      dynamic Function(dynamic)? onClose}) {
+    Dialogs.materialDialog(
+      onClose: onClose,
+      // barrierColor: Colors.red,
+      titleStyle: titleStyle ??
+          coloredText(
+                  text: "text", textAlign: TextAlign.start, fontSize: 13.0.sp)
+              .style!,
+      customViewPosition:
+          customViewPosition ?? CustomViewPosition.BEFORE_MESSAGE,
+      customView: Theme(
+        data: ThemeData(
+          useMaterial3: false,
+        ),
+        child: child,
+      ),
+      title: title,
+      color: color ?? Colors.white,
+      context: context,
+      actions: actions,
+      dialogWidth: 100.0.w,
+    );
+  }
+}
 
 // class AppUtil {
 //   static Future<String> createFolderInAppDocDir(String folderName) async {

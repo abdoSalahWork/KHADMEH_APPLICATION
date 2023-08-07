@@ -4,6 +4,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/personal%20page/submit_files_page.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
@@ -287,6 +288,10 @@ class _PersonalPageState extends State<PersonalPage>
                               trailing: Theme(
                                 data: ThemeData(primaryColor: Colors.white),
                                 child: PopupMenuButton(
+                                  constraints: BoxConstraints(
+                                    minWidth: 2.0 * 56.0,
+                                    maxWidth: MediaQuery.of(context).size.width,
+                                  ),
                                   itemBuilder: (BuildContext context) => [
                                     PopupMenuItem<int>(
                                       value: 0,
@@ -303,6 +308,12 @@ class _PersonalPageState extends State<PersonalPage>
                                       onTap: () {},
                                     ),
                                     PopupMenuItem<int>(
+                                      value: 2,
+                                      child: coloredText(
+                                          text: 'Rebook', fontSize: 12.0.sp),
+                                      onTap: () {},
+                                    ),
+                                    PopupMenuItem<int>(
                                       value: 3,
                                       child: coloredText(
                                           text: 'Recovery', fontSize: 12.0.sp),
@@ -312,10 +323,14 @@ class _PersonalPageState extends State<PersonalPage>
                                       },
                                     ),
                                     PopupMenuItem<int>(
-                                      value: 2,
+                                      value: 4,
                                       child: coloredText(
-                                          text: 'Rebook', fontSize: 12.0.sp),
-                                      onTap: () {},
+                                          text: 'Submit documents to company ',
+                                          fontSize: 12.0.sp),
+                                      onTap: () {
+                                        Future(() => Get.to(
+                                            () => const SubmitFilesPage()));
+                                      },
                                     ),
                                   ],
                                   child: const Icon(

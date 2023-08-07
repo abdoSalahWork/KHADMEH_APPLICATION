@@ -155,6 +155,7 @@ class SendMessageTextField extends StatelessWidget {
     this.style,
     this.onTap,
     this.maxLength,
+    this.wholeBorder,
   });
   final TextStyle? style;
   final String? hintText;
@@ -185,6 +186,7 @@ class SendMessageTextField extends StatelessWidget {
     return intl.Bidi.detectRtlDirectionality(text);
   }
 
+  InputBorder? wholeBorder;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -196,8 +198,7 @@ class SendMessageTextField extends StatelessWidget {
         ),
         child: TextFormField(
           maxLength: maxLength,
-          textDirection: textDirection ??
-              (isRTL(controller!.text) ? TextDirection.rtl : TextDirection.ltr),
+          textDirection: textDirection,
           autovalidateMode: autovalidateMode,
           onChanged: onchanged,
           initialValue: initialValue,
@@ -209,23 +210,26 @@ class SendMessageTextField extends StatelessWidget {
           // cursorHeight: 3.0.sp,
           keyboardType: keyBoardType,
           inputFormatters: inputFormatters,
-          style: style ?? GoogleFonts.poppins(fontSize: 15.0.sp),
+          style: style ?? GoogleFonts.poppins(fontSize: 13.0.sp),
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
-            fillColor: const Color(0xffF1F1F1),
+            fillColor: fillColor ?? const Color(0xffF1F1F1),
             filled: true,
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              borderSide: BorderSide.none,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              borderSide: BorderSide.none,
-            ),
+            enabledBorder: wholeBorder ??
+                const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderSide: BorderSide.none,
+                ),
+            focusedBorder: wholeBorder ??
+                const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderSide: BorderSide.none,
+                ),
+            errorBorder: wholeBorder ??
+                const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderSide: BorderSide.none,
+                ),
             prefixIconColor: focusNode!.hasFocus
                 ? Theme.of(context).colorScheme.secondary
                 : const Color(0xffBDC1C8),
