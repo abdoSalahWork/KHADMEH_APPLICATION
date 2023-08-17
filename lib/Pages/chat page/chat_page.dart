@@ -386,7 +386,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             customDateHeaderText: (p0) =>
-                intl.DateFormat('dd-MMMM-' 'yyyy').format(p0),
+                intl.DateFormat('yyyy-MM-dd').format(p0),
             onAttachmentPressed: _handleAttachmentPressed,
             theme: DefaultChatTheme(
               primaryColor: Theme.of(context).colorScheme.primary,

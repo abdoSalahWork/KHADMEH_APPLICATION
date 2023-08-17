@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sizer/sizer.dart';
 
 import '../Utils/utils.dart';
 
@@ -20,12 +21,23 @@ class CustomDropDownMenuButton extends StatelessWidget {
     this.value,
     this.fillColor,
     this.filled,
+    this.prefixIcon,
+    this.prefix,
+    this.suffixIcon,
+    this.suffix,
+    this.focusNode,
+    this.validator,
+    this.autovalidateMode,
+    this.hintSize,
   });
   final List<DropdownMenuItem<String>> items;
   final void Function(String?)? onChanged;
   bool? filled;
   Color? fillColor;
   double? width;
+  double? hintSize;
+  final FocusNode? focusNode;
+
   double? height;
   String? hint;
   double hintPadding;
@@ -34,6 +46,12 @@ class CustomDropDownMenuButton extends StatelessWidget {
   BorderRadiusGeometry? borderRadius;
   EdgeInsetsGeometry? padding;
   String? value;
+  final Widget? prefixIcon;
+  final Widget? prefix;
+  final Widget? suffixIcon;
+  final Widget? suffix;
+  AutovalidateMode? autovalidateMode;
+  String? Function(String?)? validator;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,11 +61,22 @@ class CustomDropDownMenuButton extends StatelessWidget {
       width: width ?? 80,
       height: height,
       child: DropdownButtonFormField<String>(
+        validator: validator,
+        autovalidateMode: autovalidateMode,
         padding: EdgeInsetsDirectional.only(start: hintPadding),
         value: value,
         dropdownColor: Colors.white,
         decoration: InputDecoration(
+          suffixIcon: suffixIcon,
+          prefixIcon: prefixIcon,
+          prefix: prefix,
+          suffix: suffix,
           fillColor: fillColor,
+          prefixIconColor: focusNode == null
+              ? null
+              : focusNode!.hasFocus
+                  ? Theme.of(context).colorScheme.secondary
+                  : const Color(0xffBDC1C8),
           filled: filled,
           enabledBorder: border != null
               ? const UnderlineInputBorder(
@@ -80,7 +109,9 @@ class CustomDropDownMenuButton extends StatelessWidget {
         hint: Padding(
           padding: EdgeInsetsDirectional.only(start: hintPadding),
           child: coloredText(
-              text: hint ?? "choose".tr, color: Colors.grey, fontSize: 13),
+              text: hint ?? "choose".tr,
+              color: Colors.grey,
+              fontSize: hintSize ?? 13.sp),
         ),
         onChanged: onChanged,
       ),

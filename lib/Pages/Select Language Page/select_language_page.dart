@@ -8,8 +8,7 @@ import '../Select%20Language%20Page/get_started_page.dart';
 import '../log-reg%20pages/login_page.dart';
 
 class SelectLanguagePage extends StatelessWidget {
-  const SelectLanguagePage({super.key});
-
+  SelectLanguagePage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

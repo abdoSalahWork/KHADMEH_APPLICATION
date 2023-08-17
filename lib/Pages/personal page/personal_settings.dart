@@ -128,7 +128,9 @@ class _PersonalSettingsState extends State<PersonalSettings> {
             ),
             spaceY(20),
             primaryBorderedButton(
-              onTap: () {
+              onTap: () async {
+                await Utils.deleteToken();
+                await Utils.deleteRemmemberMe();
                 Get.offAll(() => const LoginPage());
               },
               width: 100.w,

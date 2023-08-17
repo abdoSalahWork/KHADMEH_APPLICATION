@@ -1,6 +1,11 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
@@ -35,13 +40,38 @@ class Utils {
 //   //   });
 //   // }
 
-//   static void showSnackBar(BuildContext context, String message) {
-//     final snackBar = SnackBar(content: Text(message));
+  static String? validatePassword(String? value) {
+    if (value!.isEmpty) return null;
+    final numreg = RegExp(r'\d');
+    final bigAlphareg = RegExp(r'[A-Z]');
+    final smallAlpgareg = RegExp(r'[a-z]');
+    if (value.length < 8) {
+      return ("password should be at least 8 characters");
+    } else if (value.length > 20) {
+      return ("password should be no more 20 characters");
+    } else if (!numreg.hasMatch(value)) {
+      return ("password should have at least 1 numbers");
+    } else if (!smallAlpgareg.hasMatch(value)) {
+      return ("password should have at least 1 small letter");
+    } else if (!bigAlphareg.hasMatch(value)) {
+      return ("password should have at least 1 capital letter");
+    }
+    return null;
+  }
 
-//     ScaffoldMessenger.of(context)
-//       ..hideCurrentSnackBar()
-//       ..showSnackBar(snackBar);
-//   }
+  static void showSnackBar({required String message, double? fontSize}) {
+    final snackBar = SnackBar(
+      content: coloredText(
+        fontSize: fontSize,
+        text: message,
+        color: Colors.white,
+      ),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(Get.context!)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
 
 //   static Future<bool> reLoginHelper(DioError e) async {
 //     logError(e.response!.data["message"] == "Please Login");
@@ -61,6 +91,43 @@ class Utils {
 //     return false;
 //     // }
 //   }
+  final Dio dio = Dio();
+  Utils() {
+    dio.options.headers['content-Type'] = 'multipart/form-data';
+
+    readToken().then(
+        (value) => dio.options.headers["authorization"] = "Bearer $value");
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () =>
+        HttpClient()
+          ..badCertificateCallback =
+              (X509Certificate cert, String host, int port) => true;
+  }
+  static const _storage = FlutterSecureStorage();
+  static Future<String?> readToken() async {
+    String? value = await _storage.read(key: "token");
+    return value;
+  }
+
+  static Future deleteToken() async {
+    await _storage.delete(key: "token");
+  }
+
+  static Future saveToken({required String token}) async {
+    await _storage.write(key: "token", value: token);
+  }
+
+  static Future<String?> readRemmemberMe() async {
+    String? value = await _storage.read(key: "rem");
+    return value;
+  }
+
+  static Future deleteRemmemberMe() async {
+    await _storage.delete(key: "rem");
+  }
+
+  static Future saveRemmemberMe({required String rem}) async {
+    await _storage.write(key: "rem", value: rem);
+  }
 
   static void customDialog(
       {TextStyle? titleStyle,

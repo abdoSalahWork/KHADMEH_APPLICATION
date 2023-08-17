@@ -703,8 +703,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       textAlign: TextAlign.center,
                       focusNode: _focusNodes[5],
                       decoration: InputDecoration(
-                        hintText: DateFormat('dd-MMMM-' 'yyyy')
-                            .format(DateTime.now()),
+                        hintText:
+                            DateFormat('yyyy-MM-dd').format(DateTime.now()),
                         contentPadding: const EdgeInsets.all(10),
                         iconColor: Colors.red,
                         enabledBorder: const UnderlineInputBorder(
@@ -739,7 +739,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       materialDatePickerInitialDate: DateTime.now(),
                       materialDatePickerLastDate:
                           DateTime.now().add(const Duration(days: 365 * 40)),
-                      preferredDateFormat: DateFormat('dd-MMMM-' 'yyyy'),
+                      preferredDateFormat: DateFormat('yyyy-MM-dd'),
                       textfieldDatePickerController: _dateController,
                       style: const TextStyle(
                         fontSize: 20,

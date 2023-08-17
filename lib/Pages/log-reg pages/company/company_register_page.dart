@@ -1,12 +1,19 @@
+import 'dart:math';
+
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/models/company_register_model.dart';
+import 'package:khedma/Pages/log-reg%20pages/otp_page.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:sizer/sizer.dart';
 import 'package:textfield_datepicker/textfield_datepicker.dart';
@@ -16,7 +23,6 @@ import '../../../Utils/utils.dart';
 import '../../../widgets/dropdown_menu_button.dart';
 import '../../../widgets/radio_button.dart';
 import '../../../widgets/underline_text_field.dart';
-import '../../HomePage/company_home_page.dart';
 
 class CompanyRegisterPage extends StatefulWidget {
   const CompanyRegisterPage({super.key});
@@ -31,11 +37,22 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
     setState(() => _currentStep = step);
   }
 
+  final AuthController _authController = Get.find();
+
   cancel() {
     _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
   }
 
+  CompanyRegisterData companyRegisterData = CompanyRegisterData();
+
   PageController pageController = PageController(initialPage: 0);
+  var errors = {};
+  String ownerphoneCode = "";
+  String ownerNationality = "";
+  String companyphoneCode = "";
+  String companyType = "recruitment";
+  String city = "";
+  String region = "";
   int idPassRadio = 0;
   final formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
@@ -51,7 +68,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
       TextEditingController();
   final TextEditingController _companyPhoneNumberController =
       TextEditingController();
-  final TextEditingController _nationallityController = TextEditingController();
+  // final TextEditingController _nationallityController = TextEditingController();
   final TextEditingController _pieceNumberController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
@@ -63,8 +80,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   final TextEditingController _crnController = TextEditingController();
   final TextEditingController _taxController = TextEditingController();
   final TextEditingController _licenseController = TextEditingController();
-  bool _obsecureflag = false;
-  bool _obsecureflag2 = false;
+  bool _obsecureflag = true;
+  bool _obsecureflag2 = true;
   void toggleObsecure() {
     _obsecureflag = !_obsecureflag;
     setState(() {});
@@ -76,6 +93,11 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   }
 
   final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
+  String logobuttonText = "Upload company logo";
+  String frontIdButton = "Upload front side of ID";
+  String backIdButton = "Upload back side of ID";
+  String passportButton = "Upload your passport";
+
   @override
   void initState() {
     for (var node in _focusNodes) {
@@ -134,12 +156,10 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     //     setState(() => _currentStep = index),
                   ),
                   Expanded(
-                    child: Form(
-                      child: PageView(
-                        controller: pageController,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: pageList,
-                      ),
+                    child: PageView(
+                      controller: pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: pageList,
                     ),
                   ),
                 ],
@@ -260,391 +280,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
     );
   }
 
-  // List<MyStep> stepList(double h, double w) => [
-  //       MyStep(
-  //           label: myLabel(0, "personal_info".tr),
-  //           content: SizedBox(
-  //             height: h < 600 ? 43.0.h : 50.0.h,
-  //             child: ListView(
-  //                 padding: const EdgeInsets.symmetric(horizontal: 20),
-  //                 primary: false,
-  //                 physics: const NeverScrollableScrollPhysics(),
-  //                 children: [
-  //                   UnderlinedCustomTextField(
-  //                       focusNode: _focusNodes[0],
-  //                       autovalidateMode: AutovalidateMode.onUserInteraction,
-  //                       controller: _nameController,
-  //                       keyBoardType: TextInputType.text,
-  //                       prefixIcon: Icon(
-  //                         FontAwesomeIcons.user,
-  //                         size: 16.0.sp,
-  //                       ),
-  //                       hintText: "name".tr,
-  //                       validator: (String? value) {
-  //                         if (value!.isEmpty) {
-  //                           return "required".tr;
-  //                         }
-  //                         return null;
-  //                       }),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[1],
-  //                     controller: _emailController,
-  //                     keyBoardType: TextInputType.emailAddress,
-  //                     prefixIcon: Icon(
-  //                       FontAwesomeIcons.envelope,
-  //                       size: 16.0.sp,
-  //                     ),
-  //                     hintText: "email".tr,
-  //                     validator: (String? value) =>
-  //                         EmailValidator.validate(value!)
-  //                             ? null
-  //                             : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[2],
-  //                     controller: _ownerPhoneNumberController,
-  //                     keyBoardType: TextInputType.number,
-  //                     prefixIcon: Container(
-  //                       margin: EdgeInsetsDirectional.only(start: 10),
-  //                       child: Row(
-  //                         mainAxisSize: MainAxisSize.min,
-  //                         children: [
-  //                           Icon(
-  //                             EvaIcons.phoneOutline,
-  //                             size: 20.0.sp,
-  //                           ),
-  //                           CustomDropDownMenuButton(
-  //                             width: 100,
-  //                             hintPadding: 13,
-  //                             items: [
-  //                               "+963",
-  //                               "+954",
-  //                               "+94",
-  //                             ]
-  //                                 .map((e) => DropdownMenuItem<String>(
-  //                                       value: e,
-  //                                       child: coloredText(
-  //                                         text: e,
-  //                                         fontSize: 17,
-  //                                       ),
-  //                                     ))
-  //                                 .toList(),
-  //                             onChanged: (p0) {},
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                     hintText: "phone_number".tr,
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[3],
-  //                     keyBoardType: TextInputType.text,
-
-  //                     controller: _nationallityController,
-  //                     readOnly: true,
-  //                     prefixIcon: Icon(
-  //                       EvaIcons.globe2Outline,
-  //                       size: 20.0.sp,
-  //                     ),
-  //                     hintText: "${"nationality".tr} (${"optional".tr})",
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[4],
-  //                     controller: _jobNameController,
-  //                     keyBoardType: TextInputType.text,
-  //                     prefixIcon: Icon(
-  //                       EvaIcons.briefcaseOutline,
-  //                       size: 20.0.sp,
-  //                     ),
-  //                     hintText: "job".tr,
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                 ]),
-  //           ),
-  //           isActive: _currentStep >= 0,
-  //           state: _currentStep >= 0
-  //               ? MyStepState.complete
-  //               : MyStepState.disabled),
-  //       MyStep(
-  //           label: myLabel(1, "address_info".tr),
-  //           content: SizedBox(
-  //             height: h < 600 ? 43.0.h : 50.0.h,
-  //             child: ListView(
-  //                 padding: const EdgeInsets.symmetric(horizontal: 20),
-  //                 primary: false,
-  //                 children: [
-  //                   Row(
-  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                     children: [
-  //                       CustomDropDownMenuButton(
-  //                         hint: "city".tr,
-  //                         border: const UnderlineInputBorder(),
-  //                         width: 40.0.w,
-  //                         items: [
-  //                           "syria",
-  //                           "iraq",
-  //                           "Egybt",
-  //                         ]
-  //                             .map((e) => DropdownMenuItem<String>(
-  //                                   value: e,
-  //                                   child: coloredText(
-  //                                     text: e,
-  //                                     fontSize: 17,
-  //                                   ),
-  //                                 ))
-  //                             .toList(),
-  //                         onChanged: (p0) {},
-  //                       ),
-  //                       CustomDropDownMenuButton(
-  //                         hint: "region".tr,
-  //                         border: const UnderlineInputBorder(),
-  //                         width: 40.0.w,
-  //                         items: [
-  //                           "syria",
-  //                           "iraq",
-  //                           "Egybt",
-  //                         ]
-  //                             .map((e) => DropdownMenuItem<String>(
-  //                                   value: e,
-  //                                   child: coloredText(
-  //                                     text: e,
-  //                                     fontSize: 17,
-  //                                   ),
-  //                                 ))
-  //                             .toList(),
-  //                         onChanged: (p0) {},
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[5],
-  //                     controller: _pieceNumberController,
-  //                     keyBoardType: TextInputType.number,
-  //                     // prefixIcon: const Icon(Icons.email_outlined),
-  //                     hintText: "piece_num".tr,
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[6],
-  //                     controller: _streetController,
-  //                     keyBoardType: TextInputType.text,
-  //                     // prefixIcon: const Icon(Icons.email_outlined),
-  //                     hintText: "street".tr,
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[7],
-  //                     controller: _buildingController,
-  //                     keyBoardType: TextInputType.text,
-  //                     // prefixIcon: const Icon(Icons.email_outlined),
-  //                     hintText: "building".tr,
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[8],
-  //                     controller: _adnController,
-  //                     keyBoardType: TextInputType.number,
-  //                     // prefixIcon: const Icon(Icons.email_outlined),
-  //                     hintText: "adn".tr,
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                 ]),
-  //           ),
-  //           isActive: _currentStep >= 1,
-  //           state: _currentStep >= 1
-  //               ? MyStepState.complete
-  //               : MyStepState.disabled),
-  //       MyStep(
-  //           label: myLabel(2, "id_proof".tr),
-  //           content: SizedBox(
-  //             height: h < 600 ? 43.0.h : 50.0.h,
-  //             child: ListView(
-  //                 padding: const EdgeInsets.symmetric(horizontal: 20),
-  //                 primary: false,
-  //                 children: [
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[9],
-  //                     controller: _idNumController,
-  //                     keyBoardType: TextInputType.number,
-  //                     // prefixIcon: const Icon(Icons.email_outlined),
-  //                     hintText: "id_number".tr,
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[10],
-  //                     controller: _refNumController,
-  //                     keyBoardType: TextInputType.number,
-  //                     // prefixIcon: const Icon(Icons.email_outlined),
-  //                     hintText: "ref_number".tr,
-  //                     // validator: (String? value) =>
-  //                     //     EmailValidator.validate(value!)
-  //                     //         ? null
-  //                     //         : "please_enter_a_valid_email".tr,
-  //                   ),
-  //                   spaceY(25.0.sp),
-  //                   Align(
-  //                     alignment: AlignmentDirectional.centerStart,
-  //                     child: Container(
-  //                       padding: const EdgeInsets.symmetric(
-  //                           horizontal: 20, vertical: 10),
-  //                       decoration: BoxDecoration(
-  //                         borderRadius: BorderRadius.circular(35),
-  //                         color: Theme.of(context)
-  //                             .colorScheme
-  //                             .secondary
-  //                             .withOpacity(0.13),
-  //                       ),
-  //                       child: Row(
-  //                         mainAxisSize: MainAxisSize.min,
-  //                         children: [
-  //                           Icon(
-  //                             FontAwesomeIcons.upload,
-  //                             color: Theme.of(context).colorScheme.secondary,
-  //                             size: 13.0.sp,
-  //                           ),
-  //                           spaceX(10.0.sp),
-  //                           coloredText(
-  //                               text: "upload_id".tr,
-  //                               color: Theme.of(context).colorScheme.secondary,
-  //                               fontSize: 13.0.sp)
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   spaceY(15.0.sp),
-  //                   Align(
-  //                     alignment: AlignmentDirectional.centerStart,
-  //                     child: Container(
-  //                       padding: const EdgeInsets.symmetric(
-  //                           horizontal: 20, vertical: 10),
-  //                       decoration: BoxDecoration(
-  //                         borderRadius: BorderRadius.circular(35),
-  //                         color: Theme.of(context)
-  //                             .colorScheme
-  //                             .secondary
-  //                             .withOpacity(0.1),
-  //                       ),
-  //                       child: Row(
-  //                         mainAxisSize: MainAxisSize.min,
-  //                         children: [
-  //                           Icon(
-  //                             FontAwesomeIcons.upload,
-  //                             color: Theme.of(context).colorScheme.secondary,
-  //                             size: 13.0.sp,
-  //                           ),
-  //                           spaceX(10.0.sp),
-  //                           coloredText(
-  //                               text: "upload_personal_photo".tr,
-  //                               color: Theme.of(context).colorScheme.secondary,
-  //                               fontSize: 13.0.sp)
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   )
-  //                 ]),
-  //           ),
-  //           isActive: _currentStep >= 2,
-  //           state: _currentStep >= 2
-  //               ? MyStepState.complete
-  //               : MyStepState.disabled),
-  //       MyStep(
-  //           label: myLabel(3, "security".tr),
-  //           content: SizedBox(
-  //             height: h < 600 ? 43.0.h : 50.0.h,
-  //             child: ListView(
-  //                 padding: const EdgeInsets.symmetric(horizontal: 20),
-  //                 primary: false,
-  //                 children: [
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[11],
-  //                     controller: _passwordController,
-  //                     keyBoardType: TextInputType.visiblePassword,
-  //                     suffixIcon: IconButton(
-  //                         icon: Icon(
-  //                           EvaIcons.eyeOutline,
-  //                           color: _focusNodes[11].hasFocus
-  //                               ? Theme.of(context).colorScheme.secondary
-  //                               : Colors.grey,
-  //                           size: 20.0.sp,
-  //                         ),
-  //                         onPressed: toggleObsecure),
-  //                     hintText: "password".tr,
-  //                     obsecureText: _obsecureflag,
-  //                   ),
-  //                   spaceY(10.0.sp),
-  //                   UnderlinedCustomTextField(
-  //                     focusNode: _focusNodes[12],
-  //                     controller: _passwordConfirmController,
-  //                     keyBoardType: TextInputType.visiblePassword,
-  //                     suffixIcon: IconButton(
-  //                         icon: Icon(
-  //                           EvaIcons.eyeOutline,
-  //                           color: _focusNodes[12].hasFocus
-  //                               ? Theme.of(context).colorScheme.secondary
-  //                               : Colors.grey,
-  //                           size: 20.0.sp,
-  //                         ),
-  //                         onPressed: toggleObsecure2),
-  //                     hintText: "password_confirm".tr,
-  //                     obsecureText: _obsecureflag2,
-  //                   ),
-  //                 ]),
-  //           ),
-  //           isActive: _currentStep >= 3,
-  //           state: _currentStep >= 3
-  //               ? MyStepState.complete
-  //               : MyStepState.disabled),
-  //     ];
-
-  // Widget myLabel(int currenetStep, String text) => currenetStep == _currentStep
-  //     ? SizedBox(
-  //         width: 100,
-  //         child: Text(
-  //           text,
-  //           textAlign: TextAlign.center,
-  //           style: TextStyle(
-  //               fontSize: text.split(" ").length >= 3 ? 8.sp : 11.0.sp,
-  //               fontWeight: FontWeight.bold),
-  //           softWrap: true,
-  //         ),
-  //       )
-  //     : Text('');
-
   List<EasyStep> stepList() => [
         EasyStep(
           customStep: CircleAvatar(
@@ -700,656 +335,298 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
         ),
       ];
   List<Widget> get pageList => [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(padding: EdgeInsets.zero, primary: false, children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                UnderlinedCustomTextField(
-                  width: 40.0.w,
-                  focusNode: _focusNodes[0],
-                  controller: _firstNameController,
-                  hintText: "First name",
-                  prefixIcon: Icon(
-                    EvaIcons.personOutline,
-                    size: 20.0.sp,
-                  ),
-                ),
-                UnderlinedCustomTextField(
-                  width: 40.0.w,
-                  focusNode: _focusNodes[1],
-                  controller: _lastNameController,
-                  hintText: "Last name",
-                  prefixIcon: Icon(
-                    EvaIcons.personOutline,
-                    size: 20.0.sp,
-                  ),
-                )
-              ],
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[2],
-              controller: _ownerPhoneNumberController,
-              keyBoardType: TextInputType.number,
-              prefixIcon: Container(
-                margin: const EdgeInsetsDirectional.only(start: 10),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      EvaIcons.phoneOutline,
-                      size: 20.0.sp,
-                    ),
-                    CustomDropDownMenuButton(
-                      width: 100,
-                      hintPadding: 13,
-                      items: [
-                        "+963",
-                        "+954",
-                        "+94",
-                      ]
-                          .map((e) => DropdownMenuItem<String>(
-                                value: e,
-                                child: coloredText(
-                                  text: e,
-                                  fontSize: 17,
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (p0) {},
-                    ),
-                  ],
-                ),
-              ),
-              hintText: "phone_number".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[3],
-              keyBoardType: TextInputType.text,
-              controller: _nationallityController,
-              readOnly: true,
-              prefixIcon: Icon(
-                EvaIcons.globe2Outline,
-                size: 20.0.sp,
-              ),
-              hintText: "nationality".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[4],
-              controller: _idNumController,
-              keyBoardType: TextInputType.text,
-              prefixIcon: Icon(FontAwesomeIcons.idCard, size: 16.0.sp),
-              hintText: "ID number".tr,
-            ),
-            spaceY(10.0.sp),
-            Row(
-              children: [
-                coloredText(
-                  text: "Date of birth:",
-                ),
-                spaceX(10),
-                SizedBox(
-                  width: 40.0.w,
-                  child: Theme(
-                    data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                        seedColor: AppThemes.colorCustom,
-                      ),
-                    ),
-                    child: TextfieldDatePicker(
-                      textAlign: TextAlign.center,
-                      focusNode: _focusNodes[5],
-                      decoration: InputDecoration(
-                        hintText: DateFormat('dd-MMMM-' 'yyyy')
-                            .format(DateTime.now()),
-                        contentPadding: const EdgeInsets.all(10),
-                        iconColor: Colors.red,
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xffBDC1C8),
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _focusNodes[5].hasFocus
-                                ? Theme.of(context).colorScheme.secondary
-                                : const Color(0xffBDC1C8),
-                            width: 2.0,
-                          ),
-                        ),
-                        errorBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.red,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
-                      cupertinoDatePickerBackgroundColor: Colors.white,
-                      cupertinoDatePickerMaximumDate:
-                          DateTime.now().add(const Duration(days: 365 * 40)),
-                      cupertinoDatePickerMaximumYear: 2099,
-                      cupertinoDatePickerMinimumYear: 1900,
-                      cupertinoDatePickerMinimumDate: DateTime.now()
-                          .subtract(const Duration(days: 365 * 100)),
-                      cupertinoDateInitialDateTime: DateTime.now(),
-                      materialDatePickerFirstDate: DateTime.now()
-                          .subtract(const Duration(days: 365 * 100)),
-                      materialDatePickerInitialDate: DateTime.now(),
-                      materialDatePickerLastDate:
-                          DateTime.now().add(const Duration(days: 365 * 40)),
-                      preferredDateFormat: DateFormat('dd-MMMM-' 'yyyy'),
-                      textfieldDatePickerController: _dateController,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            spaceY(20.0.sp),
-            primaryButton(
-              onTap: () {
-                if (_currentStep < stepList().length - 1) {
-                  setState(() => _currentStep += 1);
-                  pageController.jumpToPage(_currentStep);
-                }
-              },
-              text: coloredText(
-                text: "Next",
-                color: Colors.white,
-                fontSize: 16.0.sp,
-              ),
-              height: 50,
-              width: 45.0.w,
-              radius: 30,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            spaceY(20.0.sp),
-          ]),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(padding: EdgeInsets.zero, primary: false, children: [
-            db.DottedBorder(
-              dashPattern: const [6, 6, 6, 6],
-              padding: const EdgeInsets.all(1),
-              radius: const Radius.circular(10),
-              color: const Color(0xffDBDBDB),
-              borderType: db.BorderType.RRect,
-              child: primaryButton(
-                  color: const Color(0xffF5F5F5),
-                  width: 100.0.w,
-                  height: 55,
-                  radius: 10,
-                  text: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        EvaIcons.upload,
-                        color: const Color(0xff919191),
-                        size: 18.0.sp,
-                      ),
-                      spaceX(10),
-                      coloredText(
-                        text: "Upload company logo",
-                        color: const Color(0xff919191),
-                        fontSize: 13.0.sp,
-                      ),
-                    ],
-                  )),
-            ),
-            spaceY(10.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                coloredText(
-                    text: "General info",
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 14.0.sp,
-                    fontWeight: FontWeight.w500),
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                )
-              ],
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[6],
-              controller: _companyNameEnController,
-              keyBoardType: TextInputType.text,
-              prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
-              hintText: "Company Name En",
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[7],
-              controller: _companyNameArController,
-              keyBoardType: TextInputType.text,
-              prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
-              hintText: "Company Name Ar",
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[8],
-              controller: _companyPhoneNumberController,
-              keyBoardType: TextInputType.number,
-              prefixIcon: Container(
-                margin: const EdgeInsetsDirectional.only(start: 10),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      EvaIcons.phoneOutline,
-                      size: 20.0.sp,
-                    ),
-                    CustomDropDownMenuButton(
-                      width: 100,
-                      hintPadding: 13,
-                      items: [
-                        "+963",
-                        "+954",
-                        "+94",
-                      ]
-                          .map((e) => DropdownMenuItem<String>(
-                                value: e,
-                                child: coloredText(
-                                  text: e,
-                                  fontSize: 17,
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (p0) {},
-                    ),
-                  ],
-                ),
-              ),
-              hintText: "phone_number".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[9],
-              controller: _emailController,
-              keyBoardType: TextInputType.emailAddress,
-              prefixIcon: Icon(FontAwesomeIcons.envelope, size: 16.0.sp),
-              hintText: "email".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[10],
-              controller: _urlController,
-              keyBoardType: TextInputType.url,
-              prefixIcon: Icon(Iconsax.link_21, size: 20.0.sp),
-              hintText: "URL (optional)".tr,
-            ),
-            spaceY(10.0.sp),
-            Row(
-              children: [
-                coloredText(
-                  text: "Company Type:",
-                ),
-                spaceX(15),
-                CustomDropDownMenuButton(
-                  fillColor: const Color(0xffF5F5F5),
-                  padding: const EdgeInsetsDirectional.only(end: 5, start: 5),
-                  width: 40.0.w,
-                  height: 50,
-                  borderRadius: BorderRadius.circular(10),
-                  items: ["recruitment", "clean"]
-                      .map(
-                        (e) => DropdownMenuItem<String>(
-                          value: e,
-                          child: coloredText(text: e),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (p0) {},
-                ),
-              ],
-            ),
-            spaceY(20.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                coloredText(
-                    text: "Address Info",
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 14.0.sp,
-                    fontWeight: FontWeight.w500),
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                )
-              ],
-            ),
-            spaceY(10.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomDropDownMenuButton(
-                  hint: "city".tr,
-                  border: const UnderlineInputBorder(),
-                  width: 40.0.w,
-                  items: [
-                    "syria",
-                    "iraq",
-                    "Egybt",
-                  ]
-                      .map((e) => DropdownMenuItem<String>(
-                            value: e,
-                            child: coloredText(
-                              text: e,
-                              fontSize: 17,
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: (p0) {},
-                ),
-                CustomDropDownMenuButton(
-                  hint: "region".tr,
-                  border: const UnderlineInputBorder(),
-                  width: 40.0.w,
-                  items: [
-                    "syria",
-                    "iraq",
-                    "Egybt",
-                  ]
-                      .map((e) => DropdownMenuItem<String>(
-                            value: e,
-                            child: coloredText(
-                              text: e,
-                              fontSize: 17,
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: (p0) {},
-                ),
-              ],
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[11],
-              controller: _pieceNumberController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "piece_num".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[12],
-              controller: _streetController,
-              keyBoardType: TextInputType.text,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "street".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[13],
-              controller: _buildingController,
-              keyBoardType: TextInputType.text,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "building".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[14],
-              controller: _adnController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "adn".tr,
-            ),
-            spaceY(20.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                coloredText(
-                    text: "Work Info",
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 14.0.sp,
-                    fontWeight: FontWeight.w500),
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                )
-              ],
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[15],
-              controller: _crnController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "Commercial registration number",
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[16],
-              controller: _taxController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "Tax number",
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[17],
-              controller: _licenseController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "license number",
-            ),
-            spaceY(20.0.sp),
-            primaryButton(
-              onTap: () {
-                if (_currentStep < stepList().length - 1) {
-                  setState(() => _currentStep += 1);
-                  pageController.jumpToPage(_currentStep);
-                }
-                logSuccess(_currentStep);
-              },
-              text: coloredText(
-                text: "Next",
-                color: Colors.white,
-                fontSize: 16.0.sp,
-              ),
-              height: 50,
-              width: 45.0.w,
-              radius: 30,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            spaceY(20.0.sp),
-          ]),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            primary: false,
-            children: [
-              coloredText(
-                text: "Identity confirmation by",
-              ),
+        GetBuilder<GlobalController>(builder: (c) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child:
+                ListView(padding: EdgeInsets.zero, primary: false, children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MyRadioButton(
-                    color: Colors.black,
-                    text: "ID",
-                    groupValue: idPassRadio,
-                    value: 0,
-                    onChanged: (p0) {
-                      setState(() {
-                        idPassRadio = 0;
-                      });
+                  UnderlinedCustomTextField(
+                    width: 40.0.w,
+                    focusNode: _focusNodes[0],
+                    controller: _firstNameController,
+                    hintText: "First name",
+                    prefixIcon: Icon(
+                      EvaIcons.personOutline,
+                      size: 20.0.sp,
+                    ),
+                    autovalidateMode: AutovalidateMode.always,
+                    onchanged: (s) {
+                      errors['first_name'] = null;
+                      setState(() {});
+                      companyRegisterData.firstName = s;
+                    },
+                    validator: (String? value) {
+                      if (errors['first_name'] != null) {
+                        String tmp = "";
+                        tmp = errors['first_name'].join("\n");
+
+                        return tmp;
+                      }
+                      return null;
                     },
                   ),
-                  spaceX(20),
-                  MyRadioButton(
-                    color: Colors.black,
-                    text: "Passport",
-                    groupValue: idPassRadio,
-                    value: 1,
-                    onChanged: (p0) {
-                      setState(() {
-                        idPassRadio = 1;
-                      });
+                  UnderlinedCustomTextField(
+                    width: 40.0.w,
+                    focusNode: _focusNodes[1],
+                    controller: _lastNameController,
+                    hintText: "Last name",
+                    prefixIcon: Icon(
+                      EvaIcons.personOutline,
+                      size: 20.0.sp,
+                    ),
+                    autovalidateMode: AutovalidateMode.always,
+                    onchanged: (s) {
+                      errors['last_name'] = null;
+                      setState(() {});
+                      companyRegisterData.lastName = s;
+                    },
+                    validator: (String? value) {
+                      if (errors['last_name'] != null) {
+                        String tmp = "";
+                        tmp = errors['last_name'].join("\n");
+
+                        return tmp;
+                      }
+                      return null;
                     },
                   )
                 ],
               ),
-              spaceY(20),
-              idPassRadio == 0
-                  ? Container()
-                  : primaryButton(
-                      color: const Color(0xffF5F5F5),
-                      width: 100.0.w,
-                      height: 55,
-                      radius: 10,
-                      text: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              spaceX(10),
-                              Icon(
-                                LineIcons.passport,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 18.0.sp,
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[2],
+                controller: _ownerPhoneNumberController,
+                keyBoardType: TextInputType.number,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['phone'] = null;
+                  setState(() {});
+                  companyRegisterData.phone = s;
+                },
+                validator: (String? value) {
+                  if (errors['phone'] != null) {
+                    String tmp = "";
+                    tmp = errors['phone'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+                prefixIcon: Container(
+                  margin: const EdgeInsetsDirectional.only(start: 10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        EvaIcons.phoneOutline,
+                        size: 20.0.sp,
+                      ),
+                      CustomDropDownMenuButton(
+                        width: 100,
+                        hintPadding: 5,
+                        hintSize: 14,
+                        value: ownerphoneCode == "" ? null : ownerphoneCode,
+                        items: c.countries
+                            .map((e) => DropdownMenuItem<String>(
+                                  value: e.code!,
+                                  child: coloredText(
+                                    text: e.code!,
+                                    fontSize: 17,
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (p0) {
+                          ownerphoneCode = p0!;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                hintText: "phone_number".tr,
+              ),
+              spaceY(10.0.sp),
+              CustomDropDownMenuButton(
+                hintPadding: 0, focusNode: _focusNodes[3],
+                hint: "Nationality",
+                autovalidateMode: AutovalidateMode.always,
+                validator: (String? value) {
+                  if (errors['nationality_id'] != null) {
+                    String tmp = "";
+                    tmp = errors['nationality_id'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+                width: 100.w,
+                value: ownerNationality == "" ? null : ownerNationality,
+                items: c.countries
+                    .map(
+                      (e) => DropdownMenuItem<String>(
+                        value: e.nameEn,
+                        child:
+                            coloredText(text: e.nameEn!, color: Colors.black),
+                      ),
+                    )
+                    .toList(),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: _focusNodes[4].hasFocus
+                        ? Theme.of(context).colorScheme.secondary
+                        : const Color(0xffBDC1C8),
+                  ),
+                ),
+                onChanged: (p0) {
+                  ownerNationality = p0!;
+                  errors['nationality_id'] = null;
+                  setState(() {});
+                  companyRegisterData.nationalityId = c.countries
+                      .where((element) =>
+                          element.nameEn == p0 || element.nameAr == p0)
+                      .first
+                      .id
+                      .toString();
+                  ;
+                },
+
+                prefixIcon: Icon(
+                  EvaIcons.globe2Outline,
+                  size: 20.0.sp,
+                ),
+                // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                borderRadius: BorderRadius.circular(8),
+                // padding:
+                //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+              ),
+              // UnderlinedCustomTextField(
+              //   focusNode: _focusNodes[3],
+              //   keyBoardType: TextInputType.text,
+              //   controller: _nationallityController,
+              //   readOnly: true,
+              //   prefixIcon: Icon(
+              //     EvaIcons.globe2Outline,
+              //     size: 20.0.sp,
+              //   ),
+              //   hintText: "nationality".tr,
+              // ),
+
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[4],
+                controller: _idNumController,
+                keyBoardType: TextInputType.number,
+                prefixIcon: Icon(FontAwesomeIcons.idCard, size: 16.0.sp),
+                hintText: "ID number".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['id_number'] = null;
+                  setState(() {});
+                  companyRegisterData.idNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['id_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['id_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              Row(
+                children: [
+                  coloredText(
+                    text: "Date of birth:",
+                  ),
+                  spaceX(10),
+                  SizedBox(
+                    width: 40.0.w,
+                    child: Theme(
+                      data: ThemeData(
+                        colorScheme: ColorScheme.fromSeed(
+                          seedColor: AppThemes.colorCustom,
+                        ),
+                      ),
+                      child: Form(
+                        onChanged: () => setState(() {
+                          errors['date_of_birth'] = null;
+                        }),
+                        child: TextfieldDatePicker(
+                          textAlign: TextAlign.center,
+                          focusNode: _focusNodes[5],
+                          autovalidateMode: AutovalidateMode.always,
+                          validator: (String? value) {
+                            if (errors['date_of_birth'] != null) {
+                              String tmp = "";
+                              tmp = errors['date_of_birth'].join("\n");
+
+                              return tmp;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText:
+                                DateFormat('y/MM/dd').format(DateTime.now()),
+                            contentPadding: const EdgeInsets.all(10),
+                            iconColor: Colors.red,
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0xffBDC1C8),
+                                width: 2.0,
                               ),
-                              spaceX(10),
-                              coloredText(
-                                text: "Upload your passport",
-                                color: const Color(0xff919191),
-                                fontSize: 13.0.sp,
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: _focusNodes[5].hasFocus
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : const Color(0xffBDC1C8),
+                                width: 2.0,
                               ),
-                            ],
+                            ),
+                            errorBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.red,
+                                width: 2.0,
+                              ),
+                            ),
                           ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 20.0.sp,
-                              ),
-                              spaceX(10),
-                            ],
+                          cupertinoDatePickerBackgroundColor: Colors.white,
+                          cupertinoDatePickerMaximumDate: DateTime.now()
+                              .add(const Duration(days: 365 * 40)),
+                          cupertinoDatePickerMaximumYear: 2099,
+                          cupertinoDatePickerMinimumYear: 1900,
+                          cupertinoDatePickerMinimumDate: DateTime.now()
+                              .subtract(const Duration(days: 365 * 100)),
+                          cupertinoDateInitialDateTime: DateTime.now(),
+                          materialDatePickerFirstDate: DateTime.now()
+                              .subtract(const Duration(days: 365 * 100)),
+                          materialDatePickerInitialDate: DateTime.now(),
+                          materialDatePickerLastDate: DateTime.now()
+                              .add(const Duration(days: 365 * 40)),
+                          preferredDateFormat: DateFormat('y/MM/dd'),
+                          textfieldDatePickerController: _dateController,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
                           ),
-                        ],
-                      )),
-              idPassRadio == 1
-                  ? Container()
-                  : primaryButton(
-                      color: const Color(0xffF5F5F5),
-                      width: 100.0.w,
-                      height: 55,
-                      radius: 10,
-                      text: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              spaceX(10),
-                              Icon(
-                                LineIcons.identificationCard,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 18.0.sp,
-                              ),
-                              spaceX(10),
-                              coloredText(
-                                text: "Upload front side of ID",
-                                color: const Color(0xff919191),
-                                fontSize: 13.0.sp,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 20.0.sp,
-                              ),
-                              spaceX(10),
-                            ],
-                          ),
-                        ],
-                      )),
-              idPassRadio == 1 ? Container() : spaceY(10),
-              idPassRadio == 1
-                  ? Container()
-                  : primaryButton(
-                      color: const Color(0xffF5F5F5),
-                      width: 100.0.w,
-                      height: 55,
-                      radius: 10,
-                      text: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              spaceX(10),
-                              Icon(
-                                LineIcons.identificationCard,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 18.0.sp,
-                              ),
-                              spaceX(10),
-                              coloredText(
-                                text: "Upload back side of ID",
-                                color: const Color(0xff919191),
-                                fontSize: 13.0.sp,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 20.0.sp,
-                              ),
-                              spaceX(10),
-                            ],
-                          ),
-                        ],
-                      )),
-              spaceY(20),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              spaceY(20.0.sp),
               primaryButton(
                 onTap: () {
                   if (_currentStep < stepList().length - 1) {
                     setState(() => _currentStep += 1);
                     pageController.jumpToPage(_currentStep);
                   }
-
-                  logSuccess(_currentStep);
-                  setState(() {});
                 },
                 text: coloredText(
                   text: "Next",
@@ -1361,302 +638,1011 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 radius: 30,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              spaceY(20),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(padding: EdgeInsets.zero, primary: false, children: [
-            UnderlinedCustomTextField(
-              prefixIcon: Icon(
-                EvaIcons.lockOutline,
-                color: _focusNodes[18].hasFocus
-                    ? Theme.of(context).colorScheme.secondary
-                    : Colors.grey,
+              spaceY(20.0.sp),
+            ]),
+          );
+        }),
+        GetBuilder<GlobalController>(builder: (c) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child:
+                ListView(padding: EdgeInsets.zero, primary: false, children: [
+              db.DottedBorder(
+                dashPattern: const [6, 6, 6, 6],
+                padding: const EdgeInsets.all(1),
+                radius: const Radius.circular(10),
+                color: const Color(0xffDBDBDB),
+                borderType: db.BorderType.RRect,
+                child: primaryButton(
+                    color: const Color(0xffF5F5F5),
+                    width: 100.0.w,
+                    height: 55,
+                    radius: 10,
+                    onTap: () async {
+                      final result = await FilePicker.platform.pickFiles(
+                        allowMultiple: false,
+                        type: FileType.image,
+                      );
+                      if (result != null) {
+                        logobuttonText = result.files[0].name
+                            .substring(0, min(15, result.files[0].name.length));
+                        companyRegisterData.companyLogo = result.files[0];
+                        setState(() {});
+                      }
+                    },
+                    text: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          EvaIcons.upload,
+                          color: const Color(0xff919191),
+                          size: 18.0.sp,
+                        ),
+                        spaceX(10),
+                        coloredText(
+                          text: logobuttonText,
+                          color: const Color(0xff919191),
+                          fontSize: 13.0.sp,
+                        ),
+                      ],
+                    )),
               ),
-              focusNode: _focusNodes[18],
-              controller: _passwordController,
-              keyBoardType: TextInputType.visiblePassword,
-              suffixIcon: IconButton(
-                  icon: Icon(
-                    EvaIcons.eyeOutline,
-                    color: _focusNodes[18].hasFocus
-                        ? Theme.of(context).colorScheme.secondary
-                        : Colors.grey,
-                    size: 20.0.sp,
+              spaceY(10.0.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 28.0.w,
+                    height: 1,
+                    color: Colors.grey,
                   ),
-                  onPressed: toggleObsecure),
-              hintText: "password".tr,
-              obsecureText: _obsecureflag,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              prefixIcon: Icon(
-                EvaIcons.lockOutline,
-                color: _focusNodes[19].hasFocus
-                    ? Theme.of(context).colorScheme.secondary
-                    : Colors.grey,
+                  coloredText(
+                      text: "General info",
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 14.0.sp,
+                      fontWeight: FontWeight.w500),
+                  Container(
+                    width: 28.0.w,
+                    height: 1,
+                    color: Colors.grey,
+                  )
+                ],
               ),
-              focusNode: _focusNodes[19],
-              controller: _passwordConfirmController,
-              keyBoardType: TextInputType.visiblePassword,
-              suffixIcon: IconButton(
-                  icon: Icon(
-                    EvaIcons.eyeOutline,
-                    color: _focusNodes[19].hasFocus
-                        ? Theme.of(context).colorScheme.secondary
-                        : Colors.grey,
-                    size: 20.0.sp,
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[6],
+                controller: _companyNameEnController,
+                keyBoardType: TextInputType.text,
+                prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
+                hintText: "Company Name En",
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['company_name'] = null;
+                  setState(() {});
+                  companyRegisterData.companyName = s;
+                },
+                validator: (String? value) {
+                  if (errors['company_name'] != null) {
+                    String tmp = "";
+                    tmp = errors['company_name'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[7],
+                controller: _companyNameArController,
+                keyBoardType: TextInputType.text,
+                prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
+                hintText: "Company Name Ar",
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['company_name'] = null;
+                  setState(() {});
+                  companyRegisterData.companyName = s;
+                },
+                validator: (String? value) {
+                  if (errors['company_name'] != null) {
+                    String tmp = "";
+                    tmp = errors['company_name'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[8],
+                controller: _companyPhoneNumberController,
+                keyBoardType: TextInputType.number,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['company_phone'] = null;
+                  setState(() {});
+                  companyRegisterData.companyPhone = s;
+                },
+                validator: (String? value) {
+                  if (errors['company_phone'] != null) {
+                    String tmp = "";
+                    tmp = errors['company_phone'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+                prefixIcon: Container(
+                  margin: const EdgeInsetsDirectional.only(start: 10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        EvaIcons.phoneOutline,
+                        size: 20.0.sp,
+                      ),
+                      CustomDropDownMenuButton(
+                        width: 100,
+                        hintPadding: 5,
+                        hintSize: 13,
+                        value: companyphoneCode == "" ? null : companyphoneCode,
+                        items: c.countries
+                            .map((e) => DropdownMenuItem<String>(
+                                  value: e.code!,
+                                  child: coloredText(
+                                    text: e.code!,
+                                    fontSize: 17,
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (p0) {
+                          companyphoneCode = p0!;
+                        },
+                      ),
+                    ],
                   ),
-                  onPressed: toggleObsecure2),
-              hintText: "password_confirm".tr,
-              obsecureText: _obsecureflag2,
-            ),
-            spaceY(20.0.sp),
-            primaryButton(
-              onTap: () {
-                Get.offAll(() => const CompanyHomePage());
-              },
-              text: coloredText(
-                text: "Next",
-                color: Colors.white,
-                fontSize: 16.0.sp,
+                ),
+                hintText: "phone_number".tr,
               ),
-              height: 50,
-              width: 45.0.w,
-              radius: 30,
-              color: Theme.of(context).colorScheme.primary,
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[9],
+                controller: _emailController,
+                keyBoardType: TextInputType.emailAddress,
+                prefixIcon: Icon(FontAwesomeIcons.envelope, size: 16.0.sp),
+                hintText: "email".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['company_email'] = null;
+                  setState(() {});
+                  companyRegisterData.companyEmail = s;
+                },
+                validator: (String? value) {
+                  if (errors['company_email'] != null) {
+                    String tmp = "";
+                    tmp = errors['company_email'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[10],
+                controller: _urlController,
+                keyBoardType: TextInputType.url,
+                prefixIcon: Icon(Iconsax.link_21, size: 20.0.sp),
+                hintText: "URL (optional)".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['url'] = null;
+                  setState(() {});
+                  companyRegisterData.url = s;
+                },
+                validator: (String? value) {
+                  if (errors['url'] != null) {
+                    String tmp = "";
+                    tmp = errors['url'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              Row(
+                children: [
+                  coloredText(
+                    text: "Company Type:",
+                  ),
+                  spaceX(15),
+                  CustomDropDownMenuButton(
+                    fillColor: const Color(0xffF5F5F5),
+                    padding: const EdgeInsetsDirectional.only(end: 5, start: 5),
+                    width: 40.0.w,
+                    height: 50,
+                    borderRadius: BorderRadius.circular(10),
+                    value: companyType == "" ? null : companyType,
+                    items: ["recruitment", "clean"]
+                        .map(
+                          (e) => DropdownMenuItem<String>(
+                            value: e,
+                            child: coloredText(text: e),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (p0) {
+                      companyType = p0!;
+                      companyRegisterData.companyType = p0;
+                    },
+                  ),
+                ],
+              ),
+              spaceY(20.0.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 28.0.w,
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                  coloredText(
+                      text: "Address Info",
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 14.0.sp,
+                      fontWeight: FontWeight.w500),
+                  Container(
+                    width: 28.0.w,
+                    height: 1,
+                    color: Colors.grey,
+                  )
+                ],
+              ),
+              spaceY(10.0.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomDropDownMenuButton(
+                    hint: "city".tr,
+                    border: const UnderlineInputBorder(),
+                    width: 40.0.w,
+                    value: city == "" ? null : city,
+                    items: c.cities
+                        .map((e) => DropdownMenuItem<String>(
+                              value: e.nameEn,
+                              child: coloredText(
+                                text: e.nameEn!,
+                                fontSize: 17,
+                              ),
+                            ))
+                        .toList(),
+                    autovalidateMode: AutovalidateMode.always,
+                    validator: (String? value) {
+                      if (errors['city_id'] != null) {
+                        String tmp = "";
+                        tmp = errors['city_id'].join("\n");
+
+                        return tmp;
+                      }
+                      return null;
+                    },
+                    onChanged: (p0) {
+                      city = p0!;
+                      errors["city_id"] = null;
+                      setState(() {});
+                      companyRegisterData.cityId = c.cities
+                          .where((element) =>
+                              element.nameEn == p0 || element.nameAr == p0)
+                          .first
+                          .id
+                          .toString();
+                    },
+                  ),
+                  CustomDropDownMenuButton(
+                    hint: "region".tr,
+                    border: const UnderlineInputBorder(),
+                    width: 40.0.w,
+                    value: region == "" ? null : region,
+                    items: c.regions
+                        .map((e) => DropdownMenuItem<String>(
+                              value: e.nameEn,
+                              child: coloredText(
+                                text: e.nameEn!,
+                                fontSize: 17,
+                              ),
+                            ))
+                        .toList(),
+                    autovalidateMode: AutovalidateMode.always,
+                    validator: (String? value) {
+                      if (errors['region_id'] != null) {
+                        String tmp = "";
+                        tmp = errors['region_id'].join("\n");
+
+                        return tmp;
+                      }
+                      return null;
+                    },
+                    onChanged: (p0) {
+                      region = p0!;
+                      errors["region_id"] = null;
+                      setState(() {});
+                      companyRegisterData.regionId = c.regions
+                          .where((element) =>
+                              element.nameEn == p0 || element.nameAr == p0)
+                          .first
+                          .id
+                          .toString();
+                      ;
+                    },
+                  ),
+                ],
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[11],
+                controller: _pieceNumberController,
+                keyBoardType: TextInputType.number,
+                // prefixIcon: const Icon(Icons.email_outlined),
+                hintText: "piece_num".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['piece_number'] = null;
+                  setState(() {});
+                  companyRegisterData.pieceNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['piece_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['piece_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[12],
+                controller: _streetController,
+                keyBoardType: TextInputType.text,
+                // prefixIcon: const Icon(Icons.email_outlined),
+                hintText: "street".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['street'] = null;
+                  setState(() {});
+                  companyRegisterData.street = s;
+                },
+                validator: (String? value) {
+                  if (errors['street'] != null) {
+                    String tmp = "";
+                    tmp = errors['street'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[13],
+                controller: _buildingController,
+                keyBoardType: TextInputType.text,
+                // prefixIcon: const Icon(Icons.email_outlined),
+                hintText: "building".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['building'] = null;
+                  setState(() {});
+                  companyRegisterData.building = s;
+                },
+                validator: (String? value) {
+                  if (errors['building'] != null) {
+                    String tmp = "";
+                    tmp = errors['building'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[14],
+                controller: _adnController,
+                keyBoardType: TextInputType.number,
+                // prefixIcon: const Icon(Icons.email_outlined),
+                hintText: "adn".tr, autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['automated_address_number'] = null;
+                  setState(() {});
+                  companyRegisterData.automatedAddressNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['automated_address_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['automated_address_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(20.0.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 28.0.w,
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                  coloredText(
+                      text: "Work Info",
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 14.0.sp,
+                      fontWeight: FontWeight.w500),
+                  Container(
+                    width: 28.0.w,
+                    height: 1,
+                    color: Colors.grey,
+                  )
+                ],
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[15],
+                controller: _crnController,
+                keyBoardType: TextInputType.number,
+                // prefixIcon: const Icon(Icons.email_outlined),
+                hintText: "Commercial registration number",
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['commercial_registration_number'] = null;
+                  setState(() {});
+                  companyRegisterData.commercialRegistrationNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['commercial_registration_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['commercial_registration_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[16],
+                controller: _taxController,
+                keyBoardType: TextInputType.number,
+                // prefixIcon: const Icon(Icons.email_outlined),
+                hintText: "Tax number",
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['tax_number'] = null;
+                  setState(() {});
+                  companyRegisterData.taxNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['tax_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['tax_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[17],
+                controller: _licenseController,
+                keyBoardType: TextInputType.number,
+                // prefixIcon: const Icon(Icons.email_outlined),
+                hintText: "license number",
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['license_number'] = null;
+                  setState(() {});
+                  companyRegisterData.licenseNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['license_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['license_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(20.0.sp),
+              primaryButton(
+                onTap: () {
+                  if (_currentStep < stepList().length - 1) {
+                    setState(() => _currentStep += 1);
+                    pageController.jumpToPage(_currentStep);
+                  }
+                  logSuccess(_currentStep);
+                },
+                text: coloredText(
+                  text: "Next",
+                  color: Colors.white,
+                  fontSize: 16.0.sp,
+                ),
+                height: 50,
+                width: 45.0.w,
+                radius: 30,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              spaceY(20.0.sp),
+            ]),
+          );
+        }),
+        GetBuilder<GlobalController>(builder: (c) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: ListView(
+              padding: EdgeInsets.zero,
+              primary: false,
+              children: [
+                coloredText(
+                  text: "Identity confirmation by",
+                ),
+                Row(
+                  children: [
+                    MyRadioButton(
+                      color: Colors.black,
+                      text: "ID",
+                      groupValue: idPassRadio,
+                      value: 0,
+                      onChanged: (p0) {
+                        setState(() {
+                          companyRegisterData.identityConfirmation = "id";
+
+                          passportButton = "Upload your passport";
+                          idPassRadio = 0;
+                          companyRegisterData.passportImage = null;
+                          setState(() {});
+                        });
+                      },
+                    ),
+                    spaceX(20),
+                    MyRadioButton(
+                      color: Colors.black,
+                      text: "Passport",
+                      groupValue: idPassRadio,
+                      value: 1,
+                      onChanged: (p0) {
+                        setState(() {
+                          companyRegisterData.identityConfirmation = "passport";
+                          idPassRadio = 1;
+                          companyRegisterData.frontSideIdImage = null;
+                          companyRegisterData.backSideIdImage = null;
+                          frontIdButton = "Upload front side of ID";
+                          backIdButton = "Upload back side of ID";
+                          setState(() {});
+                        });
+                      },
+                    )
+                  ],
+                ),
+                spaceY(20),
+                idPassRadio == 0
+                    ? Container()
+                    : primaryButton(
+                        onTap: () async {
+                          final result = await FilePicker.platform.pickFiles(
+                            allowMultiple: false,
+                            type: FileType.image,
+                          );
+                          if (result != null) {
+                            passportButton = result.files[0].name.substring(
+                                0, min(15, result.files[0].name.length));
+                            companyRegisterData.passportImage = result.files[0];
+                            setState(() {});
+                          }
+                        },
+                        color: const Color(0xffF5F5F5),
+                        width: 100.0.w,
+                        height: 55,
+                        radius: 10,
+                        text: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                spaceX(10),
+                                Icon(
+                                  LineIcons.passport,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 18.0.sp,
+                                ),
+                                spaceX(10),
+                                coloredText(
+                                  text: passportButton,
+                                  color: const Color(0xff919191),
+                                  fontSize: 13.0.sp,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 20.0.sp,
+                                ),
+                                spaceX(10),
+                              ],
+                            ),
+                          ],
+                        )),
+                idPassRadio == 1
+                    ? Container()
+                    : primaryButton(
+                        onTap: () async {
+                          final result = await FilePicker.platform.pickFiles(
+                            allowMultiple: false,
+                            type: FileType.image,
+                          );
+                          if (result != null) {
+                            frontIdButton = result.files[0].name.substring(
+                                0, min(15, result.files[0].name.length));
+                            companyRegisterData.frontSideIdImage =
+                                result.files[0];
+                            setState(() {});
+                          }
+                        },
+                        color: const Color(0xffF5F5F5),
+                        width: 100.0.w,
+                        height: 55,
+                        radius: 10,
+                        text: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                spaceX(10),
+                                Icon(
+                                  LineIcons.identificationCard,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 18.0.sp,
+                                ),
+                                spaceX(10),
+                                coloredText(
+                                  text: frontIdButton,
+                                  color: const Color(0xff919191),
+                                  fontSize: 13.0.sp,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 20.0.sp,
+                                ),
+                                spaceX(10),
+                              ],
+                            ),
+                          ],
+                        )),
+                idPassRadio == 1 ? Container() : spaceY(10),
+                idPassRadio == 1
+                    ? Container()
+                    : primaryButton(
+                        onTap: () async {
+                          final result = await FilePicker.platform.pickFiles(
+                            allowMultiple: false,
+                            type: FileType.image,
+                          );
+                          if (result != null) {
+                            backIdButton = result.files[0].name.substring(
+                                0, min(15, result.files[0].name.length));
+                            companyRegisterData.backSideIdImage =
+                                result.files[0];
+                            setState(() {});
+                          }
+                        },
+                        color: const Color(0xffF5F5F5),
+                        width: 100.0.w,
+                        height: 55,
+                        radius: 10,
+                        text: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                spaceX(10),
+                                Icon(
+                                  LineIcons.identificationCard,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 18.0.sp,
+                                ),
+                                spaceX(10),
+                                coloredText(
+                                  text: backIdButton,
+                                  color: const Color(0xff919191),
+                                  fontSize: 13.0.sp,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 20.0.sp,
+                                ),
+                                spaceX(10),
+                              ],
+                            ),
+                          ],
+                        )),
+                spaceY(20),
+                primaryButton(
+                  onTap: () {
+                    if (_currentStep < stepList().length - 1) {
+                      setState(() => _currentStep += 1);
+                      pageController.jumpToPage(_currentStep);
+                    }
+
+                    logSuccess(_currentStep);
+                    setState(() {});
+                  },
+                  text: coloredText(
+                    text: "Next",
+                    color: Colors.white,
+                    fontSize: 16.0.sp,
+                  ),
+                  height: 50,
+                  width: 45.0.w,
+                  radius: 30,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                spaceY(20),
+              ],
             ),
-            spaceY(20.0.sp),
-          ]),
-        ),
+          );
+        }),
+        GetBuilder<GlobalController>(builder: (c) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child:
+                ListView(padding: EdgeInsets.zero, primary: false, children: [
+              UnderlinedCustomTextField(
+                prefixIcon: Icon(
+                  EvaIcons.lockOutline,
+                  color: _focusNodes[18].hasFocus
+                      ? Theme.of(context).colorScheme.secondary
+                      : Colors.grey,
+                ),
+                focusNode: _focusNodes[18],
+                controller: _passwordController,
+                keyBoardType: TextInputType.visiblePassword,
+                suffixIcon: IconButton(
+                    icon: Icon(
+                      EvaIcons.eyeOutline,
+                      color: _focusNodes[18].hasFocus
+                          ? Theme.of(context).colorScheme.secondary
+                          : Colors.grey,
+                      size: 20.0.sp,
+                    ),
+                    onPressed: toggleObsecure),
+                hintText: "password".tr,
+                obsecureText: _obsecureflag,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['password'] = null;
+                  setState(() {});
+                  companyRegisterData.password = s;
+                },
+                validator: (String? value) {
+                  if (errors['password'] != null) {
+                    String tmp = "";
+                    tmp = errors['password'].join("\n");
 
-        // Padding(
-        //   padding: const EdgeInsets.all(20),
-        //   child: ListView(
-        //       primary: false,
-        //       padding: const EdgeInsets.all(0),
-        //       children: [
-        //         Row(
-        //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //           children: [
-        //             CustomDropDownMenuButton(
-        //               hint: "city".tr,
-        //               border: const UnderlineInputBorder(),
-        //               width: 40.0.w,
-        //               items: [
-        //                 "syria",
-        //                 "iraq",
-        //                 "Egybt",
-        //               ]
-        //                   .map((e) => DropdownMenuItem<String>(
-        //                         value: e,
-        //                         child: coloredText(
-        //                           text: e,
-        //                           fontSize: 17,
-        //                         ),
-        //                       ))
-        //                   .toList(),
-        //               onChanged: (p0) {},
-        //             ),
-        //             CustomDropDownMenuButton(
-        //               hint: "region".tr,
-        //               border: const UnderlineInputBorder(),
-        //               width: 40.0.w,
-        //               items: [
-        //                 "syria",
-        //                 "iraq",
-        //                 "Egybt",
-        //               ]
-        //                   .map((e) => DropdownMenuItem<String>(
-        //                         value: e,
-        //                         child: coloredText(
-        //                           text: e,
-        //                           fontSize: 17,
-        //                         ),
-        //                       ))
-        //                   .toList(),
-        //               onChanged: (p0) {},
-        //             ),
-        //           ],
-        //         ),
-        //         spaceY(10.0.sp),
-        //         UnderlinedCustomTextField(
-        //           focusNode: _focusNodes[5],
-        //           controller: _pieceNumberController,
-        //           keyBoardType: TextInputType.number,
-        //           // prefixIcon: const Icon(Icons.email_outlined),
-        //           hintText: "piece_num".tr,
-        //           // validator: (String? value) =>
-        //           //     EmailValidator.validate(value!)
-        //           //         ? null
-        //           //         : "please_enter_a_valid_email".tr,
-        //         ),
-        //         spaceY(10.0.sp),
-        //         UnderlinedCustomTextField(
-        //           focusNode: _focusNodes[6],
-        //           controller: _streetController,
-        //           keyBoardType: TextInputType.text,
-        //           // prefixIcon: const Icon(Icons.email_outlined),
-        //           hintText: "street".tr,
-        //           // validator: (String? value) =>
-        //           //     EmailValidator.validate(value!)
-        //           //         ? null
-        //           //         : "please_enter_a_valid_email".tr,
-        //         ),
-        //         spaceY(10.0.sp),
-        //         UnderlinedCustomTextField(
-        //           focusNode: _focusNodes[7],
-        //           controller: _buildingController,
-        //           keyBoardType: TextInputType.text,
-        //           // prefixIcon: const Icon(Icons.email_outlined),
-        //           hintText: "building".tr,
-        //           // validator: (String? value) =>
-        //           //     EmailValidator.validate(value!)
-        //           //         ? null
-        //           //         : "please_enter_a_valid_email".tr,
-        //         ),
-        //         spaceY(10.0.sp),
-        //         UnderlinedCustomTextField(
-        //           focusNode: _focusNodes[8],
-        //           controller: _adnController,
-        //           keyBoardType: TextInputType.number,
-        //           // prefixIcon: const Icon(Icons.email_outlined),
-        //           hintText: "adn".tr,
-        //           // validator: (String? value) =>
-        //           //     EmailValidator.validate(value!)
-        //           //         ? null
-        //           //         : "please_enter_a_valid_email".tr,
-        //         ),
-        //         spaceY(20.0.sp),
-        //         Row(
-        //           mainAxisAlignment: MainAxisAlignment.end,
-        //           children: [
-        //             coloredText(
-        //                 text: "next".tr,
-        //                 fontSize: 16.0.sp,
-        //                 color: Theme.of(context).colorScheme.tertiary),
-        //             spaceX(10),
-        //             GestureDetector(
-        //               onTap: () {
-        //                 if (_currentStep < stepList().length - 1) {
-        //                   setState(() => _currentStep += 1);
-        //                   pageController.jumpToPage(_currentStep);
-        //                 }
-
-        //                 logSuccess(_currentStep);
-        //                 setState(() {});
-        //               },
-        //               child: Container(
-        //                 padding: const EdgeInsets.all(15),
-        //                 decoration: BoxDecoration(
-        //                   shape: BoxShape.circle,
-        //                   gradient: LinearGradient(
-        //                     begin: AlignmentDirectional.topStart,
-        //                     end: AlignmentDirectional.bottomEnd,
-        //                     colors: [
-        //                       Theme.of(context).colorScheme.primary,
-        //                       Theme.of(context).colorScheme.secondary,
-        //                     ],
-        //                   ),
-        //                 ),
-        //                 child: const Icon(
-        //                   FontAwesomeIcons.anglesRight,
-        //                   color: Colors.white,
-        //                   size: 22,
-        //                 ),
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //         spaceY(20.0.sp),
-        //       ]),
-        // ),
-        // Padding(
-        //   padding: const EdgeInsets.all(20),
-        //   child: ListView(primary: false, padding: EdgeInsets.zero, children: [
-        //     UnderlinedCustomTextField(
-        //       focusNode: _focusNodes[9],
-        //       controller: _idNumController,
-        //       keyBoardType: TextInputType.number,
-        //       // prefixIcon: const Icon(Icons.email_outlined),
-        //       hintText: "id_number".tr,
-        //       // validator: (String? value) =>
-        //       //     EmailValidator.validate(value!)
-        //       //         ? null
-        //       //         : "please_enter_a_valid_email".tr,
-        //     ),
-        //     spaceY(25.0.sp),
-        //     Align(
-        //       alignment: AlignmentDirectional.centerStart,
-        //       child: Container(
-        //         padding:
-        //             const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        //         decoration: BoxDecoration(
-        //           borderRadius: BorderRadius.circular(35),
-        //           color:
-        //               Theme.of(context).colorScheme.secondary.withOpacity(0.13),
-        //         ),
-        //         child: Row(
-        //           mainAxisSize: MainAxisSize.min,
-        //           children: [
-        //             Icon(
-        //               FontAwesomeIcons.upload,
-        //               color: Theme.of(context).colorScheme.secondary,
-        //               size: 13.0.sp,
-        //             ),
-        //             spaceX(10.0.sp),
-        //             coloredText(
-        //                 text: "upload_id".tr,
-        //                 color: Theme.of(context).colorScheme.secondary,
-        //                 fontSize: 13.0.sp)
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //     spaceY(20.0.sp),
-        //     Row(
-        //       mainAxisAlignment: MainAxisAlignment.end,
-        //       children: [
-        //         coloredText(
-        //             text: "next".tr,
-        //             fontSize: 16.0.sp,
-        //             color: Theme.of(context).colorScheme.tertiary),
-        //         spaceX(10),
-        //         GestureDetector(
-        //           onTap: () {
-        //             if (_currentStep < stepList().length - 1) {
-        //               setState(() => _currentStep += 1);
-        //               pageController.jumpToPage(_currentStep);
-        //             }
-        //             logSuccess(_currentStep);
-        //             setState(() {});
-        //           },
-        //           child: Container(
-        //             padding: const EdgeInsets.all(15),
-        //             decoration: BoxDecoration(
-        //               shape: BoxShape.circle,
-        //               gradient: LinearGradient(
-        //                 begin: AlignmentDirectional.topStart,
-        //                 end: AlignmentDirectional.bottomEnd,
-        //                 colors: [
-        //                   Theme.of(context).colorScheme.primary,
-        //                   Theme.of(context).colorScheme.secondary,
-        //                 ],
-        //               ),
-        //             ),
-        //             child: const Icon(
-        //               FontAwesomeIcons.anglesRight,
-        //               color: Colors.white,
-        //               size: 22,
-        //             ),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     spaceY(20.0.sp),
-        //   ]),
-        // ),
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                prefixIcon: Icon(
+                  EvaIcons.lockOutline,
+                  color: _focusNodes[19].hasFocus
+                      ? Theme.of(context).colorScheme.secondary
+                      : Colors.grey,
+                ),
+                focusNode: _focusNodes[19],
+                controller: _passwordConfirmController,
+                keyBoardType: TextInputType.visiblePassword,
+                suffixIcon: IconButton(
+                    icon: Icon(
+                      EvaIcons.eyeOutline,
+                      color: _focusNodes[19].hasFocus
+                          ? Theme.of(context).colorScheme.secondary
+                          : Colors.grey,
+                      size: 20.0.sp,
+                    ),
+                    onPressed: toggleObsecure2),
+                hintText: "password_confirm".tr,
+                obsecureText: _obsecureflag2,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['password'] = null;
+                  setState(() {});
+                  companyRegisterData.passwordConfirmation = s;
+                },
+                validator: (s) {
+                  if (s!.isEmpty) {
+                    return null;
+                  } else if (_passwordController.text != s) {
+                    return "don't match password";
+                  }
+                  return null;
+                },
+              ),
+              spaceY(20.0.sp),
+              primaryButton(
+                onTap: () async {
+                  // Get.offAll(() => const CompanyHomePage());
+                  companyRegisterData.dateOfBirth = _dateController.text;
+                  var x = await await _authController.companyRegister(
+                      companyRegisterData: companyRegisterData);
+                  if (x == true) {
+                    // ignore: use_build_context_synchronously
+                    Utils.customDialog(
+                        actions: [
+                          primaryButton(
+                            onTap: () {
+                              Get.back();
+                              Get.to(
+                                () => OTPPage(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                ),
+                                transition: Transition.rightToLeft,
+                              );
+                            },
+                            width: 40.0.w,
+                            height: 50,
+                            radius: 10.w,
+                            color: Theme.of(context).colorScheme.primary,
+                            text: coloredText(
+                              text: "ok".tr,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                        context: context,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              spaceY(20),
+                              Icon(
+                                EvaIcons.checkmarkCircle,
+                                color: Theme.of(context).colorScheme.secondary,
+                                size: 40.sp,
+                              ),
+                              spaceY(20),
+                              coloredText(
+                                  text: "You have been registered",
+                                  fontSize: 12.0.sp),
+                              coloredText(
+                                text: "successfully",
+                                fontSize: 14.0.sp,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ],
+                          ),
+                        ));
+                  } else if (x['message'] == "The given data was invalid.") {
+                    errors = x['errors'];
+                    if (errors['first_name'] != null ||
+                        errors['last_name'] != null ||
+                        errors['phone'] != null ||
+                        errors['nationality_id'] != null ||
+                        errors['id_number'] != null ||
+                        errors['date_of_birth'] != null) {
+                      _currentStep = 0;
+                      setState(() {});
+                      pageController.jumpToPage(_currentStep);
+                    } else if (errors['company_name'] != null ||
+                        errors['url'] != null ||
+                        errors['company_phone'] != null ||
+                        errors['company_type'] != null ||
+                        errors['company_email'] != null ||
+                        errors['city_id'] != null ||
+                        errors['region_id'] != null ||
+                        errors['piece_number'] != null ||
+                        errors['street'] != null ||
+                        errors['building'] != null ||
+                        errors['automated_address_number'] != null ||
+                        errors['commercial_registration_number'] != null ||
+                        errors['tax_number'] != null ||
+                        errors['license_number'] != null ||
+                        errors['company_logo'] != null) {
+                      _currentStep = 1;
+                      setState(() {});
+                      pageController.jumpToPage(_currentStep);
+                      String tmp = "";
+                      if (errors['company_logo'] != null) {
+                        tmp = errors['company_logo'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      } else if (errors['company_type'] != null) {
+                        tmp = errors['company_type'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      } else if (errors['company_logo'] != null &&
+                          errors['company_type'] != null) {
+                        tmp = errors['company_logo'].join("\n") +
+                            "\n" +
+                            errors['company_type'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      }
+                    } else if (errors['front_side_id_image'] != null ||
+                        errors['back_side_id_image'] != null ||
+                        errors['passport_image'] != null) {
+                      _currentStep = 2;
+                      setState(() {});
+                      pageController.jumpToPage(_currentStep);
+                      String tmp = "";
+                      if (errors['passport_image'] != null) {
+                        tmp = errors['passport_image'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      } else if (errors['front_side_id_image'] != null) {
+                        tmp = errors['front_side_id_image'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      } else if (errors['back_side_id_image'] != null) {
+                        tmp = errors['back_side_id_image'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      } else if (errors['front_side_id_image'] != null &&
+                          errors['back_side_id_image'] != null) {
+                        tmp = errors['front_side_id_image'].join("\n") +
+                            "\n" +
+                            errors['back_side_id_image'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      }
+                    } else if (errors['password'] != null) {
+                      _currentStep = 3;
+                      setState(() {});
+                      pageController.jumpToPage(_currentStep);
+                    }
+                  }
+                },
+                text: coloredText(
+                  text: "submit".tr,
+                  color: Colors.white,
+                  fontSize: 16.0.sp,
+                ),
+                height: 50,
+                width: 45.0.w,
+                radius: 30,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              spaceY(20.0.sp),
+            ]),
+          );
+        }),
       ];
 }

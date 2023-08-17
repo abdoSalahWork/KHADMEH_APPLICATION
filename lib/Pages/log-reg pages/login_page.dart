@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/user_home_page.dart';
+import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/forget%20password/forget_passwrod_page.dart';
+import 'package:khedma/Pages/log-reg%20pages/otp_page.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
@@ -46,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
+  final AuthController _authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -181,8 +186,8 @@ class _LoginPageState extends State<LoginPage> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    // Get.to(() => ForgetPasswordPage(),
-                                    //     transition: Transition.downToUp);
+                                    Get.to(() => ForgetPasswordPage(),
+                                        transition: Transition.downToUp);
                                   },
                                   child: Text(
                                     "forget_pass".tr,
@@ -269,18 +274,36 @@ class _LoginPageState extends State<LoginPage> {
                                   color: Colors.white,
                                   fontSize: 15.0.sp),
                               onTap: () async {
-                                // Get.to(() => HomePage());
-
                                 FocusManager.instance.primaryFocus?.unfocus();
 
-                                final isValid =
-                                    formKey.currentState!.validate();
-                                if (!isValid) return;
-
-                                // await _loginController.login(
-                                //     _emailController.text,
-                                //     _passwordController.text,
-                                //     _rememberMeFlag);
+                                if (formKey.currentState!.validate()) {
+                                  LoginStates state =
+                                      await _authController.handleNormalSignIn(
+                                    userName: _emailController.text,
+                                    password: _passwordController.text,
+                                    saveToken: _rememberMeFlag,
+                                  );
+                                  if (state == LoginStates.login) {
+                                    Get.offAll(() => const UserHomePage(),
+                                        transition: Transition.downToUp);
+                                  } else if (state == LoginStates.needsVerify) {
+                                    Get.to(
+                                        () => OTPPage(
+                                              email: _emailController.text,
+                                              password:
+                                                  _passwordController.text,
+                                            ),
+                                        transition: Transition.downToUp);
+                                  } else if (state ==
+                                      LoginStates.accountNotFound) {
+                                    Utils.showSnackBar(
+                                        message: "Account not found!!");
+                                  } else {
+                                    Utils.showSnackBar(
+                                        message:
+                                            "Your password is incorrect!!");
+                                  }
+                                }
                               },
                             ),
                             spaceY(10.0.sp),
@@ -307,21 +330,33 @@ class _LoginPageState extends State<LoginPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Container(
-                                  width: 40.0.sp,
-                                  height: 40.0.sp,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.grey.withOpacity(0.2)),
-                                      shape: BoxShape.circle,
-                                      color: Colors.grey.withOpacity(0.1)),
-                                  child: Center(
-                                    child: Image(
-                                      width: 20.0.sp,
-                                      height: 20.0.sp,
-                                      image: const AssetImage(
-                                          "assets/images/google.png"),
-                                      fit: BoxFit.contain,
+                                GestureDetector(
+                                  onTap: () async {
+                                    String? token = await _authController
+                                        .handleGoogleSignIn(
+                                            saveToken: _rememberMeFlag);
+                                    if (token != null) {
+                                      Get.off(() => const UserHomePage(),
+                                          transition: Transition.downToUp);
+                                    }
+                                  },
+                                  child: Container(
+                                    width: 40.0.sp,
+                                    height: 40.0.sp,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color:
+                                                Colors.grey.withOpacity(0.2)),
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey.withOpacity(0.1)),
+                                    child: Center(
+                                      child: Image(
+                                        width: 20.0.sp,
+                                        height: 20.0.sp,
+                                        image: const AssetImage(
+                                            "assets/images/google.png"),
+                                        fit: BoxFit.contain,
+                                      ),
                                     ),
                                   ),
                                 ),

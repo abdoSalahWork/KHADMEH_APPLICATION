@@ -1,20 +1,26 @@
+// ignore_for_file: use_build_context_synchronously
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
 import '../../widgets/underline_text_field.dart';
-import '../HomePage/user_home_page.dart';
 
 class OTPPage extends StatefulWidget {
-  const OTPPage({super.key});
-
+  const OTPPage({super.key, required this.email, required this.password});
+  final String email;
+  final String password;
   @override
   State<OTPPage> createState() => _OTPPageState();
 }
 
 class _OTPPageState extends State<OTPPage> {
   FocusNode node = FocusNode();
+  TextEditingController codeController = TextEditingController();
+  final AuthController _authController = Get.find();
   @override
   void initState() {
     node.addListener(() {
@@ -67,6 +73,8 @@ class _OTPPageState extends State<OTPPage> {
           Center(
             child: UnderlinedCustomTextField(
               // width: 90.0.w,
+              keyBoardType: TextInputType.number,
+              controller: codeController,
               focusNode: node,
               hintText: "code",
             ),
@@ -82,10 +90,53 @@ class _OTPPageState extends State<OTPPage> {
               fontSize: 16.0.sp,
             ),
             color: Theme.of(context).colorScheme.primary,
-            onTap: () => Get.to(
-              () => const UserHomePage(),
-              transition: Transition.downToUp,
-            ),
+            onTap: () async {
+              bool x = await _authController.confirmEmail(
+                  email: widget.email, code: codeController.text);
+              if (x) {
+                Utils.customDialog(
+                    actions: [
+                      primaryButton(
+                        onTap: () {
+                          Get.back();
+                          Get.offAll(() => const LoginPage());
+                        },
+                        width: 40.0.w,
+                        height: 50,
+                        radius: 10.w,
+                        color: Theme.of(context).colorScheme.primary,
+                        text: coloredText(
+                          text: "ok".tr,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                    context: context,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          spaceY(20),
+                          Icon(
+                            EvaIcons.checkmarkCircle,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 40.sp,
+                          ),
+                          spaceY(20),
+                          coloredText(
+                              text: "Your email have been confirmed",
+                              fontSize: 12.0.sp),
+                          coloredText(
+                            text: "successfully",
+                            fontSize: 14.0.sp,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ],
+                      ),
+                    ));
+              }
+            },
           ),
           spaceY(2.0.h),
           Row(
@@ -96,9 +147,60 @@ class _OTPPageState extends State<OTPPage> {
                 color: Colors.grey,
               ),
               spaceX(10),
-              coloredText(
-                text: "otp_text_4".tr,
-                color: Theme.of(context).colorScheme.secondary,
+              GestureDetector(
+                onTap: () async {
+                  LoginStates state = await _authController.handleNormalSignIn(
+                    userName: widget.email,
+                    password: widget.password,
+                    saveToken: false,
+                  );
+                  if (state == LoginStates.needsVerify) {
+                    Utils.customDialog(
+                        actions: [
+                          primaryButton(
+                            onTap: () {
+                              Get.back();
+                            },
+                            width: 40.0.w,
+                            height: 50,
+                            radius: 10.w,
+                            color: Theme.of(context).colorScheme.primary,
+                            text: coloredText(
+                              text: "ok".tr,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                        context: context,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              spaceY(20),
+                              Icon(
+                                EvaIcons.checkmarkCircle,
+                                color: Theme.of(context).colorScheme.secondary,
+                                size: 40.sp,
+                              ),
+                              spaceY(20),
+                              coloredText(
+                                  text: "code has been sent ",
+                                  fontSize: 12.0.sp),
+                              coloredText(
+                                text: "successfully",
+                                fontSize: 14.0.sp,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ],
+                          ),
+                        ));
+                  }
+                },
+                child: coloredText(
+                  text: "otp_text_4".tr,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
             ],
           )
