@@ -63,7 +63,7 @@ class CustomDropDownMenuButton extends StatelessWidget {
       child: DropdownButtonFormField<String>(
         validator: validator,
         autovalidateMode: autovalidateMode,
-        padding: EdgeInsetsDirectional.only(start: hintPadding),
+        // padding: EdgeInsetsDirectional.only(start: hintPadding),
         value: value,
         dropdownColor: Colors.white,
         decoration: InputDecoration(
@@ -106,12 +106,14 @@ class CustomDropDownMenuButton extends StatelessWidget {
         ),
         isExpanded: true,
         items: items,
-        hint: Padding(
-          padding: EdgeInsetsDirectional.only(start: hintPadding),
-          child: coloredText(
-              text: hint ?? "choose".tr,
-              color: Colors.grey,
-              fontSize: hintSize ?? 13.sp),
+        hint: Row(
+          children: [
+            spaceX(hintPadding),
+            coloredText(
+                text: hint ?? "select".tr,
+                color: Colors.grey,
+                fontSize: hintSize ?? 13.sp),
+          ],
         ),
         onChanged: onChanged,
       ),

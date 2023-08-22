@@ -212,51 +212,88 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
               ),
             ),
             child: MultiSelectDialogField(
-              buttonText: coloredText(
-                  text: "choose".tr, color: Colors.grey, fontSize: 15),
-              items: langs.map((e) => MultiSelectItem(e, e)).toList(),
-              listType: MultiSelectListType.CHIP,
-              // selectedColor: Theme.of(context).colorScheme.secondary,
-              // backgroundColor: Colors.white,
-              selectedItemsTextStyle: coloredText(
-                      text: "text",
-                      color: Theme.of(context).colorScheme.secondary)
-                  .style,
-              selectedColor:
-                  Theme.of(context).colorScheme.secondary.withOpacity(0.05),
-
-              buttonIcon: Icon(
-                FontAwesomeIcons.sortDown,
-                color: Colors.grey.shade700,
-                size: 15,
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color(0xffE3E3E3),
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              chipDisplay: MultiSelectChipDisplay<String>(
-                chipColor:
-                    Theme.of(context).colorScheme.secondary.withOpacity(0.05),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                onTap: (p0) {
-                  selectedLangs.remove(p0);
-                  setState(() {});
-                },
-                textStyle: coloredText(
+                buttonText: coloredText(
+                    text: "choose".tr, color: Colors.grey, fontSize: 15),
+                items: langs.map((e) => MultiSelectItem(e, e)).toList(),
+                listType: MultiSelectListType.CHIP,
+                // selectedColor: Theme.of(context).colorScheme.secondary,
+                // backgroundColor: Colors.white,
+                selectedItemsTextStyle: coloredText(
                         text: "text",
                         color: Theme.of(context).colorScheme.secondary)
                     .style,
-              ),
-              onConfirm: (values) {
-                selectedLangs = values;
-                setState(() {});
-              },
-            ),
+                selectedColor:
+                    Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                buttonIcon: Icon(
+                  FontAwesomeIcons.sortDown,
+                  color: Colors.grey.shade700,
+                  size: 15,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xffE3E3E3),
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                chipDisplay: MultiSelectChipDisplay<String>.none(),
+                // (
+                //   chipColor:
+                //       Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                //   shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10),
+                //   ),
+                //   onTap: (p0) {
+                //     selectedLangs.remove(p0);
+                //     setState(() {});
+                //   },
+                //   textStyle: coloredText(
+                //           text: "text",
+                //           color: Theme.of(context).colorScheme.secondary)
+                //       .style,
+                // ),
+                onConfirm: (values) {
+                  selectedLangs = values;
+                  setState(() {});
+                }),
           ),
+          spaceY(5.sp),
+          selectedLangs.isEmpty
+              ? Container()
+              : SizedBox(
+                  height: 28.sp,
+                  child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => GestureDetector(
+                            onTap: () {
+                              selectedLangs.removeAt(index);
+                              setState(() {});
+                            },
+                            child: Container(
+                              child: Center(
+                                  child: coloredText(
+                                      text: selectedLangs[index],
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary)),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                                borderRadius: BorderRadius.circular(20),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withOpacity(0.05),
+                              ),
+                            ),
+                          ),
+                      separatorBuilder: (context, index) => spaceX(10.sp),
+                      itemCount: selectedLangs.length),
+                ),
           spaceY(20),
           Align(
             child: primaryButton(

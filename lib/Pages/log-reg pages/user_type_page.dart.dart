@@ -4,8 +4,7 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
-import '../log-reg%20pages/company/company_register_page.dart';
-import '../log-reg%20pages/user/user_register_page.dart';
+import '../log-reg%20pages/login_page.dart';
 
 class UserTypePage extends StatelessWidget {
   const UserTypePage({super.key});
@@ -57,7 +56,10 @@ class UserTypePage extends StatelessWidget {
                       ),
                       spaceY(5.0.h),
                       primaryBorderedButton(
-                        onTap: () => Get.to(() => const CompanyRegisterPage(),
+                        onTap: () => Get.to(
+                            () => const LoginPage(
+                                  userType: "company",
+                                ),
                             transition: Transition.rightToLeft),
                         width: 75.0.w,
                         height: 60,
@@ -75,7 +77,8 @@ class UserTypePage extends StatelessWidget {
                           color: Theme.of(context).colorScheme.tertiary,
                         ),
                         color: Theme.of(context).colorScheme.tertiary,
-                        onTap: () => Get.to(() => const UserRegisterPage(),
+                        onTap: () => Get.to(
+                            () => const LoginPage(userType: "user"),
                             transition: Transition.rightToLeft),
                       )
                     ],

@@ -129,6 +129,26 @@ class Utils {
     await _storage.write(key: "rem", value: rem);
   }
 
+  static void showDialogBox(
+      {required BuildContext context,
+      List<Widget>? actions,
+      Widget? content,
+      Widget? title}) {
+    showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: title,
+            content: SizedBox(
+              width: 100.w,
+              child: content,
+            ),
+            actions: actions,
+            surfaceTintColor: Colors.white,
+          );
+        });
+  }
+
   static void customDialog(
       {TextStyle? titleStyle,
       CustomViewPosition? customViewPosition,
@@ -149,8 +169,9 @@ class Utils {
           customViewPosition ?? CustomViewPosition.BEFORE_MESSAGE,
       customView: Theme(
         data: ThemeData(
-          useMaterial3: false,
-        ),
+            useMaterial3: false,
+            dialogTheme: DialogTheme(
+                surfaceTintColor: Colors.red, backgroundColor: Colors.blue)),
         child: child,
       ),
       title: title,
@@ -338,8 +359,10 @@ Widget primaryBorderedButton(
     double? radius,
     double? width,
     double? height,
-    void Function()? onTap}) {
+    void Function()? onTap,
+    AlignmentGeometry? alignment}) {
   return Align(
+    alignment: alignment ?? Alignment.center,
     child: GestureDetector(
       onTap: onTap,
       child: Container(
@@ -355,24 +378,25 @@ Widget primaryBorderedButton(
   );
 }
 
-Text coloredText({
-  required String text,
-  Color? color,
-  FontWeight? fontWeight,
-  TextDecoration? decoration,
-  double? fontSize,
-  TextAlign? textAlign,
-}) {
+Text coloredText(
+    {required String text,
+    Color? color,
+    FontWeight? fontWeight,
+    TextDecoration? decoration,
+    double? fontSize,
+    TextAlign? textAlign,
+    TextStyle? textstyle}) {
   return Text(
     text,
     textAlign: textAlign,
-    style: GoogleFonts.poppins(
-      color: color ?? Colors.black,
-      fontSize: fontSize ?? 13.0.sp,
-      fontWeight: fontWeight,
-      decoration: decoration,
-      decorationColor: color,
-    ),
+    style: textstyle ??
+        GoogleFonts.poppins(
+          color: color ?? Colors.black,
+          fontSize: fontSize ?? 13.0.sp,
+          fontWeight: fontWeight,
+          decoration: decoration,
+          decorationColor: color,
+        ),
   );
 }
 

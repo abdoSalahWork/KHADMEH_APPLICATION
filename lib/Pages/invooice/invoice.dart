@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
-import '../HomePage/user_home_page.dart';
+import '../HomePage/user home/user_home_page.dart';
 
 class InvoicePage extends StatelessWidget {
   const InvoicePage({super.key, required this.employeeType});
@@ -351,7 +351,9 @@ class InvoicePage extends StatelessWidget {
                   : spaceY(3.0.h),
               primaryButton(
                   onTap: () {
-                    Get.offAll(() => const UserHomePage());
+                    Get.offAll(() => const UserHomePage(
+                          needCompleteData: true,
+                        ));
                   },
                   width: 80.0.w,
                   gradient: LinearGradient(colors: [

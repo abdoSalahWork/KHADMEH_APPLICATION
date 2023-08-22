@@ -4,44 +4,55 @@ import 'dart:ui';
 import 'package:carousel_slider/carousel_slider.dart'; // ignore_for_file: must_be_immutable
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:intl/intl.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/models/user_register_model.dart';
 import 'package:sizer/sizer.dart';
-import 'package:textfield_datepicker/textfield_datepicker.dart';
 
-import '../../Themes/themes.dart';
-import '../../Utils/utils.dart';
-import '../../widgets/dropdown_menu_button.dart';
-import '../../widgets/radio_button.dart';
-import '../../widgets/underline_text_field.dart';
-import '../Notifications/notifications_page.dart';
-import '../chat%20page/messages_page.dart';
-import '../personal%20page/personal_page.dart';
-import 'cleaning%20companies/cleaning_companies_search_page.dart';
-import 'employees.dart/employees_search_page.dart';
-import 'recruitment-companies/recruitment_companies_search_page.dart';
+import '../../../Utils/utils.dart';
+import '../../../widgets/dropdown_menu_button.dart';
+import '../../../widgets/underline_text_field.dart';
+import '../../Notifications/notifications_page.dart';
+import '../../chat%20page/messages_page.dart';
+import '../../personal%20page/personal_page.dart';
+import '../cleaning%20companies/cleaning_companies_search_page.dart';
+import '../employees/employees_search_page.dart';
+import '../recruitment-companies/recruitment_companies_search_page.dart';
 
-class CompanyHomePage extends StatefulWidget {
-  const CompanyHomePage({super.key});
-
+class UserHomePage extends StatefulWidget {
+  const UserHomePage({super.key, required this.needCompleteData});
+  final bool needCompleteData;
   @override
-  State<CompanyHomePage> createState() => _CompanyHomePageState();
+  State<UserHomePage> createState() => _UserHomePageState();
 }
 
-class _CompanyHomePageState extends State<CompanyHomePage> {
+class _UserHomePageState extends State<UserHomePage> {
   PageController pageController = PageController(initialPage: 0);
-  int idPassRradio = 0;
+  var errors = {};
+  UserRegisterData userCompleteData = UserRegisterData();
+  AuthController _authController = Get.find();
+  List<String> tags = [];
 
+  List<String> options = [
+    "cleaner",
+    "driver",
+    "chef",
+    "babysitter",
+    "nurse",
+    "sewing",
+    "washing",
+  ];
   bool completedRegisterFlag = false;
   int _currentStep = 0;
 
   late double h;
   late double h2;
+  late double h3;
 
   tapped(int step) {
     setState(() => _currentStep = step);
@@ -52,31 +63,43 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   }
 
   final formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _companyNameEnController =
-      TextEditingController();
-  final TextEditingController _companyNameArController =
-      TextEditingController();
-  final TextEditingController _companyPhoneNumberController =
-      TextEditingController();
-  final TextEditingController _nationallityController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _jobNameController = TextEditingController();
   final TextEditingController _pieceNumberController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
   final TextEditingController _adnController = TextEditingController();
   final TextEditingController _idNumController = TextEditingController();
-  final TextEditingController _crnController = TextEditingController();
-  final TextEditingController _taxController = TextEditingController();
-  final TextEditingController _licenseController = TextEditingController();
 
-  final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
+  String button1Text = "upload_id".tr;
+  String button2Text = "upload_personal_photo".tr;
+  bool _obsecureflag = true;
+  bool _obsecureflag2 = true;
+  String region = "";
+  String nationality = "";
+  String city = "";
+  String phoneCode = "";
+  final List<FocusNode> _focusNodes = [
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+    FocusNode(),
+  ];
   @override
   void initState() {
-    h2 = 100.0.h;
-    h = 75.0.h;
+    completedRegisterFlag = widget.needCompleteData;
+    h2 = 470.0.sp;
+    h = 330.0.sp;
+    h3 = 400.0.sp;
     for (var node in _focusNodes) {
       node.addListener(() {
         setState(() {});
@@ -157,7 +180,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                             ),
                           ),
                         ),
-                      )
+                      ),
                     ]),
                   ],
                 ),
@@ -497,20 +520,24 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 bottomRight: Radius.elliptical(50.0.w, 30),
               ),
               child: ClipPath(
-                clipper: _currentStep == 1 ? null : OvalBottomBorderClipper(),
+                clipper: OvalBottomBorderClipper(),
                 child: Stack(
                   children: [
                     Container(
                       width: 100.0.w,
-                      height: _currentStep == 1 ? h2 : h,
+                      height: _currentStep == 1
+                          ? h2
+                          : _currentStep == 2
+                              ? h3
+                              : h,
                       color: Colors.white,
-                      // duration: const Duration(milliseconds: 250),
+                      // duration: const const Duration(milliseconds: 250),
                       child: Column(
                         children: [
                           spaceY(100),
                           EasyStepper(
                             activeStep: _currentStep,
-                            lineLength: 20.0.w,
+                            lineLength: 30.0.w,
                             lineSpace: 0,
                             lineType: LineType.normal,
                             defaultLineColor: Colors.grey,
@@ -522,9 +549,9 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                             finishedStepTextColor: Colors.transparent,
                             internalPadding: 0,
                             showLoadingAnimation: false,
-                            stepRadius: 12,
+                            stepRadius: 10,
                             showStepBorder: false,
-                            lineThickness: 1,
+                            lineThickness: 0.7,
                             alignment: Alignment.topCenter,
                             disableScroll: true,
                             fitWidth: true,
@@ -639,208 +666,68 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
         Padding(
           padding: const EdgeInsets.all(20),
           child: ListView(padding: EdgeInsets.zero, primary: false, children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                UnderlinedCustomTextField(
-                  width: 40.0.w,
-                  focusNode: _focusNodes[0],
-                  controller: _firstNameController,
-                  hintText: "First name",
-                  prefixIcon: Icon(
-                    EvaIcons.personOutline,
-                    size: 20.0.sp,
-                  ),
-                ),
-                UnderlinedCustomTextField(
-                  width: 40.0.w,
-                  focusNode: _focusNodes[1],
-                  controller: _lastNameController,
-                  hintText: "Last name",
-                  prefixIcon: Icon(
-                    EvaIcons.personOutline,
-                    size: 20.0.sp,
-                  ),
-                )
-              ],
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[3],
-              keyBoardType: TextInputType.text,
-              controller: _nationallityController,
-              readOnly: true,
-              prefixIcon: Icon(
-                EvaIcons.globe2Outline,
-                size: 20.0.sp,
-              ),
-              hintText: "nationality".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[4],
-              controller: _idNumController,
-              keyBoardType: TextInputType.text,
-              prefixIcon: Icon(FontAwesomeIcons.idCard, size: 16.0.sp),
-              hintText: "ID number".tr,
-            ),
-            spaceY(10.0.sp),
-            Row(
-              children: [
-                coloredText(
-                  text: "Date of birth:",
-                ),
-                spaceX(10),
-                SizedBox(
-                  width: 40.0.w,
-                  child: Theme(
-                    data: ThemeData(
-                      colorScheme: ColorScheme.fromSeed(
-                        seedColor: AppThemes.colorCustom,
-                      ),
-                    ),
-                    child: TextfieldDatePicker(
-                      textAlign: TextAlign.center,
-                      focusNode: _focusNodes[5],
-                      decoration: InputDecoration(
-                        hintText:
-                            DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                        contentPadding: const EdgeInsets.all(10),
-                        iconColor: Colors.red,
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xffBDC1C8),
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _focusNodes[5].hasFocus
-                                ? Theme.of(context).colorScheme.secondary
-                                : const Color(0xffBDC1C8),
-                            width: 2.0,
-                          ),
-                        ),
-                        errorBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.red,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
-                      cupertinoDatePickerBackgroundColor: Colors.white,
-                      cupertinoDatePickerMaximumDate:
-                          DateTime.now().add(const Duration(days: 365 * 40)),
-                      cupertinoDatePickerMaximumYear: 2099,
-                      cupertinoDatePickerMinimumYear: 1990,
-                      cupertinoDatePickerMinimumDate: DateTime.now(),
-                      cupertinoDateInitialDateTime: DateTime.now(),
-                      materialDatePickerFirstDate: DateTime.now(),
-                      materialDatePickerInitialDate: DateTime.now(),
-                      materialDatePickerLastDate:
-                          DateTime.now().add(const Duration(days: 365 * 40)),
-                      preferredDateFormat: DateFormat('yyyy-MM-dd'),
-                      textfieldDatePickerController: _dateController,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            spaceY(20.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                coloredText(
-                    text: "next".tr,
-                    fontSize: 16.0.sp,
-                    color: Theme.of(context).colorScheme.tertiary),
-                spaceX(10),
-                GestureDetector(
-                  onTap: () {
-                    if (_currentStep < stepList().length - 1) {
-                      setState(() => _currentStep += 1);
-                      pageController.jumpToPage(_currentStep);
-                    } else {
-                      completedRegisterFlag = true;
-                    }
+            // UnderlinedCustomTextField(
+            //   focusNode: _focusNodes[2],
+            //   controller: _phoneNumberController,
+            //   keyBoardType: TextInputType.number,
+            //   prefixIcon: Container(
+            //     margin: const EdgeInsetsDirectional.only(start: 10),
+            //     child: Row(
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: [
+            //         Icon(
+            //           EvaIcons.phoneOutline,
+            //           size: 20.0.sp,
+            //         ),
+            //         CustomDropDownMenuButton(
+            //           width: 100,
+            //           hintPadding: 13,
+            //           items: [
+            //             "+963",
+            //             "+954",
+            //             "+94",
+            //           ]
+            //               .map((e) => DropdownMenuItem<String>(
+            //                     value: e,
+            //                     child: coloredText(
+            //                       text: e,
+            //                       fontSize: 17,
+            //                     ),
+            //                   ))
+            //               .toList(),
+            //           onChanged: (p0) {},
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            //   hintText: "phone_number".tr,
+            //   // validator: (String? value) =>
+            //   //     EmailValidator.validate(value!)
+            //   //         ? null
+            //   //         : "please_enter_a_valid_email".tr,
+            // ),
 
-                    logSuccess(_currentStep);
-                    setState(() {});
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: AlignmentDirectional.topStart,
-                        end: AlignmentDirectional.bottomEnd,
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.secondary,
-                        ],
-                      ),
-                    ),
-                    child: const Icon(
-                      FontAwesomeIcons.anglesRight,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            spaceY(20.0.sp),
-          ]),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(padding: EdgeInsets.zero, primary: false, children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                coloredText(
-                    text: "General info",
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 14.0.sp,
-                    fontWeight: FontWeight.w500),
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                )
-              ],
-            ),
-            spaceY(10.0.sp),
             UnderlinedCustomTextField(
-              focusNode: _focusNodes[6],
-              controller: _companyNameEnController,
-              keyBoardType: TextInputType.text,
-              prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
-              hintText: "Company Name En",
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[7],
-              controller: _companyNameArController,
-              keyBoardType: TextInputType.text,
-              prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
-              hintText: "Company Name Ar",
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[8],
-              controller: _companyPhoneNumberController,
+              focusNode: _focusNodes[2],
+              controller: _phoneNumberController,
               keyBoardType: TextInputType.number,
+              autovalidateMode: AutovalidateMode.always,
+              onchanged: (s) {
+                errors['phone'] = null;
+                setState(() {});
+                userCompleteData.phone = s!;
+              },
+              validator: (String? value) {
+                if (errors['phone'] != null) {
+                  String tmp = "";
+                  tmp = errors['phone'].join("\n");
+
+                  return tmp;
+                } else if (value!.length < 7 && value.isNotEmpty) {
+                  return "phone must be 7 numbers at least";
+                }
+                return null;
+              },
               prefixIcon: Container(
                 margin: const EdgeInsetsDirectional.only(start: 10),
                 child: Row(
@@ -850,203 +737,65 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       EvaIcons.phoneOutline,
                       size: 20.0.sp,
                     ),
-                    CustomDropDownMenuButton(
-                      width: 100,
-                      hintPadding: 13,
-                      items: [
-                        "+963",
-                        "+954",
-                        "+94",
-                      ]
-                          .map((e) => DropdownMenuItem<String>(
-                                value: e,
-                                child: coloredText(
-                                  text: e,
-                                  fontSize: 17,
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (p0) {},
-                    ),
+                    GetBuilder<GlobalController>(builder: (c) {
+                      return CustomDropDownMenuButton(
+                        width: 100,
+                        hintPadding: 5,
+                        hintSize: 13,
+                        value: phoneCode == "" ? null : phoneCode,
+                        items: c.countries
+                            .map((e) => DropdownMenuItem<String>(
+                                  value: e.code!,
+                                  child: coloredText(
+                                    text: e.code!,
+                                    fontSize: 17,
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (s) {
+                          phoneCode = s!;
+                        },
+                      );
+                    }),
                   ],
                 ),
               ),
               hintText: "phone_number".tr,
+              // validator: (String? value) =>
+              //     EmailValidator.validate(value!)
+              //         ? null
+              //         : "please_enter_a_valid_email".tr,
             ),
             spaceY(10.0.sp),
             UnderlinedCustomTextField(
-              focusNode: _focusNodes[9],
-              controller: _emailController,
-              keyBoardType: TextInputType.emailAddress,
-              prefixIcon: Icon(FontAwesomeIcons.envelope, size: 16.0.sp),
-              hintText: "email".tr,
-            ),
-            spaceY(10.0.sp),
-            Row(
-              children: [
-                coloredText(
-                  text: "Company Type:",
-                ),
-                spaceX(15),
-                CustomDropDownMenuButton(
-                  fillColor: const Color(0xffF5F5F5),
-                  padding: const EdgeInsetsDirectional.only(end: 5, start: 5),
-                  width: 40.0.w,
-                  height: 50,
-                  borderRadius: BorderRadius.circular(10),
-                  items: ["recruitment", "clean"]
-                      .map(
-                        (e) => DropdownMenuItem<String>(
-                          value: e,
-                          child: coloredText(text: e),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (p0) {},
-                ),
-              ],
-            ),
-            spaceY(20.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                coloredText(
-                    text: "Address Info",
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 14.0.sp,
-                    fontWeight: FontWeight.w500),
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                )
-              ],
-            ),
-            spaceY(10.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomDropDownMenuButton(
-                  hint: "city".tr,
-                  border: const UnderlineInputBorder(),
-                  width: 40.0.w,
-                  items: [
-                    "syria",
-                    "iraq",
-                    "Egybt",
-                  ]
-                      .map((e) => DropdownMenuItem<String>(
-                            value: e,
-                            child: coloredText(
-                              text: e,
-                              fontSize: 17,
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: (p0) {},
-                ),
-                CustomDropDownMenuButton(
-                  hint: "region".tr,
-                  border: const UnderlineInputBorder(),
-                  width: 40.0.w,
-                  items: [
-                    "syria",
-                    "iraq",
-                    "Egybt",
-                  ]
-                      .map((e) => DropdownMenuItem<String>(
-                            value: e,
-                            child: coloredText(
-                              text: e,
-                              fontSize: 17,
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: (p0) {},
-                ),
-              ],
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[11],
-              controller: _pieceNumberController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "piece_num".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[12],
-              controller: _streetController,
+              focusNode: _focusNodes[4],
+              controller: _jobNameController,
               keyBoardType: TextInputType.text,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "street".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[13],
-              controller: _buildingController,
-              keyBoardType: TextInputType.text,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "building".tr,
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[14],
-              controller: _adnController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "adn".tr,
-            ),
-            spaceY(20.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                ),
-                coloredText(
-                    text: "Work Info",
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 14.0.sp,
-                    fontWeight: FontWeight.w500),
-                Container(
-                  width: 28.0.w,
-                  height: 1,
-                  color: Colors.grey,
-                )
-              ],
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[15],
-              controller: _crnController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "Commercial registration number",
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[16],
-              controller: _taxController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "Tax number",
-            ),
-            spaceY(10.0.sp),
-            UnderlinedCustomTextField(
-              focusNode: _focusNodes[17],
-              controller: _licenseController,
-              keyBoardType: TextInputType.number,
-              // prefixIcon: const Icon(Icons.email_outlined),
-              hintText: "license number",
+              autovalidateMode: AutovalidateMode.always,
+
+              prefixIcon: Icon(
+                EvaIcons.briefcaseOutline,
+                size: 20.0.sp,
+              ),
+              onchanged: (s) {
+                errors['job_name'] = null;
+                setState(() {});
+                userCompleteData.jobName = s;
+              },
+              validator: (String? value) {
+                if (errors['job_name'] != null) {
+                  String tmp = "";
+                  tmp = errors['job_name'].join("\n");
+
+                  return tmp;
+                }
+                return null;
+              },
+              hintText: "job".tr,
+              // validator: (String? value) =>
+              //     EmailValidator.validate(value!)
+              //         ? null
+              //         : "please_enter_a_valid_email".tr,
             ),
             spaceY(20.0.sp),
             Row(
@@ -1097,245 +846,541 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
         Padding(
           padding: const EdgeInsets.all(20),
           child: ListView(
-            padding: EdgeInsets.zero,
-            primary: false,
-            children: [
-              coloredText(
-                text: "Identity confirmation by",
-              ),
-              Row(
-                children: [
-                  MyRadioButton(
-                    color: Colors.black,
-                    text: "ID",
-                    groupValue: idPassRradio,
-                    value: 0,
-                    onChanged: (p0) {
-                      setState(() {
-                        idPassRradio = 0;
-                      });
-                    },
-                  ),
-                  spaceX(20),
-                  MyRadioButton(
-                    color: Colors.black,
-                    text: "Passport",
-                    groupValue: idPassRradio,
-                    value: 1,
-                    onChanged: (p0) {
-                      setState(() {
-                        idPassRradio = 1;
-                      });
-                    },
-                  )
-                ],
-              ),
-              spaceY(20),
-              idPassRradio == 0
-                  ? Container()
-                  : primaryButton(
-                      color: const Color(0xffF5F5F5),
-                      width: 100.0.w,
-                      height: 55,
-                      radius: 10,
-                      text: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              spaceX(10),
-                              Icon(
-                                LineIcons.passport,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 18.0.sp,
-                              ),
-                              spaceX(10),
-                              coloredText(
-                                text: "Upload your passport",
-                                color: const Color(0xff919191),
-                                fontSize: 13.0.sp,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 20.0.sp,
-                              ),
-                              spaceX(10),
-                            ],
-                          ),
-                        ],
-                      )),
-              idPassRradio == 1
-                  ? Container()
-                  : primaryButton(
-                      color: const Color(0xffF5F5F5),
-                      width: 100.0.w,
-                      height: 55,
-                      radius: 10,
-                      text: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              spaceX(10),
-                              Icon(
-                                LineIcons.identificationCard,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 18.0.sp,
-                              ),
-                              spaceX(10),
-                              coloredText(
-                                text: "Upload front side of ID",
-                                color: const Color(0xff919191),
-                                fontSize: 13.0.sp,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 20.0.sp,
-                              ),
-                              spaceX(10),
-                            ],
-                          ),
-                        ],
-                      )),
-              idPassRradio == 1 ? Container() : spaceY(10),
-              idPassRradio == 1
-                  ? Container()
-                  : primaryButton(
-                      color: const Color(0xffF5F5F5),
-                      width: 100.0.w,
-                      height: 55,
-                      radius: 10,
-                      text: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              spaceX(10),
-                              Icon(
-                                LineIcons.identificationCard,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 18.0.sp,
-                              ),
-                              spaceX(10),
-                              coloredText(
-                                text: "Upload back side of ID",
-                                color: const Color(0xff919191),
-                                fontSize: 13.0.sp,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 20.0.sp,
-                              ),
-                              spaceX(10),
-                            ],
-                          ),
-                        ],
-                      )),
-              spaceY(20.0.sp),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  coloredText(
-                      text: "next".tr,
-                      fontSize: 16.0.sp,
-                      color: Theme.of(context).colorScheme.tertiary),
-                  spaceX(10),
-                  GestureDetector(
-                    onTap: () {
-                      if (_currentStep < stepList().length - 1) {
-                        setState(() => _currentStep += 1);
-                        pageController.jumpToPage(_currentStep);
-                      } else {
-                        completedRegisterFlag = true;
-                      }
+              primary: false,
+              padding: const EdgeInsets.all(0),
+              children: [
+                GetBuilder<GlobalController>(builder: (c) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      //todo:langs needs to be fixed
+                      CustomDropDownMenuButton(
+                        hint: "city".tr,
+                        value: city == "" ? null : city,
+                        hintPadding: 0,
+                        border: const UnderlineInputBorder(),
+                        width: 40.0.w,
+                        items: c.cities
+                            .map((e) => DropdownMenuItem<String>(
+                                  value: e.nameEn,
+                                  child: coloredText(
+                                    text: e.nameEn!,
+                                    fontSize: 17,
+                                  ),
+                                ))
+                            .toList(),
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (String? value) {
+                          if (errors['city_id'] != null) {
+                            String tmp = "";
+                            tmp = errors['city_id'].join("\n");
 
-                      logSuccess(_currentStep);
-                      setState(() {});
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: AlignmentDirectional.topStart,
-                          end: AlignmentDirectional.bottomEnd,
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.secondary,
-                          ],
+                            return tmp;
+                          }
+                          return null;
+                        },
+                        onChanged: (p0) {
+                          city = p0!;
+                          errors["city_id"] = null;
+                          setState(() {});
+                          userCompleteData.cityId = c.cities
+                              .where((element) =>
+                                  element.nameEn == p0 || element.nameAr == p0)
+                              .first
+                              .id
+                              .toString();
+                        },
+                      ),
+                      //todo:langs need to be fixed
+                      CustomDropDownMenuButton(
+                        hint: "region".tr,
+                        border: const UnderlineInputBorder(),
+                        width: 40.0.w,
+                        value: region == "" ? null : region,
+                        items: c.regions
+                            .map((e) => DropdownMenuItem<String>(
+                                  value: e.nameEn,
+                                  child: coloredText(
+                                    text: e.nameEn!,
+                                    fontSize: 17,
+                                  ),
+                                ))
+                            .toList(),
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (String? value) {
+                          if (errors['region_id'] != null) {
+                            String tmp = "";
+                            tmp = errors['region_id'].join("\n");
+
+                            return tmp;
+                          }
+                          return null;
+                        },
+                        onChanged: (p0) {
+                          region = p0!;
+                          errors["region_id"] = null;
+                          setState(() {});
+                          userCompleteData.regionId = c.regions
+                              .where((element) =>
+                                  element.nameEn == p0 || element.nameAr == p0)
+                              .first
+                              .id
+                              .toString();
+                          ;
+                        },
+                      ),
+                    ],
+                  );
+                }),
+                spaceY(10.0.sp),
+                UnderlinedCustomTextField(
+                  focusNode: _focusNodes[5],
+                  controller: _pieceNumberController,
+                  keyBoardType: TextInputType.number,
+                  // prefixIcon: const Icon(Icons.email_outlined),
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (String? value) {
+                    if (errors['piece_number'] != null) {
+                      String tmp = "";
+                      tmp = errors['piece_number'].join("\n");
+
+                      return tmp;
+                    }
+                    return null;
+                  },
+                  onchanged: (s) {
+                    errors["piece_number"] = null;
+                    setState(() {});
+                    userCompleteData.pieceNumber = s;
+                  },
+                  hintText: "piece_num".tr,
+                  // validator: (String? value) =>
+                  //     EmailValidator.validate(value!)
+                  //         ? null
+                  //         : "please_enter_a_valid_email".tr,
+                ),
+                spaceY(10.0.sp),
+                UnderlinedCustomTextField(
+                  focusNode: _focusNodes[6],
+                  controller: _streetController,
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (String? value) {
+                    if (errors['street'] != null) {
+                      String tmp = "";
+                      tmp = errors['street'].join("\n");
+
+                      return tmp;
+                    }
+                    return null;
+                  },
+                  onchanged: (s) {
+                    errors["street"] = null;
+                    setState(() {});
+                    userCompleteData.street = s;
+                  },
+                  keyBoardType: TextInputType.text,
+                  // prefixIcon: const Icon(Icons.email_outlined),
+                  hintText: "street".tr,
+                  // validator: (String? value) =>
+                  //     EmailValidator.validate(value!)
+                  //         ? null
+                  //         : "please_enter_a_valid_email".tr,
+                ),
+                spaceY(10.0.sp),
+                UnderlinedCustomTextField(
+                  focusNode: _focusNodes[7],
+                  controller: _buildingController,
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (String? value) {
+                    if (errors['building'] != null) {
+                      String tmp = "";
+                      tmp = errors['building'].join("\n");
+
+                      return tmp;
+                    }
+                    return null;
+                  },
+                  onchanged: (s) {
+                    errors["building"] = null;
+                    setState(() {});
+                    userCompleteData.building = s;
+                  },
+                  keyBoardType: TextInputType.text,
+                  // prefixIcon: const Icon(Icons.email_outlined),
+                  hintText: "building".tr,
+                  // validator: (String? value) =>
+                  //     EmailValidator.validate(value!)
+                  //         ? null
+                  //         : "please_enter_a_valid_email".tr,
+                ),
+                spaceY(10.0.sp),
+                UnderlinedCustomTextField(
+                  focusNode: _focusNodes[8],
+                  controller: _adnController,
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (String? value) {
+                    if (errors['automated_address_number'] != null) {
+                      String tmp = "";
+                      tmp = errors['automated_address_number'].join("\n");
+
+                      return tmp;
+                    }
+                    return null;
+                  },
+                  onchanged: (s) {
+                    errors["automated_address_number"] = null;
+                    setState(() {});
+                    userCompleteData.automatedAddressNumber = s;
+                  },
+                  keyBoardType: TextInputType.number,
+                  // prefixIcon: const Icon(Icons.email_outlined),
+                  hintText: "adn".tr,
+                  // validator: (String? value) =>
+                  //     EmailValidator.validate(value!)
+                  //         ? null
+                  //         : "please_enter_a_valid_email".tr,
+                ),
+                spaceY(20.0.sp),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    coloredText(
+                        text: "next".tr,
+                        fontSize: 16.0.sp,
+                        color: Theme.of(context).colorScheme.tertiary),
+                    spaceX(10),
+                    GestureDetector(
+                      onTap: () {
+                        if (_currentStep < stepList().length - 1) {
+                          setState(() => _currentStep += 1);
+                          pageController.jumpToPage(_currentStep);
+                        } else {
+                          completedRegisterFlag = true;
+                        }
+
+                        logSuccess(_currentStep);
+                        setState(() {});
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: AlignmentDirectional.topStart,
+                            end: AlignmentDirectional.bottomEnd,
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                            ],
+                          ),
+                        ),
+                        child: const Icon(
+                          FontAwesomeIcons.anglesRight,
+                          color: Colors.white,
+                          size: 22,
                         ),
                       ),
-                      child: const Icon(
-                        FontAwesomeIcons.anglesRight,
-                        color: Colors.white,
-                        size: 22,
+                    ),
+                  ],
+                ),
+                spaceY(20.0.sp),
+              ]),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: ListView(primary: false, padding: EdgeInsets.zero, children: [
+            UnderlinedCustomTextField(
+              focusNode: _focusNodes[9],
+              controller: _idNumController,
+              keyBoardType: TextInputType.number,
+              autovalidateMode: AutovalidateMode.always,
+              validator: (String? value) {
+                if (errors['id_number_nationality'] != null) {
+                  String tmp = "";
+                  tmp = errors['id_number_nationality'].join("\n");
+
+                  return tmp;
+                }
+                return null;
+              },
+              onchanged: (s) {
+                errors["id_number_nationality"] = null;
+                setState(() {});
+                userCompleteData.idNumberNationality = s;
+              },
+              // prefixIcon: const Icon(Icons.email_outlined),
+              hintText: "id_number".tr,
+              // validator: (String? value) =>
+              //     EmailValidator.validate(value!)
+              //         ? null
+              //         : "please_enter_a_valid_email".tr,
+            ),
+            spaceY(25.0.sp),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: GestureDetector(
+                onTap: () async {
+                  final result = await FilePicker.platform.pickFiles(
+                    allowMultiple: false,
+                    type: FileType.image,
+                  );
+                  if (result != null) {
+                    button1Text = result.files[0].name
+                        .substring(0, min(15, result.files[0].name.length));
+                    userCompleteData.idPhotoNationality = result.files[0];
+                    setState(() {});
+                  }
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(35),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.13),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.upload,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 13.0.sp,
+                      ),
+                      spaceX(10.0.sp),
+                      coloredText(
+                          text: button1Text,
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 13.0.sp)
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            spaceY(20.0.sp),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: GestureDetector(
+                onTap: () async {
+                  final result = await FilePicker.platform.pickFiles(
+                    allowMultiple: false,
+                    type: FileType.image,
+                  );
+                  if (result != null) {
+                    button2Text = result.files[0].name
+                        .substring(0, min(25, result.files[0].name.length));
+                    userCompleteData.personalPhoto = result.files[0];
+                    setState(() {});
+                  }
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(35),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.1),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.upload,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 13.0.sp,
+                      ),
+                      spaceX(10.0.sp),
+                      coloredText(
+                          text: button2Text,
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 13.0.sp)
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            spaceY(20.0.sp),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                coloredText(
+                    text: "next".tr,
+                    fontSize: 16.0.sp,
+                    color: Theme.of(context).colorScheme.tertiary),
+                spaceX(10),
+                GestureDetector(
+                  onTap: () async {
+                    if (_currentStep < stepList().length - 1) {
+                      setState(() => _currentStep += 1);
+                      pageController.jumpToPage(_currentStep);
+                    } else {
+                      // completedRegisterFlag = true;
+
+                      FocusScope.of(context).unfocus();
+                      // userRegisterData.phone ??= "";
+                      userCompleteData.phone =
+                          phoneCode + _phoneNumberController.text;
+                      var x = await _authController.usercompleteData(
+                          userCompleteData: userCompleteData);
+
+                      if (x == true) {
+                        // ignore: use_build_context_synchronously
+                        Utils.customDialog(
+                            actions: [
+                              primaryButton(
+                                onTap: () {
+                                  Get.back();
+                                  completedRegisterFlag = true;
+                                  setState(() {});
+                                },
+                                width: 40.0.w,
+                                height: 50,
+                                radius: 10.w,
+                                color: Theme.of(context).colorScheme.primary,
+                                text: coloredText(
+                                  text: "ok".tr,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                            context: context,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  spaceY(20),
+                                  Icon(
+                                    EvaIcons.checkmarkCircle,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    size: 40.sp,
+                                  ),
+                                  spaceY(20),
+                                  coloredText(
+                                      text: "You'r data have been completed '",
+                                      fontSize: 12.0.sp),
+                                  coloredText(
+                                    text: "successfully",
+                                    fontSize: 14.0.sp,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ],
+                              ),
+                            ));
+                      } else if (x['message'] ==
+                          "The given data was invalid.") {
+                        errors = x['errors'];
+                        if (errors['full_name'] != null ||
+                            errors['phone'] != null ||
+                            errors['email'] != null ||
+                            errors['jon_name'] != null ||
+                            errors['nationality_id'] != null) {
+                          setState(() => _currentStep = 0);
+                          pageController.jumpToPage(_currentStep);
+                        } else if (errors['city_id'] != null ||
+                            errors['region_id'] != null ||
+                            errors['piece_number'] != null ||
+                            errors['street'] != null ||
+                            errors['building'] != null ||
+                            errors['automated_address_number'] != null) {
+                          setState(() => _currentStep = 1);
+                          pageController.jumpToPage(_currentStep);
+                        } else if (errors['id_number_nationality'] != null ||
+                            errors['refrence_number'] != null ||
+                            errors['id_photo_nationality'] != null ||
+                            errors['personal_photo'] != null) {
+                          setState(() => _currentStep = 2);
+                          pageController.jumpToPage(_currentStep);
+                          String tmp = "";
+                          if (errors['id_photo_nationality'] != null &&
+                              errors['personal_photo'] != null) {
+                            tmp = errors['id_photo_nationality'].join("\n") +
+                                "\n" +
+                                errors['personal_photo'].join("\n");
+                            Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                          } else if (errors['id_photo_nationality'] != null) {
+                            tmp = errors['id_photo_nationality'].join("\n");
+                            Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                          } else if (errors['personal_photo'] != null) {
+                            tmp = errors['personal_photo'].join("\n");
+                            Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                          }
+                        }
+                      }
+                    }
+                    setState(() {});
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: AlignmentDirectional.topStart,
+                        end: AlignmentDirectional.bottomEnd,
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.secondary,
+                        ],
                       ),
                     ),
+                    child: const Icon(
+                      FontAwesomeIcons.anglesRight,
+                      color: Colors.white,
+                      size: 22,
+                    ),
                   ),
-                ],
-              ),
-              spaceY(20.0.sp),
-            ],
-          ),
+                ),
+              ],
+            ),
+            spaceY(20.0.sp),
+          ]),
         ),
       ];
   List<EasyStep> stepList() => [
         EasyStep(
           customStep: CircleAvatar(
-            radius: 12,
+            radius: 10,
             backgroundColor: _currentStep >= 0
                 ? Theme.of(context).colorScheme.tertiary
                 : Colors.grey,
             child: const CircleAvatar(
-              radius: 4,
+              radius: 3,
               backgroundColor: Colors.white,
             ),
           ),
-          title: _currentStep == 0 ? "owner_info".tr : "",
+          title: _currentStep == 0 ? "personal_info".tr : "",
         ),
         EasyStep(
           customStep: CircleAvatar(
-            radius: 12,
+            radius: 10,
             backgroundColor: _currentStep >= 1
                 ? Theme.of(context).colorScheme.tertiary
                 : Colors.grey,
             child: const CircleAvatar(
-              radius: 4,
+              radius: 3,
               backgroundColor: Colors.white,
             ),
           ),
-          title: _currentStep == 1 ? 'company_info'.tr : "",
+          title: _currentStep == 1 ? 'address_info'.tr : "",
         ),
         EasyStep(
           customStep: CircleAvatar(
-            radius: 12,
+            radius: 10,
             backgroundColor: _currentStep >= 2
                 ? Theme.of(context).colorScheme.tertiary
                 : Colors.grey,
             child: const CircleAvatar(
-              radius: 4,
+              radius: 3,
               backgroundColor: Colors.white,
             ),
           ),
-          title: _currentStep == 2 ? 'docs'.tr : "",
+          title: _currentStep == 2 ? 'id_proof'.tr : "",
         ),
       ];
 }

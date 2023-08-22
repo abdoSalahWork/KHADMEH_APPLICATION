@@ -5,7 +5,10 @@ class EndPoints {
   static String get loginGoogle => "$_baseURL/login/google";
   static String get loginFacebook => "$_baseURL/login/facebook";
   static String get login => "$_baseURL/login";
+  static String get me => "$_baseURL/me";
   static String get registerUser => "$_baseURL/register/user";
+  static String get completeDataUser => "$_baseURL/user/data";
+  static String get completeDataCompany => "$_baseURL/company/data";
   static String get registerCompany => "$_baseURL/register/company";
   static String get forgetPassword => "$_baseURL/forget-password";
   static String get confirmEmail => "$_baseURL/confirm-code-email";

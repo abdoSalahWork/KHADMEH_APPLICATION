@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
-import '../Pages/HomePage/employees.dart/employee.dart';
+import '../Pages/HomePage/employees/employee.dart';
 import '../Utils/utils.dart';
 
 // ignore: must_be_immutable

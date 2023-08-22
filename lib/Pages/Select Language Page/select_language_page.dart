@@ -5,7 +5,7 @@ import 'package:sizer/sizer.dart';
 import '../../Utils/utils.dart';
 import '../../widgets/zero_app_bar.dart';
 import '../Select%20Language%20Page/get_started_page.dart';
-import '../log-reg%20pages/login_page.dart';
+import '../log-reg pages/user_type_page.dart.dart';
 
 class SelectLanguagePage extends StatelessWidget {
   SelectLanguagePage({super.key});
@@ -45,7 +45,7 @@ class SelectLanguagePage extends StatelessWidget {
           spaceY(5.0.h),
           primaryBorderedButton(
             onTap: () {
-              Get.to(() => const LoginPage(),
+              Get.to(() => const UserTypePage(),
                   transition: Transition.rightToLeft);
             },
             width: 75.0.w,
@@ -60,7 +60,7 @@ class SelectLanguagePage extends StatelessWidget {
           spaceY(5.0.h),
           primaryButton(
             onTap: () {
-              Get.to(() => const LoginPage(),
+              Get.to(() => const UserTypePage(),
                   transition: Transition.rightToLeft);
             },
             width: 75.0.w,

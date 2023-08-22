@@ -3,19 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:get/get.dart';
-import 'package:khedma/Pages/HomePage/user_home_page.dart';
+import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
+import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
+import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/company/company_register_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/forget%20password/forget_passwrod_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/otp_page.dart';
+import 'package:khedma/Pages/log-reg%20pages/user/user_register_page.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
 import '../../widgets/underline_text_field.dart';
-import '../log-reg%20pages/user_type_page.dart.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
+  const LoginPage({super.key, required this.userType});
+  final String userType;
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -50,7 +53,8 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
-  final AuthController _authController = Get.put(AuthController());
+  final AuthController _authController = Get.find();
+  final GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,13 +101,19 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                         spaceY(8.0.h),
-                        Container(
-                          width: 30.0.w,
-                          height: 30.0.w,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage("assets/images/logo.png"),
-                                fit: BoxFit.contain),
+                        GestureDetector(
+                          onTap: () => widget.userType == "user"
+                              ? Get.to(
+                                  () => UserHomePage(needCompleteData: true))
+                              : Get.to(() => CompanyHomePage()),
+                          child: Container(
+                            width: 30.0.w,
+                            height: 30.0.w,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/images/logo.png"),
+                                  fit: BoxFit.contain),
+                            ),
                           ),
                         )
                       ],
@@ -284,7 +294,12 @@ class _LoginPageState extends State<LoginPage> {
                                     saveToken: _rememberMeFlag,
                                   );
                                   if (state == LoginStates.login) {
-                                    Get.offAll(() => const UserHomePage(),
+                                    String? token = await Utils.readToken();
+                                    bool x =
+                                        AuthController.needCompleteData(token);
+
+                                    Get.offAll(
+                                        () => UserHomePage(needCompleteData: x),
                                         transition: Transition.downToUp);
                                   } else if (state == LoginStates.needsVerify) {
                                     Get.to(
@@ -292,6 +307,7 @@ class _LoginPageState extends State<LoginPage> {
                                               email: _emailController.text,
                                               password:
                                                   _passwordController.text,
+                                              userType: widget.userType,
                                             ),
                                         transition: Transition.downToUp);
                                   } else if (state ==
@@ -335,9 +351,19 @@ class _LoginPageState extends State<LoginPage> {
                                     String? token = await _authController
                                         .handleGoogleSignIn(
                                             saveToken: _rememberMeFlag);
+
                                     if (token != null) {
-                                      Get.off(() => const UserHomePage(),
-                                          transition: Transition.downToUp);
+                                      bool x = AuthController.needCompleteData(
+                                          token);
+                                      if (widget.userType == "user") {
+                                        Get.off(
+                                            () => UserHomePage(
+                                                needCompleteData: x),
+                                            transition: Transition.downToUp);
+                                      } else {
+                                        Get.off(() => CompanyHomePage(),
+                                            transition: Transition.downToUp);
+                                      }
                                     }
                                   },
                                   child: Container(
@@ -405,8 +431,13 @@ class _LoginPageState extends State<LoginPage> {
                               fontWeight: FontWeight.w500,
                             ),
                             GestureDetector(
-                              onTap: () => Get.to(() => const UserTypePage(),
-                                  transition: Transition.rightToLeft),
+                              onTap: () => widget.userType == "user"
+                                  ? Get.to(() => UserRegisterPage(
+                                      userType: widget.userType))
+                                  : Get.to(
+                                      () => CompanyRegisterPage(
+                                          userType: widget.userType),
+                                      transition: Transition.rightToLeft),
                               child: coloredText(
                                   text: "create_an_account".tr,
                                   fontWeight: FontWeight.w500,

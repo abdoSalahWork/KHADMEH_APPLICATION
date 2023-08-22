@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:easy_stepper/easy_stepper.dart';
@@ -11,96 +12,99 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Pages/global_controller.dart';
-import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/company_register_model.dart';
-import 'package:khedma/Pages/log-reg%20pages/otp_page.dart';
+import 'package:khedma/widgets/company_request.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:sizer/sizer.dart';
 import 'package:textfield_datepicker/textfield_datepicker.dart';
 
+import './add_advertisement_page.dart';
 import '../../../Themes/themes.dart';
 import '../../../Utils/utils.dart';
 import '../../../widgets/dropdown_menu_button.dart';
 import '../../../widgets/radio_button.dart';
 import '../../../widgets/underline_text_field.dart';
+import '../../Notifications/notifications_page.dart';
+import '../../chat%20page/messages_page.dart';
+import '../../personal%20page/personal_page.dart';
+import 'add_employee_page.dart';
+import 'company_employees.dart';
 
-class CompanyRegisterPage extends StatefulWidget {
-  const CompanyRegisterPage({super.key, required this.userType});
-  final String userType;
+class CompanyHomePage extends StatefulWidget {
+  const CompanyHomePage({super.key});
 
   @override
-  State<CompanyRegisterPage> createState() => _CompanyRegisterPageState();
+  State<CompanyHomePage> createState() => _CompanyHomePageState();
 }
 
-class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
-  int _currentStep = 0;
-  tapped(int step) {
-    setState(() => _currentStep = step);
-  }
-
-  final AuthController _authController = Get.find();
-
-  cancel() {
-    _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
-  }
-
-  CompanyRegisterData companyRegisterData = CompanyRegisterData();
-
+class _CompanyHomePageState extends State<CompanyHomePage> {
   PageController pageController = PageController(initialPage: 0);
   var errors = {};
   String ownerphoneCode = "";
   String ownerNationality = "";
   String companyphoneCode = "";
   String companyType = "recruitment";
+  String logobuttonText = "Upload company logo";
+  String frontIdButton = "Upload front side of ID";
+  String backIdButton = "Upload back side of ID";
+  String passportButton = "Upload your passport";
   String city = "";
   String region = "";
   int idPassRadio = 0;
+  CompanyRegisterData _companyRegisterData = CompanyRegisterData();
+
+  bool completedRegisterFlag = false;
+  int _currentStep = 0;
+  List<OverView> overView = [
+    OverView(150, "All employees"),
+    OverView(150, "Available"),
+    OverView(150, "Pending"),
+    OverView(150, "Booked"),
+    OverView(150, "Retrieved"),
+  ];
+  late double h;
+  late double h2;
+  late double h3;
+
+  tapped(int step) {
+    setState(() => _currentStep = step);
+  }
+
+  cancel() {
+    _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
+  }
+
   final formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _urlController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _urlController = TextEditingController();
+
+  final TextEditingController _ownerPhoneNumberController =
+      TextEditingController();
   final TextEditingController _companyNameEnController =
       TextEditingController();
   final TextEditingController _companyNameArController =
       TextEditingController();
-  final TextEditingController _ownerPhoneNumberController =
-      TextEditingController();
   final TextEditingController _companyPhoneNumberController =
       TextEditingController();
-  // final TextEditingController _nationallityController = TextEditingController();
+  final TextEditingController _nationallityController = TextEditingController();
   final TextEditingController _pieceNumberController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
   final TextEditingController _adnController = TextEditingController();
   final TextEditingController _idNumController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmController =
-      TextEditingController();
   final TextEditingController _crnController = TextEditingController();
   final TextEditingController _taxController = TextEditingController();
   final TextEditingController _licenseController = TextEditingController();
-  bool _obsecureflag = true;
-  bool _obsecureflag2 = true;
-  void toggleObsecure() {
-    _obsecureflag = !_obsecureflag;
-    setState(() {});
-  }
-
-  void toggleObsecure2() {
-    _obsecureflag2 = !_obsecureflag2;
-    setState(() {});
-  }
 
   final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
-  String logobuttonText = "Upload company logo";
-  String frontIdButton = "Upload front side of ID";
-  String backIdButton = "Upload back side of ID";
-  String passportButton = "Upload your passport";
-
   @override
   void initState() {
+    h2 = 100.0.h;
+    h = 75.0.h;
+    h3 = 65.0.h;
     for (var node in _focusNodes) {
       node.addListener(() {
         setState(() {});
@@ -112,229 +116,370 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: ZeroAppBar(color: Theme.of(context).primaryColor),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              ClipPath(
-                clipper: OvalBottomBorderClipper(),
-                // clipper: WaveClipperOne(flip: true),
+      floatingActionButton: !completedRegisterFlag
+          ? null
+          : Theme(
+              data: ThemeData(
+                useMaterial3: false,
+              ),
+              child: FloatingActionButton(
+                onPressed: () {
+                  Get.to(() => const AddEmployeePage(),
+                      transition: Transition.downToUp);
+                },
                 child: Container(
-                  height: 16.0.h,
-                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: AlignmentDirectional.bottomStart,
+                      end: AlignmentDirectional.topEnd,
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.secondary
+                      ],
+                    ),
+                  ),
+                  width: 60,
+                  height: 60,
+                  child: const Icon(
+                    EvaIcons.plus,
+                    color: Colors.white,
                   ),
                 ),
               ),
-              SizedBox(
-                height: 4.0.h,
-              ),
-              Expanded(
-                  child: Column(
-                children: [
-                  EasyStepper(
-                    activeStep: _currentStep,
-                    lineLength: 18.0.w,
-                    lineSpace: 0,
-                    lineType: LineType.normal,
-                    defaultLineColor: Colors.grey,
-
-                    finishedLineColor: Theme.of(context).colorScheme.tertiary,
-                    activeStepTextColor: Theme.of(context).colorScheme.tertiary,
-                    finishedStepTextColor: Colors.transparent,
-                    internalPadding: 0,
-                    showLoadingAnimation: false,
-                    stepRadius: 12,
-                    showStepBorder: false,
-                    lineThickness: 1,
-                    alignment: Alignment.topCenter,
-                    disableScroll: true,
-                    fitWidth: true,
-                    steps: stepList(),
-                    // onStepReached: (index) =>
-                    //     setState(() => _currentStep = index),
-                  ),
-                  Expanded(
-                    child: PageView(
-                      controller: pageController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: pageList,
+            ),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 55,
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Get.to(() => CompanyEmployeesSearchPage()),
+                      child: Icon(
+                        EvaIcons.people,
+                        color: const Color(0xffD1D1D1),
+                        size: 25.0.sp,
+                      ),
+                    ),
+                    spaceX(10),
+                    Badge(
+                      smallSize: 10,
+                      child: GestureDetector(
+                        onTap: () => Get.to(() => const NotificationsPage(),
+                            transition: Transition.downToUp),
+                        child: Icon(
+                          EvaIcons.bell,
+                          color: const Color(0xffD1D1D1),
+                          size: 25.0.sp,
+                        ),
+                      ),
+                    ),
+                    spaceX(10),
+                    GestureDetector(
+                      child: Icon(
+                        EvaIcons.messageCircle,
+                        color: const Color(0xffD1D1D1),
+                        size: 22.0.sp,
+                      ),
+                      onTap: () => Get.to(() => const MessagesPage()),
+                    ),
+                    spaceX(10),
+                    GestureDetector(
+                      onTap: () => Get.to(
+                          () => const PersonalPage(
+                              employeeType: EmployeeType.clean),
+                          transition: Transition.downToUp),
+                      child: Container(
+                        width: 45,
+                        height: 45,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          // border: Border.all(
+                          //   width: 1,
+                          //   color: const Color(0xffD1D1D1),
+                          // ),
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/image.png"),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                spaceY(1.5.h),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => const AddAdvertismentPage());
+                  },
+                  child: Container(
+                    width: 100.w,
+                    height: 40.w,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      image: const DecorationImage(
+                          image: AssetImage("assets/images/adv_background.png"),
+                          fit: BoxFit.cover),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        coloredText(
+                          text: "Add your",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                        ),
+                        spaceY(10),
+                        coloredText(
+                          text: "Advertisement",
+                          textstyle: TextStyle(
+                            fontSize: 24.sp,
+                            color: Colors.white,
+                            fontFamily: "Gabriola",
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              )
-                  //  Container(
-                  //   width: 100.0.w,
-                  //   margin: EdgeInsetsDirectional.only(bottom: 10),
-                  //   child: Form(
-                  //     key: formKey,
-                  //     child: MyStepper(
-                  //         type: MyStepperType.horizontal,
-                  //         onStepContinue: () {
-                  //           _currentStep < stepList(0, 0).length - 1
-                  //               ? setState(() => _currentStep += 1)
-                  //               : null;
-                  //         },
-                  //         elevation: 0,
-                  //         onStepCancel: cancel,
-                  //         onStepTapped: tapped,
-                  //         currentStep: _currentStep,
-                  //         steps: stepList(100.0.h, 100.0.w),
-                  //         // physics: const NeverScrollableScrollPhysics(),
-                  //         controlsBuilder: (context, details) {
-                  //           return primaryButton(
-                  //             height: 50,
-                  //             width: 45.0.w,
-                  //             radius: 30,
-                  //             onTap: () {
-                  //               _currentStep < stepList(0, 0).length - 1
-                  //                   ? setState(() => _currentStep += 1)
-                  //                   : Get.to(
-                  //                       () => const OTPPage(),
-                  //                       transition: Transition.rightToLeft,
-                  //                     );
-                  //             },
-                  //             text: coloredText(
-                  //               text: "next".tr,
-                  //               color: Colors.white,
-                  //               fontSize: 16.0.sp,
-                  //             ),
-                  //             color: Theme.of(context).primaryColor,
-                  //           );
-                  //         }),
-                  //   ),
-                  // ),
+                ),
+                spaceY(10),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: coloredText(text: "Overview", fontSize: 16.0.sp),
+                ),
+                spaceY(10),
+                SizedBox(
+                  height: 30.w,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) => SizedBox(
+                      width: 45.w,
+                      height: 25.w,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset: const Offset(
+                                  0, 0), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            coloredText(
+                              text: overView[index].number.toString(),
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: 14.sp,
+                            ),
+                            spaceY(10),
+                            coloredText(
+                              text: overView[index].string,
+                              fontSize: 14.sp,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    separatorBuilder: (context, index) => spaceX(10),
+                    itemCount: overView.length,
+                  ),
+                ),
+                spaceY(10),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: coloredText(text: "Requests", fontSize: 15.sp),
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    itemBuilder: (context, index) => CompanyRequestWidget(),
+                    separatorBuilder: (context, index) => spaceY(15),
+                    itemCount: 20,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Visibility(
+            visible: !completedRegisterFlag,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.5)),
+                width: 100.0.w,
+                height: 100.0.h,
+              ),
+            ),
+          ),
+          Visibility(
+            visible: !completedRegisterFlag,
+            child: Material(
+              color: Colors.transparent,
+              elevation: 15,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.elliptical(50.0.w, 30),
+                bottomRight: Radius.elliptical(50.0.w, 30),
+              ),
+              child: ClipPath(
+                clipper: _currentStep == 1 ? null : OvalBottomBorderClipper(),
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 100.0.w,
+                      height: _currentStep == 0
+                          ? h
+                          : _currentStep == 1
+                              ? h2
+                              : h3,
+                      color: Colors.white,
+                      // duration: const Duration(milliseconds: 250),
+                      child: Column(
+                        children: [
+                          spaceY(100),
+                          EasyStepper(
+                            activeStep: _currentStep,
+                            lineLength: 20.0.w,
+                            lineSpace: 0,
+                            lineType: LineType.normal,
+                            defaultLineColor: Colors.grey,
 
-                  )
-            ],
-          ),
-          Positioned(
-            top: -282.0.w,
-            left: -95.0.w,
-            child: Container(
-              width: 300.0.w,
-              height: 300.0.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                            finishedLineColor:
+                                Theme.of(context).colorScheme.tertiary,
+                            activeStepTextColor:
+                                Theme.of(context).colorScheme.tertiary,
+                            finishedStepTextColor: Colors.transparent,
+                            internalPadding: 0,
+                            showLoadingAnimation: false,
+                            stepRadius: 12,
+                            showStepBorder: false,
+                            lineThickness: 1,
+                            alignment: Alignment.topCenter,
+                            disableScroll: true,
+                            fitWidth: true,
+                            steps: stepList(),
+                            // onStepReached: (index) =>
+                            //     setState(() => _currentStep = index),
+                          ),
+                          Expanded(
+                            child: Form(
+                              child: PageView(
+                                controller: pageController,
+                                physics: const NeverScrollableScrollPhysics(),
+                                children: pageList,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // PositionedDirectional(
+                    //     bottom: 35,
+                    //     end: 50,
+                    // child: Row(
+                    //   children: [
+                    //     coloredText(
+                    //         text: "next".tr,
+                    //         fontSize: 16.0.sp,
+                    //         color: Theme.of(context).colorScheme.tertiary),
+                    //     spaceX(10),
+                    //     GestureDetector(
+                    //       onTap: () {
+                    //         if (_currentStep < stepList().length - 1) {
+                    //           setState(() => _currentStep += 1);
+                    //           pageController.jumpToPage(_currentStep);
+                    //         } else {
+                    //           completedRegisterFlag = true;
+                    //         }
+
+                    //         logSuccess(_currentStep);
+                    //         setState(() {});
+                    //       },
+                    //       child: Container(
+                    //         padding: const EdgeInsets.all(15),
+                    //         decoration: BoxDecoration(
+                    //           shape: BoxShape.circle,
+                    //           gradient: LinearGradient(
+                    //             begin: AlignmentDirectional.topStart,
+                    //             end: AlignmentDirectional.bottomEnd,
+                    //             colors: [
+                    //               Theme.of(context).colorScheme.primary,
+                    //               Theme.of(context).colorScheme.secondary,
+                    //             ],
+                    //           ),
+                    //         ),
+                    //         child: const Icon(
+                    //           FontAwesomeIcons.anglesRight,
+                    //           color: Colors.white,
+                    //           size: 22,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // )),
+                    PositionedDirectional(
+                      top: 40,
+                      start: 30,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (_currentStep == 2) {
+                            _currentStep -= 1;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                          } else if (_currentStep == 0) {
+                            Get.back();
+                            setState(() {});
+                          } else {
+                            _currentStep -= 1;
+                            pageController.jumpToPage(_currentStep);
+                            setState(() {});
+                          }
+                          logSuccess(_currentStep);
+                        },
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 22.0.sp,
+                        ),
+                      ),
+                    ),
+                    Positioned.fill(
+                        top: 40,
+                        child: Align(
+                          alignment: AlignmentDirectional.topCenter,
+                          child: coloredText(
+                            text: "complete_data".tr,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 14.0.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ))
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned(
-            top: -288.0.w,
-            left: -100.0.w,
-            child: Container(
-              width: 300.0.w,
-              height: 300.0.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-              ),
-            ),
-          ),
-          Positioned(
-            top: -292.0.w,
-            left: -105.0.w,
-            child: Container(
-              width: 300.0.w,
-              height: 300.0.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
-              ),
-            ),
-          ),
-          PositionedDirectional(
-            top: 40,
-            start: 20,
-            child: GestureDetector(
-              onTap: () {
-                if (_currentStep == 0) {
-                  Get.back();
-                } else {
-                  cancel();
-                  pageController.jumpToPage(_currentStep);
-                }
-              },
-              child: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-                size: 22.0.sp,
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: 40,
-            child: Align(
-              alignment: AlignmentDirectional.topCenter,
-              child: coloredText(
-                text: "create_an_account".tr,
-                color: Colors.white,
-                fontSize: 16.0.sp,
-              ),
-            ),
-          ),
+          )
         ],
       ),
     );
   }
 
-  List<EasyStep> stepList() => [
-        EasyStep(
-          customStep: CircleAvatar(
-            radius: 12,
-            backgroundColor: _currentStep >= 0
-                ? Theme.of(context).colorScheme.tertiary
-                : Colors.grey,
-            child: const CircleAvatar(
-              radius: 4,
-              backgroundColor: Colors.white,
-            ),
-          ),
-          title: _currentStep == 0 ? "owner_info".tr : "",
-        ),
-        EasyStep(
-          customStep: CircleAvatar(
-            radius: 12,
-            backgroundColor: _currentStep >= 1
-                ? Theme.of(context).colorScheme.tertiary
-                : Colors.grey,
-            child: const CircleAvatar(
-              radius: 4,
-              backgroundColor: Colors.white,
-            ),
-          ),
-          title: _currentStep == 1 ? 'company_info'.tr : "",
-        ),
-        EasyStep(
-          customStep: CircleAvatar(
-            radius: 12,
-            backgroundColor: _currentStep >= 2
-                ? Theme.of(context).colorScheme.tertiary
-                : Colors.grey,
-            child: const CircleAvatar(
-              radius: 4,
-              backgroundColor: Colors.white,
-            ),
-          ),
-          title: _currentStep == 2 ? 'docs'.tr : "",
-        ),
-        EasyStep(
-          customStep: CircleAvatar(
-            radius: 12,
-            backgroundColor: _currentStep >= 3
-                ? Theme.of(context).colorScheme.tertiary
-                : Colors.grey,
-            child: const CircleAvatar(
-              radius: 4,
-              backgroundColor: Colors.white,
-            ),
-          ),
-          title: _currentStep == 3 ? 'security'.tr : "",
-        ),
-      ];
   List<Widget> get pageList => [
         GetBuilder<GlobalController>(builder: (c) {
           return Padding(
@@ -357,7 +502,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     onchanged: (s) {
                       errors['first_name'] = null;
                       setState(() {});
-                      companyRegisterData.firstName = s;
+                      _companyRegisterData.firstName = s;
                     },
                     validator: (String? value) {
                       if (errors['first_name'] != null) {
@@ -382,7 +527,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     onchanged: (s) {
                       errors['last_name'] = null;
                       setState(() {});
-                      companyRegisterData.lastName = s;
+                      _companyRegisterData.lastName = s;
                     },
                     validator: (String? value) {
                       if (errors['last_name'] != null) {
@@ -405,7 +550,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['phone'] = null;
                   setState(() {});
-                  companyRegisterData.phone = s;
+                  _companyRegisterData.phone = s;
                 },
                 validator: (String? value) {
                   if (errors['phone'] != null) {
@@ -484,7 +629,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   ownerNationality = p0!;
                   errors['nationality_id'] = null;
                   setState(() {});
-                  companyRegisterData.nationalityId = c.countries
+                  _companyRegisterData.nationalityId = c.countries
                       .where((element) =>
                           element.nameEn == p0 || element.nameAr == p0)
                       .first
@@ -502,18 +647,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 // padding:
                 //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
               ),
-              // UnderlinedCustomTextField(
-              //   focusNode: _focusNodes[3],
-              //   keyBoardType: TextInputType.text,
-              //   controller: _nationallityController,
-              //   readOnly: true,
-              //   prefixIcon: Icon(
-              //     EvaIcons.globe2Outline,
-              //     size: 20.0.sp,
-              //   ),
-              //   hintText: "nationality".tr,
-              // ),
-
               spaceY(10.0.sp),
               UnderlinedCustomTextField(
                 focusNode: _focusNodes[4],
@@ -525,7 +658,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['id_number'] = null;
                   setState(() {});
-                  companyRegisterData.idNumber = s;
+                  _companyRegisterData.idNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['id_number'] != null) {
@@ -622,22 +755,47 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 ],
               ),
               spaceY(20.0.sp),
-              primaryButton(
-                onTap: () {
-                  if (_currentStep < stepList().length - 1) {
-                    setState(() => _currentStep += 1);
-                    pageController.jumpToPage(_currentStep);
-                  }
-                },
-                text: coloredText(
-                  text: "Next",
-                  color: Colors.white,
-                  fontSize: 16.0.sp,
-                ),
-                height: 50,
-                width: 45.0.w,
-                radius: 30,
-                color: Theme.of(context).colorScheme.primary,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  coloredText(
+                      text: "next".tr,
+                      fontSize: 16.0.sp,
+                      color: Theme.of(context).colorScheme.tertiary),
+                  spaceX(10),
+                  GestureDetector(
+                    onTap: () {
+                      if (_currentStep < stepList().length - 1) {
+                        setState(() => _currentStep += 1);
+                        pageController.jumpToPage(_currentStep);
+                      } else {
+                        completedRegisterFlag = true;
+                      }
+
+                      logSuccess(_currentStep);
+                      setState(() {});
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: AlignmentDirectional.topStart,
+                          end: AlignmentDirectional.bottomEnd,
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.secondary,
+                          ],
+                        ),
+                      ),
+                      child: const Icon(
+                        FontAwesomeIcons.anglesRight,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               spaceY(20.0.sp),
             ]),
@@ -657,7 +815,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 child: primaryButton(
                     color: const Color(0xffF5F5F5),
                     width: 100.0.w,
-                    height: 55,
+                    height: 42.sp,
                     radius: 10,
                     onTap: () async {
                       final result = await FilePicker.platform.pickFiles(
@@ -667,7 +825,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       if (result != null) {
                         logobuttonText = result.files[0].name
                             .substring(0, min(15, result.files[0].name.length));
-                        companyRegisterData.companyLogo = result.files[0];
+                        _companyRegisterData.companyLogo = result.files[0];
                         setState(() {});
                       }
                     },
@@ -720,7 +878,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['company_name'] = null;
                   setState(() {});
-                  companyRegisterData.companyName = s;
+                  _companyRegisterData.companyName = s;
                 },
                 validator: (String? value) {
                   if (errors['company_name'] != null) {
@@ -732,29 +890,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   return null;
                 },
               ),
-              // spaceY(10.0.sp),
-              // UnderlinedCustomTextField(
-              //   focusNode: _focusNodes[7],
-              //   controller: _companyNameArController,
-              //   keyBoardType: TextInputType.text,
-              //   prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
-              //   hintText: "Company Name Ar",
-              //   autovalidateMode: AutovalidateMode.always,
-              //   onchanged: (s) {
-              //     errors['company_name'] = null;
-              //     setState(() {});
-              //     companyRegisterData.companyName = s;
-              //   },
-              //   validator: (String? value) {
-              //     if (errors['company_name'] != null) {
-              //       String tmp = "";
-              //       tmp = errors['company_name'].join("\n");
-
-              //       return tmp;
-              //     }
-              //     return null;
-              //   },
-              // ),
               spaceY(10.0.sp),
               UnderlinedCustomTextField(
                 focusNode: _focusNodes[8],
@@ -764,7 +899,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['company_phone'] = null;
                   setState(() {});
-                  companyRegisterData.companyPhone = s;
+                  _companyRegisterData.companyPhone = s;
                 },
                 validator: (String? value) {
                   if (errors['company_phone'] != null) {
@@ -818,7 +953,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['company_email'] = null;
                   setState(() {});
-                  companyRegisterData.companyEmail = s;
+                  _companyRegisterData.companyEmail = s;
                 },
                 validator: (String? value) {
                   if (errors['company_email'] != null) {
@@ -841,7 +976,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['url'] = null;
                   setState(() {});
-                  companyRegisterData.url = s;
+                  _companyRegisterData.url = s;
                 },
                 validator: (String? value) {
                   if (errors['url'] != null) {
@@ -862,10 +997,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   spaceX(15),
                   CustomDropDownMenuButton(
                     fillColor: const Color(0xffF5F5F5),
-                    padding:
-                        const EdgeInsetsDirectional.only(end: 10, start: 10),
-                    // hintPadding: 5,
-                    width: 42.0.w,
+                    padding: const EdgeInsetsDirectional.only(end: 5, start: 5),
+                    width: 40.0.w,
                     height: 38.sp,
                     borderRadius: BorderRadius.circular(10),
                     value: companyType == "" ? null : companyType,
@@ -879,7 +1012,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                         .toList(),
                     onChanged: (p0) {
                       companyType = p0!;
-                      companyRegisterData.companyType = p0;
+                      _companyRegisterData.companyType = p0;
                     },
                   ),
                 ],
@@ -910,7 +1043,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomDropDownMenuButton(
-                    hintPadding: 10,
                     hint: "city".tr,
                     border: const UnderlineInputBorder(),
                     width: 40.0.w,
@@ -938,7 +1070,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       city = p0!;
                       errors["city_id"] = null;
                       setState(() {});
-                      companyRegisterData.cityId = c.cities
+                      _companyRegisterData.cityId = c.cities
                           .where((element) =>
                               element.nameEn == p0 || element.nameAr == p0)
                           .first
@@ -974,7 +1106,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       region = p0!;
                       errors["region_id"] = null;
                       setState(() {});
-                      companyRegisterData.regionId = c.regions
+                      _companyRegisterData.regionId = c.regions
                           .where((element) =>
                               element.nameEn == p0 || element.nameAr == p0)
                           .first
@@ -996,7 +1128,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['piece_number'] = null;
                   setState(() {});
-                  companyRegisterData.pieceNumber = s;
+                  _companyRegisterData.pieceNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['piece_number'] != null) {
@@ -1019,7 +1151,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['street'] = null;
                   setState(() {});
-                  companyRegisterData.street = s;
+                  _companyRegisterData.street = s;
                 },
                 validator: (String? value) {
                   if (errors['street'] != null) {
@@ -1042,7 +1174,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['building'] = null;
                   setState(() {});
-                  companyRegisterData.building = s;
+                  _companyRegisterData.building = s;
                 },
                 validator: (String? value) {
                   if (errors['building'] != null) {
@@ -1064,7 +1196,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['automated_address_number'] = null;
                   setState(() {});
-                  companyRegisterData.automatedAddressNumber = s;
+                  _companyRegisterData.automatedAddressNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['automated_address_number'] != null) {
@@ -1108,7 +1240,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['commercial_registration_number'] = null;
                   setState(() {});
-                  companyRegisterData.commercialRegistrationNumber = s;
+                  _companyRegisterData.commercialRegistrationNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['commercial_registration_number'] != null) {
@@ -1131,7 +1263,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['tax_number'] = null;
                   setState(() {});
-                  companyRegisterData.taxNumber = s;
+                  _companyRegisterData.taxNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['tax_number'] != null) {
@@ -1154,7 +1286,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 onchanged: (s) {
                   errors['license_number'] = null;
                   setState(() {});
-                  companyRegisterData.licenseNumber = s;
+                  _companyRegisterData.licenseNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['license_number'] != null) {
@@ -1167,23 +1299,47 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 },
               ),
               spaceY(20.0.sp),
-              primaryButton(
-                onTap: () {
-                  if (_currentStep < stepList().length - 1) {
-                    setState(() => _currentStep += 1);
-                    pageController.jumpToPage(_currentStep);
-                  }
-                  logSuccess(_currentStep);
-                },
-                text: coloredText(
-                  text: "Next",
-                  color: Colors.white,
-                  fontSize: 16.0.sp,
-                ),
-                height: 50,
-                width: 45.0.w,
-                radius: 30,
-                color: Theme.of(context).colorScheme.primary,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  coloredText(
+                      text: "next".tr,
+                      fontSize: 16.0.sp,
+                      color: Theme.of(context).colorScheme.tertiary),
+                  spaceX(10),
+                  GestureDetector(
+                    onTap: () {
+                      if (_currentStep < stepList().length - 1) {
+                        setState(() => _currentStep += 1);
+                        pageController.jumpToPage(_currentStep);
+                      } else {
+                        completedRegisterFlag = true;
+                      }
+
+                      logSuccess(_currentStep);
+                      setState(() {});
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: AlignmentDirectional.topStart,
+                          end: AlignmentDirectional.bottomEnd,
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.secondary,
+                          ],
+                        ),
+                      ),
+                      child: const Icon(
+                        FontAwesomeIcons.anglesRight,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               spaceY(20.0.sp),
             ]),
@@ -1208,11 +1364,11 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       value: 0,
                       onChanged: (p0) {
                         setState(() {
-                          companyRegisterData.identityConfirmation = "id";
+                          _companyRegisterData.identityConfirmation = "id";
 
                           passportButton = "Upload your passport";
                           idPassRadio = 0;
-                          companyRegisterData.passportImage = null;
+                          _companyRegisterData.passportImage = null;
                           setState(() {});
                         });
                       },
@@ -1225,10 +1381,11 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       value: 1,
                       onChanged: (p0) {
                         setState(() {
-                          companyRegisterData.identityConfirmation = "passport";
+                          _companyRegisterData.identityConfirmation =
+                              "passport";
                           idPassRadio = 1;
-                          companyRegisterData.frontSideIdImage = null;
-                          companyRegisterData.backSideIdImage = null;
+                          _companyRegisterData.frontSideIdImage = null;
+                          _companyRegisterData.backSideIdImage = null;
                           frontIdButton = "Upload front side of ID";
                           backIdButton = "Upload back side of ID";
                           setState(() {});
@@ -1249,13 +1406,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                           if (result != null) {
                             passportButton = result.files[0].name.substring(
                                 0, min(15, result.files[0].name.length));
-                            companyRegisterData.passportImage = result.files[0];
+                            _companyRegisterData.passportImage =
+                                result.files[0];
                             setState(() {});
                           }
                         },
                         color: const Color(0xffF5F5F5),
                         width: 100.0.w,
-                        height: 55,
+                        height: 42.sp,
                         radius: 10,
                         text: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1302,14 +1460,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                           if (result != null) {
                             frontIdButton = result.files[0].name.substring(
                                 0, min(15, result.files[0].name.length));
-                            companyRegisterData.frontSideIdImage =
+                            _companyRegisterData.frontSideIdImage =
                                 result.files[0];
                             setState(() {});
                           }
                         },
                         color: const Color(0xffF5F5F5),
                         width: 100.0.w,
-                        height: 55,
+                        height: 42.sp,
                         radius: 10,
                         text: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1357,14 +1515,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                           if (result != null) {
                             backIdButton = result.files[0].name.substring(
                                 0, min(15, result.files[0].name.length));
-                            companyRegisterData.backSideIdImage =
+                            _companyRegisterData.backSideIdImage =
                                 result.files[0];
                             setState(() {});
                           }
                         },
                         color: const Color(0xffF5F5F5),
                         width: 100.0.w,
-                        height: 55,
+                        height: 42.sp,
                         radius: 10,
                         text: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1401,253 +1559,99 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                           ],
                         )),
                 spaceY(20),
-                primaryButton(
-                  onTap: () {
-                    if (_currentStep < stepList().length - 1) {
-                      setState(() => _currentStep += 1);
-                      pageController.jumpToPage(_currentStep);
-                    }
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    coloredText(
+                        text: "next".tr,
+                        fontSize: 16.0.sp,
+                        color: Theme.of(context).colorScheme.tertiary),
+                    spaceX(10),
+                    GestureDetector(
+                      onTap: () {
+                        if (_currentStep < stepList().length - 1) {
+                          setState(() => _currentStep += 1);
+                          pageController.jumpToPage(_currentStep);
+                        } else {
+                          completedRegisterFlag = true;
+                        }
 
-                    logSuccess(_currentStep);
-                    setState(() {});
-                  },
-                  text: coloredText(
-                    text: "Next",
-                    color: Colors.white,
-                    fontSize: 16.0.sp,
-                  ),
-                  height: 50,
-                  width: 45.0.w,
-                  radius: 30,
-                  color: Theme.of(context).colorScheme.primary,
+                        logSuccess(_currentStep);
+                        setState(() {});
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: AlignmentDirectional.topStart,
+                            end: AlignmentDirectional.bottomEnd,
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                            ],
+                          ),
+                        ),
+                        child: const Icon(
+                          FontAwesomeIcons.anglesRight,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 spaceY(20),
               ],
             ),
           );
         }),
-        GetBuilder<GlobalController>(builder: (c) {
-          return Padding(
-            padding: const EdgeInsets.all(20),
-            child:
-                ListView(padding: EdgeInsets.zero, primary: false, children: [
-              UnderlinedCustomTextField(
-                prefixIcon: Icon(
-                  EvaIcons.lockOutline,
-                  color: _focusNodes[18].hasFocus
-                      ? Theme.of(context).colorScheme.secondary
-                      : Colors.grey,
-                ),
-                focusNode: _focusNodes[18],
-                controller: _passwordController,
-                keyBoardType: TextInputType.visiblePassword,
-                suffixIcon: IconButton(
-                    icon: Icon(
-                      EvaIcons.eyeOutline,
-                      color: _focusNodes[18].hasFocus
-                          ? Theme.of(context).colorScheme.secondary
-                          : Colors.grey,
-                      size: 20.0.sp,
-                    ),
-                    onPressed: toggleObsecure),
-                hintText: "password".tr,
-                obsecureText: _obsecureflag,
-                autovalidateMode: AutovalidateMode.always,
-                onchanged: (s) {
-                  errors['password'] = null;
-                  setState(() {});
-                  companyRegisterData.password = s;
-                },
-                validator: (String? value) {
-                  if (errors['password'] != null) {
-                    String tmp = "";
-                    tmp = errors['password'].join("\n");
-
-                    return tmp;
-                  }
-                  return null;
-                },
-              ),
-              spaceY(10.0.sp),
-              UnderlinedCustomTextField(
-                prefixIcon: Icon(
-                  EvaIcons.lockOutline,
-                  color: _focusNodes[19].hasFocus
-                      ? Theme.of(context).colorScheme.secondary
-                      : Colors.grey,
-                ),
-                focusNode: _focusNodes[19],
-                controller: _passwordConfirmController,
-                keyBoardType: TextInputType.visiblePassword,
-                suffixIcon: IconButton(
-                    icon: Icon(
-                      EvaIcons.eyeOutline,
-                      color: _focusNodes[19].hasFocus
-                          ? Theme.of(context).colorScheme.secondary
-                          : Colors.grey,
-                      size: 20.0.sp,
-                    ),
-                    onPressed: toggleObsecure2),
-                hintText: "password_confirm".tr,
-                obsecureText: _obsecureflag2,
-                autovalidateMode: AutovalidateMode.always,
-                onchanged: (s) {
-                  errors['password'] = null;
-                  setState(() {});
-                  companyRegisterData.passwordConfirmation = s;
-                },
-                validator: (s) {
-                  if (s!.isEmpty) {
-                    return null;
-                  } else if (_passwordController.text != s) {
-                    return "don't match password";
-                  }
-                  return null;
-                },
-              ),
-              spaceY(20.0.sp),
-              primaryButton(
-                onTap: () async {
-                  // Get.offAll(() => const CompanyHomePage());
-                  companyRegisterData.dateOfBirth = _dateController.text;
-                  var x = await await _authController.companyRegister(
-                      companyRegisterData: companyRegisterData);
-                  if (x == true) {
-                    // ignore: use_build_context_synchronously
-                    Utils.customDialog(
-                        actions: [
-                          primaryButton(
-                            onTap: () {
-                              Get.back();
-                              Get.to(
-                                () => OTPPage(
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                  userType: widget.userType,
-                                ),
-                                transition: Transition.rightToLeft,
-                              );
-                            },
-                            width: 40.0.w,
-                            height: 50,
-                            radius: 10.w,
-                            color: Theme.of(context).colorScheme.primary,
-                            text: coloredText(
-                              text: "ok".tr,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                        context: context,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              spaceY(20),
-                              Icon(
-                                EvaIcons.checkmarkCircle,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 40.sp,
-                              ),
-                              spaceY(20),
-                              coloredText(
-                                  text: "You have been registered",
-                                  fontSize: 12.0.sp),
-                              coloredText(
-                                text: "successfully",
-                                fontSize: 14.0.sp,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ],
-                          ),
-                        ));
-                  } else if (x['message'] == "The given data was invalid.") {
-                    errors = x['errors'];
-                    if (errors['first_name'] != null ||
-                        errors['last_name'] != null ||
-                        errors['phone'] != null ||
-                        errors['nationality_id'] != null ||
-                        errors['id_number'] != null ||
-                        errors['date_of_birth'] != null) {
-                      _currentStep = 0;
-                      setState(() {});
-                      pageController.jumpToPage(_currentStep);
-                    } else if (errors['company_name'] != null ||
-                        errors['url'] != null ||
-                        errors['company_phone'] != null ||
-                        errors['company_type'] != null ||
-                        errors['company_email'] != null ||
-                        errors['city_id'] != null ||
-                        errors['region_id'] != null ||
-                        errors['piece_number'] != null ||
-                        errors['street'] != null ||
-                        errors['building'] != null ||
-                        errors['automated_address_number'] != null ||
-                        errors['commercial_registration_number'] != null ||
-                        errors['tax_number'] != null ||
-                        errors['license_number'] != null ||
-                        errors['company_logo'] != null) {
-                      _currentStep = 1;
-                      setState(() {});
-                      pageController.jumpToPage(_currentStep);
-                      String tmp = "";
-                      if (errors['company_logo'] != null) {
-                        tmp = errors['company_logo'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['company_type'] != null) {
-                        tmp = errors['company_type'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['company_logo'] != null &&
-                          errors['company_type'] != null) {
-                        tmp = errors['company_logo'].join("\n") +
-                            "\n" +
-                            errors['company_type'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      }
-                    } else if (errors['front_side_id_image'] != null ||
-                        errors['back_side_id_image'] != null ||
-                        errors['passport_image'] != null) {
-                      _currentStep = 2;
-                      setState(() {});
-                      pageController.jumpToPage(_currentStep);
-                      String tmp = "";
-                      if (errors['passport_image'] != null) {
-                        tmp = errors['passport_image'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['front_side_id_image'] != null) {
-                        tmp = errors['front_side_id_image'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['back_side_id_image'] != null) {
-                        tmp = errors['back_side_id_image'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['front_side_id_image'] != null &&
-                          errors['back_side_id_image'] != null) {
-                        tmp = errors['front_side_id_image'].join("\n") +
-                            "\n" +
-                            errors['back_side_id_image'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      }
-                    } else if (errors['password'] != null) {
-                      _currentStep = 3;
-                      setState(() {});
-                      pageController.jumpToPage(_currentStep);
-                    }
-                  }
-                },
-                text: coloredText(
-                  text: "submit".tr,
-                  color: Colors.white,
-                  fontSize: 16.0.sp,
-                ),
-                height: 50,
-                width: 45.0.w,
-                radius: 30,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              spaceY(20.0.sp),
-            ]),
-          );
-        }),
       ];
+  List<EasyStep> stepList() => [
+        EasyStep(
+          customStep: CircleAvatar(
+            radius: 12,
+            backgroundColor: _currentStep >= 0
+                ? Theme.of(context).colorScheme.tertiary
+                : Colors.grey,
+            child: const CircleAvatar(
+              radius: 4,
+              backgroundColor: Colors.white,
+            ),
+          ),
+          title: _currentStep == 0 ? "owner_info".tr : "",
+        ),
+        EasyStep(
+          customStep: CircleAvatar(
+            radius: 12,
+            backgroundColor: _currentStep >= 1
+                ? Theme.of(context).colorScheme.tertiary
+                : Colors.grey,
+            child: const CircleAvatar(
+              radius: 4,
+              backgroundColor: Colors.white,
+            ),
+          ),
+          title: _currentStep == 1 ? 'company_info'.tr : "",
+        ),
+        EasyStep(
+          customStep: CircleAvatar(
+            radius: 12,
+            backgroundColor: _currentStep >= 2
+                ? Theme.of(context).colorScheme.tertiary
+                : Colors.grey,
+            child: const CircleAvatar(
+              radius: 4,
+              backgroundColor: Colors.white,
+            ),
+          ),
+          title: _currentStep == 2 ? 'docs'.tr : "",
+        ),
+      ];
+}
+
+class OverView {
+  int number;
+  String string;
+  OverView(this.number, this.string);
 }

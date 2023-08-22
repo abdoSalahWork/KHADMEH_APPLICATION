@@ -10,9 +10,14 @@ import '../../Utils/utils.dart';
 import '../../widgets/underline_text_field.dart';
 
 class OTPPage extends StatefulWidget {
-  const OTPPage({super.key, required this.email, required this.password});
+  const OTPPage(
+      {super.key,
+      required this.email,
+      required this.password,
+      required this.userType});
   final String email;
   final String password;
+  final String userType;
   @override
   State<OTPPage> createState() => _OTPPageState();
 }
@@ -99,7 +104,9 @@ class _OTPPageState extends State<OTPPage> {
                       primaryButton(
                         onTap: () {
                           Get.back();
-                          Get.offAll(() => const LoginPage());
+                          Get.offAll(() => LoginPage(
+                                userType: widget.userType,
+                              ));
                         },
                         width: 40.0.w,
                         height: 50,

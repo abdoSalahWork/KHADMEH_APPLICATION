@@ -5,7 +5,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:khedma/Pages/HomePage/employees.dart/employees_filter_page.dart';
+import 'package:khedma/Pages/HomePage/employees/employees_filter_page.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/profile_card.dart';
 import 'package:khedma/widgets/search_text_field.dart';

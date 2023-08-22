@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:khedma/Pages/HomePage/user_home_page.dart';
+import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 
 import '../Select%20Language%20Page/select_language_page.dart';
@@ -17,6 +18,8 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
   final GlobalController _globalController = Get.put(GlobalController());
+  final AuthController _authController = Get.put(AuthController());
+
   @override
   void initState() {
     super.initState();
@@ -28,8 +31,13 @@ class _SplashPageState extends State<SplashPage>
       const Duration(seconds: 2),
       () async {
         String? rem = await Utils.readRemmemberMe();
+
         if (rem == "yes") {
-          Get.off(() => const UserHomePage(), transition: Transition.downToUp);
+          String? token = await Utils.readToken();
+          Get.off(
+              () => UserHomePage(
+                  needCompleteData: AuthController.needCompleteData(token)),
+              transition: Transition.downToUp);
         } else {
           Get.off(() => SelectLanguagePage(), transition: Transition.downToUp);
         }

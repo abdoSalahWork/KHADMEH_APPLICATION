@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 
 import '../../../Utils/end_points.dart';
@@ -31,6 +33,13 @@ class AuthController extends GetxController {
   GoogleSignInAccount? get currentUser => _currentUser;
   bool get isAuthorized => _isAuthorized;
 
+  static bool needCompleteData(String? token) {
+    if (token == null) return false;
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    logSuccess(decodedToken);
+    return decodedToken['complite_data'] != null;
+  }
+
   Future handleGoogleSignIn({
     required bool saveToken,
   }) async {
@@ -45,7 +54,10 @@ class AuthController extends GetxController {
         var res = await dio.post(EndPoints.loginGoogle,
             options: Options(headers: {"accessToken": auth.accessToken}));
         String token = res.data["access_token"];
+        logSuccess(token);
         await Utils.saveToken(token: token);
+        GlobalController g = Get.find();
+        await g.getMe();
 
         if (saveToken) {
           await Utils.saveRemmemberMe(rem: saveToken ? "yes" : "no");
@@ -64,37 +76,6 @@ class AuthController extends GetxController {
       return null;
     }
   }
-
-  // Future handleNormalSignIn({
-  //   required String email,
-  //   required String password,
-  //   required bool saveToken,
-  // }) async {
-  //   try {
-  //     Get.dialog(const Center(
-  //       child: CircularProgressIndicator(),
-  //     ));
-
-  //     var res = await dio.post(
-  //       EndPoints.login,
-  //       data: {
-  //         "email": email,
-  //         "password": password,
-  //       },
-  //     );
-  //     String token = res.data["access_token"];
-  //     await Utils.saveToken(token: token);
-  //     Get.back();
-
-  //     return token;
-  //   } on DioException catch (error) {
-  //     Get.back();
-  //     logError(error.toString());
-
-  //     Utils.showSnackBar(message: error.response!.data["message"]);
-  //     return null;
-  //   }
-  // }
 
   Future userRegister({required UserRegisterData userRegisterData}) async {
     try {
@@ -130,6 +111,57 @@ class AuthController extends GetxController {
       await dio.post(EndPoints.registerUser,
           data: body,
           options: Options(headers: {"Accept": "application/json"}));
+
+      Get.back();
+      return true;
+    } on DioException catch (error) {
+      Get.back();
+      logError(error.response!.data);
+
+      // Utils.showSnackBar(message: error.response!.data["message"]);
+      return error.response!.data;
+    }
+  }
+
+  Future usercompleteData({required UserRegisterData userCompleteData}) async {
+    try {
+      Get.dialog(const Center(
+        child: CircularProgressIndicator(),
+      ));
+      userCompleteData.userType = "user";
+      logSuccess(userCompleteData.toJson());
+      final body = d.FormData.fromMap(userCompleteData.toJson());
+      PlatformFile? idPhotoNationality = userCompleteData.idPhotoNationality;
+      PlatformFile? personaPhoto = userCompleteData.personalPhoto;
+
+      if (idPhotoNationality != null) {
+        body.files.add(MapEntry(
+          "id_photo_nationality",
+          await d.MultipartFile.fromFile(
+            idPhotoNationality.path!,
+            filename: idPhotoNationality.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (personaPhoto != null) {
+        body.files.add(MapEntry(
+          "personal_photo",
+          await d.MultipartFile.fromFile(
+            personaPhoto.path!,
+            filename: personaPhoto.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      String? token = await Utils.readToken();
+
+      await dio.post(EndPoints.completeDataUser,
+          data: body,
+          options: Options(headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          }));
 
       Get.back();
       return true;
@@ -264,18 +296,24 @@ class AuthController extends GetxController {
         ),
       );
 
-      Get.back();
-
       if (res.data["message"] == "check your Email to reset your password") {
+        Get.back();
+
         return LoginStates.needsVerify;
       } else if (res.data["access_token"] != null) {
         String token = res.data["access_token"];
         await Utils.saveToken(token: token);
+        GlobalController g = Get.find();
+        await g.getMe();
         if (saveToken) {
           await Utils.saveRemmemberMe(rem: saveToken ? "yes" : "no");
         }
+        Get.back();
+
         return LoginStates.login;
       } else {
+        Get.back();
+
         return LoginStates.error;
       }
     } on DioException catch (error) {

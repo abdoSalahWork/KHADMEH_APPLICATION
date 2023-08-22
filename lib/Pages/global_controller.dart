@@ -6,6 +6,7 @@ import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/city.dart';
 import 'package:khedma/models/country.dart';
+import 'package:khedma/models/me.dart';
 import 'package:khedma/models/region.dart';
 
 class GlobalController extends GetxController {
@@ -54,6 +55,33 @@ class GlobalController extends GetxController {
       getCitiesFlag = false;
       update();
       logError("Cities failed");
+    }
+  }
+
+  Me me = Me();
+  bool getMeFlag = false;
+  Future getMe() async {
+    try {
+      getMeFlag = true;
+      String? token = await Utils.readToken();
+
+      var res = await dio.get(
+        EndPoints.me,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+      me = Me.fromJson(res.data);
+      logSuccess(me.toJson());
+      logSuccess("Me get done");
+      getMeFlag = false;
+      update();
+    } on DioException catch (e) {
+      getMeFlag = false;
+      update();
+      logError("Me failed");
     }
   }
 

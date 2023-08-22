@@ -3,13 +3,13 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/log-reg%20pages/user_type_page.dart.dart';
 import 'package:sizer/sizer.dart';
 
 import './languages.dart';
 import './password_change.dart';
 import './profile_edit.dart';
 import '../../Utils/utils.dart';
-import '../log-reg%20pages/login_page.dart';
 
 class PersonalSettings extends StatefulWidget {
   const PersonalSettings({super.key});
@@ -131,7 +131,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
               onTap: () async {
                 await Utils.deleteToken();
                 await Utils.deleteRemmemberMe();
-                Get.offAll(() => const LoginPage());
+                Get.offAll(() => const UserTypePage());
               },
               width: 100.w,
               text: Row(
