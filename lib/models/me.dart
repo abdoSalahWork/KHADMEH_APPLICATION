@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this
+
 class Me {
   int? id;
   String? fullName;
@@ -6,17 +8,22 @@ class Me {
   int? status;
   String? createdAt;
   String? updatedAt;
+  String? userType;
   UserInformation? userInformation;
+  CompanyInformation? companyInformation;
 
-  Me(
-      {this.id,
-      this.fullName,
-      this.email,
-      this.emailVerifiedAt,
-      this.status,
-      this.createdAt,
-      this.updatedAt,
-      this.userInformation});
+  Me({
+    this.id,
+    this.fullName,
+    this.email,
+    this.emailVerifiedAt,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.userType,
+    this.userInformation,
+    this.companyInformation,
+  });
 
   Me.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -26,13 +33,17 @@ class Me {
     status = json['status'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    userType = json['user_type'];
     userInformation = json['user_information'] != null
-        ? new UserInformation.fromJson(json['user_information'])
+        ? UserInformation.fromJson(json['user_information'])
+        : null;
+    companyInformation = json['company_information'] != null
+        ? CompanyInformation.fromJson(json['company_information'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['full_name'] = this.fullName;
     data['email'] = this.email;
@@ -40,8 +51,12 @@ class Me {
     data['status'] = this.status;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['user_type'] = this.userType;
     if (this.userInformation != null) {
       data['user_information'] = this.userInformation!.toJson();
+    }
+    if (this.companyInformation != null) {
+      data['company_information'] = this.companyInformation!.toJson();
     }
     return data;
   }
@@ -115,7 +130,7 @@ class UserInformation {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
     data['phone'] = this.phone;
     data['user_type'] = this.userType;
@@ -136,6 +151,135 @@ class UserInformation {
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['user_name'] = this.userName;
+    return data;
+  }
+}
+
+class CompanyInformation {
+  int? id;
+  String? firstName;
+  String? lastName;
+  String? phone;
+  String? idNumber;
+  String? dateOfBirth;
+  String? companyPhone;
+  String? companyPhoneVerifiedAt;
+  String? url;
+  String? companyType;
+  String? pieceNumber;
+  String? street;
+  String? building;
+  String? automatedAddressNumber;
+  String? commercialRegistrationNumber;
+  String? taxNumber;
+  String? licenseNumber;
+  String? companyLogo;
+  String? identityConfirmation;
+  String? frontSideIdImage;
+  String? backSideIdImage;
+  String? passportImage;
+  int? nationalityId;
+  int? companyId;
+  int? cityId;
+  int? regionId;
+  String? createdAt;
+  String? updatedAt;
+  String? companyName;
+
+  CompanyInformation(
+      {this.id,
+      this.firstName,
+      this.lastName,
+      this.phone,
+      this.idNumber,
+      this.dateOfBirth,
+      this.companyPhone,
+      this.companyPhoneVerifiedAt,
+      this.url,
+      this.companyType,
+      this.pieceNumber,
+      this.street,
+      this.building,
+      this.automatedAddressNumber,
+      this.commercialRegistrationNumber,
+      this.taxNumber,
+      this.licenseNumber,
+      this.companyLogo,
+      this.identityConfirmation,
+      this.frontSideIdImage,
+      this.backSideIdImage,
+      this.passportImage,
+      this.nationalityId,
+      this.companyId,
+      this.cityId,
+      this.regionId,
+      this.createdAt,
+      this.updatedAt,
+      this.companyName});
+
+  CompanyInformation.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+    phone = json['phone'];
+    idNumber = json['id_number'];
+    dateOfBirth = json['date_of_birth'];
+    companyPhone = json['company_phone'];
+    companyPhoneVerifiedAt = json['company_phone_verified_at'];
+    url = json['url'];
+    companyType = json['company_type'];
+    pieceNumber = json['piece_number'];
+    street = json['street'];
+    building = json['building'];
+    automatedAddressNumber = json['automated_address_number'];
+    commercialRegistrationNumber = json['commercial_registration_number'];
+    taxNumber = json['tax_number'];
+    licenseNumber = json['license_number'];
+    companyLogo = json['company_logo'];
+    identityConfirmation = json['identity_confirmation'];
+    frontSideIdImage = json['front_side_id_image'];
+    backSideIdImage = json['back_side_id_image'];
+    passportImage = json['passport_image'];
+    nationalityId = json['nationality_id'];
+    companyId = json['company_id'];
+    cityId = json['city_id'];
+    regionId = json['region_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    companyName = json['company_name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = this.id;
+    data['first_name'] = this.firstName;
+    data['last_name'] = this.lastName;
+    data['phone'] = this.phone;
+    data['id_number'] = this.idNumber;
+    data['date_of_birth'] = this.dateOfBirth;
+    data['company_phone'] = this.companyPhone;
+    data['company_phone_verified_at'] = this.companyPhoneVerifiedAt;
+    data['url'] = this.url;
+    data['company_type'] = this.companyType;
+    data['piece_number'] = this.pieceNumber;
+    data['street'] = this.street;
+    data['building'] = this.building;
+    data['automated_address_number'] = this.automatedAddressNumber;
+    data['commercial_registration_number'] = this.commercialRegistrationNumber;
+    data['tax_number'] = this.taxNumber;
+    data['license_number'] = this.licenseNumber;
+    data['company_logo'] = this.companyLogo;
+    data['identity_confirmation'] = this.identityConfirmation;
+    data['front_side_id_image'] = this.frontSideIdImage;
+    data['back_side_id_image'] = this.backSideIdImage;
+    data['passport_image'] = this.passportImage;
+    data['nationality_id'] = this.nationalityId;
+    data['company_id'] = this.companyId;
+    data['city_id'] = this.cityId;
+    data['region_id'] = this.regionId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    data['company_name'] = this.companyName;
     return data;
   }
 }

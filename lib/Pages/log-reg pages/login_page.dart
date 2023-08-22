@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMeFlag = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  final GlobalController _globalController = Get.find();
   final formKey = GlobalKey<FormState>();
 
   void toggleObsecure() {
@@ -54,7 +54,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   final AuthController _authController = Get.find();
-  final GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,19 +100,13 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                         spaceY(8.0.h),
-                        GestureDetector(
-                          onTap: () => widget.userType == "user"
-                              ? Get.to(
-                                  () => UserHomePage(needCompleteData: true))
-                              : Get.to(() => CompanyHomePage()),
-                          child: Container(
-                            width: 30.0.w,
-                            height: 30.0.w,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage("assets/images/logo.png"),
-                                  fit: BoxFit.contain),
-                            ),
+                        Container(
+                          width: 30.0.w,
+                          height: 30.0.w,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage("assets/images/logo.png"),
+                                fit: BoxFit.contain),
                           ),
                         )
                       ],
@@ -294,13 +287,14 @@ class _LoginPageState extends State<LoginPage> {
                                     saveToken: _rememberMeFlag,
                                   );
                                   if (state == LoginStates.login) {
-                                    String? token = await Utils.readToken();
-                                    bool x =
-                                        AuthController.needCompleteData(token);
-
-                                    Get.offAll(
-                                        () => UserHomePage(needCompleteData: x),
-                                        transition: Transition.downToUp);
+                                    if (_globalController.me.userType ==
+                                        "user") {
+                                      Get.offAll(() => const UserHomePage(),
+                                          transition: Transition.downToUp);
+                                    } else {
+                                      Get.offAll(() => const CompanyHomePage(),
+                                          transition: Transition.downToUp);
+                                    }
                                   } else if (state == LoginStates.needsVerify) {
                                     Get.to(
                                         () => OTPPage(
@@ -353,15 +347,11 @@ class _LoginPageState extends State<LoginPage> {
                                             saveToken: _rememberMeFlag);
 
                                     if (token != null) {
-                                      bool x = AuthController.needCompleteData(
-                                          token);
                                       if (widget.userType == "user") {
-                                        Get.off(
-                                            () => UserHomePage(
-                                                needCompleteData: x),
+                                        Get.off(() => const UserHomePage(),
                                             transition: Transition.downToUp);
                                       } else {
-                                        Get.off(() => CompanyHomePage(),
+                                        Get.off(() => const CompanyHomePage(),
                                             transition: Transition.downToUp);
                                       }
                                     }

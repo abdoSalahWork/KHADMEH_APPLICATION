@@ -231,22 +231,22 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                                     errors['personal_photo'] != null) {
                                   setState(() => _currentStep = 2);
                                   String tmp = "";
-                                  if (errors['id_photo_nationality'] != null) {
+                                  if (errors['id_photo_nationality'] != null &&
+                                      errors['personal_photo'] != null) {
+                                    tmp = errors['id_photo_nationality']
+                                            .join("\n") +
+                                        "\n" +
+                                        errors['personal_photo'].join("\n");
+                                    Utils.showSnackBar(
+                                        message: tmp, fontSize: 12.0.sp);
+                                  } else if (errors['id_photo_nationality'] !=
+                                      null) {
                                     tmp = errors['id_photo_nationality']
                                         .join("\n");
                                     Utils.showSnackBar(
                                         message: tmp, fontSize: 12.0.sp);
                                   } else if (errors['personal_photo'] != null) {
                                     tmp = errors['personal_photo'].join("\n");
-                                    Utils.showSnackBar(
-                                        message: tmp, fontSize: 12.0.sp);
-                                  } else if (errors['id_photo_nationality'] !=
-                                          null &&
-                                      errors['personal_photo'] != null) {
-                                    tmp = errors['id_photo_nationality']
-                                            .join("\n") +
-                                        "\n" +
-                                        errors['personal_photo'].join("\n");
                                     Utils.showSnackBar(
                                         message: tmp, fontSize: 12.0.sp);
                                   }

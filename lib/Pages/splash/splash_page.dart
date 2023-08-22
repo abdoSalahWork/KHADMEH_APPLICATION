@@ -1,6 +1,9 @@
+// ignore_for_file: unused_field
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
@@ -31,13 +34,17 @@ class _SplashPageState extends State<SplashPage>
       const Duration(seconds: 2),
       () async {
         String? rem = await Utils.readRemmemberMe();
-
-        if (rem == "yes") {
-          String? token = await Utils.readToken();
-          Get.off(
-              () => UserHomePage(
-                  needCompleteData: AuthController.needCompleteData(token)),
-              transition: Transition.downToUp);
+        bool x = await _globalController.getMe();
+        if (!x) {
+          Get.off(() => SelectLanguagePage(), transition: Transition.downToUp);
+        } else if (rem == "yes") {
+          if (_globalController.me.userType == "user") {
+            Get.off(() => const UserHomePage(),
+                transition: Transition.downToUp);
+          } else {
+            Get.off(() => const CompanyHomePage(),
+                transition: Transition.downToUp);
+          }
         } else {
           Get.off(() => SelectLanguagePage(), transition: Transition.downToUp);
         }

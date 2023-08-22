@@ -25,8 +25,9 @@ import '../employees/employees_search_page.dart';
 import '../recruitment-companies/recruitment_companies_search_page.dart';
 
 class UserHomePage extends StatefulWidget {
-  const UserHomePage({super.key, required this.needCompleteData});
-  final bool needCompleteData;
+  const UserHomePage({
+    super.key,
+  });
   @override
   State<UserHomePage> createState() => _UserHomePageState();
 }
@@ -73,8 +74,7 @@ class _UserHomePageState extends State<UserHomePage> {
 
   String button1Text = "upload_id".tr;
   String button2Text = "upload_personal_photo".tr;
-  bool _obsecureflag = true;
-  bool _obsecureflag2 = true;
+  final GlobalController _globalController = Get.find();
   String region = "";
   String nationality = "";
   String city = "";
@@ -96,7 +96,7 @@ class _UserHomePageState extends State<UserHomePage> {
   ];
   @override
   void initState() {
-    completedRegisterFlag = widget.needCompleteData;
+    completedRegisterFlag = _globalController.me.userInformation != null;
     h2 = 470.0.sp;
     h = 330.0.sp;
     h3 = 400.0.sp;

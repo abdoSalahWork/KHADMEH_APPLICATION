@@ -63,8 +63,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _companyNameEnController =
       TextEditingController();
-  final TextEditingController _companyNameArController =
-      TextEditingController();
   final TextEditingController _ownerPhoneNumberController =
       TextEditingController();
   final TextEditingController _companyPhoneNumberController =
@@ -869,7 +867,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     height: 38.sp,
                     borderRadius: BorderRadius.circular(10),
                     value: companyType == "" ? null : companyType,
-                    items: ["recruitment", "clean"]
+                    items: ["recruitment", "cleaning"]
                         .map(
                           (e) => DropdownMenuItem<String>(
                             value: e,
@@ -1592,17 +1590,17 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       setState(() {});
                       pageController.jumpToPage(_currentStep);
                       String tmp = "";
-                      if (errors['company_logo'] != null) {
-                        tmp = errors['company_logo'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['company_type'] != null) {
-                        tmp = errors['company_type'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['company_logo'] != null &&
+                      if (errors['company_logo'] != null &&
                           errors['company_type'] != null) {
                         tmp = errors['company_logo'].join("\n") +
                             "\n" +
                             errors['company_type'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      } else if (errors['company_logo'] != null) {
+                        tmp = errors['company_logo'].join("\n");
+                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
+                      } else if (errors['company_type'] != null) {
+                        tmp = errors['company_type'].join("\n");
                         Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
                       }
                     } else if (errors['front_side_id_image'] != null ||

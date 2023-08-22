@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/company_register_model.dart';
 import 'package:khedma/widgets/company_request.dart';
 import 'package:line_icons/line_icons.dart';
@@ -51,7 +52,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   String city = "";
   String region = "";
   int idPassRadio = 0;
-  CompanyRegisterData _companyRegisterData = CompanyRegisterData();
+  CompanyRegisterData companyCompleteData = CompanyRegisterData();
 
   bool completedRegisterFlag = false;
   int _currentStep = 0;
@@ -85,11 +86,9 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
       TextEditingController();
   final TextEditingController _companyNameEnController =
       TextEditingController();
-  final TextEditingController _companyNameArController =
-      TextEditingController();
+
   final TextEditingController _companyPhoneNumberController =
       TextEditingController();
-  final TextEditingController _nationallityController = TextEditingController();
   final TextEditingController _pieceNumberController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
@@ -98,10 +97,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   final TextEditingController _crnController = TextEditingController();
   final TextEditingController _taxController = TextEditingController();
   final TextEditingController _licenseController = TextEditingController();
-
+  final GlobalController _globalController = Get.find();
+  final AuthController _authController = Get.find();
   final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
   @override
   void initState() {
+    completedRegisterFlag = _globalController.me.companyInformation != null;
+
     h2 = 100.0.h;
     h = 75.0.h;
     h3 = 65.0.h;
@@ -502,7 +504,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     onchanged: (s) {
                       errors['first_name'] = null;
                       setState(() {});
-                      _companyRegisterData.firstName = s;
+                      companyCompleteData.firstName = s;
                     },
                     validator: (String? value) {
                       if (errors['first_name'] != null) {
@@ -527,7 +529,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     onchanged: (s) {
                       errors['last_name'] = null;
                       setState(() {});
-                      _companyRegisterData.lastName = s;
+                      companyCompleteData.lastName = s;
                     },
                     validator: (String? value) {
                       if (errors['last_name'] != null) {
@@ -550,7 +552,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['phone'] = null;
                   setState(() {});
-                  _companyRegisterData.phone = s;
+                  companyCompleteData.phone = s;
                 },
                 validator: (String? value) {
                   if (errors['phone'] != null) {
@@ -629,7 +631,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   ownerNationality = p0!;
                   errors['nationality_id'] = null;
                   setState(() {});
-                  _companyRegisterData.nationalityId = c.countries
+                  companyCompleteData.nationalityId = c.countries
                       .where((element) =>
                           element.nameEn == p0 || element.nameAr == p0)
                       .first
@@ -658,7 +660,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['id_number'] = null;
                   setState(() {});
-                  _companyRegisterData.idNumber = s;
+                  companyCompleteData.idNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['id_number'] != null) {
@@ -825,7 +827,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       if (result != null) {
                         logobuttonText = result.files[0].name
                             .substring(0, min(15, result.files[0].name.length));
-                        _companyRegisterData.companyLogo = result.files[0];
+                        companyCompleteData.companyLogo = result.files[0];
                         setState(() {});
                       }
                     },
@@ -878,7 +880,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['company_name'] = null;
                   setState(() {});
-                  _companyRegisterData.companyName = s;
+                  companyCompleteData.companyName = s;
                 },
                 validator: (String? value) {
                   if (errors['company_name'] != null) {
@@ -899,7 +901,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['company_phone'] = null;
                   setState(() {});
-                  _companyRegisterData.companyPhone = s;
+                  companyCompleteData.companyPhone = s;
                 },
                 validator: (String? value) {
                   if (errors['company_phone'] != null) {
@@ -953,7 +955,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['company_email'] = null;
                   setState(() {});
-                  _companyRegisterData.companyEmail = s;
+                  companyCompleteData.companyEmail = s;
                 },
                 validator: (String? value) {
                   if (errors['company_email'] != null) {
@@ -976,7 +978,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['url'] = null;
                   setState(() {});
-                  _companyRegisterData.url = s;
+                  companyCompleteData.url = s;
                 },
                 validator: (String? value) {
                   if (errors['url'] != null) {
@@ -1002,7 +1004,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     height: 38.sp,
                     borderRadius: BorderRadius.circular(10),
                     value: companyType == "" ? null : companyType,
-                    items: ["recruitment", "clean"]
+                    items: ["recruitment", "cleaning"]
                         .map(
                           (e) => DropdownMenuItem<String>(
                             value: e,
@@ -1012,7 +1014,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         .toList(),
                     onChanged: (p0) {
                       companyType = p0!;
-                      _companyRegisterData.companyType = p0;
+                      companyCompleteData.companyType = p0;
                     },
                   ),
                 ],
@@ -1070,7 +1072,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       city = p0!;
                       errors["city_id"] = null;
                       setState(() {});
-                      _companyRegisterData.cityId = c.cities
+                      companyCompleteData.cityId = c.cities
                           .where((element) =>
                               element.nameEn == p0 || element.nameAr == p0)
                           .first
@@ -1106,7 +1108,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       region = p0!;
                       errors["region_id"] = null;
                       setState(() {});
-                      _companyRegisterData.regionId = c.regions
+                      companyCompleteData.regionId = c.regions
                           .where((element) =>
                               element.nameEn == p0 || element.nameAr == p0)
                           .first
@@ -1128,7 +1130,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['piece_number'] = null;
                   setState(() {});
-                  _companyRegisterData.pieceNumber = s;
+                  companyCompleteData.pieceNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['piece_number'] != null) {
@@ -1151,7 +1153,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['street'] = null;
                   setState(() {});
-                  _companyRegisterData.street = s;
+                  companyCompleteData.street = s;
                 },
                 validator: (String? value) {
                   if (errors['street'] != null) {
@@ -1174,7 +1176,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['building'] = null;
                   setState(() {});
-                  _companyRegisterData.building = s;
+                  companyCompleteData.building = s;
                 },
                 validator: (String? value) {
                   if (errors['building'] != null) {
@@ -1196,7 +1198,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['automated_address_number'] = null;
                   setState(() {});
-                  _companyRegisterData.automatedAddressNumber = s;
+                  companyCompleteData.automatedAddressNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['automated_address_number'] != null) {
@@ -1240,7 +1242,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['commercial_registration_number'] = null;
                   setState(() {});
-                  _companyRegisterData.commercialRegistrationNumber = s;
+                  companyCompleteData.commercialRegistrationNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['commercial_registration_number'] != null) {
@@ -1263,7 +1265,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['tax_number'] = null;
                   setState(() {});
-                  _companyRegisterData.taxNumber = s;
+                  companyCompleteData.taxNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['tax_number'] != null) {
@@ -1286,7 +1288,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 onchanged: (s) {
                   errors['license_number'] = null;
                   setState(() {});
-                  _companyRegisterData.licenseNumber = s;
+                  companyCompleteData.licenseNumber = s;
                 },
                 validator: (String? value) {
                   if (errors['license_number'] != null) {
@@ -1364,11 +1366,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       value: 0,
                       onChanged: (p0) {
                         setState(() {
-                          _companyRegisterData.identityConfirmation = "id";
+                          companyCompleteData.identityConfirmation = "id";
 
                           passportButton = "Upload your passport";
                           idPassRadio = 0;
-                          _companyRegisterData.passportImage = null;
+                          companyCompleteData.passportImage = null;
                           setState(() {});
                         });
                       },
@@ -1381,11 +1383,10 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       value: 1,
                       onChanged: (p0) {
                         setState(() {
-                          _companyRegisterData.identityConfirmation =
-                              "passport";
+                          companyCompleteData.identityConfirmation = "passport";
                           idPassRadio = 1;
-                          _companyRegisterData.frontSideIdImage = null;
-                          _companyRegisterData.backSideIdImage = null;
+                          companyCompleteData.frontSideIdImage = null;
+                          companyCompleteData.backSideIdImage = null;
                           frontIdButton = "Upload front side of ID";
                           backIdButton = "Upload back side of ID";
                           setState(() {});
@@ -1406,8 +1407,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           if (result != null) {
                             passportButton = result.files[0].name.substring(
                                 0, min(15, result.files[0].name.length));
-                            _companyRegisterData.passportImage =
-                                result.files[0];
+                            companyCompleteData.passportImage = result.files[0];
                             setState(() {});
                           }
                         },
@@ -1460,7 +1460,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           if (result != null) {
                             frontIdButton = result.files[0].name.substring(
                                 0, min(15, result.files[0].name.length));
-                            _companyRegisterData.frontSideIdImage =
+                            companyCompleteData.frontSideIdImage =
                                 result.files[0];
                             setState(() {});
                           }
@@ -1515,7 +1515,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           if (result != null) {
                             backIdButton = result.files[0].name.substring(
                                 0, min(15, result.files[0].name.length));
-                            _companyRegisterData.backSideIdImage =
+                            companyCompleteData.backSideIdImage =
                                 result.files[0];
                             setState(() {});
                           }
@@ -1568,15 +1568,152 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         color: Theme.of(context).colorScheme.tertiary),
                     spaceX(10),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         if (_currentStep < stepList().length - 1) {
                           setState(() => _currentStep += 1);
                           pageController.jumpToPage(_currentStep);
                         } else {
-                          completedRegisterFlag = true;
+                          FocusScope.of(context).unfocus();
+                          companyCompleteData.phone =
+                              ownerphoneCode + _ownerPhoneNumberController.text;
+                          companyCompleteData.companyPhone = companyphoneCode +
+                              _companyPhoneNumberController.text;
+                          companyCompleteData.dateOfBirth =
+                              _dateController.text;
+                          var x = await _authController.companycompleteData(
+                              companyCompleteData: companyCompleteData);
+                          if (x == true) {
+                            // ignore: use_build_context_synchronously
+                            Utils.customDialog(
+                                actions: [
+                                  primaryButton(
+                                    onTap: () {
+                                      Get.back();
+                                      completedRegisterFlag = true;
+                                      setState(() {});
+                                    },
+                                    width: 40.0.w,
+                                    height: 50,
+                                    radius: 10.w,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    text: coloredText(
+                                      text: "ok".tr,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                                context: context,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      spaceY(20),
+                                      Icon(
+                                        EvaIcons.checkmarkCircle,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        size: 40.sp,
+                                      ),
+                                      spaceY(20),
+                                      coloredText(
+                                          text:
+                                              "You'r data have been completed '",
+                                          fontSize: 12.0.sp),
+                                      coloredText(
+                                        text: "successfully",
+                                        fontSize: 14.0.sp,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                    ],
+                                  ),
+                                ));
+                          } else if (x['message'] ==
+                              "The given data was invalid.") {
+                            errors = x['errors'];
+                            if (errors['first_name'] != null ||
+                                errors['last_name'] != null ||
+                                errors['phone'] != null ||
+                                errors['nationality_id'] != null ||
+                                errors['id_number'] != null ||
+                                errors['date_of_birth'] != null) {
+                              _currentStep = 0;
+                              setState(() {});
+                              pageController.jumpToPage(_currentStep);
+                            } else if (errors['company_name'] != null ||
+                                errors['url'] != null ||
+                                errors['company_phone'] != null ||
+                                errors['company_type'] != null ||
+                                errors['company_email'] != null ||
+                                errors['city_id'] != null ||
+                                errors['region_id'] != null ||
+                                errors['piece_number'] != null ||
+                                errors['street'] != null ||
+                                errors['building'] != null ||
+                                errors['automated_address_number'] != null ||
+                                errors['commercial_registration_number'] !=
+                                    null ||
+                                errors['tax_number'] != null ||
+                                errors['license_number'] != null ||
+                                errors['company_logo'] != null) {
+                              _currentStep = 1;
+                              setState(() {});
+                              pageController.jumpToPage(_currentStep);
+                              String tmp = "";
+                              if (errors['company_logo'] != null &&
+                                  errors['company_type'] != null) {
+                                tmp = errors['company_logo'].join("\n") +
+                                    "\n" +
+                                    errors['company_type'].join("\n");
+                                Utils.showSnackBar(
+                                    message: tmp, fontSize: 12.0.sp);
+                              } else if (errors['company_logo'] != null) {
+                                tmp = errors['company_logo'].join("\n");
+                                Utils.showSnackBar(
+                                    message: tmp, fontSize: 12.0.sp);
+                              } else if (errors['company_type'] != null) {
+                                tmp = errors['company_type'].join("\n");
+                                Utils.showSnackBar(
+                                    message: tmp, fontSize: 12.0.sp);
+                              }
+                            } else if (errors['front_side_id_image'] != null &&
+                                    errors['back_side_id_image'] != null ||
+                                errors['passport_image'] != null) {
+                              _currentStep = 2;
+                              setState(() {});
+                              pageController.jumpToPage(_currentStep);
+                              String tmp = "";
+                              if (errors['passport_image'] != null) {
+                                tmp = errors['passport_image'].join("\n");
+                                Utils.showSnackBar(
+                                    message: tmp, fontSize: 12.0.sp);
+                              } else if (errors['front_side_id_image'] !=
+                                      null &&
+                                  errors['back_side_id_image'] != null) {
+                                tmp = errors['front_side_id_image'].join("\n") +
+                                    "\n" +
+                                    errors['back_side_id_image'].join("\n");
+                                Utils.showSnackBar(
+                                    message: tmp, fontSize: 12.0.sp);
+                              } else if (errors['back_side_id_image'] != null) {
+                                tmp = errors['back_side_id_image'].join("\n");
+                                Utils.showSnackBar(
+                                    message: tmp, fontSize: 12.0.sp);
+                              } else if (errors['front_side_id_image'] !=
+                                  null) {
+                                tmp = errors['front_side_id_image'].join("\n");
+                                Utils.showSnackBar(
+                                    message: tmp, fontSize: 12.0.sp);
+                              }
+                            }
+                          }
                         }
 
-                        logSuccess(_currentStep);
                         setState(() {});
                       },
                       child: Container(

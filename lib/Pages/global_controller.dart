@@ -60,7 +60,7 @@ class GlobalController extends GetxController {
 
   Me me = Me();
   bool getMeFlag = false;
-  Future getMe() async {
+  Future<bool> getMe() async {
     try {
       getMeFlag = true;
       String? token = await Utils.readToken();
@@ -78,10 +78,12 @@ class GlobalController extends GetxController {
       logSuccess("Me get done");
       getMeFlag = false;
       update();
+      return true;
     } on DioException catch (e) {
       getMeFlag = false;
       update();
       logError("Me failed");
+      return false;
     }
   }
 

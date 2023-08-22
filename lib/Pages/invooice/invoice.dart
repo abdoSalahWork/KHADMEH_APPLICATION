@@ -351,9 +351,7 @@ class InvoicePage extends StatelessWidget {
                   : spaceY(3.0.h),
               primaryButton(
                   onTap: () {
-                    Get.offAll(() => const UserHomePage(
-                          needCompleteData: true,
-                        ));
+                    Get.offAll(() => const UserHomePage());
                   },
                   width: 80.0.w,
                   gradient: LinearGradient(colors: [

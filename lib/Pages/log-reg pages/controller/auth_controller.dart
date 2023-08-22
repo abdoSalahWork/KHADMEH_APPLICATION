@@ -174,6 +174,81 @@ class AuthController extends GetxController {
     }
   }
 
+  Future companycompleteData(
+      {required CompanyRegisterData companyCompleteData}) async {
+    try {
+      Get.dialog(const Center(
+        child: CircularProgressIndicator(),
+      ));
+      companyCompleteData.userType = "company";
+      logSuccess(companyCompleteData.toJson());
+      final body = d.FormData.fromMap(companyCompleteData.toJson());
+      PlatformFile? companyLogo = companyCompleteData.companyLogo;
+      PlatformFile? passportImage = companyCompleteData.passportImage;
+      PlatformFile? frontSideIdImage = companyCompleteData.frontSideIdImage;
+      PlatformFile? backSideIdImage = companyCompleteData.backSideIdImage;
+
+      if (companyLogo != null) {
+        body.files.add(MapEntry(
+          "company_logo",
+          await d.MultipartFile.fromFile(
+            companyLogo.path!,
+            filename: companyLogo.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (passportImage != null) {
+        body.files.add(MapEntry(
+          "passport_image",
+          await d.MultipartFile.fromFile(
+            passportImage.path!,
+            filename: passportImage.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (frontSideIdImage != null) {
+        body.files.add(MapEntry(
+          "front_side_id_image",
+          await d.MultipartFile.fromFile(
+            frontSideIdImage.path!,
+            filename: frontSideIdImage.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (backSideIdImage != null) {
+        body.files.add(MapEntry(
+          "back_side_id_image",
+          await d.MultipartFile.fromFile(
+            backSideIdImage.path!,
+            filename: backSideIdImage.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+
+      String? token = await Utils.readToken();
+
+      await dio.post(EndPoints.completeDataCompany,
+          data: body,
+          options: Options(headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          }));
+
+      Get.back();
+      return true;
+    } on DioException catch (error) {
+      Get.back();
+      logError(error.response!.data);
+
+      // Utils.showSnackBar(message: error.response!.data["message"]);
+      return error.response!.data;
+    }
+  }
+
   Future companyRegister(
       {required CompanyRegisterData companyRegisterData}) async {
     try {
