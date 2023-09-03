@@ -1,3 +1,4 @@
+import 'dart:math' as math; // import this
 import 'dart:math';
 import 'dart:ui';
 
@@ -141,7 +142,7 @@ class _UserHomePageState extends State<UserHomePage> {
                       Badge(
                         smallSize: 10,
                         child: GestureDetector(
-                          onTap: () => Get.to(() => const NotificationsPage(),
+                          onTap: () => Get.to(() => NotificationsPage(),
                               transition: Transition.downToUp),
                           child: Icon(
                             EvaIcons.bell,
@@ -571,50 +572,6 @@ class _UserHomePageState extends State<UserHomePage> {
                         ],
                       ),
                     ),
-                    // PositionedDirectional(
-                    //     bottom: 35,
-                    //     end: 50,
-                    // child: Row(
-                    //   children: [
-                    //     coloredText(
-                    //         text: "next".tr,
-                    //         fontSize: 16.0.sp,
-                    //         color: Theme.of(context).colorScheme.tertiary),
-                    //     spaceX(10),
-                    //     GestureDetector(
-                    //       onTap: () {
-                    //         if (_currentStep < stepList().length - 1) {
-                    //           setState(() => _currentStep += 1);
-                    //           pageController.jumpToPage(_currentStep);
-                    //         } else {
-                    //           completedRegisterFlag = true;
-                    //         }
-
-                    //         logSuccess(_currentStep);
-                    //         setState(() {});
-                    //       },
-                    //       child: Container(
-                    //         padding: const EdgeInsets.all(15),
-                    //         decoration: BoxDecoration(
-                    //           shape: BoxShape.circle,
-                    //           gradient: LinearGradient(
-                    //             begin: AlignmentDirectional.topStart,
-                    //             end: AlignmentDirectional.bottomEnd,
-                    //             colors: [
-                    //               Theme.of(context).colorScheme.primary,
-                    //               Theme.of(context).colorScheme.secondary,
-                    //             ],
-                    //           ),
-                    //         ),
-                    //         child: const Icon(
-                    //           FontAwesomeIcons.anglesRight,
-                    //           color: Colors.white,
-                    //           size: 22,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // )),
                     PositionedDirectional(
                       top: 40,
                       start: 30,
@@ -831,10 +788,15 @@ class _UserHomePageState extends State<UserHomePage> {
                         ],
                       ),
                     ),
-                    child: const Icon(
-                      FontAwesomeIcons.anglesRight,
-                      color: Colors.white,
-                      size: 22,
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(
+                          Get.locale == const Locale('en', 'US') ? 0 : math.pi),
+                      child: const Icon(
+                        FontAwesomeIcons.anglesRight,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ),
@@ -1074,10 +1036,17 @@ class _UserHomePageState extends State<UserHomePage> {
                             ],
                           ),
                         ),
-                        child: const Icon(
-                          FontAwesomeIcons.anglesRight,
-                          color: Colors.white,
-                          size: 22,
+                        child: Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.rotationY(
+                              Get.locale == const Locale('en', 'US')
+                                  ? 0
+                                  : math.pi),
+                          child: const Icon(
+                            FontAwesomeIcons.anglesRight,
+                            color: Colors.white,
+                            size: 22,
+                          ),
                         ),
                       ),
                     ),
@@ -1329,10 +1298,15 @@ class _UserHomePageState extends State<UserHomePage> {
                         ],
                       ),
                     ),
-                    child: const Icon(
-                      FontAwesomeIcons.anglesRight,
-                      color: Colors.white,
-                      size: 22,
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(
+                          Get.locale == const Locale('en', 'US') ? 0 : math.pi),
+                      child: const Icon(
+                        FontAwesomeIcons.anglesRight,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ),

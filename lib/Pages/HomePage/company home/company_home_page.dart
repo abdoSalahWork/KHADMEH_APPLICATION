@@ -11,11 +11,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Pages/HomePage/company%20home/company_personal_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/company_register_model.dart';
 import 'package:khedma/widgets/company_request.dart';
 import 'package:line_icons/line_icons.dart';
+// import 'package:pusher_client/pusher_client.dart';
 import 'package:sizer/sizer.dart';
 import 'package:textfield_datepicker/textfield_datepicker.dart';
 
@@ -27,7 +29,6 @@ import '../../../widgets/radio_button.dart';
 import '../../../widgets/underline_text_field.dart';
 import '../../Notifications/notifications_page.dart';
 import '../../chat%20page/messages_page.dart';
-import '../../personal%20page/personal_page.dart';
 import 'add_employee_page.dart';
 import 'company_employees.dart';
 
@@ -100,6 +101,10 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   final GlobalController _globalController = Get.find();
   final AuthController _authController = Get.find();
   final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
+
+  // late PusherClient pusher;
+  // late Channel channel;
+
   @override
   void initState() {
     completedRegisterFlag = _globalController.me.companyInformation != null;
@@ -112,6 +117,43 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
         setState(() {});
       });
     }
+
+    // pusher = PusherClient(
+    //   "e9cb090a00d813850650",
+    //   PusherOptions(
+    //     // if local on android use 10.0.2.2
+    //     // host: 'https://wazzfny.online',
+    //     cluster: "eu",
+    //     encrypted: true,
+    //     // auth: PusherAuth(
+    //     //   'https://wazzfny.online/api/pusher/auth',
+    //     //   headers: {
+    //     //     'Authorization':
+    //     //         'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd2F6emZueS5vbmxpbmVcL2FwaVwvbG9naW4iLCJpYXQiOjE2OTMwNTM4MjYsImV4cCI6MTY5MzA1NzQyNiwibmJmIjoxNjkzMDUzODI2LCJqdGkiOiJoMTJaeEowN2g3NjJRNWRzIiwic3ViIjo0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3Iiwicm9sZV90eXBlIjoidXNlciIsImNvbXBsaXRlX2RhdGEiOnRydWV9.qSFSmGHFx9XHjlTtVuILNvtLTxRAutZnnNcv7IzKgpQ',
+    //     //   },
+    //     // ),
+    //   ),
+    //   enableLogging: true,
+    // );
+
+    // channel = pusher.subscribe("orders3");
+
+    // pusher.onConnectionStateChange((state) {
+    //   logWarning(
+    //       "previousState: ${state!.previousState}, currentState: ${state.currentState}");
+    // });
+
+    // pusher.onConnectionError((error) {
+    //   logWarning("error: ${error!.message}");
+    // });
+
+    // channel.bind('status-update', (PusherEvent? event) {
+    //   logWarning(event!.data!);
+    // });
+
+    // // channel.bind('order-filled', (event) {
+    // //   logWarning("Order Filled Event" + event!.data.toString());
+    // // });
     super.initState();
   }
 
@@ -175,7 +217,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     Badge(
                       smallSize: 10,
                       child: GestureDetector(
-                        onTap: () => Get.to(() => const NotificationsPage(),
+                        onTap: () => Get.to(() => NotificationsPage(),
                             transition: Transition.downToUp),
                         child: Icon(
                           EvaIcons.bell,
@@ -196,7 +238,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     spaceX(10),
                     GestureDetector(
                       onTap: () => Get.to(
-                          () => const PersonalPage(
+                          () => const CompanyPersonalPage(
                               employeeType: EmployeeType.clean),
                           transition: Transition.downToUp),
                       child: Container(
@@ -255,51 +297,53 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                   ),
                 ),
                 spaceY(10),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: coloredText(text: "Overview", fontSize: 16.0.sp),
+                GestureDetector(
+                  onTap: () {},
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: coloredText(text: "Overview", fontSize: 16.0.sp),
+                  ),
                 ),
-                spaceY(10),
                 SizedBox(
                   height: 30.w,
-                  child: ListView.separated(
+                  child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) => SizedBox(
+                    itemBuilder: (context, index) => Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: const Offset(
+                                0, 0), // changes position of shadow
+                          ),
+                        ],
+                      ),
                       width: 45.w,
                       height: 25.w,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 3,
-                              offset: const Offset(
-                                  0, 0), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            coloredText(
-                              text: overView[index].number.toString(),
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontSize: 14.sp,
-                            ),
-                            spaceY(10),
-                            coloredText(
-                              text: overView[index].string,
-                              fontSize: 14.sp,
-                            ),
-                          ],
-                        ),
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 10,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          coloredText(
+                            text: overView[index].number.toString(),
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontSize: 14.sp,
+                          ),
+                          spaceY(10),
+                          coloredText(
+                            text: overView[index].string,
+                            fontSize: 14.sp,
+                          ),
+                        ],
                       ),
                     ),
-                    separatorBuilder: (context, index) => spaceX(10),
                     itemCount: overView.length,
                   ),
                 ),
@@ -391,50 +435,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         ],
                       ),
                     ),
-                    // PositionedDirectional(
-                    //     bottom: 35,
-                    //     end: 50,
-                    // child: Row(
-                    //   children: [
-                    //     coloredText(
-                    //         text: "next".tr,
-                    //         fontSize: 16.0.sp,
-                    //         color: Theme.of(context).colorScheme.tertiary),
-                    //     spaceX(10),
-                    //     GestureDetector(
-                    //       onTap: () {
-                    //         if (_currentStep < stepList().length - 1) {
-                    //           setState(() => _currentStep += 1);
-                    //           pageController.jumpToPage(_currentStep);
-                    //         } else {
-                    //           completedRegisterFlag = true;
-                    //         }
-
-                    //         logSuccess(_currentStep);
-                    //         setState(() {});
-                    //       },
-                    //       child: Container(
-                    //         padding: const EdgeInsets.all(15),
-                    //         decoration: BoxDecoration(
-                    //           shape: BoxShape.circle,
-                    //           gradient: LinearGradient(
-                    //             begin: AlignmentDirectional.topStart,
-                    //             end: AlignmentDirectional.bottomEnd,
-                    //             colors: [
-                    //               Theme.of(context).colorScheme.primary,
-                    //               Theme.of(context).colorScheme.secondary,
-                    //             ],
-                    //           ),
-                    //         ),
-                    //         child: const Icon(
-                    //           FontAwesomeIcons.anglesRight,
-                    //           color: Colors.white,
-                    //           size: 22,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // )),
                     PositionedDirectional(
                       top: 40,
                       start: 30,

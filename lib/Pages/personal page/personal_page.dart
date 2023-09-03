@@ -97,7 +97,7 @@ class _PersonalPageState extends State<PersonalPage>
                       ),
                       GestureDetector(
                         onTap: () {
-                          Get.to(() => const PersonalSettings(),
+                          Get.to(() => const PersonalSettings(userType: "user"),
                               transition: Transition.downToUp);
                         },
                         child: Icon(

@@ -117,7 +117,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                       child: coloredText(
                         text: "Personal info",
                         color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
                       ),
                     ),
@@ -202,7 +202,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                       child: coloredText(
                         text: "Passport data",
                         color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
                       ),
                     ),
@@ -261,7 +261,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                       child: coloredText(
                         text: "Work info",
                         color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
                       ),
                     ),
@@ -338,7 +338,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                       child: coloredText(
                         text: "Other Data",
                         color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
                       ),
                     ),

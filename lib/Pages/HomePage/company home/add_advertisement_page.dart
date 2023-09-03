@@ -1,11 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
 import 'dart:math';
 
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:khedma/widgets/dropdown_menu_button.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
+import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
+import 'package:khedma/Themes/themes.dart';
 import 'package:khedma/widgets/radio_button.dart';
+import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
@@ -13,17 +21,21 @@ import '../../../Utils/utils.dart';
 // ignore: must_be_immutable
 class AddAdvertismentPage extends StatefulWidget {
   const AddAdvertismentPage({super.key});
-
   @override
   State<AddAdvertismentPage> createState() => _AddAdvertismentPageState();
 }
 
 class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
+  AdvertismentController _advertismentController = Get.find();
+  AdvertismentModel advertismentToCreate = AdvertismentModel();
+
   int durationRadio = 0;
-  int promotionRadio = 0;
+  int promotionRadio = 1;
   int durationCounter = 0;
   String? selectedValue;
-  String uploadButtontext = "Upload Photo";
+  String uploadButtontext = "${"upload".tr} ${"photo".tr}";
+  final TextEditingController _dateController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +44,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: coloredText(text: "Add Advertisment", fontSize: 15.0.sp),
+        title: coloredText(text: "add_advertisment".tr, fontSize: 15.0.sp),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -54,10 +66,43 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                     type: FileType.image,
                   );
                   if (result != null) {
-                    uploadButtontext = result.files[0].name
-                        .substring(0, min(15, result.files[0].name.length));
-                    // userRegisterData.idPhotoNationality = result.files[0];
-                    setState(() {});
+                    File f = File(result.files[0].path!);
+                    var decodedImage =
+                        await decodeImageFromList(f.readAsBytesSync());
+                    double aspectRatio =
+                        (decodedImage.width / decodedImage.height)
+                            .toPrecision(1);
+                    if (aspectRatio == 1.8) {
+                      uploadButtontext = result.files[0].name
+                          .substring(0, min(15, result.files[0].name.length));
+                      advertismentToCreate.image = result.files[0];
+                      setState(() {});
+                    } else {
+                      Utils.customDialog(
+                          actions: [
+                            primaryButton(
+                              onTap: () => Get.back(),
+                              text: coloredText(
+                                text: "close".tr,
+                                color: Colors.white,
+                              ),
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ],
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: coloredText(
+                                text: "image_ratio".tr,
+                                textAlign: TextAlign.center,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                          context: context);
+                    }
                   }
                 },
                 width: 100.0.w,
@@ -88,45 +133,14 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                 ),
                 spaceX(10),
                 coloredText(
-                  text: "Image width:350, Image height:150",
+                  text: "image_ratio".tr,
                   color: Theme.of(context).colorScheme.secondary,
                   fontSize: 12.sp,
                 ),
               ],
             ),
             spaceY(20),
-            coloredText(text: "Duration", fontSize: 15.sp),
-            Row(
-              children: [
-                MyRadioButton(
-                  color: Colors.black,
-                  text: "Days",
-                  groupValue: durationRadio,
-                  value: 0,
-                  onChanged: (p0) {
-                    setState(() {
-                      durationRadio = 0;
-
-                      setState(() {});
-                    });
-                  },
-                ),
-                spaceX(20),
-                MyRadioButton(
-                  color: Colors.black,
-                  text: "Hours",
-                  groupValue: durationRadio,
-                  value: 1,
-                  onChanged: (p0) {
-                    setState(() {
-                      durationRadio = 1;
-
-                      setState(() {});
-                    });
-                  },
-                )
-              ],
-            ),
+            coloredText(text: "duration".tr, fontSize: 15.sp),
             Align(
               alignment: AlignmentDirectional.centerStart,
               child: Container(
@@ -141,7 +155,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     coloredText(
-                      text: durationCounter.toString(),
+                      text: "$durationCounter ${"day".tr}",
                       color: const Color(0xff919191),
                     ),
                     Row(
@@ -149,6 +163,8 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                         GestureDetector(
                           onTap: () {
                             durationCounter++;
+                            advertismentToCreate.durationByDay =
+                                durationCounter;
                             setState(() {});
                           },
                           child: const Icon(
@@ -161,6 +177,8 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                           onTap: () {
                             if (durationCounter > 0) {
                               durationCounter--;
+                              advertismentToCreate.durationByDay =
+                                  durationCounter;
                             }
                             setState(() {});
                           },
@@ -176,17 +194,18 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
               ),
             ),
             spaceY(20),
-            coloredText(text: "Promotion URL", fontSize: 15.sp),
+            coloredText(text: "promotion_url".tr, fontSize: 15.sp),
             Column(
               children: [
                 MyRadioButton(
                   color: Colors.black,
-                  text: "Company page",
+                  text: "company_page".tr,
                   groupValue: promotionRadio,
-                  value: 0,
+                  value: 1,
                   onChanged: (p0) {
                     setState(() {
-                      promotionRadio = 0;
+                      promotionRadio = 1;
+                      advertismentToCreate.promotionType = promotionRadio;
 
                       setState(() {});
                     });
@@ -195,12 +214,13 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                 spaceY(5),
                 MyRadioButton(
                   color: Colors.black,
-                  text: "External link",
+                  text: "external_link".tr,
                   groupValue: promotionRadio,
-                  value: 1,
+                  value: 2,
                   onChanged: (p0) {
                     setState(() {
-                      promotionRadio = 1;
+                      promotionRadio = 2;
+                      advertismentToCreate.promotionType = promotionRadio;
 
                       setState(() {});
                     });
@@ -209,23 +229,80 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
               ],
             ),
             spaceY(20),
-            coloredText(text: "Promotion place", fontSize: 15.sp),
-            CustomDropDownMenuButton(
-              height: 38.sp,
-              items: ["item", "item2"]
-                  .map(
-                    (e) => DropdownMenuItem<String>(
-                      value: e,
-                      child: coloredText(text: e, color: Colors.black),
+            promotionRadio == 1
+                ? Container()
+                : SendMessageTextField(
+                    borderRadius: 10,
+                    fillColor: const Color(0xffF3F2F2),
+                    autovalidateMode: AutovalidateMode.always,
+                    onchanged: (s) {
+                      advertismentToCreate.externalLink = s;
+                    },
+                    validator: (s) {
+                      var urlPattern =
+                          r"(https?|http)://([-A-Z0-9.]+)(/[-A-Z0-9+&@#/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#/%=~_|!:‌​,.;]*)?";
+                      bool validURL =
+                          RegExp(urlPattern, caseSensitive: false).hasMatch(s!);
+
+                      if (!validURL && s.isNotEmpty) {
+                        return "must be a valid link";
+                      }
+                      return null;
+                    },
+                    focusNode: FocusNode(),
+                  ),
+            promotionRadio == 1 ? Container() : spaceY(20),
+            coloredText(text: "start_date".tr, fontSize: 15.sp),
+            // CustomDropDownMenuButton(
+            //   height: 38.sp,
+            //   items: ["item", "item2"]
+            //       .map(
+            //         (e) => DropdownMenuItem<String>(
+            //           value: e,
+            //           child: coloredText(text: e, color: Colors.black),
+            //         ),
+            //       )
+            //       .toList(),
+            //   onChanged: (p0) {},
+            //   fillColor: const Color(0xffF3F2F2),
+            //   borderc: Border.all(color: const Color(0xffF3F2F2)),
+            //   borderRadius: BorderRadius.circular(8),
+            //   padding: const EdgeInsetsDirectional.symmetric(horizontal: 10),
+            // ),
+            SendMessageTextField(
+              onTap: () async {
+                DateTime? x = await showDatePicker(
+                  builder: (context, child) => Theme(
+                    data: ThemeData(
+                      colorScheme: ColorScheme.fromSeed(
+                        seedColor: AppThemes.colorCustom,
+                      ),
                     ),
-                  )
-                  .toList(),
-              onChanged: (p0) {},
-              fillColor: const Color(0xffF3F2F2),
-              borderc: Border.all(color: const Color(0xffF3F2F2)),
-              borderRadius: BorderRadius.circular(8),
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                    child: child!,
+                  ),
+                  context: context,
+                  initialDate: DateTime.now().add(
+                    const Duration(days: 2),
+                  ),
+                  firstDate: DateTime.now().add(
+                    const Duration(days: 2),
+                  ),
+                  lastDate: DateTime.now().add(
+                    const Duration(days: 365 * 15),
+                  ),
+                );
+                if (x != null) {
+                  _dateController.text = DateFormat('y/MM/dd').format(x);
+                }
+              },
+              focusNode: FocusNode(),
+              hintText: 'YYYY/MM/DD',
+              fillColor: const Color(0xffF8F8F8),
+              borderRadius: 10,
+              controller: _dateController,
+              readOnly: true,
             ),
+
             spaceY(20),
             Row(
               children: [
@@ -238,7 +315,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                   height: 45,
                   radius: 8,
                   text: coloredText(
-                      text: "30\$",
+                      text: "${10 * durationCounter}\$",
                       fontSize: 13.0.sp,
                       color: Theme.of(context).colorScheme.secondary),
                 ),
@@ -246,14 +323,60 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
             ),
             spaceY(40),
             primaryButton(
-                onTap: () {},
+                onTap: () async {
+                  advertismentToCreate.startDate = _dateController.text;
+                  bool b = await _advertismentController.createAdvertisment(
+                      advertisment: advertismentToCreate);
+                  if (b) {
+                    Utils.customDialog(
+                        actions: [
+                          primaryButton(
+                            onTap: () {
+                              Get.back();
+                            },
+                            width: 40.0.w,
+                            height: 50,
+                            radius: 10.w,
+                            color: Theme.of(context).colorScheme.primary,
+                            text: coloredText(
+                              text: "ok".tr,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                        context: context,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              spaceY(20),
+                              Icon(
+                                EvaIcons.checkmarkCircle,
+                                color: Theme.of(context).colorScheme.secondary,
+                                size: 40.sp,
+                              ),
+                              spaceY(20),
+                              coloredText(
+                                  text: "Your advertisment has added",
+                                  fontSize: 12.0.sp),
+                              coloredText(
+                                text: "successfully",
+                                fontSize: 14.0.sp,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ],
+                          ),
+                        ));
+                  }
+                },
                 width: 50.0.w,
                 gradient: LinearGradient(colors: [
                   Theme.of(context).colorScheme.primary,
                   Theme.of(context).colorScheme.secondary,
                 ]),
                 text: coloredText(
-                  text: "apply",
+                  text: "add".tr,
                   color: Colors.white,
                 )),
             spaceY(20),

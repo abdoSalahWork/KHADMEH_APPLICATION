@@ -25,8 +25,9 @@ import '../../../widgets/radio_button.dart';
 import '../../../widgets/underline_text_field.dart';
 
 class CompanyRegisterPage extends StatefulWidget {
-  const CompanyRegisterPage({super.key, required this.userType});
-  final String userType;
+  const CompanyRegisterPage({
+    super.key,
+  });
 
   @override
   State<CompanyRegisterPage> createState() => _CompanyRegisterPageState();
@@ -1521,7 +1522,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                 () => OTPPage(
                                   email: _emailController.text,
                                   password: _passwordController.text,
-                                  userType: widget.userType,
                                 ),
                                 transition: Transition.rightToLeft,
                               );

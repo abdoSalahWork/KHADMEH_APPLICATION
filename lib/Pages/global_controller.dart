@@ -1,6 +1,7 @@
 // ignore_for_file: unused_catch_clause
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
@@ -106,5 +107,21 @@ class GlobalController extends GetxController {
       update();
       logError("Regions failed");
     }
+  }
+
+  Locale fallbackLocale = const Locale('en', 'US');
+  Future getCurrentLocale() async {
+    String? lang = await Utils.readLanguage();
+    if (lang != null) {
+      if (lang == "ar") {
+        fallbackLocale = const Locale('ar', 'SYR');
+      } else {
+        fallbackLocale = const Locale('en', 'US');
+      }
+    } else {
+      fallbackLocale = const Locale('en', 'US');
+    }
+    Get.updateLocale(fallbackLocale);
+    // update();
   }
 }

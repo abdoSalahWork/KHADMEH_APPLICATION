@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
 import '../../widgets/zero_app_bar.dart';
 import '../Select%20Language%20Page/get_started_page.dart';
-import '../log-reg pages/user_type_page.dart.dart';
 
 class SelectLanguagePage extends StatelessWidget {
   SelectLanguagePage({super.key});
+  final GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,8 +46,10 @@ class SelectLanguagePage extends StatelessWidget {
           ),
           spaceY(5.0.h),
           primaryBorderedButton(
-            onTap: () {
-              Get.to(() => const UserTypePage(),
+            onTap: () async {
+              await Utils.saveLanguage(language: "en");
+              await _globalController.getCurrentLocale();
+              Get.to(() => const LoginPage(),
                   transition: Transition.rightToLeft);
             },
             width: 75.0.w,
@@ -59,8 +63,10 @@ class SelectLanguagePage extends StatelessWidget {
           ),
           spaceY(5.0.h),
           primaryButton(
-            onTap: () {
-              Get.to(() => const UserTypePage(),
+            onTap: () async {
+              await Utils.saveLanguage(language: "ar");
+              await _globalController.getCurrentLocale();
+              Get.to(() => const LoginPage(),
                   transition: Transition.rightToLeft);
             },
             width: 75.0.w,

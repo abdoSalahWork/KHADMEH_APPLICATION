@@ -165,7 +165,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                           child: coloredText(
                             text: "Personal info",
                             color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             fontSize: 16.sp,
                           ),
                         ),
@@ -578,7 +578,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                           child: coloredText(
                             text: "Passport data",
                             color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             fontSize: 16.sp,
                           ),
                         ),
@@ -751,7 +751,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                           child: coloredText(
                             text: "Work info",
                             color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             fontSize: 16.sp,
                           ),
                         ),
@@ -1076,7 +1076,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                           child: coloredText(
                             text: "Other data",
                             color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             fontSize: 16.sp,
                           ),
                         ),

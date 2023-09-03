@@ -8,8 +8,8 @@ import '../../widgets/dropdown_menu_button.dart';
 import '../../widgets/underline_text_field.dart';
 
 class ProfileEditPage extends StatefulWidget {
-  const ProfileEditPage({super.key});
-
+  const ProfileEditPage({super.key, required this.userType});
+  final String userType;
   @override
   State<ProfileEditPage> createState() => _ProfileEditPageState();
 }

@@ -102,6 +102,7 @@ class Utils {
           ..badCertificateCallback =
               (X509Certificate cert, String host, int port) => true;
   }
+
   static const _storage = FlutterSecureStorage();
   static Future<String?> readToken() async {
     String? value = await _storage.read(key: "token");
@@ -114,6 +115,19 @@ class Utils {
 
   static Future saveToken({required String token}) async {
     await _storage.write(key: "token", value: token);
+  }
+
+  static Future<String?> readLanguage() async {
+    String? value = await _storage.read(key: "language");
+    return value;
+  }
+
+  static Future deleteLanguage() async {
+    await _storage.delete(key: "language");
+  }
+
+  static Future saveLanguage({required String language}) async {
+    await _storage.write(key: "language", value: language);
   }
 
   static Future<String?> readRemmemberMe() async {
@@ -149,6 +163,12 @@ class Utils {
         });
   }
 
+  static void circularIndicator() {
+    Get.dialog(const Center(
+      child: CircularProgressIndicator(),
+    ));
+  }
+
   static void customDialog(
       {TextStyle? titleStyle,
       CustomViewPosition? customViewPosition,
@@ -160,6 +180,7 @@ class Utils {
       dynamic Function(dynamic)? onClose}) {
     Dialogs.materialDialog(
       onClose: onClose,
+
       // barrierColor: Colors.red,
       titleStyle: titleStyle ??
           coloredText(
@@ -371,7 +392,7 @@ Widget primaryBorderedButton(
           border: Border.all(color: color),
         ),
         width: width ?? 60.0.w,
-        height: height ?? 50.0.sp,
+        height: height ?? 45.0.sp,
         child: Center(child: text),
       ),
     ),

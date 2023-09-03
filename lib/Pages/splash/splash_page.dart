@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
+import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Utils/utils.dart';
 
 import '../Select%20Language%20Page/select_language_page.dart';
@@ -21,6 +23,8 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
   final GlobalController _globalController = Get.put(GlobalController());
+  final AdvertismentController _advertismentController =
+      Get.put(AdvertismentController());
   final AuthController _authController = Get.put(AuthController());
 
   @override
@@ -29,24 +33,35 @@ class _SplashPageState extends State<SplashPage>
     _globalController.getCities();
     _globalController.getCountries();
     _globalController.getRegions();
+    _globalController.getCurrentLocale();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(
       const Duration(seconds: 2),
       () async {
         String? rem = await Utils.readRemmemberMe();
-        bool x = await _globalController.getMe();
-        if (!x) {
-          Get.off(() => SelectLanguagePage(), transition: Transition.downToUp);
-        } else if (rem == "yes") {
-          if (_globalController.me.userType == "user") {
-            Get.off(() => const UserHomePage(),
-                transition: Transition.downToUp);
-          } else {
-            Get.off(() => const CompanyHomePage(),
-                transition: Transition.downToUp);
-          }
+        String? lang = await Utils.readLanguage();
+        if (lang == null) {
+          Get.offAll(() => SelectLanguagePage(),
+              transition: Transition.downToUp);
         } else {
-          Get.off(() => SelectLanguagePage(), transition: Transition.downToUp);
+          await _globalController.getCurrentLocale();
+          if (rem == "yes") {
+            bool x = await _globalController.getMe();
+
+            if (x) {
+              if (_globalController.me.userType == "none") {
+                Get.off(() => LoginPage(), transition: Transition.downToUp);
+              } else if (_globalController.me.userType == "user") {
+                Get.offAll(() => const UserHomePage(),
+                    transition: Transition.downToUp);
+              } else {
+                Get.offAll(() => const CompanyHomePage(),
+                    transition: Transition.downToUp);
+              }
+            }
+          } else {
+            Get.off(() => LoginPage(), transition: Transition.downToUp);
+          }
         }
       },
     );

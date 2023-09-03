@@ -1,24 +1,24 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/pages/admin_home.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
-import 'package:khedma/Pages/log-reg%20pages/company/company_register_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/forget%20password/forget_passwrod_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/otp_page.dart';
-import 'package:khedma/Pages/log-reg%20pages/user/user_register_page.dart';
+import 'package:khedma/Pages/log-reg%20pages/user_type_page.dart.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
 import '../../widgets/underline_text_field.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.userType});
-  final String userType;
+  const LoginPage({
+    super.key,
+  });
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -26,6 +26,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _obsecureflag = true;
   bool _rememberMeFlag = false;
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalController _globalController = Get.find();
@@ -43,8 +44,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+    //     overlays: SystemUiOverlay.values);
     for (var node in _focusNodes) {
       node.addListener(() {
         setState(() {});
@@ -100,13 +101,18 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                         spaceY(8.0.h),
-                        Container(
-                          width: 30.0.w,
-                          height: 30.0.w,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage("assets/images/logo.png"),
-                                fit: BoxFit.contain),
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(() => const AdminHomePage());
+                          },
+                          child: Container(
+                            width: 30.0.w,
+                            height: 30.0.w,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/images/logo.png"),
+                                  fit: BoxFit.contain),
+                            ),
                           ),
                         )
                       ],
@@ -301,7 +307,6 @@ class _LoginPageState extends State<LoginPage> {
                                               email: _emailController.text,
                                               password:
                                                   _passwordController.text,
-                                              userType: widget.userType,
                                             ),
                                         transition: Transition.downToUp);
                                   } else if (state ==
@@ -321,7 +326,7 @@ class _LoginPageState extends State<LoginPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Container(
-                                  width: 22.0.w,
+                                  width: 20.0.w,
                                   height: 1,
                                   color: Colors.grey,
                                 ),
@@ -330,7 +335,7 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w500),
                                 Container(
-                                  width: 22.0.w,
+                                  width: 20.0.w,
                                   height: 1,
                                   color: Colors.grey,
                                 )
@@ -342,19 +347,154 @@ class _LoginPageState extends State<LoginPage> {
                               children: [
                                 GestureDetector(
                                   onTap: () async {
-                                    String? token = await _authController
-                                        .handleGoogleSignIn(
-                                            saveToken: _rememberMeFlag);
+                                    Utils.showDialogBox(
+                                      context: context,
+                                      title: Center(
+                                        child: coloredText(
+                                          fontSize: 19.sp,
+                                          // fontWeight: FontWeight.w600,
+                                          text: "select".tr,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                      actions: [
+                                        primaryButton(
+                                          onTap: () async {
+                                            Get.back();
+                                            String? token =
+                                                await _authController
+                                                    .handleGoogleSignIn(
+                                                        saveToken:
+                                                            _rememberMeFlag);
 
-                                    if (token != null) {
-                                      if (widget.userType == "user") {
-                                        Get.off(() => const UserHomePage(),
-                                            transition: Transition.downToUp);
-                                      } else {
-                                        Get.off(() => const CompanyHomePage(),
-                                            transition: Transition.downToUp);
-                                      }
-                                    }
+                                            if (token != null) {
+                                              if (_globalController
+                                                      .me.userType ==
+                                                  "user") {
+                                                Get.off(
+                                                    () => const UserHomePage(),
+                                                    transition:
+                                                        Transition.downToUp);
+                                              } else {
+                                                Get.off(
+                                                    () =>
+                                                        const CompanyHomePage(),
+                                                    transition:
+                                                        Transition.downToUp);
+                                              }
+                                            }
+                                          },
+                                          text: coloredText(
+                                            text: "login".tr,
+                                            color: Colors.white,
+                                          ),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                        spaceY(10.sp),
+                                        primaryBorderedButton(
+                                          onTap: () {
+                                            Get.back();
+
+                                            Utils.showDialogBox(
+                                              context: context,
+                                              title: Center(
+                                                child: coloredText(
+                                                  fontSize: 19.sp,
+                                                  // fontWeight: FontWeight.w600,
+                                                  text: "select".tr,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                ),
+                                              ),
+                                              actions: [
+                                                primaryButton(
+                                                  onTap: () async {
+                                                    Get.back();
+
+                                                    String? token =
+                                                        await _authController
+                                                            .handleGoogleSignIn(
+                                                                saveToken:
+                                                                    _rememberMeFlag);
+
+                                                    if (token != null) {
+                                                      Get.off(
+                                                          () =>
+                                                              const UserHomePage(),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    }
+                                                  },
+                                                  text: coloredText(
+                                                    text: "user".tr,
+                                                    color: Colors.white,
+                                                  ),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                ),
+                                                spaceY(10.sp),
+                                                primaryBorderedButton(
+                                                  onTap: () async {
+                                                    Get.back();
+
+                                                    String? token =
+                                                        await _authController
+                                                            .handleGoogleSignIn(
+                                                                saveToken:
+                                                                    _rememberMeFlag);
+
+                                                    if (token != null) {
+                                                      Get.off(
+                                                          () =>
+                                                              const CompanyHomePage(),
+                                                          transition: Transition
+                                                              .downToUp);
+                                                    }
+                                                  },
+                                                  text: coloredText(
+                                                    text: "company".tr,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                  ),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                          text: coloredText(
+                                            text: "register".tr,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ],
+                                    );
+                                    // String? token = await _authController
+                                    //     .handleGoogleSignIn(
+                                    //         saveToken: _rememberMeFlag);
+
+                                    // if (token != null) {
+                                    //   if (userType == "user") {
+                                    //     Get.off(() => const UserHomePage(),
+                                    //         transition: Transition.downToUp);
+                                    //   } else {
+                                    //     Get.off(() => const CompanyHomePage(),
+                                    //         transition: Transition.downToUp);
+                                    //   }
+                                    // }
                                   },
                                   child: Container(
                                     width: 40.0.sp,
@@ -376,21 +516,28 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-                                Container(
-                                  width: 40.0.sp,
-                                  height: 40.0.sp,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.grey.withOpacity(0.2)),
-                                      shape: BoxShape.circle,
-                                      color: Colors.grey.withOpacity(0.1)),
-                                  child: Center(
-                                    child: Image(
-                                      width: 20.0.sp,
-                                      height: 20.0.sp,
-                                      image: const AssetImage(
-                                          "assets/images/facebook.png"),
-                                      fit: BoxFit.contain,
+                                GestureDetector(
+                                  onTap: () {
+                                    logSuccess(
+                                        _globalController.fallbackLocale);
+                                  },
+                                  child: Container(
+                                    width: 40.0.sp,
+                                    height: 40.0.sp,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color:
+                                                Colors.grey.withOpacity(0.2)),
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey.withOpacity(0.1)),
+                                    child: Center(
+                                      child: Image(
+                                        width: 20.0.sp,
+                                        height: 20.0.sp,
+                                        image: const AssetImage(
+                                            "assets/images/facebook.png"),
+                                        fit: BoxFit.contain,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -421,13 +568,9 @@ class _LoginPageState extends State<LoginPage> {
                               fontWeight: FontWeight.w500,
                             ),
                             GestureDetector(
-                              onTap: () => widget.userType == "user"
-                                  ? Get.to(() => UserRegisterPage(
-                                      userType: widget.userType))
-                                  : Get.to(
-                                      () => CompanyRegisterPage(
-                                          userType: widget.userType),
-                                      transition: Transition.rightToLeft),
+                              onTap: () => Get.to(
+                                () => UserTypePage(),
+                              ),
                               child: coloredText(
                                   text: "create_an_account".tr,
                                   fontWeight: FontWeight.w500,

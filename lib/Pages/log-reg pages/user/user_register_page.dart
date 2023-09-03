@@ -19,8 +19,9 @@ import '../../../widgets/my_stepper.dart';
 import '../../../widgets/underline_text_field.dart';
 
 class UserRegisterPage extends StatefulWidget {
-  const UserRegisterPage({super.key, required this.userType});
-  final String userType;
+  const UserRegisterPage({
+    super.key,
+  });
 
   @override
   State<UserRegisterPage> createState() => _UserRegisterPageState();
@@ -161,7 +162,6 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                                               email: _emailController.text,
                                               password:
                                                   _passwordController.text,
-                                              userType: widget.userType,
                                             ),
                                             transition: Transition.rightToLeft,
                                           );
@@ -469,7 +469,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       return CustomDropDownMenuButton(
                         hintPadding: 0, focusNode: _focusNodes[3],
                         value: nationality == "" ? null : nationality,
-
+                        hint: "Nationality (optional)",
                         autovalidateMode: AutovalidateMode.always,
                         validator: (String? value) {
                           if (errors['nationality_id'] != null) {

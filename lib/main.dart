@@ -10,6 +10,12 @@ import 'Themes/themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.restoreSystemUIOverlays();
+  // await Firebase.initializeApp();
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.black, // navigation bar color
+    statusBarColor: Colors.transparent, // status bar color
+  ));
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,
@@ -55,7 +61,7 @@ void main() async {
       tools: const [
         ...DevicePreview.defaultTools,
       ],
-      builder: (context) => const MyApp(
+      builder: (context) => MyApp(
           // themeMode: themesController.currentMode,
           ), // Wrap your app
     ),
@@ -63,8 +69,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  // This widget is the root of your application.
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -108,9 +108,13 @@ class AuthController extends GetxController {
           ),
         ));
       }
-      await dio.post(EndPoints.registerUser,
-          data: body,
-          options: Options(headers: {"Accept": "application/json"}));
+      await dio.post(
+        EndPoints.registerUser,
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       Get.back();
       return true;

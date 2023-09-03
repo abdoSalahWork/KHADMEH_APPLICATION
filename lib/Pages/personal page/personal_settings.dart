@@ -3,7 +3,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:khedma/Pages/log-reg%20pages/user_type_page.dart.dart';
+import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:sizer/sizer.dart';
 
 import './languages.dart';
@@ -12,8 +12,8 @@ import './profile_edit.dart';
 import '../../Utils/utils.dart';
 
 class PersonalSettings extends StatefulWidget {
-  const PersonalSettings({super.key});
-
+  const PersonalSettings({super.key, required this.userType});
+  final String userType;
   @override
   State<PersonalSettings> createState() => _PersonalSettingsState();
 }
@@ -37,7 +37,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
             spaceY(20),
             primaryBorderedButton(
               onTap: () {
-                Get.to(() => const ProfileEditPage(),
+                Get.to(() => ProfileEditPage(userType: widget.userType),
                     transition: Transition.rightToLeft);
               },
               width: 100.w,
@@ -131,7 +131,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
               onTap: () async {
                 await Utils.deleteToken();
                 await Utils.deleteRemmemberMe();
-                Get.offAll(() => const UserTypePage());
+                Get.offAll(() => const LoginPage());
               },
               width: 100.w,
               text: Row(
