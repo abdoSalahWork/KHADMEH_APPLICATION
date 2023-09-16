@@ -195,10 +195,11 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                                           ),
                                           spaceY(20),
                                           coloredText(
-                                              text: "You have been registered",
+                                              text:
+                                                  "you_have_been_registered".tr,
                                               fontSize: 12.0.sp),
                                           coloredText(
-                                            text: "successfully",
+                                            text: "successfully".tr,
                                             fontSize: 14.0.sp,
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -437,8 +438,9 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                             ),
                             GetBuilder<GlobalController>(builder: (c) {
                               return CustomDropDownMenuButton(
-                                width: 100,
+                                width: 65.sp,
                                 hintPadding: 5,
+                                contentPadding: 10,
                                 hintSize: 13,
                                 value: phoneCode == "" ? null : phoneCode,
                                 items: c.countries
@@ -469,7 +471,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       return CustomDropDownMenuButton(
                         hintPadding: 0, focusNode: _focusNodes[3],
                         value: nationality == "" ? null : nationality,
-                        hint: "Nationality (optional)",
+                        hint: "${"nationality".tr} (${"optional".tr})",
                         autovalidateMode: AutovalidateMode.always,
                         validator: (String? value) {
                           if (errors['nationality_id'] != null) {
@@ -484,9 +486,14 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                         items: c.countries
                             .map(
                               (e) => DropdownMenuItem<String>(
-                                value: e.nameEn,
+                                value: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr,
                                 child: coloredText(
-                                    text: e.nameEn!, color: Colors.black),
+                                    text: Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!,
+                                    color: Colors.black),
                               ),
                             )
                             .toList(),
@@ -595,9 +602,15 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                             width: 40.0.w,
                             items: c.cities
                                 .map((e) => DropdownMenuItem<String>(
-                                      value: e.nameEn,
+                                      value:
+                                          Get.locale == const Locale('en', 'US')
+                                              ? e.nameEn!
+                                              : e.nameAr,
                                       child: coloredText(
-                                        text: e.nameEn!,
+                                        text: Get.locale ==
+                                                const Locale('en', 'US')
+                                            ? e.nameEn!
+                                            : e.nameAr!,
                                         fontSize: 17,
                                       ),
                                     ))
@@ -634,9 +647,15 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                             value: region == "" ? null : region,
                             items: c.regions
                                 .map((e) => DropdownMenuItem<String>(
-                                      value: e.nameEn,
+                                      value:
+                                          Get.locale == const Locale('en', 'US')
+                                              ? e.nameEn!
+                                              : e.nameAr,
                                       child: coloredText(
-                                        text: e.nameEn!,
+                                        text: Get.locale ==
+                                                const Locale('en', 'US')
+                                            ? e.nameEn!
+                                            : e.nameAr!,
                                         fontSize: 17,
                                       ),
                                     ))
@@ -1018,7 +1037,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
 
   Widget myLabel(int currenetStep, String text) => currenetStep == _currentStep
       ? SizedBox(
-          width: 100,
+          width: 65.sp,
           child: Text(
             text,
             textAlign: TextAlign.center,

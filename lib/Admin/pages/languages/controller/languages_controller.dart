@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
 import 'package:get/get.dart';
-import 'package:khedma/Admin/pages/languages/controller/models/language_model.dart';
+import 'package:khedma/Admin/pages/languages/models/language_model.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
 

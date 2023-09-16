@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
 import 'package:get/get.dart';
-import 'package:khedma/Admin/pages/jobs/controller/models/job_model.dart';
+import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
 

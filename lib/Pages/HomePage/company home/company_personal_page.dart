@@ -1,9 +1,13 @@
+import 'package:chips_choice/chips_choice.dart';
 import 'package:custom_rating_bar/custom_rating_bar.dart' as r;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/personal%20page/personal_settings.dart';
+import 'package:khedma/widgets/ad_card.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
@@ -20,12 +24,25 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
   int selectedTabIndex = 0;
+  List<String> tags = [
+    "my_ads".tr,
+  ];
 
+  List<String> options = [
+    "my_ads".tr,
+    "rate_view".tr,
+  ];
+  List<String> tabs = [
+    "history".tr,
+    "pending".tr,
+    "refused".tr,
+  ];
+  final AdvertismentController _advertismentController = Get.find();
   PageController pageController = PageController(initialPage: 0);
   @override
   void initState() {
-    tabController = TabController(length: 4, vsync: this);
-
+    tabController = TabController(length: 3, vsync: this);
+    _advertismentController.getCompanyAdvertisments();
     super.initState();
   }
 
@@ -178,6 +195,54 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                     ),
                   ],
                 ),
+                spaceY(3.0.h),
+                ChipsChoice<String>.multiple(
+                  padding: EdgeInsets.zero,
+                  value: tags,
+                  onChanged: (val) {},
+                  choiceItems: C2Choice.listFrom<String, String>(
+                    source: options,
+                    value: (i, v) => v,
+                    label: (i, v) => v,
+                  ),
+                  // choiceStyle: C2ChipStyle.outlined(),
+                  choiceCheckmark: true,
+
+                  choiceBuilder: (item, i) => GestureDetector(
+                    onTap: () {
+                      if (!tags.contains(item.label)) {
+                        tags = [];
+                        tags.add(item.label);
+                      }
+                      pageController.jumpToPage(options.indexOf(item.label));
+                      setState(() {});
+                    },
+                    child: Container(
+                      width: 43.0.w,
+                      height: 40,
+                      margin: EdgeInsets.symmetric(horizontal: 1.0.w),
+                      padding: EdgeInsets.symmetric(horizontal: 1.0.w),
+                      decoration: BoxDecoration(
+                          color: !tags.contains(item.label)
+                              ? const Color(0xffE8E8E8).withOpacity(0)
+                              : Theme.of(context).colorScheme.secondary,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: !tags.contains(item.label)
+                                ? const Color(0xffF1F1F1)
+                                : Colors.transparent,
+                          )),
+                      child: Center(
+                        child: coloredText(
+                            text: item.label,
+                            color: !tags.contains(item.label)
+                                ? const Color(0xffF1F1F1)
+                                : Colors.white,
+                            fontSize: 12.0.sp),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -188,6 +253,129 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
           physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
           children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+              child: Column(
+                children: [
+                  TabBar(
+                      dividerColor: Colors.grey,
+                      // indicatorColor: Colors.black,
+                      indicator: UnderlineTabIndicator(
+                          borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                      )),
+                      indicatorSize: TabBarIndicatorSize.tab,
+
+                      // isScrollable: true,
+                      controller: tabController,
+                      onTap: (value) {
+                        selectedTabIndex = value;
+                        setState(() {});
+                      },
+                      tabs: List<Widget>.generate(
+                        tabController.length,
+                        (index) => Tab(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            child: coloredText(
+                                text: tabs[index].tr,
+                                color: selectedTabIndex == index
+                                    ? Colors.black
+                                    : Colors.grey),
+                          ),
+                        ),
+                      )),
+                  spaceY(10.sp),
+                  Expanded(
+                    child: TabBarView(
+                      controller: tabController,
+                      children: [
+                        GetBuilder<AdvertismentController>(builder: (c) {
+                          return c.getCompanyAdvertismentsFlag
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : c.companyAds.isEmpty
+                                  ? const NoItemsWidget()
+                                  : ListView.separated(
+                                      padding: EdgeInsets.zero,
+                                      itemBuilder: (context, index) =>
+                                          AdvertismentCard(
+                                              advertismentModel:
+                                                  c.companyAds[index]),
+                                      separatorBuilder: (context, index) =>
+                                          Column(
+                                        children: [
+                                          spaceY(5.sp),
+                                          const Divider(
+                                              color: Colors.grey,
+                                              thickness: 0.5),
+                                          spaceY(5.sp),
+                                        ],
+                                      ),
+                                      itemCount: c.companyAds.length,
+                                    );
+                        }),
+                        GetBuilder<AdvertismentController>(builder: (c) {
+                          return c.getCompanyAdvertismentsFlag
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : c.companyAds.isEmpty
+                                  ? const NoItemsWidget()
+                                  : ListView.separated(
+                                      padding: EdgeInsets.zero,
+                                      itemBuilder: (context, index) =>
+                                          AdvertismentCard(
+                                              advertismentModel:
+                                                  c.companyAds[index]),
+                                      separatorBuilder: (context, index) =>
+                                          Column(
+                                        children: [
+                                          spaceY(5.sp),
+                                          const Divider(
+                                              color: Colors.grey,
+                                              thickness: 0.5),
+                                          spaceY(5.sp),
+                                        ],
+                                      ),
+                                      itemCount: c.companyAds.length,
+                                    );
+                        }),
+                        GetBuilder<AdvertismentController>(builder: (c) {
+                          return c.getCompanyAdvertismentsFlag
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : c.companyAds.isEmpty
+                                  ? const NoItemsWidget()
+                                  : ListView.separated(
+                                      padding: EdgeInsets.zero,
+                                      itemBuilder: (context, index) =>
+                                          AdvertismentCard(
+                                        advertismentModel: c.companyAds[index],
+                                        refused: true,
+                                      ),
+                                      separatorBuilder: (context, index) =>
+                                          Column(
+                                        children: [
+                                          spaceY(5.sp),
+                                          const Divider(
+                                              color: Colors.grey,
+                                              thickness: 0.5),
+                                          spaceY(5.sp),
+                                        ],
+                                      ),
+                                      itemCount: c.companyAds.length,
+                                    );
+                        }),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             ListView(
               padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               children: [

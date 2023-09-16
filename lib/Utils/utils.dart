@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:khedma/Utils/notification_service.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
 import 'package:sizer/sizer.dart';
@@ -15,7 +16,6 @@ import 'package:sizer/sizer.dart';
 // import 'package:dio/dio.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
-// // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:get/get.dart';
 // import 'package:local_auth/local_auth.dart';
 // import 'package:local_auth_android/local_auth_android.dart';
@@ -24,6 +24,51 @@ import 'package:sizer/sizer.dart';
 
 // /
 class Utils {
+  static NotificationService notificationService = NotificationService();
+  static void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        // Navigator.push(Get.context!,
+        //     MaterialPageRoute(builder: (context) => NotificationsPage()));
+      });
+  // static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
+  // static Future initializeNotifications(
+  //     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+  //   flutterLocalNotificationsPlugin
+  //       .resolvePlatformSpecificImplementation<
+  //           AndroidFlutterLocalNotificationsPlugin>()!
+  //       .requestPermission();
+  //   var androidInitialize =
+  //       const AndroidInitializationSettings('mipmap/ic_launcher');
+  //   var iOSInitialize = const DarwinInitializationSettings();
+  //   var initializationsSettings =
+  //       InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+  //   await flutterLocalNotificationsPlugin.initialize(initializationsSettings);
+  // }
+
+  // static Future showBigTextNotification(
+  //     {var id = 0,
+  //     required String title,
+  //     required String body,
+  //     var payload,
+  //     required FlutterLocalNotificationsPlugin fln}) async {
+  //   AndroidNotificationDetails androidPlatformChannelSpecifics =
+  //       const AndroidNotificationDetails(
+  //     'you_can_name_it_whatever1',
+  //     'channel_name',
+  //     playSound: true,
+  //     // sound: RawResourceAndroidNotificationSound('notification'),
+  //     importance: Importance.max,
+
+  //     priority: Priority.high,
+  //   );
+
+  //   var not = NotificationDetails(
+  //       android: androidPlatformChannelSpecifics,
+  //       iOS: DarwinNotificationDetails());
+  //   await fln.show(0, title, body, not);
+  // }
+
 //   // static Future<void> takeContainer(
 //   //     ScreenshotController controller, String imageName) async {
 //   //   controller.capture().then((value) async {
@@ -115,6 +160,19 @@ class Utils {
 
   static Future saveToken({required String token}) async {
     await _storage.write(key: "token", value: token);
+  }
+
+  static Future<String?> readFBToken() async {
+    String? value = await _storage.read(key: "fb_token");
+    return value;
+  }
+
+  static Future deleteFBToken() async {
+    await _storage.delete(key: "fb_token");
+  }
+
+  static Future saveFBToken({required String token}) async {
+    await _storage.write(key: "fb_token", value: token);
   }
 
   static Future<String?> readLanguage() async {
@@ -220,10 +278,10 @@ class Utils {
 //       //if folder not exists create folder and then return its path
 //       try {
 //         logWarning(_appDocDirFolder.path);
-//         final Directory _appDocDirNewFolder =
+//         final Directory _appDocDirFolder =
 //             await _appDocDirFolder.create(recursive: true);
 //         logSuccess("created");
-//         return _appDocDirNewFolder.path;
+//         return _appDocDirFolder.path;
 //       } catch (e) {
 //         logError(e);
 //         final Directory _appDocDirFolder =
@@ -233,10 +291,10 @@ class Utils {
 //           logSuccess("existed");
 //           return _appDocDirFolder.path;
 //         } else {
-//           final Directory _appDocDirNewFolder =
+//           final Directory _appDocDirFolder =
 //               await _appDocDirFolder.create(recursive: true);
 //           logSuccess("created");
-//           return _appDocDirNewFolder.path;
+//           return _appDocDirFolder.path;
 //         }
 //       }
 //     }
@@ -292,9 +350,9 @@ class Utils {
 // //   static Future initialize(
 // //       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
 // //     var androidInitialize =
-// //         new AndroidInitializationSettings('mipmap/ic_launcher');
-// //     var iOSInitialize = new DarwinInitializationSettings();
-// //     var initializationsSettings = new InitializationSettings(
+// //          AndroidInitializationSettings('mipmap/ic_launcher');
+// //     var iOSInitialize =  DarwinInitializationSettings();
+// //     var initializationsSettings =  InitializationSettings(
 // //         android: androidInitialize, iOS: iOSInitialize);
 // //     await flutterLocalNotificationsPlugin.initialize(initializationsSettings);
 // //   }
@@ -306,7 +364,7 @@ class Utils {
 // //       var payload,
 // //       required FlutterLocalNotificationsPlugin fln}) async {
 // //     AndroidNotificationDetails androidPlatformChannelSpecifics =
-// //         new AndroidNotificationDetails(
+// //          AndroidNotificationDetails(
 // //       'you_can_name_it_whatever1',
 // //       'channel_name',
 
@@ -406,10 +464,13 @@ Text coloredText(
     TextDecoration? decoration,
     double? fontSize,
     TextAlign? textAlign,
+    TextDirection? textDirection,
     TextStyle? textstyle}) {
   return Text(
     text,
     textAlign: textAlign,
+    softWrap: true,
+    textDirection: textDirection,
     style: textstyle ??
         GoogleFonts.poppins(
           color: color ?? Colors.black,

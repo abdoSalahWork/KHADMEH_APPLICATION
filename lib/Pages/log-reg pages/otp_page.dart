@@ -129,10 +129,10 @@ class _OTPPageState extends State<OTPPage> {
                           ),
                           spaceY(20),
                           coloredText(
-                              text: "Your email have been confirmed",
+                              text: "your_email_have_been_confirmed".tr,
                               fontSize: 12.0.sp),
                           coloredText(
-                            text: "successfully",
+                            text: "successfully".tr,
                             fontSize: 14.0.sp,
                             color: Theme.of(context).colorScheme.secondary,
                           ),
@@ -189,10 +189,10 @@ class _OTPPageState extends State<OTPPage> {
                               ),
                               spaceY(20),
                               coloredText(
-                                  text: "code has been sent ",
+                                  text: "code_has_been_sent".tr,
                                   fontSize: 12.0.sp),
                               coloredText(
-                                text: "successfully",
+                                text: "successfully".tr,
                                 fontSize: 14.0.sp,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),

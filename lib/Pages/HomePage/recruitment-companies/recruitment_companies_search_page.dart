@@ -47,7 +47,7 @@ class _RecruitmentCompaniesPageSSearchtate
         child: Column(
           children: [
             SearchTextField(
-              hintText: "Search ...",
+              hintText: "${"search".tr} ...",
               prefixIcon: const Icon(
                 EvaIcons.search,
                 color: Color(0xffAFAFAF),

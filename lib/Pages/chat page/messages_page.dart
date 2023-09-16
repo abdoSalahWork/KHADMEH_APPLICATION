@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/chat_card.dart';
 import 'package:sizer/sizer.dart';
@@ -34,7 +35,7 @@ class _MessagesPageState extends State<MessagesPage> {
         child: Column(
           children: [
             SearchTextField(
-              hintText: "Search ...",
+              hintText: "${"search".tr} ...",
               prefixIcon: const Icon(
                 EvaIcons.search,
                 color: Color(0xffAFAFAF),

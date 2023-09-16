@@ -29,7 +29,8 @@ class AdvertismentModel {
 
   AdvertismentModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    image = json['image'];
+    image =
+        "https://wazzfny.online/api/files/images/addvertisment/${json['image']}";
     durationByDay = json['duration_by_day'];
     promotionType = json['promotion_type'];
     externalLink = json['external_link'];
@@ -44,12 +45,12 @@ class AdvertismentModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
+    data['id'] = id;
     // data['image'] = this.image;
-    data['duration_by_day'] = this.durationByDay;
-    data['promotion_type'] = this.promotionType;
-    data['external_link'] = this.externalLink;
-    data['start_date'] = this.startDate;
+    data['duration_by_day'] = durationByDay;
+    data['promotion_type'] = promotionType;
+    data['external_link'] = externalLink;
+    data['start_date'] = startDate;
 
     return data;
   }

@@ -1,17 +1,26 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Utils/notification_service.dart';
+import 'package:khedma/firebase_api.dart';
 import 'package:sizer/sizer.dart';
 
 import 'Locals/langs.dart';
 import 'Pages/splash/splash_page.dart';
 import 'Themes/themes.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // SystemChrome.restoreSystemUIOverlays();
-  // await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await NotificationService().initializePlatformNotifications();
+  await FirebaseApi().initNotifications();
+  // await FirebaseApi().handleNotifications();
+
+  // await Utils.initializeNotifications(Utils.flutterLocalNotificationsPlugin);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.black, // navigation bar color
     statusBarColor: Colors.transparent, // status bar color
@@ -69,23 +78,27 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
       return GetMaterialApp(
-          useInheritedMediaQuery: true,
-          builder: DevicePreview.appBuilder,
-          debugShowCheckedModeBanner: false,
-          translations: LocaleString(),
-          locale: Get.deviceLocale,
-          fallbackLocale: const Locale('en', 'US'),
-          title: 'Khedma',
-          theme: AppThemes.lightTheme,
-          darkTheme: AppThemes.darkTheme,
-          themeMode: ThemeMode.light,
-          home: const SplashPage());
+        useInheritedMediaQuery: true,
+        builder: DevicePreview.appBuilder,
+        debugShowCheckedModeBanner: false,
+        translations: LocaleString(),
+        locale: Get.deviceLocale,
+        fallbackLocale: const Locale('en', 'US'),
+        title: 'Khedma',
+        theme: AppThemes.lightTheme,
+        darkTheme: AppThemes.darkTheme,
+        themeMode: ThemeMode.light,
+        home: const SplashPage(),
+        // routes: {
+        //   '/notification':
+        // },
+      );
     });
   }
 }

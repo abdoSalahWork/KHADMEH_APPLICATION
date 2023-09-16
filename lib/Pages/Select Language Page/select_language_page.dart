@@ -48,7 +48,7 @@ class SelectLanguagePage extends StatelessWidget {
           primaryBorderedButton(
             onTap: () async {
               await Utils.saveLanguage(language: "en");
-              await _globalController.getCurrentLocale();
+              await _globalController.setLocale();
               Get.to(() => const LoginPage(),
                   transition: Transition.rightToLeft);
             },
@@ -65,7 +65,7 @@ class SelectLanguagePage extends StatelessWidget {
           primaryButton(
             onTap: () async {
               await Utils.saveLanguage(language: "ar");
-              await _globalController.getCurrentLocale();
+              await _globalController.setLocale();
               Get.to(() => const LoginPage(),
                   transition: Transition.rightToLeft);
             },

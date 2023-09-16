@@ -12,6 +12,7 @@ class NotificationController extends GetxController {
   Future getNotifications() async {
     try {
       getNotificationsFlag = true;
+      update();
       String? token = await Utils.readToken();
       var res = await dio.get(EndPoints.notifications,
           options: Options(headers: {"authorization": "Bearer $token"}));

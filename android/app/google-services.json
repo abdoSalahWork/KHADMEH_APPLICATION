@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "1091226230129",
-    "project_id": "khemah-f2af6",
-    "storage_bucket": "khemah-f2af6.appspot.com"
+    "project_number": "40476024382",
+    "project_id": "khedma-test",
+    "storage_bucket": "khedma-test.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1091226230129:android:244ceaa0aa7b218acd6ad0",
+        "mobilesdk_app_id": "1:40476024382:android:c617b2f305b989133dfb6f",
         "android_client_info": {
-          "package_name": "com.dropidea.khedma.khedma"
+          "package_name": "com.dropidea.khedma"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1091226230129-eaanc76g5rjn8afi8dq7eqlme85p1nc7.apps.googleusercontent.com",
+          "client_id": "40476024382-3gmcamj81k5kue3imhqe4gtg9blhgmrn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDF8xZgE__hcJZdjqx-3Y2Emv6X3-ex-5U"
+          "current_key": "AIzaSyB2zUayuUdNWwSZHp3Ko0NsZPFCpmkSBJM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1091226230129-eaanc76g5rjn8afi8dq7eqlme85p1nc7.apps.googleusercontent.com",
+              "client_id": "40476024382-3gmcamj81k5kue3imhqe4gtg9blhgmrn.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

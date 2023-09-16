@@ -50,7 +50,7 @@ class _CompanyEmployeesFilterPageState
     return Scaffold(
       appBar: AppBar(
         title: coloredText(
-          text: "filter_page".tr,
+          text: "employee_filter_page".tr,
           fontSize: 14.0.sp,
         ),
         backgroundColor: Theme.of(context).colorScheme.background,

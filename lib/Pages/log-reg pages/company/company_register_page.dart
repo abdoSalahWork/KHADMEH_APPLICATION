@@ -93,10 +93,10 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   }
 
   final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
-  String logobuttonText = "Upload company logo";
-  String frontIdButton = "Upload front side of ID";
-  String backIdButton = "Upload back side of ID";
-  String passportButton = "Upload your passport";
+  String logobuttonText = "upload_company_logo".tr;
+  String frontIdButton = "upload_front_side_of_id".tr;
+  String backIdButton = "upload_back_side_of_id".tr;
+  String passportButton = "Upload_your_passport".tr;
 
   @override
   void initState() {
@@ -347,7 +347,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     width: 40.0.w,
                     focusNode: _focusNodes[0],
                     controller: _firstNameController,
-                    hintText: "First name",
+                    hintText: "first_name".tr,
                     prefixIcon: Icon(
                       EvaIcons.personOutline,
                       size: 20.0.sp,
@@ -372,7 +372,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     width: 40.0.w,
                     focusNode: _focusNodes[1],
                     controller: _lastNameController,
-                    hintText: "Last name",
+                    hintText: "last_name".tr,
                     prefixIcon: Icon(
                       EvaIcons.personOutline,
                       size: 20.0.sp,
@@ -425,7 +425,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                         size: 20.0.sp,
                       ),
                       CustomDropDownMenuButton(
-                        width: 100,
+                        width: 65.sp,
                         hintPadding: 5,
                         hintSize: 14,
                         value: ownerphoneCode == "" ? null : ownerphoneCode,
@@ -450,7 +450,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               spaceY(10.0.sp),
               CustomDropDownMenuButton(
                 hintPadding: 0, focusNode: _focusNodes[3],
-                hint: "Nationality",
+                hint: "nationality".tr,
                 autovalidateMode: AutovalidateMode.always,
                 validator: (String? value) {
                   if (errors['nationality_id'] != null) {
@@ -466,9 +466,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 items: c.countries
                     .map(
                       (e) => DropdownMenuItem<String>(
-                        value: e.nameEn,
-                        child:
-                            coloredText(text: e.nameEn!, color: Colors.black),
+                        value: Get.locale == const Locale('en', 'US')
+                            ? e.nameEn!
+                            : e.nameAr,
+                        child: coloredText(
+                            text: Get.locale == const Locale('en', 'US')
+                                ? e.nameEn!
+                                : e.nameAr!,
+                            color: Colors.black),
                       ),
                     )
                     .toList(),
@@ -519,7 +524,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 controller: _idNumController,
                 keyBoardType: TextInputType.number,
                 prefixIcon: Icon(FontAwesomeIcons.idCard, size: 16.0.sp),
-                hintText: "ID number".tr,
+                hintText: "id_number".tr.tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['id_number'] = null;
@@ -540,7 +545,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               Row(
                 children: [
                   coloredText(
-                    text: "Date of birth:",
+                    text: "${"date_of_birth".tr} :",
                   ),
                   spaceX(10),
                   SizedBox(
@@ -629,7 +634,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   }
                 },
                 text: coloredText(
-                  text: "Next",
+                  text: "next".tr,
                   color: Colors.white,
                   fontSize: 16.0.sp,
                 ),
@@ -697,7 +702,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     color: Colors.grey,
                   ),
                   coloredText(
-                      text: "General info",
+                      text: "general_info".tr,
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 14.0.sp,
                       fontWeight: FontWeight.w500),
@@ -714,7 +719,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 controller: _companyNameEnController,
                 keyBoardType: TextInputType.text,
                 prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
-                hintText: "Company Name",
+                hintText: "company_name".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['company_name'] = null;
@@ -784,7 +789,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                         size: 20.0.sp,
                       ),
                       CustomDropDownMenuButton(
-                        width: 100,
+                        width: 65.sp,
                         hintPadding: 5,
                         hintSize: 13,
                         value: companyphoneCode == "" ? null : companyphoneCode,
@@ -835,7 +840,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 controller: _urlController,
                 keyBoardType: TextInputType.url,
                 prefixIcon: Icon(Iconsax.link_21, size: 20.0.sp),
-                hintText: "URL (optional)".tr,
+                hintText: "${"url".tr} ( ${"optional".tr}${" )".tr}",
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['url'] = null;
@@ -856,7 +861,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               Row(
                 children: [
                   coloredText(
-                    text: "Company Type:",
+                    text: "company_type".tr + ' :',
                   ),
                   spaceX(15),
                   CustomDropDownMenuButton(
@@ -872,7 +877,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                         .map(
                           (e) => DropdownMenuItem<String>(
                             value: e,
-                            child: coloredText(text: e),
+                            child: coloredText(text: e.tr),
                           ),
                         )
                         .toList(),
@@ -893,7 +898,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     color: Colors.grey,
                   ),
                   coloredText(
-                      text: "Address Info",
+                      text: "address_info".tr,
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 14.0.sp,
                       fontWeight: FontWeight.w500),
@@ -916,9 +921,13 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     value: city == "" ? null : city,
                     items: c.cities
                         .map((e) => DropdownMenuItem<String>(
-                              value: e.nameEn,
+                              value: Get.locale == const Locale('en', 'US')
+                                  ? e.nameEn!
+                                  : e.nameAr,
                               child: coloredText(
-                                text: e.nameEn!,
+                                text: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr!,
                                 fontSize: 17,
                               ),
                             ))
@@ -952,9 +961,13 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     value: region == "" ? null : region,
                     items: c.regions
                         .map((e) => DropdownMenuItem<String>(
-                              value: e.nameEn,
+                              value: Get.locale == const Locale('en', 'US')
+                                  ? e.nameEn!
+                                  : e.nameAr,
                               child: coloredText(
-                                text: e.nameEn!,
+                                text: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr!,
                                 fontSize: 17,
                               ),
                             ))
@@ -1085,7 +1098,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     color: Colors.grey,
                   ),
                   coloredText(
-                      text: "Work Info",
+                      text: "work_info".tr,
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 14.0.sp,
                       fontWeight: FontWeight.w500),
@@ -1102,7 +1115,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 controller: _crnController,
                 keyBoardType: TextInputType.number,
                 // prefixIcon: const Icon(Icons.email_outlined),
-                hintText: "Commercial registration number",
+                hintText: "commercial_reg_number".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['commercial_registration_number'] = null;
@@ -1125,7 +1138,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 controller: _taxController,
                 keyBoardType: TextInputType.number,
                 // prefixIcon: const Icon(Icons.email_outlined),
-                hintText: "Tax number",
+                hintText: "tax_number".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['tax_number'] = null;
@@ -1148,7 +1161,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 controller: _licenseController,
                 keyBoardType: TextInputType.number,
                 // prefixIcon: const Icon(Icons.email_outlined),
-                hintText: "license number",
+                hintText: "license_number".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['license_number'] = null;
@@ -1175,7 +1188,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   logSuccess(_currentStep);
                 },
                 text: coloredText(
-                  text: "Next",
+                  text: "next".tr,
                   color: Colors.white,
                   fontSize: 16.0.sp,
                 ),
@@ -1196,20 +1209,21 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               primary: false,
               children: [
                 coloredText(
-                  text: "Identity confirmation by",
+                  text: "identity_confirmation_by".tr,
                 ),
                 Row(
                   children: [
                     MyRadioButton(
                       color: Colors.black,
-                      text: "ID",
+                      text: "id".tr,
                       groupValue: idPassRadio,
                       value: 0,
                       onChanged: (p0) {
                         setState(() {
                           companyRegisterData.identityConfirmation = "id";
 
-                          passportButton = "Upload your passport";
+                          passportButton = "Upload_your_passport".tr;
+                          ;
                           idPassRadio = 0;
                           companyRegisterData.passportImage = null;
                           setState(() {});
@@ -1219,7 +1233,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     spaceX(20),
                     MyRadioButton(
                       color: Colors.black,
-                      text: "Passport",
+                      text: "passport".tr,
                       groupValue: idPassRadio,
                       value: 1,
                       onChanged: (p0) {
@@ -1228,8 +1242,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                           idPassRadio = 1;
                           companyRegisterData.frontSideIdImage = null;
                           companyRegisterData.backSideIdImage = null;
-                          frontIdButton = "Upload front side of ID";
-                          backIdButton = "Upload back side of ID";
+                          frontIdButton = "upload_front_side_of_id".tr;
+                          backIdButton = "upload_back_side_of_id".tr;
                           setState(() {});
                         });
                       },
@@ -1411,7 +1425,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     setState(() {});
                   },
                   text: coloredText(
-                    text: "Next",
+                    text: "next".tr,
                     color: Colors.white,
                     fontSize: 16.0.sp,
                   ),
@@ -1550,10 +1564,10 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                               ),
                               spaceY(20),
                               coloredText(
-                                  text: "You have been registered",
+                                  text: "you_have_been_registered".tr,
                                   fontSize: 12.0.sp),
                               coloredText(
-                                text: "successfully",
+                                text: "successfully".tr,
                                 fontSize: 14.0.sp,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),

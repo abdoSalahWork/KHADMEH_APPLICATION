@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
 
 class LanguagesPage extends StatelessWidget {
-  const LanguagesPage({super.key});
+  LanguagesPage({super.key});
+  final GlobalController _globalController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class LanguagesPage extends StatelessWidget {
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
         centerTitle: true,
-        title: coloredText(text: "Languages", fontSize: 15.0.sp),
+        title: coloredText(text: "language".tr, fontSize: 15.0.sp),
       ),
       body: ListView(
         primary: false,
@@ -43,7 +45,9 @@ class LanguagesPage extends StatelessWidget {
           ),
           spaceY(5.0.h),
           primaryBorderedButton(
-            onTap: () {
+            onTap: () async {
+              await Utils.saveLanguage(language: "en");
+              await _globalController.setLocale();
               Get.back();
             },
             width: 75.0.w,
@@ -57,7 +61,9 @@ class LanguagesPage extends StatelessWidget {
           ),
           spaceY(5.0.h),
           primaryButton(
-            onTap: () {
+            onTap: () async {
+              await Utils.saveLanguage(language: "ar");
+              await _globalController.setLocale();
               Get.back();
             },
             width: 75.0.w,

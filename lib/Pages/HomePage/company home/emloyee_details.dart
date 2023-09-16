@@ -140,15 +140,15 @@ class EmployeeDetailsPage extends StatelessWidget {
                             subTitle2: "10",
                           ),
                           spaceY(12.sp),
-                          const DetailsItemWidget(
-                            title1: "Nationality",
+                          DetailsItemWidget(
+                            title1: "nationality".tr,
                             subTitle1: "Filipino",
                             title2: "Religion",
                             subTitle2: "Muslim",
                           ),
                           spaceY(12.sp),
-                          const DetailsItemWidget(
-                            title1: "Date of birth",
+                          DetailsItemWidget(
+                            title1: "date_of_birth".tr,
                             subTitle1: "03/21/1992",
                             title2: "Birthplace",
                             subTitle2: "Filipino",
@@ -259,7 +259,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                     header: Padding(
                       padding: const EdgeInsets.all(10),
                       child: coloredText(
-                        text: "Work info",
+                        text: "work_info".tr,
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                         fontSize: 16.sp,

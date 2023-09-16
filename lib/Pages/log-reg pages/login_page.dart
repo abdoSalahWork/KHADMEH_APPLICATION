@@ -233,7 +233,7 @@ class _LoginPageState extends State<LoginPage> {
                                               .primary
                                               .withOpacity(0.5);
                                         }
-                                        return Colors.grey.shade800;
+                                        return Colors.white;
                                       }),
                                       shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(

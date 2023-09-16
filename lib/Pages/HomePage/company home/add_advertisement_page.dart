@@ -206,6 +206,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                     setState(() {
                       promotionRadio = 1;
                       advertismentToCreate.promotionType = promotionRadio;
+                      advertismentToCreate.externalLink = null;
 
                       setState(() {});
                     });
@@ -325,6 +326,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
             primaryButton(
                 onTap: () async {
                   advertismentToCreate.startDate = _dateController.text;
+                  advertismentToCreate.promotionType = promotionRadio;
                   bool b = await _advertismentController.createAdvertisment(
                       advertisment: advertismentToCreate);
                   if (b) {
@@ -332,6 +334,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                         actions: [
                           primaryButton(
                             onTap: () {
+                              Get.back();
                               Get.back();
                             },
                             width: 40.0.w,
@@ -358,10 +361,10 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                               ),
                               spaceY(20),
                               coloredText(
-                                  text: "Your advertisment has added",
+                                  text: "your_advertisment_has_added".tr,
                                   fontSize: 12.0.sp),
                               coloredText(
-                                text: "successfully",
+                                text: "successfully".tr,
                                 fontSize: 14.0.sp,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),

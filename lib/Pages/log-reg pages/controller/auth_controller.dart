@@ -11,6 +11,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
+import 'package:khedma/firebase_api.dart';
 
 import '../../../Utils/end_points.dart';
 import '../models/company_register_model.dart';
@@ -45,14 +46,20 @@ class AuthController extends GetxController {
   }) async {
     try {
       GoogleSignInAccount? user = await _googleSignIn.signIn();
+      await FirebaseApi().initNotifications();
 
       GoogleSignInAuthentication auth = await user!.authentication;
       if (auth.accessToken != null) {
         Get.dialog(const Center(
           child: CircularProgressIndicator(),
         ));
+        String? fcsToken = await Utils.readFBToken();
+
         var res = await dio.post(EndPoints.loginGoogle,
-            options: Options(headers: {"accessToken": auth.accessToken}));
+            options: Options(headers: {
+              "accessToken": auth.accessToken,
+              "fcsToken": fcsToken,
+            }));
         String token = res.data["access_token"];
         logSuccess(token);
         await Utils.saveToken(token: token);
@@ -361,17 +368,21 @@ class AuthController extends GetxController {
       Get.dialog(const Center(
         child: CircularProgressIndicator(),
       ));
+      await FirebaseApi().initNotifications();
 
       final body = d.FormData.fromMap({
         "email": userName,
         "password": password,
       });
-
+      String? fcsToken = await Utils.readFBToken();
       var res = await dio.post(
         EndPoints.login,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "fcsToken": fcsToken,
+          },
         ),
       );
 

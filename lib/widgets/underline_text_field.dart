@@ -238,6 +238,12 @@ class SendMessageTextField extends StatelessWidget {
                       BorderRadius.all(Radius.circular(borderRadius ?? 20)),
                   borderSide: BorderSide.none,
                 ),
+            focusedErrorBorder: wholeBorder ??
+                OutlineInputBorder(
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(borderRadius ?? 20)),
+                  borderSide: BorderSide.none,
+                ),
             prefixIconColor: focusNode!.hasFocus
                 ? Theme.of(context).colorScheme.secondary
                 : const Color(0xffBDC1C8),

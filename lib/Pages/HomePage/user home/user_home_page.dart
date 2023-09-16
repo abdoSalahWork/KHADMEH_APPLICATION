@@ -10,9 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/user_register_model.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
@@ -76,6 +78,8 @@ class _UserHomePageState extends State<UserHomePage> {
   String button1Text = "upload_id".tr;
   String button2Text = "upload_personal_photo".tr;
   final GlobalController _globalController = Get.find();
+  final EmployeesController _employeesController =
+      Get.put(EmployeesController());
   String region = "";
   String nationality = "";
   String city = "";
@@ -98,6 +102,7 @@ class _UserHomePageState extends State<UserHomePage> {
   @override
   void initState() {
     completedRegisterFlag = _globalController.me.userInformation != null;
+    _employeesController.getEmployees();
     h2 = 470.0.sp;
     h = 330.0.sp;
     h3 = 400.0.sp;
@@ -623,47 +628,6 @@ class _UserHomePageState extends State<UserHomePage> {
         Padding(
           padding: const EdgeInsets.all(20),
           child: ListView(padding: EdgeInsets.zero, primary: false, children: [
-            // UnderlinedCustomTextField(
-            //   focusNode: _focusNodes[2],
-            //   controller: _phoneNumberController,
-            //   keyBoardType: TextInputType.number,
-            //   prefixIcon: Container(
-            //     margin: const EdgeInsetsDirectional.only(start: 10),
-            //     child: Row(
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: [
-            //         Icon(
-            //           EvaIcons.phoneOutline,
-            //           size: 20.0.sp,
-            //         ),
-            //         CustomDropDownMenuButton(
-            //           width: 100,
-            //           hintPadding: 13,
-            //           items: [
-            //             "+963",
-            //             "+954",
-            //             "+94",
-            //           ]
-            //               .map((e) => DropdownMenuItem<String>(
-            //                     value: e,
-            //                     child: coloredText(
-            //                       text: e,
-            //                       fontSize: 17,
-            //                     ),
-            //                   ))
-            //               .toList(),
-            //           onChanged: (p0) {},
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            //   hintText: "phone_number".tr,
-            //   // validator: (String? value) =>
-            //   //     EmailValidator.validate(value!)
-            //   //         ? null
-            //   //         : "please_enter_a_valid_email".tr,
-            // ),
-
             UnderlinedCustomTextField(
               focusNode: _focusNodes[2],
               controller: _phoneNumberController,
@@ -696,7 +660,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     ),
                     GetBuilder<GlobalController>(builder: (c) {
                       return CustomDropDownMenuButton(
-                        width: 100,
+                        width: 65.sp,
                         hintPadding: 5,
                         hintSize: 13,
                         value: phoneCode == "" ? null : phoneCode,
@@ -1204,6 +1168,8 @@ class _UserHomePageState extends State<UserHomePage> {
                                 onTap: () {
                                   Get.back();
                                   completedRegisterFlag = true;
+                                  Restart.restartApp();
+
                                   setState(() {});
                                 },
                                 width: 40.0.w,
@@ -1231,10 +1197,10 @@ class _UserHomePageState extends State<UserHomePage> {
                                   ),
                                   spaceY(20),
                                   coloredText(
-                                      text: "You'r data have been completed '",
+                                      text: "your_data_have_been_completed".tr,
                                       fontSize: 12.0.sp),
                                   coloredText(
-                                    text: "successfully",
+                                    text: "successfully".tr,
                                     fontSize: 14.0.sp,
                                     color:
                                         Theme.of(context).colorScheme.secondary,

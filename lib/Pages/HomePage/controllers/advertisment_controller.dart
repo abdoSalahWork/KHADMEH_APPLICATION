@@ -1,4 +1,4 @@
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
@@ -13,18 +13,16 @@ import 'package:sizer/sizer.dart';
 
 class AdvertismentController extends GetxController {
   final Dio dio = Utils().dio;
-  List<AdvertismentModel> ads = [];
+  List<AdvertismentModel> companyAds = [];
 
   Future<bool> createAdvertisment(
       {required AdvertismentModel advertisment}) async {
     try {
-      logSuccess(advertisment.toJson());
       Utils.circularIndicator();
       final body = d.FormData.fromMap(advertisment.toJson());
       PlatformFile? image = advertisment.image;
       String? token = await Utils.readToken();
 
-      logSuccess(token!);
       if (image != null) {
         body.files.add(MapEntry(
           "image",
@@ -92,6 +90,37 @@ class AdvertismentController extends GetxController {
           context: context);
 
       return false;
+    }
+  }
+
+  bool getCompanyAdvertismentsFlag = false;
+  Future getCompanyAdvertisments() async {
+    try {
+      getCompanyAdvertismentsFlag = true;
+      String? token = await Utils.readToken();
+
+      var res = await dio.get(
+        EndPoints.getAllCompanyAdvertisments,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        ),
+      );
+      List<AdvertismentModel> tmp = [];
+      for (var i in res.data['data']) {
+        AdvertismentModel t = AdvertismentModel.fromJson(i);
+        tmp.add(t);
+      }
+      companyAds = tmp;
+      logSuccess("Company Advertisments get done");
+      getCompanyAdvertismentsFlag = false;
+      update();
+    } on DioException {
+      getCompanyAdvertismentsFlag = false;
+      update();
+      logError("Company Advertisments failed");
     }
   }
 }

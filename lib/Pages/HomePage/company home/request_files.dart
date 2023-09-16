@@ -129,10 +129,10 @@ class _RequestFilesPageState extends State<RequestFilesPage> {
                                     ),
                                     spaceY(20),
                                     coloredText(
-                                        text: "Your note have been sent",
+                                        text: "your_note_have_been_sent".tr,
                                         fontSize: 12.0.sp),
                                     coloredText(
-                                      text: "successfully",
+                                      text: "successfully".tr,
                                       fontSize: 14.0.sp,
                                       color: Theme.of(context)
                                           .colorScheme
@@ -145,14 +145,15 @@ class _RequestFilesPageState extends State<RequestFilesPage> {
                         color: Colors.black,
                         width: 45.w,
                         height: 50,
-                        text: coloredText(text: "Submit", color: Colors.white),
+                        text:
+                            coloredText(text: "submit".tr, color: Colors.white),
                       ),
                     ],
                     content: TextFormField(
                       maxLines: 5,
-                      decoration: const InputDecoration(
-                        hintText: "Write your notes",
-                        border: OutlineInputBorder(
+                      decoration: InputDecoration(
+                        hintText: "write_your_notes".tr,
+                        border: const OutlineInputBorder(
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.all(
                             Radius.circular(10),

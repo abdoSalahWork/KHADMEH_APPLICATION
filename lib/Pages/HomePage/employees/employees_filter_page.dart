@@ -40,7 +40,7 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
     return Scaffold(
       appBar: AppBar(
         title: coloredText(
-          text: "filter_page".tr,
+          text: "employee_filter_page".tr,
           fontSize: 14.0.sp,
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -269,13 +269,7 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                               setState(() {});
                             },
                             child: Container(
-                              child: Center(
-                                  child: coloredText(
-                                      text: selectedLangs[index],
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary)),
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 20,
                               ),
                               decoration: BoxDecoration(
@@ -289,6 +283,12 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                                     .secondary
                                     .withOpacity(0.05),
                               ),
+                              child: Center(
+                                  child: coloredText(
+                                      text: selectedLangs[index],
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary)),
                             ),
                           ),
                       separatorBuilder: (context, index) => spaceX(10.sp),

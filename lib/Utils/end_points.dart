@@ -12,7 +12,7 @@ class EndPoints {
   static String updateCompanyAdvertisment(int id) =>
       "$_baseURL/advertisment/update/$id";
   static String get storeCompanyAdvertisment => "$_baseURL/advertisment/store";
-  static String get getAllEmployees => "$_baseURL/employees";
+  static String get getAllUserEmployees => "$_baseURL/employees";
   static String showEmployee(int id) => "$_baseURL/employee/show/$id";
   static String updateEmployee(int id) => "$_baseURL/employee/update/$id";
   static String deleteEmployee(int id) => "$_baseURL/employee/delete/$id";
@@ -24,7 +24,7 @@ class EndPoints {
   static String get forgetPassword => "$_baseURL/forget-password";
   static String get notifications => "$_baseURL/notifications";
   static String get confirmEmail => "$_baseURL/confirm-code-email";
-  static String get resitPassword => "$_baseURL/reset-password";
+  static String get resetPassword => "$_baseURL/reset-password";
 
 ///////////////////////////admin///////////////////////////
   static String get getAllCountries => "$_adminBaseURL/countries";
@@ -43,6 +43,10 @@ class EndPoints {
   static String get storeJob => "$_adminBaseURL/job/store";
   static String updateJob(int id) => "$_adminBaseURL/job/update/$id";
   static String deleteJob(int id) => "$_adminBaseURL/job/delete/$id";
+  static String get getAllCategories => "$_adminBaseURL/categories";
+  static String get storeCategory => "$_adminBaseURL/category/store";
+  static String updateCategory(int id) => "$_adminBaseURL/category/update/$id";
+  static String deleteCategory(int id) => "$_adminBaseURL/category/delete/$id";
   static String get getAllCommunityTypes => "$_adminBaseURL/companyTypes";
   static String get storeCompanyType => "$_adminBaseURL/companyType/store";
   static String updateCompanyType(int id) =>
@@ -50,6 +54,10 @@ class EndPoints {
   static String deleteCompanyType(int id) =>
       "$_adminBaseURL/companyType/delete/$id";
   static String get getAllLanguages => "$_adminBaseURL/languages";
+  static String get getAllCertificate => "$_adminBaseURL/certifications";
+  static String get getAllMaritalStatus => "$_adminBaseURL/marital_status";
+  static String get getAllComplexions => "$_adminBaseURL/complexions";
+  static String get getAllRelegions => "$_adminBaseURL/religions";
   static String get storeLanguage => "$_adminBaseURL/language/store";
   static String updateLanguage(int id) => "$_adminBaseURL/language/update/$id";
   static String deleteLanguage(int id) => "$_adminBaseURL/language/delete/$id";

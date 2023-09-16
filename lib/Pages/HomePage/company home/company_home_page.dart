@@ -1,3 +1,4 @@
+import 'dart:math' as math; // import this
 import 'dart:math';
 import 'dart:ui';
 
@@ -11,12 +12,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Admin/pages/jobs/controller/jobs_controller.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_personal_page.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/company_register_model.dart';
+import 'package:khedma/Utils/notification_service.dart';
 import 'package:khedma/widgets/company_request.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:restart_app/restart_app.dart';
 // import 'package:pusher_client/pusher_client.dart';
 import 'package:sizer/sizer.dart';
 import 'package:textfield_datepicker/textfield_datepicker.dart';
@@ -41,15 +46,17 @@ class CompanyHomePage extends StatefulWidget {
 
 class _CompanyHomePageState extends State<CompanyHomePage> {
   PageController pageController = PageController(initialPage: 0);
+  final EmployeesController _employeesController =
+      Get.put(EmployeesController());
   var errors = {};
   String ownerphoneCode = "";
   String ownerNationality = "";
   String companyphoneCode = "";
   String companyType = "recruitment";
-  String logobuttonText = "Upload company logo";
-  String frontIdButton = "Upload front side of ID";
-  String backIdButton = "Upload back side of ID";
-  String passportButton = "Upload your passport";
+  String logobuttonText = "upload_company_logo".tr;
+  String frontIdButton = "upload_front_side_of_id".tr;
+  String backIdButton = "upload_back_side_of_id".tr;
+  String passportButton = "Upload_your_passport".tr;
   String city = "";
   String region = "";
   int idPassRadio = 0;
@@ -102,13 +109,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   final AuthController _authController = Get.find();
   final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
 
-  // late PusherClient pusher;
-  // late Channel channel;
-
+  final NotificationService notificationService = Utils.notificationService;
+  final JobsController _jobsController = Get.find();
   @override
   void initState() {
+    notificationService.initializePlatformNotifications();
     completedRegisterFlag = _globalController.me.companyInformation != null;
-
+    _jobsController.getjobs();
     h2 = 100.0.h;
     h = 75.0.h;
     h3 = 65.0.h;
@@ -277,14 +284,14 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         coloredText(
-                          text: "Add your",
+                          text: "add_your".tr,
                           fontWeight: FontWeight.w500,
                           fontSize: 16.sp,
                           color: Colors.white,
                         ),
                         spaceY(10),
                         coloredText(
-                          text: "Advertisement",
+                          text: "ad".tr,
                           textstyle: TextStyle(
                             fontSize: 24.sp,
                             color: Colors.white,
@@ -298,7 +305,12 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 ),
                 spaceY(10),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    // Utils.showBigTextNotification(
+                    //     title: "title",
+                    //     body: "body",
+                    //     fln: Utils.flutterLocalNotificationsPlugin);
+                  },
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: coloredText(text: "Overview", fontSize: 16.0.sp),
@@ -495,7 +507,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     width: 40.0.w,
                     focusNode: _focusNodes[0],
                     controller: _firstNameController,
-                    hintText: "First name",
+                    hintText: "first_name".tr,
                     prefixIcon: Icon(
                       EvaIcons.personOutline,
                       size: 20.0.sp,
@@ -520,7 +532,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     width: 40.0.w,
                     focusNode: _focusNodes[1],
                     controller: _lastNameController,
-                    hintText: "Last name",
+                    hintText: "last_name".tr,
                     prefixIcon: Icon(
                       EvaIcons.personOutline,
                       size: 20.0.sp,
@@ -573,8 +585,9 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         size: 20.0.sp,
                       ),
                       CustomDropDownMenuButton(
-                        width: 100,
+                        width: 65.sp,
                         hintPadding: 5,
+                        contentPadding: 10,
                         hintSize: 14,
                         value: ownerphoneCode == "" ? null : ownerphoneCode,
                         items: c.countries
@@ -598,7 +611,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               spaceY(10.0.sp),
               CustomDropDownMenuButton(
                 hintPadding: 0, focusNode: _focusNodes[3],
-                hint: "Nationality",
+                hint: "nationality".tr,
                 autovalidateMode: AutovalidateMode.always,
                 validator: (String? value) {
                   if (errors['nationality_id'] != null) {
@@ -614,9 +627,14 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 items: c.countries
                     .map(
                       (e) => DropdownMenuItem<String>(
-                        value: e.nameEn,
-                        child:
-                            coloredText(text: e.nameEn!, color: Colors.black),
+                        value: Get.locale == const Locale('en', 'US')
+                            ? e.nameEn!
+                            : e.nameAr!,
+                        child: coloredText(
+                            text: Get.locale == const Locale('en', 'US')
+                                ? e.nameEn!
+                                : e.nameAr!,
+                            color: Colors.black),
                       ),
                     )
                     .toList(),
@@ -655,7 +673,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 controller: _idNumController,
                 keyBoardType: TextInputType.number,
                 prefixIcon: Icon(FontAwesomeIcons.idCard, size: 16.0.sp),
-                hintText: "ID number".tr,
+                hintText: "id_number".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['id_number'] = null;
@@ -676,7 +694,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               Row(
                 children: [
                   coloredText(
-                    text: "Date of birth:",
+                    text: "date_of_birth".tr,
                   ),
                   spaceX(10),
                   SizedBox(
@@ -777,23 +795,28 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       logSuccess(_currentStep);
                       setState(() {});
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: AlignmentDirectional.topStart,
-                          end: AlignmentDirectional.bottomEnd,
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.secondary,
-                          ],
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(
+                          Get.locale == const Locale('en', 'US') ? 0 : math.pi),
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: AlignmentDirectional.topStart,
+                            end: AlignmentDirectional.bottomEnd,
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                            ],
+                          ),
                         ),
-                      ),
-                      child: const Icon(
-                        FontAwesomeIcons.anglesRight,
-                        color: Colors.white,
-                        size: 22,
+                        child: const Icon(
+                          FontAwesomeIcons.anglesRight,
+                          color: Colors.white,
+                          size: 22,
+                        ),
                       ),
                     ),
                   ),
@@ -858,7 +881,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     color: Colors.grey,
                   ),
                   coloredText(
-                      text: "General info",
+                      text: "general_info".tr,
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 14.0.sp,
                       fontWeight: FontWeight.w500),
@@ -875,7 +898,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 controller: _companyNameEnController,
                 keyBoardType: TextInputType.text,
                 prefixIcon: Icon(Iconsax.buildings, size: 20.0.sp),
-                hintText: "Company Name",
+                hintText: "company_name".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['company_name'] = null;
@@ -922,8 +945,9 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         size: 20.0.sp,
                       ),
                       CustomDropDownMenuButton(
-                        width: 100,
+                        width: 65.sp,
                         hintPadding: 5,
+                        contentPadding: 10,
                         hintSize: 13,
                         value: companyphoneCode == "" ? null : companyphoneCode,
                         items: c.countries
@@ -973,7 +997,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 controller: _urlController,
                 keyBoardType: TextInputType.url,
                 prefixIcon: Icon(Iconsax.link_21, size: 20.0.sp),
-                hintText: "URL (optional)".tr,
+                hintText: "${"url".tr} ( ${"optional".tr}${" )".tr}",
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['url'] = null;
@@ -994,7 +1018,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               Row(
                 children: [
                   coloredText(
-                    text: "Company Type:",
+                    text: '${"company_type".tr} :',
                   ),
                   spaceX(15),
                   CustomDropDownMenuButton(
@@ -1002,13 +1026,14 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     padding: const EdgeInsetsDirectional.only(end: 5, start: 5),
                     width: 40.0.w,
                     height: 38.sp,
+                    contentPadding: 10,
                     borderRadius: BorderRadius.circular(10),
                     value: companyType == "" ? null : companyType,
                     items: ["recruitment", "cleaning"]
                         .map(
                           (e) => DropdownMenuItem<String>(
                             value: e,
-                            child: coloredText(text: e),
+                            child: coloredText(text: e.tr),
                           ),
                         )
                         .toList(),
@@ -1029,7 +1054,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     color: Colors.grey,
                   ),
                   coloredText(
-                      text: "Address Info",
+                      text: "address_info".tr,
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 14.0.sp,
                       fontWeight: FontWeight.w500),
@@ -1051,9 +1076,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     value: city == "" ? null : city,
                     items: c.cities
                         .map((e) => DropdownMenuItem<String>(
-                              value: e.nameEn,
+                              value: Get.locale == const Locale('en', 'US')
+                                  ? e.nameEn!
+                                  : e.nameAr,
                               child: coloredText(
-                                text: e.nameEn!,
+                                text: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr!,
                                 fontSize: 17,
                               ),
                             ))
@@ -1087,9 +1116,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     value: region == "" ? null : region,
                     items: c.regions
                         .map((e) => DropdownMenuItem<String>(
-                              value: e.nameEn,
+                              value: Get.locale == const Locale('en', 'US')
+                                  ? e.nameEn!
+                                  : e.nameAr,
                               child: coloredText(
-                                text: e.nameEn!,
+                                text: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr!,
                                 fontSize: 17,
                               ),
                             ))
@@ -1220,7 +1253,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     color: Colors.grey,
                   ),
                   coloredText(
-                      text: "Work Info",
+                      text: "work_info".tr,
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 14.0.sp,
                       fontWeight: FontWeight.w500),
@@ -1237,7 +1270,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 controller: _crnController,
                 keyBoardType: TextInputType.number,
                 // prefixIcon: const Icon(Icons.email_outlined),
-                hintText: "Commercial registration number",
+                hintText: "commercial_reg_number".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['commercial_registration_number'] = null;
@@ -1260,7 +1293,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 controller: _taxController,
                 keyBoardType: TextInputType.number,
                 // prefixIcon: const Icon(Icons.email_outlined),
-                hintText: "Tax number",
+                hintText: "tax_number".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['tax_number'] = null;
@@ -1283,7 +1316,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 controller: _licenseController,
                 keyBoardType: TextInputType.number,
                 // prefixIcon: const Icon(Icons.email_outlined),
-                hintText: "license number",
+                hintText: "license_number".tr,
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['license_number'] = null;
@@ -1321,23 +1354,28 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       logSuccess(_currentStep);
                       setState(() {});
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: AlignmentDirectional.topStart,
-                          end: AlignmentDirectional.bottomEnd,
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.secondary,
-                          ],
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(
+                          Get.locale == const Locale('en', 'US') ? 0 : math.pi),
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: AlignmentDirectional.topStart,
+                            end: AlignmentDirectional.bottomEnd,
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                            ],
+                          ),
                         ),
-                      ),
-                      child: const Icon(
-                        FontAwesomeIcons.anglesRight,
-                        color: Colors.white,
-                        size: 22,
+                        child: const Icon(
+                          FontAwesomeIcons.anglesRight,
+                          color: Colors.white,
+                          size: 22,
+                        ),
                       ),
                     ),
                   ),
@@ -1355,20 +1393,20 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               primary: false,
               children: [
                 coloredText(
-                  text: "Identity confirmation by",
+                  text: "identity_confirmation_by".tr,
                 ),
                 Row(
                   children: [
                     MyRadioButton(
                       color: Colors.black,
-                      text: "ID",
+                      text: "id".tr,
                       groupValue: idPassRadio,
                       value: 0,
                       onChanged: (p0) {
                         setState(() {
                           companyCompleteData.identityConfirmation = "id";
 
-                          passportButton = "Upload your passport";
+                          passportButton = "Upload_your_passport".tr;
                           idPassRadio = 0;
                           companyCompleteData.passportImage = null;
                           setState(() {});
@@ -1378,7 +1416,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     spaceX(20),
                     MyRadioButton(
                       color: Colors.black,
-                      text: "Passport",
+                      text: "passport".tr,
                       groupValue: idPassRadio,
                       value: 1,
                       onChanged: (p0) {
@@ -1387,8 +1425,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           idPassRadio = 1;
                           companyCompleteData.frontSideIdImage = null;
                           companyCompleteData.backSideIdImage = null;
-                          frontIdButton = "Upload front side of ID";
-                          backIdButton = "Upload back side of ID";
+                          frontIdButton = "upload_front_side_of_id".tr;
+                          backIdButton = "upload_back_side_of_id".tr;
                           setState(() {});
                         });
                       },
@@ -1590,6 +1628,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                                     onTap: () {
                                       Get.back();
                                       completedRegisterFlag = true;
+                                      Restart.restartApp();
+
                                       setState(() {});
                                     },
                                     width: 40.0.w,
@@ -1620,11 +1660,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                                       ),
                                       spaceY(20),
                                       coloredText(
-                                          text:
-                                              "You'r data have been completed '",
+                                          text: "your_data_have_been_completed"
+                                              .tr,
                                           fontSize: 12.0.sp),
                                       coloredText(
-                                        text: "successfully",
+                                        text: "successfully".tr,
                                         fontSize: 14.0.sp,
                                         color: Theme.of(context)
                                             .colorScheme
@@ -1716,23 +1756,30 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
 
                         setState(() {});
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: AlignmentDirectional.topStart,
-                            end: AlignmentDirectional.bottomEnd,
-                            colors: [
-                              Theme.of(context).colorScheme.primary,
-                              Theme.of(context).colorScheme.secondary,
-                            ],
+                      child: Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(
+                            Get.locale == const Locale('en', 'US')
+                                ? 0
+                                : math.pi),
+                        child: Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: AlignmentDirectional.topStart,
+                              end: AlignmentDirectional.bottomEnd,
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.secondary,
+                              ],
+                            ),
                           ),
-                        ),
-                        child: const Icon(
-                          FontAwesomeIcons.anglesRight,
-                          color: Colors.white,
-                          size: 22,
+                          child: const Icon(
+                            FontAwesomeIcons.anglesRight,
+                            color: Colors.white,
+                            size: 22,
+                          ),
                         ),
                       ),
                     ),

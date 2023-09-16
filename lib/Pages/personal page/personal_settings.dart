@@ -52,7 +52,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   spaceX(10),
                   coloredText(
                     color: const Color(0xff919191),
-                    text: "Edit profile",
+                    text: "edit_profile".tr,
                   ),
                 ],
               ),
@@ -61,7 +61,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
             spaceY(20),
             primaryBorderedButton(
               onTap: () {
-                Get.to(() => const LanguagesPage(),
+                Get.to(() => LanguagesPage(),
                     transition: Transition.rightToLeft);
               },
               width: 100.w,
@@ -76,7 +76,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   spaceX(10),
                   coloredText(
                     color: const Color(0xff919191),
-                    text: "Languages",
+                    text: "language".tr,
                   ),
                 ],
               ),
@@ -100,7 +100,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   spaceX(10),
                   coloredText(
                     color: const Color(0xff919191),
-                    text: "Change password",
+                    text: "change_password".tr,
                   ),
                 ],
               ),
@@ -120,7 +120,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                   spaceX(10),
                   coloredText(
                     color: const Color(0xff919191),
-                    text: "About application",
+                    text: "about_app".tr,
                   ),
                 ],
               ),
@@ -131,6 +131,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
               onTap: () async {
                 await Utils.deleteToken();
                 await Utils.deleteRemmemberMe();
+                await Utils.deleteFBToken();
                 Get.offAll(() => const LoginPage());
               },
               width: 100.w,

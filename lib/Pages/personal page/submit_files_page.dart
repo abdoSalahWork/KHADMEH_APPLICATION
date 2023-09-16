@@ -460,10 +460,10 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                 ),
                                 spaceY(20),
                                 coloredText(
-                                    text: "The documents have been sent",
+                                    text: "the_documents_have_been_sent".tr,
                                     fontSize: 12.0.sp),
                                 coloredText(
-                                  text: "successfully",
+                                  text: "successfully".tr,
                                   fontSize: 14.0.sp,
                                   color:
                                       Theme.of(context).colorScheme.secondary,
@@ -478,7 +478,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                       Theme.of(context).colorScheme.secondary,
                     ]),
                     text: coloredText(
-                      text: "Submit",
+                      text: "submit".tr,
                       color: Colors.white,
                     ),
                   )

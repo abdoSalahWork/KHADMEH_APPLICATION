@@ -15,8 +15,7 @@ class AdminUserDetailsPage extends StatelessWidget {
       ExpandableController(initialExpanded: false);
   final ExpandableController _expandable3Controller =
       ExpandableController(initialExpanded: false);
-  final ExpandableController _expandable4Controller =
-      ExpandableController(initialExpanded: false);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

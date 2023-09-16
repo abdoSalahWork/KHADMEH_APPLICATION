@@ -6,6 +6,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/cleaning%20companies/cleaning_company.dart';
+import 'package:khedma/Pages/HomePage/cleaning%20companies/controller/cleaning_companies_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/dropdown_menu_button.dart';
 import 'package:khedma/widgets/search_text_field.dart';
@@ -21,6 +22,8 @@ class CleaningCompaniesSearchPage extends StatefulWidget {
 
 class _RecruitmentCompaniesPageSSearchtate
     extends State<CleaningCompaniesSearchPage> {
+  final CleaningCompanyController _cleaningCompanyController = Get.find();
+
   List<String> tags = [
     "closest",
   ];
@@ -47,7 +50,7 @@ class _RecruitmentCompaniesPageSSearchtate
         child: Column(
           children: [
             SearchTextField(
-              hintText: "Search ...",
+              hintText: "${"search".tr} ...",
               prefixIcon: const Icon(
                 EvaIcons.search,
                 color: Color(0xffAFAFAF),

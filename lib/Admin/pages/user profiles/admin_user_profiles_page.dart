@@ -29,10 +29,13 @@ class AdminUserProfilesPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 20.sp,
+                  GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 20.sp,
+                    ),
                   ),
                   coloredText(
                     text: "user_profiles".tr,
@@ -56,7 +59,7 @@ class AdminUserProfilesPage extends StatelessWidget {
                 child: Column(
                   children: [
                     SearchTextField(
-                      hintText: "Search ...",
+                      hintText: "${"search".tr} ...",
                       prefixIcon: const Icon(
                         EvaIcons.search,
                         color: Color(0xffAFAFAF),

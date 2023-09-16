@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/models/drawer_menu_item.dart';
+import 'package:khedma/Admin/pages/account%20statment/admin_account_statment_page.dart';
 import 'package:khedma/Admin/pages/admin_main_page.dart';
+import 'package:khedma/Admin/pages/advertisments/admin_advertisment_page.dart';
+import 'package:khedma/Admin/pages/bookings/admin_bookings_page.dart';
+import 'package:khedma/Admin/pages/categories/admin_categories_page.dart';
+import 'package:khedma/Admin/pages/company%20profiles/admin_company_profiles_page.dart';
 import 'package:khedma/Admin/pages/menu_page.dart';
 import 'package:khedma/Admin/pages/user%20profiles/admin_user_profiles_page.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
-import 'package:khedma/Pages/global_controller.dart';
 import 'package:sizer/sizer.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -17,7 +21,6 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
-  GlobalController _globalController = Get.find();
   MyZoomDrawerController zoomDrawerController =
       Get.put(MyZoomDrawerController());
   DrawerMenuItem _currnetAdminMenuItem = MyAdminMenuItems.userProfiles;
@@ -147,8 +150,24 @@ class _AdminHomePageState extends State<AdminHomePage> {
   void getAdminScreen() {
     switch (_currnetAdminMenuItem) {
       case MyAdminMenuItems.userProfiles:
-        Get.to(() => AdminUserProfilesPage());
+        Get.to(() => const AdminUserProfilesPage());
         break;
+      case MyAdminMenuItems.companyProfiles:
+        Get.to(() => const AdminCompanyProfilesPage());
+        break;
+      case MyAdminMenuItems.categories:
+        Get.to(() => const AdminCategoriesPage());
+        break;
+      case MyAdminMenuItems.bookings:
+        Get.to(() => const AdminBookingsPage());
+        break;
+      case MyAdminMenuItems.advertisements:
+        Get.to(() => const AdminAdvertismentsPage());
+        break;
+      case MyAdminMenuItems.acountStatment:
+        Get.to(() => const AdminAccountStatmentPage());
+        break;
+
       default:
         break;
     }

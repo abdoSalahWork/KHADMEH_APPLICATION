@@ -85,7 +85,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                     CustomDropDownMenuButton(
                       value: "+963",
-                      width: 100,
+                      width: 65.sp,
                       hintPadding: 13,
                       items: [
                         "+963",
