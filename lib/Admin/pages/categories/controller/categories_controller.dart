@@ -1,59 +1,100 @@
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:khedma/Admin/pages/categories/models/categories_model.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
 
 class CategoriesController extends GetxController {
   final Dio dio = Utils().dio;
   List<CategoryModel> categories = [];
+  GlobalController _globalController = Get.find();
 
-  Future createCategory({required CategoryModel category}) async {
+  Future<bool> createCategory({required CategoryModel category}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(category.toJson());
 
-      await dio.post(EndPoints.storeCategory, data: body);
+      PlatformFile? icon = category.image;
 
-      await getCategories();
+      if (icon != null) {
+        body.files.add(MapEntry(
+          "image",
+          await d.MultipartFile.fromFile(
+            icon.path!,
+            filename: icon.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+
+      await dio.post(EndPoints.storeCategory,
+          data: body,
+          options: Options(headers: {"Accept": "application/json"}));
+
+      await _globalController.getCategories();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future deleteCategory(
-      {required CategoryModel category, required int id}) async {
+  Future<bool> deleteCategory({required CategoryModel category}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(category.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
-      await dio.post(EndPoints.deleteCategory(id), data: body);
+      await dio.post(EndPoints.deleteCategory(category.id!),
+          data: body,
+          options: Options(headers: {"Accept": "application/json"}));
 
-      await getCategories();
+      await _globalController.getCategories();
       Get.back();
+      return true;
     } on DioException catch (e) {
       logError(e.message!);
       Get.back();
     }
+    return false;
   }
 
-  Future updateCategory(
-      {required CategoryModel category, required int id}) async {
+  Future<bool> updateCategory({required CategoryModel category}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(category.toJson());
-      body.fields.add(const MapEntry("_method", "PUT"));
-      await dio.post(EndPoints.updateCategory(id), data: body);
 
-      await getCategories();
+      PlatformFile? icon = category.image;
+
+      if (icon != null) {
+        body.files.add(MapEntry(
+          "image",
+          await d.MultipartFile.fromFile(
+            icon.path!,
+            filename: icon.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+
+      body.fields.add(const MapEntry("_method", "PUT"));
+      await dio.post(EndPoints.updateCategory(category.id!),
+          data: body,
+          options: Options(headers: {"Accept": "application/json"}));
+
+      await _globalController.getCategories();
       Get.back();
+      return true;
     } on DioException catch (e) {
       logError(e.message!);
       Get.back();
     }
+    return false;
   }
 
   bool getCategoriesFlag = false;

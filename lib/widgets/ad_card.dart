@@ -3,6 +3,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:sizer/sizer.dart';
@@ -24,6 +25,8 @@ class AdvertismentCard extends StatelessWidget {
   bool pending;
   bool status;
   bool refunds;
+  AdvertismentController _advertismentController = Get.find();
+  // AdminController _adminController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -33,14 +36,19 @@ class AdvertismentCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Image(
-            image: AssetImage("assets/images/adv_background.png"),
+          child: Image(
+            image: NetworkImage(advertismentModel.image),
+            // image: AssetImage("assets/images/adv_background.png"),
           ),
         ),
         spaceY(10.sp),
         adText(
             blackText: "duration".tr,
             greyText: "${advertismentModel.durationByDay} ${"day".tr}"),
+        spaceY(10.sp),
+        adText(
+            blackText: "start_date".tr,
+            greyText: "${advertismentModel.startDate}"),
         spaceY(10.sp),
         adText(
             blackText: "end_date".tr, greyText: "${advertismentModel.endDate}"),
@@ -51,7 +59,9 @@ class AdvertismentCard extends StatelessWidget {
                 ? "company_page".tr
                 : advertismentModel.externalLink!),
         spaceY(10.sp),
-        adText(blackText: "price".tr, greyText: "50\$"),
+        adText(
+            blackText: "price".tr,
+            greyText: "${advertismentModel.amount!} KWD"),
         !admin && refused ? spaceY(10.sp) : Container(),
         !admin && refused
             ? Row(
@@ -107,6 +117,11 @@ class AdvertismentCard extends StatelessWidget {
             ? Row(
                 children: [
                   primaryButton(
+                    onTap: () async {
+                      bool b = await _advertismentController.approveAdvertismnt(
+                          approve: 1, advertismentId: advertismentModel.id!);
+                      if (b) Utils.doneDialog(context: context);
+                    },
                     width: 35.w,
                     height: 30.sp,
                     radius: 20.sp,
@@ -125,53 +140,63 @@ class AdvertismentCard extends StatelessWidget {
                         context: context,
                         actions: [
                           primaryButton(
-                            onTap: () {
+                            onTap: () async {
                               Get.back();
-                              Utils.customDialog(
-                                  actions: [
-                                    primaryButton(
-                                      onTap: () {
-                                        Get.back();
-                                      },
-                                      width: 40.0.w,
-                                      height: 50,
-                                      radius: 10.w,
-                                      color: Colors.black,
-                                      text: coloredText(
-                                        text: "ok".tr,
-                                        color: Colors.white,
+                              bool b = await _advertismentController
+                                  .approveAdvertismnt(
+                                      approve: 0,
+                                      advertismentId: advertismentModel.id!);
+                              if (b) {
+                                Future(
+                                    () => Utils.doneDialog(context: context));
+
+                                Utils.customDialog(
+                                    actions: [
+                                      primaryButton(
+                                        onTap: () async {
+                                          Get.back();
+                                        },
+                                        width: 40.0.w,
+                                        height: 50,
+                                        radius: 10.w,
+                                        color: Colors.black,
+                                        text: coloredText(
+                                          text: "ok".tr,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                  context: context,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        spaceY(20),
-                                        Icon(
-                                          EvaIcons.checkmarkCircle,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          size: 40.sp,
-                                        ),
-                                        spaceY(20),
-                                        coloredText(
-                                            text: "your_note_have_been_sent".tr,
-                                            fontSize: 12.0.sp),
-                                        coloredText(
-                                          text: "successfully".tr,
-                                          fontSize: 14.0.sp,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
-                                      ],
-                                    ),
-                                  ));
+                                    ],
+                                    context: context,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          spaceY(20),
+                                          Icon(
+                                            EvaIcons.checkmarkCircle,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: 40.sp,
+                                          ),
+                                          spaceY(20),
+                                          coloredText(
+                                              text:
+                                                  "your_note_have_been_sent".tr,
+                                              fontSize: 12.0.sp),
+                                          coloredText(
+                                            text: "successfully".tr,
+                                            fontSize: 14.0.sp,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                        ],
+                                      ),
+                                    ));
+                              }
                             },
                             color: Colors.black,
                             width: 45.w,
@@ -243,6 +268,11 @@ class AdvertismentCard extends StatelessWidget {
             ? Row(
                 children: [
                   primaryButton(
+                    onTap: () async {
+                      bool b = await _advertismentController.refundAdvertismnt(
+                          refund: 1, advertismentId: advertismentModel.id!);
+                      if (b) Utils.doneDialog(context: context);
+                    },
                     width: 35.w,
                     height: 30.sp,
                     radius: 20.sp,
@@ -261,53 +291,62 @@ class AdvertismentCard extends StatelessWidget {
                         context: context,
                         actions: [
                           primaryButton(
-                            onTap: () {
+                            onTap: () async {
                               Get.back();
-                              Utils.customDialog(
-                                  actions: [
-                                    primaryButton(
-                                      onTap: () {
-                                        Get.back();
-                                      },
-                                      width: 40.0.w,
-                                      height: 50,
-                                      radius: 10.w,
-                                      color: Colors.black,
-                                      text: coloredText(
-                                        text: "ok".tr,
-                                        color: Colors.white,
+                              bool b = await _advertismentController
+                                  .refundAdvertismnt(
+                                      refund: 0,
+                                      advertismentId: advertismentModel.id!);
+                              if (b) {
+                                Utils.doneDialog(context: context);
+
+                                Utils.customDialog(
+                                    actions: [
+                                      primaryButton(
+                                        onTap: () {
+                                          Get.back();
+                                        },
+                                        width: 40.0.w,
+                                        height: 50,
+                                        radius: 10.w,
+                                        color: Colors.black,
+                                        text: coloredText(
+                                          text: "ok".tr,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                  context: context,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        spaceY(20),
-                                        Icon(
-                                          EvaIcons.checkmarkCircle,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          size: 40.sp,
-                                        ),
-                                        spaceY(20),
-                                        coloredText(
-                                            text: "your_note_have_been_sent".tr,
-                                            fontSize: 12.0.sp),
-                                        coloredText(
-                                          text: "successfully".tr,
-                                          fontSize: 14.0.sp,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
-                                      ],
-                                    ),
-                                  ));
+                                    ],
+                                    context: context,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          spaceY(20),
+                                          Icon(
+                                            EvaIcons.checkmarkCircle,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: 40.sp,
+                                          ),
+                                          spaceY(20),
+                                          coloredText(
+                                              text:
+                                                  "your_note_have_been_sent".tr,
+                                              fontSize: 12.0.sp),
+                                          coloredText(
+                                            text: "successfully".tr,
+                                            fontSize: 14.0.sp,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                        ],
+                                      ),
+                                    ));
+                              }
                             },
                             color: Colors.black,
                             width: 45.w,
@@ -362,8 +401,14 @@ class AdvertismentCard extends StatelessWidget {
                     text: "${"status".tr}:  ",
                   ),
                   coloredText(
-                    text: "accepted".tr,
-                    color: Theme.of(context).colorScheme.secondary,
+                    text: advertismentModel.adminApprove == null ||
+                            advertismentModel.adminApprove == 0
+                        ? "refused".tr
+                        : "accepted".tr,
+                    color: advertismentModel.adminApprove == null ||
+                            advertismentModel.adminApprove == 0
+                        ? Colors.red
+                        : Theme.of(context).colorScheme.secondary,
                   ),
                 ],
               )

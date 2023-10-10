@@ -1,13 +1,28 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/pages/user%20profiles/admin_user_details.dart';
 import 'package:khedma/Utils/utils.dart';
+import 'package:khedma/models/me.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:khedma/widgets/search_text_field.dart';
 import 'package:sizer/sizer.dart';
 
-class AdminUserProfilesPage extends StatelessWidget {
+class AdminUserProfilesPage extends StatefulWidget {
   const AdminUserProfilesPage({super.key});
+
+  @override
+  State<AdminUserProfilesPage> createState() => _AdminUserProfilesPageState();
+}
+
+class _AdminUserProfilesPageState extends State<AdminUserProfilesPage> {
+  final AdminController _adminController = Get.find();
+  @override
+  void initState() {
+    _adminController.getUserProfiles();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,38 +74,120 @@ class AdminUserProfilesPage extends StatelessWidget {
                 child: Column(
                   children: [
                     SearchTextField(
+                      onchanged: (s) {
+                        if (s != null) {
+                          _adminController.handleUserProfilesSearch(name: s);
+                        }
+                      },
                       hintText: "${"search".tr} ...",
                       prefixIcon: const Icon(
                         EvaIcons.search,
                         color: Color(0xffAFAFAF),
                       ),
-                      suffixIcon: GestureDetector(
-                        onTap: () {},
-                        child: const Image(
-                          width: 15,
-                          height: 15,
-                          image: AssetImage("assets/images/filter-icon.png"),
-                        ),
-                      ),
+                      // suffixIcon: GestureDetector(
+                      //   onTap: () {},
+                      //   child: const Image(
+                      //     width: 15,
+                      //     height: 15,
+                      //     image: AssetImage("assets/images/filter-icon.png"),
+                      //   ),
+                      // ),
                     ),
                     spaceY(10.sp),
                     Expanded(
-                      child: ListView.separated(
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (context, index) => const AdminUserCard(
-                          img: "",
-                          name: "Mohammed Ammourie",
-                          phone: "+9561712313",
-                        ),
-                        separatorBuilder: (context, index) => Column(
-                          children: [
-                            spaceY(5.sp),
-                            const Divider(color: Color(0xffE5E5E5)),
-                            spaceY(5.sp),
-                          ],
-                        ),
-                        itemCount: 20,
-                      ),
+                      child: GetBuilder<AdminController>(builder: (c) {
+                        return c.getUserProfilesFlag
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : c.userProfilesToShow.isEmpty
+                                ? const Center(child: NoItemsWidget())
+                                : ListView.separated(
+                                    padding: EdgeInsets.zero,
+                                    itemBuilder: (context, index) =>
+                                        AdminUserCard(
+                                      img: c.userProfilesToShow[index]
+                                          .userInformation!.personalPhoto!,
+                                      name:
+                                          c.userProfilesToShow[index].fullName!,
+                                      phone: c.userProfilesToShow[index]
+                                          .userInformation!.phone!,
+                                      onTap: () async {
+                                        Me? userProfile = await c.showAdminUser(
+                                            id: c.userProfilesToShow[index].id!,
+                                            indicator: true);
+                                        if (userProfile != null) {
+                                          Get.to(() => AdminUserDetailsPage(
+                                                userProfile: userProfile,
+                                              ));
+                                        }
+                                      },
+                                      trailing: Theme(
+                                        data: ThemeData(
+                                            primaryColor: Colors.white),
+                                        child: PopupMenuButton(
+                                          constraints: BoxConstraints(
+                                            minWidth: 2.0 * 56.0,
+                                            maxWidth: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                          ),
+                                          itemBuilder: (BuildContext cc) => [
+                                            PopupMenuItem<int>(
+                                              value: 0,
+                                              child: Row(
+                                                children: [
+                                                  Icon(EvaIcons.slashOutline,
+                                                      size: 15.sp),
+                                                  spaceX(5.sp),
+                                                  coloredText(
+                                                      text:
+                                                          c.userProfilesToShow[index]
+                                                                      .block ==
+                                                                  0
+                                                              ? 'block'.tr
+                                                              : "un_block".tr,
+                                                      fontSize: 12.0.sp),
+                                                ],
+                                              ),
+                                              onTap: () async {
+                                                bool b = await c.blockProfile(
+                                                  id: c
+                                                      .userProfilesToShow[index]
+                                                      .id!,
+                                                  block:
+                                                      c.userProfilesToShow[index]
+                                                                  .block ==
+                                                              0
+                                                          ? 1
+                                                          : 0,
+                                                  userIndicator: 'user',
+                                                );
+                                                if (b) {
+                                                  // ignore: use_build_context_synchronously
+                                                  Utils.doneDialog(
+                                                      context: context);
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                          child: const Icon(
+                                            EvaIcons.moreVertical,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    separatorBuilder: (context, index) =>
+                                        Column(
+                                      children: [
+                                        spaceY(5.sp),
+                                        const Divider(color: Color(0xffE5E5E5)),
+                                        spaceY(5.sp),
+                                      ],
+                                    ),
+                                    itemCount: c.userProfilesToShow.length,
+                                  );
+                      }),
                     ),
                   ],
                 ),
@@ -109,24 +206,27 @@ class AdminUserCard extends StatelessWidget {
     required this.img,
     required this.name,
     required this.phone,
+    this.trailing,
+    this.onTap,
   });
   final String img;
   final String name;
   final String phone;
+  final Widget? trailing;
+  final Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.to(() => AdminUserDetailsPage()),
+      onTap: onTap,
       child: Row(
         children: [
           Container(
             width: 55.0.sp,
             height: 55.0.sp,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              image: DecorationImage(
-                  image: AssetImage("assets/images/image.png"),
-                  fit: BoxFit.cover),
+              image:
+                  DecorationImage(image: NetworkImage(img), fit: BoxFit.cover),
             ),
           ),
           spaceX(10.sp),
@@ -141,8 +241,8 @@ class AdminUserCard extends StatelessWidget {
                   color: const Color(0xff919191)),
             ],
           ),
-          Spacer(),
-          Icon(Icons.more_vert)
+          const Spacer(),
+          trailing ?? Container()
         ],
       ),
     );

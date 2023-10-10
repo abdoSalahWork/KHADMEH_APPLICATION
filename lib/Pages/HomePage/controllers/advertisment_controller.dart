@@ -14,8 +14,10 @@ import 'package:sizer/sizer.dart';
 class AdvertismentController extends GetxController {
   final Dio dio = Utils().dio;
   List<AdvertismentModel> companyAds = [];
+  List<AdvertismentModel> pendingCompanyAds = [];
+  List<AdvertismentModel> refusedCompanyAds = [];
 
-  Future<bool> createAdvertisment(
+  Future<String?> createAdvertisment(
       {required AdvertismentModel advertisment}) async {
     try {
       Utils.circularIndicator();
@@ -33,7 +35,7 @@ class AdvertismentController extends GetxController {
           ),
         ));
       }
-      await dio.post(
+      var res = await dio.post(
         EndPoints.storeCompanyAdvertisment,
         data: body,
         options: Options(
@@ -46,7 +48,7 @@ class AdvertismentController extends GetxController {
 
       // await getAdvertisments();
       Get.back();
-      return true;
+      return res.data['InvoiceURL'];
     } on DioException catch (e) {
       BuildContext context = Get.context!;
       List<String> errorText = [];
@@ -88,9 +90,8 @@ class AdvertismentController extends GetxController {
             ),
           ),
           context: context);
-
-      return false;
     }
+    return null;
   }
 
   bool getCompanyAdvertismentsFlag = false;
@@ -114,6 +115,16 @@ class AdvertismentController extends GetxController {
         tmp.add(t);
       }
       companyAds = tmp;
+      pendingCompanyAds = companyAds
+          .where((element) =>
+              (element.adminApprove == null || element.adminApprove == 0) &&
+              DateTime.parse(element.startDate!).isAfter(DateTime.now()))
+          .toList();
+      refusedCompanyAds = companyAds
+          .where((element) =>
+              (element.adminApprove == null || element.adminApprove == 0) &&
+              DateTime.parse(element.startDate!).isBefore(DateTime.now()))
+          .toList();
       logSuccess("Company Advertisments get done");
       getCompanyAdvertismentsFlag = false;
       update();
@@ -122,5 +133,103 @@ class AdvertismentController extends GetxController {
       update();
       logError("Company Advertisments failed");
     }
+  }
+
+  List<AdvertismentModel> adminAds = [];
+  List<AdvertismentModel> adminRefundAds = [];
+  List<AdvertismentModel> adminRequestedAds = [];
+
+  bool getAdminAdvertismentsFlag = false;
+  Future getAdminAdvertisments() async {
+    try {
+      getAdminAdvertismentsFlag = true;
+      String? token = await Utils.readToken();
+
+      var res = await dio.get(
+        EndPoints.getAllAdminAdvertisments,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        ),
+      );
+      List<AdvertismentModel> tmp = [];
+      for (var i in res.data['data']) {
+        AdvertismentModel t = AdvertismentModel.fromJson(i);
+        tmp.add(t);
+      }
+      adminAds = tmp;
+      adminRequestedAds =
+          adminAds.where((element) => element.adminApprove == null).toList();
+      adminRefundAds =
+          adminAds.where((element) => element.refund == 0).toList();
+      logSuccess("Company Advertisments get done");
+      getAdminAdvertismentsFlag = false;
+      update();
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      getAdminAdvertismentsFlag = false;
+      update();
+      logError("Company Advertisments failed");
+    }
+  }
+
+  Future<bool> approveAdvertismnt(
+      {required int approve, required int advertismentId}) async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData.fromMap({
+        "admin_approve": approve,
+        "_method": "PUT",
+      });
+
+      await Dio().post(
+        EndPoints.updateAdminAdvertisment(advertismentId),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+          },
+        ),
+      );
+
+      await getAdminAdvertisments();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      Get.back();
+      logError(e.response!.data);
+    }
+    return false;
+  }
+
+  Future<bool> refundAdvertismnt(
+      {required int refund, required int advertismentId}) async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData.fromMap({
+        "admin_refund": refund,
+        "_method": "PUT",
+      });
+
+      await Dio().post(
+        EndPoints.refundAdminAdvertisment(advertismentId),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+          },
+        ),
+      );
+
+      await getAdminAdvertisments();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      Get.back();
+      logError(e.response!.data);
+    }
+    return false;
   }
 }

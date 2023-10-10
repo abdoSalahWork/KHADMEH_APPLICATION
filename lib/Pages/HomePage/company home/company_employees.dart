@@ -3,10 +3,14 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/company%20home/add_employee_page.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_employees_filter.dart';
 import 'package:khedma/Pages/HomePage/company%20home/emloyee_details.dart';
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/company_employee_card.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:khedma/widgets/search_text_field.dart';
 import 'package:sizer/sizer.dart';
 
@@ -20,18 +24,12 @@ class CompanyEmployeesSearchPage extends StatefulWidget {
 
 class _CompanyEmployeesSearchPageState
     extends State<CompanyEmployeesSearchPage> {
-  List<String> tags = [];
-  List<String> categories = ["Per hour", "Per year"];
-  String selectedCategory = "Per hour";
-  List<String> options = [
-    "cleaner",
-    "driver",
-    "chef",
-    "babysitter",
-    "nurse",
-    "sewing",
-    "washing",
-  ];
+  EmployeesController _employeesController = Get.find();
+  @override
+  void initState() {
+    _employeesController.getCompanyEmployees();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +52,11 @@ class _CompanyEmployeesSearchPageState
                 EvaIcons.search,
                 color: Color(0xffAFAFAF),
               ),
+              onchanged: (s) {
+                if (s != null) {
+                  _employeesController.handleCompanyEmployeesSearch(name: s);
+                }
+              },
               suffixIcon: GestureDetector(
                 onTap: () {
                   FocusScope.of(context).unfocus();
@@ -67,72 +70,124 @@ class _CompanyEmployeesSearchPageState
               ),
             ),
             spaceY(2.0.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Icon(
-                  EvaIcons.personAddOutline,
-                ),
-                spaceX(10),
-                coloredText(
-                  text: "Add new",
-                  fontSize: 13.0.sp,
-                  decoration: TextDecoration.underline,
-                  fontWeight: FontWeight.w500,
-                ),
-              ],
+            GestureDetector(
+              onTap: () {
+                Get.to(() => const AddEmployeePage());
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Icon(
+                    EvaIcons.personAddOutline,
+                  ),
+                  spaceX(10),
+                  coloredText(
+                    text: "create_new".tr,
+                    fontSize: 13.0.sp,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ],
+              ),
             ),
             spaceY(2.0.h),
             Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.zero,
-                primary: false,
-                itemBuilder: (context, index) => CompanyEmployeeCard(
-                  onTap: () => Get.to(() => EmployeeDetailsPage()),
-                  booked: index % 2 == 0,
-                  trailing: Theme(
-                    data: ThemeData(primaryColor: Colors.white),
-                    child: PopupMenuButton(
-                      constraints: BoxConstraints(
-                        minWidth: 2.0 * 56.0,
-                        maxWidth: MediaQuery.of(context).size.width,
-                      ),
-                      itemBuilder: (BuildContext context) => [
-                        PopupMenuItem<int>(
-                          value: 0,
-                          child: coloredText(
-                              text: 'More details', fontSize: 11.0.sp),
-                          onTap: () {},
-                        ),
-                        PopupMenuItem<int>(
-                          value: 1,
-                          child: coloredText(text: 'Edit', fontSize: 11.0.sp),
-                          onTap: () {},
-                        ),
-                        PopupMenuItem<int>(
-                          value: 2,
-                          child: coloredText(text: 'Delete', fontSize: 12.0.sp),
-                          onTap: () {},
-                        ),
-                      ],
-                      child: const Icon(
-                        EvaIcons.moreVertical,
-                      ),
-                    ),
-                  ),
-                ),
-                separatorBuilder: (context, index) => Column(
-                  children: [
-                    spaceY(1.0.h),
-                    const Divider(
-                      color: Color(0xffEBEBEB),
-                      thickness: 1,
-                    ),
-                    spaceY(1.0.h),
-                  ],
-                ),
-                itemCount: 10,
-              ),
+              child: GetBuilder<EmployeesController>(builder: (c) {
+                return c.getCompanyEmployeesFlag
+                    ? const Center(child: CircularProgressIndicator())
+                    : c.companyEmployeeToShow.isEmpty
+                        ? const NoItemsWidget()
+                        : ListView.separated(
+                            padding: EdgeInsets.zero,
+                            primary: false,
+                            itemBuilder: (context, index) =>
+                                CompanyEmployeeCard(
+                              trailing: Theme(
+                                data: ThemeData(primaryColor: Colors.white),
+                                child: PopupMenuButton(
+                                  constraints: BoxConstraints(
+                                    minWidth: 2.0 * 56.0,
+                                    maxWidth: MediaQuery.of(context).size.width,
+                                  ),
+                                  itemBuilder: (BuildContext ctx) => [
+                                    PopupMenuItem<int>(
+                                      value: 0,
+                                      child: coloredText(
+                                          text: 'more_details'.tr,
+                                          fontSize: 11.0.sp),
+                                      onTap: () async {
+                                        EmployeeModel? em =
+                                            await _employeesController
+                                                .showCompanyEmployee(
+                                                    id: c
+                                                        .companyEmployeeToShow[
+                                                            index]
+                                                        .id!,
+                                                    indicator: true);
+                                        if (em != null) {
+                                          Get.to(() => EmployeeDetailsPage(
+                                                employee: em,
+                                              ));
+                                        }
+                                      },
+                                    ),
+                                    PopupMenuItem<int>(
+                                      value: 1,
+                                      child: coloredText(
+                                          text: 'edit'.tr, fontSize: 11.0.sp),
+                                      onTap: () async {
+                                        EmployeeModel? em =
+                                            await _employeesController
+                                                .showCompanyEmployee(
+                                                    id: c
+                                                        .companyEmployeeToShow[
+                                                            index]
+                                                        .id!,
+                                                    indicator: true);
+                                        if (em != null) {
+                                          Get.to(() => AddEmployeePage(
+                                                employeeToEdit: em,
+                                              ));
+                                        }
+                                      },
+                                    ),
+                                    PopupMenuItem<int>(
+                                      value: 2,
+                                      child: coloredText(
+                                          text: 'delete'.tr, fontSize: 12.0.sp),
+                                      onTap: () async {
+                                        bool x = await _employeesController
+                                            .deleteEmployee(
+                                                employee:
+                                                    c.companyEmployeeToShow[
+                                                        index]);
+                                        if (x) {
+                                          Utils.doneDialog(context: context);
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                  child: const Icon(
+                                    EvaIcons.moreVertical,
+                                  ),
+                                ),
+                              ),
+                              employee: _employeesController
+                                  .companyEmployeeToShow[index],
+                            ),
+                            separatorBuilder: (context, index) => Column(
+                              children: [
+                                spaceY(1.0.h),
+                                const Divider(
+                                  color: Color(0xffEBEBEB),
+                                  thickness: 1,
+                                ),
+                                spaceY(1.0.h),
+                              ],
+                            ),
+                            itemCount: c.companyEmployeeToShow.length,
+                          );
+              }),
             )
           ],
         ),

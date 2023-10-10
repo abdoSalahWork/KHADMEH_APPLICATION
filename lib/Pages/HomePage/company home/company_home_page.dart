@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'dart:math' as math; // import this
 import 'dart:math';
 import 'dart:ui';
@@ -14,12 +16,15 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Admin/pages/jobs/controller/jobs_controller.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_personal_page.dart';
+import 'package:khedma/Pages/HomePage/company%20home/company_services.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
+import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/company_register_model.dart';
 import 'package:khedma/Utils/notification_service.dart';
 import 'package:khedma/widgets/company_request.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:restart_app/restart_app.dart';
 // import 'package:pusher_client/pusher_client.dart';
@@ -44,10 +49,11 @@ class CompanyHomePage extends StatefulWidget {
   State<CompanyHomePage> createState() => _CompanyHomePageState();
 }
 
-class _CompanyHomePageState extends State<CompanyHomePage> {
+class _CompanyHomePageState extends State<CompanyHomePage>
+    with SingleTickerProviderStateMixin {
   PageController pageController = PageController(initialPage: 0);
-  final EmployeesController _employeesController =
-      Get.put(EmployeesController());
+
+  ChatController _chatController = Get.find();
   var errors = {};
   String ownerphoneCode = "";
   String ownerNationality = "";
@@ -64,13 +70,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
 
   bool completedRegisterFlag = false;
   int _currentStep = 0;
-  List<OverView> overView = [
-    OverView(150, "All employees"),
-    OverView(150, "Available"),
-    OverView(150, "Pending"),
-    OverView(150, "Booked"),
-    OverView(150, "Retrieved"),
-  ];
+
   late double h;
   late double h2;
   late double h3;
@@ -111,11 +111,30 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
 
   final NotificationService notificationService = Utils.notificationService;
   final JobsController _jobsController = Get.find();
+  EmployeesController _employeesController = Get.find();
+  String meCompanyType = "recruitment";
+  // AddressessController _adressControllerController = Get.find();
+  List<String> tabs = [
+    "employees_requests",
+    "reservation_requests",
+  ];
+  late TabController tabController;
+  int selectedTabIndex = 0;
   @override
   void initState() {
+    tabController = TabController(length: 2, vsync: this);
+    meCompanyType = _globalController.me.companyInformation!.companyType!;
+    _chatController.getChats();
     notificationService.initializePlatformNotifications();
+    meCompanyType == "recruitment"
+        ? _employeesController
+            .getCompanyEmployees()
+            .then((value) => _globalController.getRecruitmentCompanyHomePage())
+        : _globalController.getRecruitmentCompanyHomePage();
+
     completedRegisterFlag = _globalController.me.companyInformation != null;
-    _jobsController.getjobs();
+    _globalController.getjobs();
+
     h2 = 100.0.h;
     h = 75.0.h;
     h3 = 65.0.h;
@@ -129,11 +148,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     //   "e9cb090a00d813850650",
     //   PusherOptions(
     //     // if local on android use 10.0.2.2
-    //     // host: 'https://wazzfny.online',
+    //     // host: 'https://khdmah.online',
     //     cluster: "eu",
     //     encrypted: true,
     //     // auth: PusherAuth(
-    //     //   'https://wazzfny.online/api/pusher/auth',
+    //     //   'https://khdmah.online/api/pusher/auth',
     //     //   headers: {
     //     //     'Authorization':
     //     //         'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd2F6emZueS5vbmxpbmVcL2FwaVwvbG9naW4iLCJpYXQiOjE2OTMwNTM4MjYsImV4cCI6MTY5MzA1NzQyNiwibmJmIjoxNjkzMDUzODI2LCJqdGkiOiJoMTJaeEowN2g3NjJRNWRzIiwic3ViIjo0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3Iiwicm9sZV90eXBlIjoidXNlciIsImNvbXBsaXRlX2RhdGEiOnRydWV9.qSFSmGHFx9XHjlTtVuILNvtLTxRAutZnnNcv7IzKgpQ',
@@ -207,173 +226,231 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
               right: 20,
               top: 55,
             ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () => Get.to(() => CompanyEmployeesSearchPage()),
-                      child: Icon(
-                        EvaIcons.people,
-                        color: const Color(0xffD1D1D1),
-                        size: 25.0.sp,
+            child: GetBuilder<GlobalController>(builder: (c) {
+              return Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      meCompanyType == "cleaning"
+                          ? GestureDetector(
+                              onTap: () =>
+                                  Get.to(() => const CompanyServicesPage()),
+                              child: Icon(
+                                EvaIcons.grid,
+                                color: const Color(0xffD1D1D1),
+                                size: 25.0.sp,
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () =>
+                                  Get.to(() => CompanyEmployeesSearchPage()),
+                              child: Icon(
+                                EvaIcons.people,
+                                color: const Color(0xffD1D1D1),
+                                size: 25.0.sp,
+                              ),
+                            ),
+                      spaceX(10),
+                      Badge(
+                        smallSize: 10,
+                        child: GestureDetector(
+                          onTap: () => Get.to(() => NotificationsPage(),
+                              transition: Transition.downToUp),
+                          child: Icon(
+                            EvaIcons.bell,
+                            color: const Color(0xffD1D1D1),
+                            size: 25.0.sp,
+                          ),
+                        ),
                       ),
-                    ),
-                    spaceX(10),
-                    Badge(
-                      smallSize: 10,
-                      child: GestureDetector(
-                        onTap: () => Get.to(() => NotificationsPage(),
-                            transition: Transition.downToUp),
+                      spaceX(10),
+                      GestureDetector(
                         child: Icon(
-                          EvaIcons.bell,
+                          EvaIcons.messageCircle,
                           color: const Color(0xffD1D1D1),
-                          size: 25.0.sp,
+                          size: 22.0.sp,
                         ),
+                        onTap: () => Get.to(() => const MessagesPage()),
                       ),
-                    ),
-                    spaceX(10),
-                    GestureDetector(
-                      child: Icon(
-                        EvaIcons.messageCircle,
-                        color: const Color(0xffD1D1D1),
-                        size: 22.0.sp,
-                      ),
-                      onTap: () => Get.to(() => const MessagesPage()),
-                    ),
-                    spaceX(10),
-                    GestureDetector(
-                      onTap: () => Get.to(
-                          () => const CompanyPersonalPage(
-                              employeeType: EmployeeType.clean),
-                          transition: Transition.downToUp),
-                      child: Container(
-                        width: 45,
-                        height: 45,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          // border: Border.all(
-                          //   width: 1,
-                          //   color: const Color(0xffD1D1D1),
-                          // ),
-                          image: DecorationImage(
-                            image: AssetImage("assets/images/image.png"),
-                            fit: BoxFit.cover,
+                      spaceX(10),
+                      GestureDetector(
+                        onTap: () => Get.to(
+                            () => const CompanyPersonalPage(
+                                employeeType: EmployeeType.clean),
+                            transition: Transition.downToUp),
+                        child: Container(
+                          width: 45,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            // border: Border.all(
+                            //   width: 1,
+                            //   color: const Color(0xffD1D1D1),
+                            // ),
+                            image: DecorationImage(
+                              image: NetworkImage(_globalController
+                                  .me.companyInformation!.companyLogo!),
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                spaceY(1.5.h),
-                GestureDetector(
-                  onTap: () {
-                    Get.to(() => const AddAdvertismentPage());
-                  },
-                  child: Container(
-                    width: 100.w,
-                    height: 40.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      image: const DecorationImage(
-                          image: AssetImage("assets/images/adv_background.png"),
-                          fit: BoxFit.cover),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        coloredText(
-                          text: "add_your".tr,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16.sp,
-                          color: Colors.white,
-                        ),
-                        spaceY(10),
-                        coloredText(
-                          text: "ad".tr,
-                          textstyle: TextStyle(
-                            fontSize: 24.sp,
-                            color: Colors.white,
-                            fontFamily: "Gabriola",
-                            fontStyle: FontStyle.normal,
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
-                ),
-                spaceY(10),
-                GestureDetector(
-                  onTap: () {
-                    // Utils.showBigTextNotification(
-                    //     title: "title",
-                    //     body: "body",
-                    //     fln: Utils.flutterLocalNotificationsPlugin);
-                  },
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: coloredText(text: "Overview", fontSize: 16.0.sp),
-                  ),
-                ),
-                SizedBox(
-                  height: 30.w,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) => Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 2,
-                            blurRadius: 3,
-                            offset: const Offset(
-                                0, 0), // changes position of shadow
+                  Expanded(
+                    child: c.getCompanyHomePageFlag
+                        ? const Center(child: CircularProgressIndicator())
+                        : Column(
+                            children: [
+                              spaceY(1.5.h),
+                              GestureDetector(
+                                onTap: () {
+                                  Get.to(() => const AddAdvertismentPage());
+                                },
+                                child: Container(
+                                  width: 100.w,
+                                  height: 40.w,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    image: const DecorationImage(
+                                        image: AssetImage(
+                                            "assets/images/adv_background.png"),
+                                        fit: BoxFit.cover),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      coloredText(
+                                        text: "add_your".tr,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16.sp,
+                                        color: Colors.white,
+                                      ),
+                                      spaceY(10),
+                                      coloredText(
+                                        text: "ad".tr,
+                                        textstyle: TextStyle(
+                                          fontSize: 24.sp,
+                                          color: Colors.white,
+                                          fontFamily: "Gabriola",
+                                          fontStyle: FontStyle.normal,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              spaceY(10),
+                              GestureDetector(
+                                onTap: () {
+                                  // Utils.showBigTextNotification(
+                                  //     title: "title",
+                                  //     body: "body",
+                                  //     fln: Utils.flutterLocalNotificationsPlugin);
+                                },
+                                child: Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: coloredText(
+                                      text: "overview".tr, fontSize: 16.0.sp),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 30.w,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (ctx, index) => Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.3),
+                                          spreadRadius: 2,
+                                          blurRadius: 3,
+                                          offset: const Offset(0,
+                                              0), // changes position of shadow
+                                        ),
+                                      ],
+                                    ),
+                                    width: 45.w,
+                                    height: 25.w,
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 10,
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        coloredText(
+                                          text: c.overView[index].number
+                                              .toString(),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          fontSize: 14.sp,
+                                        ),
+                                        spaceY(10),
+                                        coloredText(
+                                          text: c.overView[index].string,
+                                          fontSize: 14.sp,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  itemCount: c.overView.length,
+                                ),
+                              ),
+                              spaceY(10),
+                              // Align(
+                              //   alignment: AlignmentDirectional.centerStart,
+                              //   child: coloredText(
+                              //       text: "requests".tr, fontSize: 15.sp),
+                              // ),
+                              TabBar(
+                                  dividerColor: Colors.grey,
+                                  // indicatorColor: Colors.black,
+                                  indicator: UnderlineTabIndicator(
+                                      borderSide: BorderSide(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  )),
+                                  indicatorSize: TabBarIndicatorSize.tab,
+                                  labelPadding: EdgeInsets.zero,
+                                  // isScrollable: true,
+                                  controller: tabController,
+                                  onTap: (value) {
+                                    selectedTabIndex = value;
+                                    setState(() {});
+                                  },
+                                  tabs: List<Widget>.generate(
+                                    tabController.length,
+                                    (index) => Tab(
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 5),
+                                        child: coloredText(
+                                            fontSize: 10.sp,
+                                            text: tabs[index].tr,
+                                            color: selectedTabIndex == index
+                                                ? Colors.black
+                                                : Colors.grey),
+                                      ),
+                                    ),
+                                  )),
+                              Expanded(
+                                  child: TabBarView(
+                                      controller: tabController,
+                                      children: tapList)),
+                              // Expanded(
+                              //   child:         )
+                            ],
                           ),
-                        ],
-                      ),
-                      width: 45.w,
-                      height: 25.w,
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 10,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          coloredText(
-                            text: overView[index].number.toString(),
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 14.sp,
-                          ),
-                          spaceY(10),
-                          coloredText(
-                            text: overView[index].string,
-                            fontSize: 14.sp,
-                          ),
-                        ],
-                      ),
-                    ),
-                    itemCount: overView.length,
                   ),
-                ),
-                spaceY(10),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: coloredText(text: "Requests", fontSize: 15.sp),
-                ),
-                Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    itemBuilder: (context, index) => CompanyRequestWidget(),
-                    separatorBuilder: (context, index) => spaceY(15),
-                    itemCount: 20,
-                  ),
-                )
-              ],
-            ),
+                ],
+              );
+            }),
           ),
           Visibility(
             visible: !completedRegisterFlag,
@@ -1831,6 +1908,46 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           ),
           title: _currentStep == 2 ? 'docs'.tr : "",
         ),
+      ];
+
+  List<Widget> get tapList => [
+        GetBuilder<GlobalController>(builder: (c) {
+          return c.companyHomePage.requests!.isEmpty
+              ? const Center(child: NoItemsWidget())
+              : ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  itemBuilder: (ctx, index) => CompanyRequestWidget(
+                    image: _globalController.companyHomePage.requests![index]
+                        .document!.user!.userInformation!.personalPhoto!,
+                    userName: _globalController.companyHomePage.requests![index]
+                        .document!.user!.fullName!,
+                    employeeId: _globalController
+                        .companyHomePage.requests![index].document!.employeeId!,
+                    docsId: _globalController
+                        .companyHomePage.requests![index].document!.id!,
+                  ),
+                  separatorBuilder: (ctx, index) => _globalController
+                              .companyHomePage.requests![index].document ==
+                          null
+                      ? Container()
+                      : spaceY(10.sp),
+                  itemCount: _globalController.companyHomePage.requests!.length,
+                );
+        }),
+        GetBuilder<GlobalController>(builder: (c) {
+          return c.getReservationRequestFlag
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : c.reservationRequests.isEmpty
+                  ? const Center(child: NoItemsWidget())
+                  : ListView.separated(
+                      itemBuilder: (ctx, index) => ReservationRequestWidget(
+                          reservationExtintionModel:
+                              c.reservationRequests[index]),
+                      separatorBuilder: (ctx, index) => spaceY(10.sp),
+                      itemCount: c.reservationRequests.length);
+        }),
       ];
 }
 

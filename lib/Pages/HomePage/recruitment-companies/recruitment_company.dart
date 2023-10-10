@@ -2,21 +2,34 @@ import 'package:chips_choice/chips_choice.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/HomePage/models/company_model.dart';
+import 'package:khedma/Pages/chat%20page/chat_page.dart';
+import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
+import 'package:khedma/Pages/chat%20page/model/my_message.dart';
+import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
 import '../../../widgets/profile_card.dart';
-import '../../chat%20page/messages_page.dart';
 
 class RecruitmentCompany extends StatefulWidget {
-  const RecruitmentCompany({super.key});
-
+  const RecruitmentCompany({super.key, required this.company});
+  final CompanyModel company;
   @override
   State<RecruitmentCompany> createState() => _RecruitmentCompanyState();
 }
 
 class _RecruitmentCompanyState extends State<RecruitmentCompany>
     with SingleTickerProviderStateMixin {
+  ChatController _chatController = Get.find();
+  GlobalController _globalController = Get.find();
+  List<EmployeeModel> employeesToShow = [];
+  List<EmployeeModel> employees = [];
+  List<EmployeeModel> employeesOfficeWarrantly = [];
+  List<EmployeeModel> employeesIsOffer = [];
+  bool visible = true;
   List<String> tags = [
     "employees",
   ];
@@ -26,21 +39,40 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
     "office_warrently",
     "offers",
   ];
-  List<String> tabs = [
-    "cleaner",
-    "driver",
-    "chef",
-    "babysitter",
-    "nurse",
-    "sewing",
-    "washing",
-  ];
+  List<EmployeeModel> employeesPerJobList = [];
+  List<String?> jobsForFilter = [];
+  late List<String> tabs = [];
   late TabController tabController;
   int selectedTabIndex = 0;
   bool offerFlag = false;
   @override
   void initState() {
-    tabController = TabController(length: 7, vsync: this);
+    tabs = _globalController.jobs
+        .map((e) =>
+            Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+        .toList();
+    for (var employee in widget.company.companyInformation!.employees!) {
+      jobsForFilter.addAll(employee.jobs!
+          .where((job) =>
+              tabs[selectedTabIndex] == job.nameAr! ||
+              tabs[selectedTabIndex] == job.nameEn!)
+          .toList()
+          .map((e) => e.nameEn)
+          .toList());
+    }
+
+    employees = widget.company.companyInformation!.employees!
+        .where((element) => element.isOffer == 0)
+        .toList();
+    employeesOfficeWarrantly = widget.company.companyInformation!.employees!
+        .where((element) => element.isOffer == 0)
+        .toList();
+    employeesIsOffer = widget.company.companyInformation!.employees!
+        .where((element) => element.isOffer == 1)
+        .toList();
+
+    employeesToShow = employees;
+    tabController = TabController(length: tabs.length, vsync: this);
     super.initState();
   }
 
@@ -94,7 +126,27 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                         color: Colors.white,
                         size: 22.0.sp,
                       ),
-                      onTap: () => Get.to(() => const MessagesPage()),
+                      onTap: () async {
+                        MyChat? chat = await _chatController.storeChat(
+                            id: widget.company.id!);
+                        if (chat != null) {
+                          Get.to(
+                            () => ChatPage(
+                              chatId: chat.id!,
+                              receiverId: _globalController.me.id ==
+                                      chat.participants![0].userId
+                                  ? chat.participants![1].chatId!
+                                  : chat.participants![0].chatId!,
+                              recieverName: _globalController.me.id ==
+                                      chat.participants![0].userId
+                                  ? chat.participants![1].user!.fullName!
+                                  : chat.participants![0].user!.fullName!,
+                              recieverImage: '',
+                            ),
+                          );
+                        }
+                        // Get.to(() => const MessagesPage());
+                      },
                     ),
                   ],
                 ),
@@ -104,14 +156,15 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                   children: [
                     GestureDetector(
                       // onTap: () => Get.to(() => const RecruitmentCompany(),
-                      //     transition: Transition.rightToLeftWithFade),
+                      //     ),
                       child: Container(
                         width: 75.0.sp,
                         height: 75.0.sp,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                              image: AssetImage("assets/images/image.png"),
+                              image: NetworkImage(widget
+                                  .company.companyInformation!.companyLogo!),
                               fit: BoxFit.cover),
                         ),
                       ),
@@ -122,7 +175,7 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           coloredText(
-                              text: 'lorem ipsun',
+                              text: widget.company.fullName!,
                               color: Colors.white,
                               fontSize: 16.0.sp),
                           spaceY(6),
@@ -136,7 +189,11 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                               ),
                               spaceX(3),
                               coloredText(
-                                text: 'Philippines',
+                                text: Get.locale == const Locale('en', 'US')
+                                    ? widget.company.companyInformation!.city!
+                                        .nameEn!
+                                    : widget.company.companyInformation!.city!
+                                        .nameAr!,
                                 color: Theme.of(context).colorScheme.secondary,
                                 fontSize: 14.0.sp,
                               ),
@@ -153,7 +210,8 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                               ),
                               spaceX(5),
                               coloredText(
-                                text: "+965 5632 4224",
+                                text: widget
+                                    .company.companyInformation!.companyPhone!,
                                 fontSize: 13.0.sp,
                                 color: const Color(0xffD4D4D4),
                               ),
@@ -170,7 +228,8 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                               ),
                               spaceX(5),
                               coloredText(
-                                text: "4.5",
+                                text: widget.company.reviewCompanyCount!
+                                    .toString(),
                                 fontSize: 13.0.sp,
                                 color: Colors.white,
                               ),
@@ -196,6 +255,14 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
 
                   choiceBuilder: (item, i) => GestureDetector(
                     onTap: () {
+                      if (item.label == "employees") {
+                        employeesToShow = employees;
+                      } else if (item.label == "office_warrently") {
+                        employeesToShow = employeesOfficeWarrantly;
+                      } else {
+                        employeesToShow = employeesIsOffer;
+                      }
+                      setState(() {});
                       if (!tags.contains(item.label)) {
                         tags = [];
                         tags.add(item.label);
@@ -247,6 +314,45 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                   controller: tabController,
                   onTap: (value) {
                     selectedTabIndex = value;
+                    jobsForFilter = [];
+                    for (var employee
+                        in widget.company.companyInformation!.employees!) {
+                      jobsForFilter.addAll(employee.jobs!
+                          .where((job) =>
+                              tabs[selectedTabIndex] == job.nameAr! ||
+                              tabs[selectedTabIndex] == job.nameEn!)
+                          .toList()
+                          .map((e) => e.nameEn)
+                          .toList());
+                    }
+
+                    // employeesPerJobList = [];
+                    // setState(() {});
+
+                    // for (var employee
+                    //     in widget.company.companyInformation!.employees!) {
+                    //   List tmp = employee.jobs!
+                    //       .where((job) =>
+                    //           tabs[selectedTabIndex] == job.nameAr! ||
+                    //           tabs[selectedTabIndex] == job.nameEn!)
+                    //       .toList();
+                    //   if (tmp.isNotEmpty) {
+                    //     visible = true;
+                    //   } else {
+                    //     visible = false;
+                    //   }
+                    // }
+                    // for (var element
+                    //     in widget.company.companyInformation!.employees!) {
+                    //   List tmp = element.jobs!
+                    //       .where((job) =>
+                    //           tabs[selectedTabIndex] == job.nameAr! ||
+                    //           tabs[selectedTabIndex] == job.nameEn!)
+                    //       .toList();
+                    //   if (tmp.isNotEmpty) {
+                    //     employeesPerJobList.add(element);
+                    //   }
+                    // }
                     setState(() {});
                   },
                   tabs: List<Widget>.generate(
@@ -263,92 +369,36 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                     ),
                   )),
               Expanded(
-                child: TabBarView(controller: tabController, children: [
-                  ListView.separated(
-                    padding: const EdgeInsets.all(20),
-                    itemBuilder: (context, index) => ProfileCard(
-                        trailing: const Icon(
-                          EvaIcons.heart,
-                          color: Color(0xffBFBFBF),
-                        ),
-                        isOffer: offerFlag,
-                        employeeType: EmployeeType.recruitment),
-                    separatorBuilder: (context, index) => spaceY(10),
-                    itemCount: 10,
-                  ),
-                  ListView.separated(
-                    padding: const EdgeInsets.all(20),
-                    itemBuilder: (context, index) => ProfileCard(
-                        trailing: const Icon(
-                          EvaIcons.heart,
-                          color: Color(0xffBFBFBF),
-                        ),
-                        isOffer: offerFlag,
-                        employeeType: EmployeeType.recruitment),
-                    separatorBuilder: (context, index) => spaceY(10),
-                    itemCount: 10,
-                  ),
-                  ListView.separated(
-                    padding: const EdgeInsets.all(20),
-                    itemBuilder: (context, index) => ProfileCard(
-                        trailing: const Icon(
-                          EvaIcons.heart,
-                          color: Color(0xffBFBFBF),
-                        ),
-                        isOffer: offerFlag,
-                        employeeType: EmployeeType.recruitment),
-                    separatorBuilder: (context, index) => spaceY(10),
-                    itemCount: 10,
-                  ),
-                  ListView.separated(
-                    padding: const EdgeInsets.all(20),
-                    itemBuilder: (context, index) => ProfileCard(
-                        trailing: const Icon(
-                          EvaIcons.heart,
-                          color: Color(0xffBFBFBF),
-                        ),
-                        isOffer: offerFlag,
-                        employeeType: EmployeeType.recruitment),
-                    separatorBuilder: (context, index) => spaceY(10),
-                    itemCount: 10,
-                  ),
-                  ListView.separated(
-                    padding: const EdgeInsets.all(20),
-                    itemBuilder: (context, index) => ProfileCard(
-                        trailing: const Icon(
-                          EvaIcons.heart,
-                          color: Color(0xffBFBFBF),
-                        ),
-                        isOffer: offerFlag,
-                        employeeType: EmployeeType.recruitment),
-                    separatorBuilder: (context, index) => spaceY(10),
-                    itemCount: 10,
-                  ),
-                  ListView.separated(
-                    padding: const EdgeInsets.all(20),
-                    itemBuilder: (context, index) => ProfileCard(
-                        trailing: const Icon(
-                          EvaIcons.heart,
-                          color: Color(0xffBFBFBF),
-                        ),
-                        isOffer: offerFlag,
-                        employeeType: EmployeeType.recruitment),
-                    separatorBuilder: (context, index) => spaceY(10),
-                    itemCount: 10,
-                  ),
-                  ListView.separated(
-                    padding: const EdgeInsets.all(20),
-                    itemBuilder: (context, index) => ProfileCard(
-                        trailing: const Icon(
-                          EvaIcons.heart,
-                          color: Color(0xffBFBFBF),
-                        ),
-                        isOffer: offerFlag,
-                        employeeType: EmployeeType.recruitment),
-                    separatorBuilder: (context, index) => spaceY(10),
-                    itemCount: 10,
-                  ),
-                ]),
+                child: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    controller: tabController,
+                    children: List<Widget>.generate(
+                      tabController.length,
+                      (index) => employeesToShow.isEmpty
+                          ? const NoItemsWidget()
+                          : ListView.separated(
+                              padding: const EdgeInsets.all(20),
+                              itemBuilder: (context, index) => Visibility(
+                                visible: employeesToShow[index]
+                                    .jobs!
+                                    .where((element) =>
+                                        jobsForFilter
+                                            .contains(element.nameAr) ||
+                                        jobsForFilter.contains(element.nameEn))
+                                    .isNotEmpty,
+                                child: ProfileCard(
+                                  employee: employeesToShow[index],
+                                  trailing: const Icon(
+                                    EvaIcons.heart,
+                                    color: Color(0xffBFBFBF),
+                                  ),
+                                  isOffer: offerFlag,
+                                ),
+                              ),
+                              separatorBuilder: (context, index) => spaceY(10),
+                              itemCount: employeesToShow.length,
+                            ),
+                    )),
               )
             ],
           ),

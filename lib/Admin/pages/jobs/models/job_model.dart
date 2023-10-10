@@ -1,27 +1,29 @@
-class JobModel {
-  int? id;
-  String? nameEn;
-  String? nameAr;
-  String? createdAt;
-  String? updatedAt;
+import 'package:khedma/models/global_admin_items_model.dart';
 
-  JobModel({this.id, this.nameEn, this.nameAr, this.createdAt, this.updatedAt});
+class JobModel extends GlobalAdminItem {
+  var icon;
+  JobModel({
+    int? id,
+    String? nameEn,
+    String? nameAr,
+    String? createdAt,
+    String? updatedAt,
+    var icon,
+  }) : super(
+            id: id,
+            nameAr: nameAr,
+            nameEn: nameEn,
+            createdAt: createdAt,
+            updatedAt: updatedAt);
 
-  JobModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    nameEn = json['name_en'];
-    nameAr = json['name_ar'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+  JobModel.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+    icon = "https://khdmah.online/api/images/job/${json['icon']}";
   }
 
+  @override
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name_en'] = this.nameEn;
-    data['name_ar'] = this.nameAr;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = super.toJson();
+    // data['icon'] = icon;
     return data;
   }
 }

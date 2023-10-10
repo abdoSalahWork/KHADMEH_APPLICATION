@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/models/drawer_menu_item.dart';
+import 'package:khedma/Admin/pages/Addressess/admin_addresses_page.dart';
+import 'package:khedma/Admin/pages/about/admin_about_page.dart';
 import 'package:khedma/Admin/pages/account%20statment/admin_account_statment_page.dart';
 import 'package:khedma/Admin/pages/admin_main_page.dart';
 import 'package:khedma/Admin/pages/advertisments/admin_advertisment_page.dart';
 import 'package:khedma/Admin/pages/bookings/admin_bookings_page.dart';
 import 'package:khedma/Admin/pages/categories/admin_categories_page.dart';
+import 'package:khedma/Admin/pages/commissions/admin_commissions_page.dart';
 import 'package:khedma/Admin/pages/company%20profiles/admin_company_profiles_page.dart';
+import 'package:khedma/Admin/pages/contact/admin_contact_page.dart';
+import 'package:khedma/Admin/pages/dropdowns/admin_dropdowns_page.dart';
+import 'package:khedma/Admin/pages/languages/admin_languages_page.dart';
 import 'package:khedma/Admin/pages/menu_page.dart';
 import 'package:khedma/Admin/pages/user%20profiles/admin_user_profiles_page.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
@@ -166,6 +172,24 @@ class _AdminHomePageState extends State<AdminHomePage> {
         break;
       case MyAdminMenuItems.acountStatment:
         Get.to(() => const AdminAccountStatmentPage());
+        break;
+      case MyAdminMenuItems.addresses:
+        Get.to(() => const AdminAddressesPage());
+        break;
+      case MyAdminMenuItems.languages:
+        Get.to(() => const AdminLanguagesPage());
+        break;
+      case MyAdminMenuItems.contactUs:
+        Get.to(() => const AdminContactUsPage());
+        break;
+      case MyAdminMenuItems.about:
+        Get.to(() => const AdminAboutPage());
+        break;
+      case MyAdminMenuItems.commissions:
+        Get.to(() => const AdminCommissionsPage());
+        break;
+      case MyAdminMenuItems.dropDowns:
+        Get.to(() => const AdminDropDownsPage());
         break;
 
       default:

@@ -4,37 +4,42 @@ import 'package:custom_rating_bar/custom_rating_bar.dart' as r;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:khedma/Pages/HomePage/cleaning%20companies/controller/cleaning_companies_controller.dart';
+import 'package:khedma/Pages/HomePage/cleaning%20companies/cart_page.dart';
+import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
+import 'package:khedma/Pages/HomePage/models/company_model.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/widgets/cleaning_company_service_widget.dart';
 import 'package:khedma/widgets/my_rating_bar.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
 import '../../chat%20page/messages_page.dart';
 
 class CleaningCompany extends StatefulWidget {
-  const CleaningCompany({super.key});
-
+  const CleaningCompany({super.key, required this.cleaningCompany});
+  final CompanyModel cleaningCompany;
   @override
   State<CleaningCompany> createState() => _CleaningCompanyState();
 }
 
 class _CleaningCompanyState extends State<CleaningCompany> {
   PageController _pageController = PageController(initialPage: 0);
-  final CleaningCompanyController _cleaningCompanyController = Get.find();
+  final CompaniesController _cleaningCompanyController = Get.find();
+  final GlobalController _globalController = Get.find();
 
   List<String> tags = [
-    "rate_view".tr,
+    "services".tr,
   ];
 
   List<String> options = [
-    "rate_view".tr,
     "services".tr,
+    "rate_view".tr,
   ];
 
   @override
   void initState() {
-    _cleaningCompanyController.servicesBooked.clear();
+    _cleaningCompanyController.geCompanyPrice();
 
     super.initState();
   }
@@ -49,8 +54,12 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                   useMaterial3: false,
                 ),
                 child: FloatingActionButton(
-                  onPressed: () {},
-                  child: GetBuilder<CleaningCompanyController>(builder: (c) {
+                  onPressed: () {
+                    Get.to(() => CartPage(
+                          companyId: widget.cleaningCompany.id!,
+                        ));
+                  },
+                  child: GetBuilder<CompaniesController>(builder: (c) {
                     return badges.Badge(
                       showBadge: c.servicesBooked.isNotEmpty,
                       badgeContent: coloredText(
@@ -138,14 +147,15 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                       children: [
                         GestureDetector(
                           // onTap: () => Get.to(() => const CleaningCompany(),
-                          //     transition: Transition.rightToLeftWithFade),
+                          //     ),
                           child: Container(
                             width: 75.0.sp,
                             height: 75.0.sp,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                  image: AssetImage("assets/images/image.png"),
+                                  image: NetworkImage(widget.cleaningCompany
+                                      .companyInformation!.companyLogo),
                                   fit: BoxFit.cover),
                             ),
                           ),
@@ -156,7 +166,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               coloredText(
-                                  text: 'lorem2 ipsun',
+                                  text: widget.cleaningCompany.fullName!,
                                   color: Colors.white,
                                   fontSize: 16.0.sp),
                               spaceY(6),
@@ -171,7 +181,16 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                   ),
                                   spaceX(3),
                                   coloredText(
-                                    text: 'Philippines',
+                                    text: _globalController.cities
+                                        .where((element) =>
+                                            widget.cleaningCompany
+                                                .companyInformation!.cityId ==
+                                            element.id)
+                                        .map((e) => Get.locale ==
+                                                const Locale('en', 'US')
+                                            ? e.nameEn!
+                                            : e.nameAr!)
+                                        .first,
                                     color:
                                         Theme.of(context).colorScheme.secondary,
                                     fontSize: 14.0.sp,
@@ -189,7 +208,8 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                   ),
                                   spaceX(5),
                                   coloredText(
-                                    text: "+965 5632 4224",
+                                    text: widget.cleaningCompany
+                                        .companyInformation!.companyPhone!,
                                     fontSize: 13.0.sp,
                                     color: const Color(0xffD4D4D4),
                                   ),
@@ -206,7 +226,9 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                   ),
                                   spaceX(5),
                                   coloredText(
-                                    text: "4.5",
+                                    text: widget
+                                        .cleaningCompany.reviewCompanyCount!
+                                        .toString(),
                                     fontSize: 13.0.sp,
                                     color: Colors.white,
                                   ),
@@ -283,6 +305,46 @@ class _CleaningCompanyState extends State<CleaningCompany> {
   }
 
   List<Widget> get pageList => [
+        GetBuilder<CompaniesController>(builder: (c) {
+          return widget.cleaningCompany.cleaningServices!.isEmpty
+              ? const Center(child: NoItemsWidget())
+              : ListView.separated(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  itemBuilder: (context, index) => CleaningServiceWidget(
+                    added: _cleaningCompanyController.servicesBooked
+                        .where((element) =>
+                            element.serviceId ==
+                            widget.cleaningCompany.cleaningServices![index].id!)
+                        .isNotEmpty,
+                    index: index,
+                    price:
+                        widget.cleaningCompany.cleaningServices![index].price!,
+                    name: _globalController.categories
+                        .where((element) =>
+                            element.id ==
+                            widget.cleaningCompany.cleaningServices![index]
+                                .serviceId)
+                        .map(
+                          (e) => Get.locale == const Locale('en', 'US')
+                              ? e.nameEn!
+                              : e.nameAr!,
+                        )
+                        .first,
+                    image: _globalController.categories
+                        .where((element) =>
+                            element.id ==
+                            widget.cleaningCompany.cleaningServices![index]
+                                .serviceId)
+                        .first
+                        .image,
+                    serviceId:
+                        widget.cleaningCompany.cleaningServices![index].id!,
+                  ),
+                  separatorBuilder: (context, index) => spaceY(20.sp),
+                  itemCount: widget.cleaningCompany.cleaningServices!.length,
+                );
+        }),
         ListView(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
           children: [
@@ -403,13 +465,5 @@ class _CleaningCompanyState extends State<CleaningCompany> {
             spaceY(20),
           ],
         ),
-        ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-          itemBuilder: (context, index) => CleaningServiceWidget(
-              added: _cleaningCompanyController.servicesBooked.contains(index),
-              index: index),
-          separatorBuilder: (context, index) => spaceY(20.sp),
-          itemCount: 10,
-        )
       ];
 }

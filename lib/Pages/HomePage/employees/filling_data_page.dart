@@ -1,37 +1,49 @@
 import 'package:chips_choice/chips_choice.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:khedma/Admin/controllers/admin_controller.dart';
+import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
+import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
+import 'package:khedma/Themes/themes.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
-import 'pay_page.dart';
 
 // ignore: must_be_immutable
 class FillingDataPage extends StatefulWidget {
-  const FillingDataPage({super.key});
-
+  const FillingDataPage({super.key, required this.companyId});
+  final int companyId;
   @override
   State<FillingDataPage> createState() => _FillingDataPageState();
 }
 
 class _FillingDataPageState extends State<FillingDataPage> {
-  final List<String> items = [
-    'Hours',
-    'Days',
-    'Years',
-  ];
-
+  TextEditingController startDateController = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  CompaniesController _companiesController = Get.find();
+  AdminController _adminController = Get.find();
   List<String> tags = [
-    "Company Headquarters",
+    "company_headquarters",
   ];
 
   List<String> options = [
-    "Company Headquarters",
-    "Representative from the company",
-    "Representative from the application",
+    "company_headquarters",
+    "representative_from_the_company",
+    "representative_from_the_application",
   ];
 
   String? selectedValue;
+  int diffPrice = 0;
+  int reciptMethod = 0;
+  @override
+  void initState() {
+    diffPrice = int.parse(_companiesController.companyPrice);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,94 +61,143 @@ class _FillingDataPageState extends State<FillingDataPage> {
           primary: false,
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            coloredText(
-              text: "Determind hours required:",
-            ),
-            spaceY(10),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
-                    width: 25.0.w,
-                    child: TextFormField(
-                      textAlign: TextAlign.center,
-                      initialValue: "2",
-                      decoration: InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Color(0xffE3E3E3),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Color(0xffE3E3E3),
-                          ),
-                        ),
-                        isDense: true,
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  width: 40.w,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      spaceY(10.sp),
+                      coloredText(
+                        text: "${"start_date".tr}:",
                       ),
-                    )),
-                spaceX(15),
-                coloredText(text: "Hours", fontSize: 15.0.sp)
-                // SizedBox(
-                //   width: 35.0.w,
-                //   child: DropdownButtonFormField2<String>(
-                //     value: items[0],
-                //     isExpanded: true,
-                //     decoration: InputDecoration(
-                //       isDense: true,
-                //       // Add Horizontal padding using menuItemStyleData.padding so it matches
-                //       // the menu padding when button's width is not specified.
-                //       contentPadding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
+                      spaceY(5.sp),
+                      SizedBox(
+                        height: 40.sp,
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          onTap: () async {
+                            DateTime? x = await showDatePicker(
+                                builder: (context, child) => Theme(
+                                      data: ThemeData(
+                                        colorScheme: ColorScheme.fromSeed(
+                                          seedColor: AppThemes.colorCustom,
+                                        ),
+                                      ),
+                                      child: child!,
+                                    ),
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now()
+                                    .add(const Duration(days: 30)));
+                            if (x != null) {
+                              startDateController.text =
+                                  DateFormat('y/MM/dd').format(x);
+                            }
+                          },
+                          // maxLines: 3,
+                          controller: startDateController,
+                          readOnly: true,
 
-                //       focusedBorder: OutlineInputBorder(
-                //         borderRadius: BorderRadius.circular(8),
-                //         borderSide: const BorderSide(
-                //           color: Color(0xffE3E3E3),
-                //         ),
-                //       ),
-                //       enabledBorder: OutlineInputBorder(
-                //         borderRadius: BorderRadius.circular(8),
-                //         borderSide: const BorderSide(
-                //           color: Color(0xffE3E3E3),
-                //         ),
-                //       ),
-                //       // Add more decoration..
-                //     ),
-                //     items: items
-                //         .map((item) => DropdownMenuItem<String>(
-                //               value: item,
-                //               child: coloredText(text: item, fontSize: 15),
-                //             ))
-                //         .toList(),
-                //     onChanged: (value) {
-                //       //Do something when selected item is changed.
-                //     },
-                //     buttonStyleData: const ButtonStyleData(
-                //       padding: EdgeInsets.only(right: 8),
-                //     ),
-                //     iconStyleData: const IconStyleData(
-                //       icon: Icon(
-                //         Icons.arrow_drop_down,
-                //         color: Colors.black45,
-                //       ),
-                //       iconSize: 24,
-                //     ),
-                //     dropdownStyleData: DropdownStyleData(
-                //       decoration: BoxDecoration(
-                //         borderRadius: BorderRadius.circular(15),
-                //       ),
-                //     ),
-                //     menuItemStyleData: const MenuItemStyleData(
-                //       padding: EdgeInsets.symmetric(horizontal: 16),
-                //     ),
-                //   ),
-                // ),
+                          decoration: InputDecoration(
+                            hintText: 'YYYY/MM/DD',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xffE3E3E3),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xffE3E3E3),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 40.w,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      spaceY(10.sp),
+                      coloredText(
+                        text: "${"end_date".tr}:",
+                      ),
+                      spaceY(5.sp),
+                      SizedBox(
+                        height: 40.sp,
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          onTap: () async {
+                            DateTime? x = await showDatePicker(
+                                builder: (context, child) => Theme(
+                                      data: ThemeData(
+                                        colorScheme: ColorScheme.fromSeed(
+                                          seedColor: AppThemes.colorCustom,
+                                        ),
+                                      ),
+                                      child: child!,
+                                    ),
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now()
+                                    .add(const Duration(days: 30)));
+                            if (x != null) {
+                              endDateController.text =
+                                  DateFormat('y/MM/dd').format(x);
+                            }
+                          },
+                          // maxLines: 3,
+                          controller: endDateController,
+                          readOnly: true,
+
+                          decoration: InputDecoration(
+                            hintText: 'YYYY/MM/DD',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xffE3E3E3),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xffE3E3E3),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-            spaceY(15),
+            spaceY(10.sp),
+            Row(
+              children: [
+                Icon(
+                  EvaIcons.info,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                spaceX(5.sp),
+                coloredText(
+                  text: "Work hours per day is 8 max",
+                  fontSize: 11.sp,
+                  color: Theme.of(context).colorScheme.secondary,
+                )
+              ],
+            ),
+            spaceY(10.sp),
             coloredText(
               text: "Determine receipt method:",
             ),
@@ -157,6 +218,18 @@ class _FillingDataPageState extends State<FillingDataPage> {
                   if (!tags.contains(item.label)) {
                     tags = [];
                     tags.add(item.label);
+                    if (item.label == "company_headquarters") {
+                      diffPrice = 0;
+                      reciptMethod = 0;
+                    } else if (item.label ==
+                        "representative_from_the_application") {
+                      diffPrice =
+                          int.parse(_adminController.settingAdmin.khedmaPrice!);
+                      reciptMethod = 2;
+                    } else {
+                      diffPrice = int.parse(_companiesController.companyPrice);
+                      reciptMethod = 1;
+                    }
                   }
 
                   setState(() {});
@@ -183,64 +256,83 @@ class _FillingDataPageState extends State<FillingDataPage> {
                 ),
               ),
             ),
-            spaceY(15),
+            spaceY(10.sp),
             coloredText(
-              text: "Type the details:",
+              text: "${"address".tr}:",
             ),
-            spaceY(10),
-            TextField(
-              maxLines: 3,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xffE3E3E3),
+            spaceY(5.sp),
+            SizedBox(
+              height: 40.sp,
+              child: TextFormField(
+                // maxLines: 3,
+                controller: addressController,
+
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xffE3E3E3),
+                    ),
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xffE3E3E3),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xffE3E3E3),
+                    ),
                   ),
                 ),
               ),
             ),
-            spaceY(15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                coloredText(
-                  text: "${"total".tr} :",
-                  fontSize: 13.0.sp,
-                ),
-                spaceX(10),
-                primaryButton(
-                  color:
-                      Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                  width: 30.0.w,
-                  height: 45,
-                  radius: 8,
-                  text: coloredText(
-                      text: "30\$",
-                      fontSize: 13.0.sp,
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-              ],
-            ),
             spaceY(10.0.h),
-            primaryButton(
-                onTap: () {
-                  Get.to(() => const PayPage(employeeType: EmployeeType.clean));
-                },
-                width: 80.0.w,
-                gradient: LinearGradient(colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.secondary,
-                ]),
-                text: coloredText(
-                  text: "apply".tr,
-                  color: Colors.white,
-                ))
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    coloredText(text: "${"total".tr}:"),
+                    coloredText(
+                        text:
+                            "${_companiesController.getCartTotal() + diffPrice} KWD",
+                        color: Theme.of(context).colorScheme.secondary),
+                  ],
+                ),
+                primaryButton(
+                    onTap: () async {
+                      Map<String, String>? x =
+                          await _companiesController.checkOut(
+                        id: widget.companyId,
+                        startDate: startDateController.text,
+                        endDate: endDateController.text,
+                        address: addressController.text,
+                        receiptMethod: reciptMethod,
+                      );
+                      if (x != null) {
+                        //String invoiceId = x.keys.first;
+                        Uri url = Uri.parse(x.values.first);
+
+                        await launchUrl(url,
+                            mode: LaunchMode.externalApplication);
+
+                        await Future.delayed(const Duration(milliseconds: 100));
+                        while (WidgetsBinding.instance.lifecycleState !=
+                            AppLifecycleState.resumed) {
+                          await Future.delayed(
+                              const Duration(milliseconds: 100));
+                        }
+                        Get.offAll(() => UserHomePage());
+                      }
+                    },
+                    width: 60.0.w,
+                    gradient: LinearGradient(colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.secondary,
+                    ]),
+                    text: coloredText(
+                      text: "checkout".tr,
+                      color: Colors.white,
+                    )),
+              ],
+            )
           ],
         ),
       ),

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
+import 'package:khedma/Pages/HomePage/employees/models/employees_filter.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:sizer/sizer.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import '../../../Utils/utils.dart';
 import '../../../widgets/dropdown_menu_button.dart';
-import '../../../widgets/radio_button.dart';
 
 class CompanyEmployeesFilterPage extends StatefulWidget {
   const CompanyEmployeesFilterPage({super.key});
@@ -20,28 +20,24 @@ class CompanyEmployeesFilterPage extends StatefulWidget {
 
 class _CompanyEmployeesFilterPageState
     extends State<CompanyEmployeesFilterPage> {
-  SfRangeValues values = const SfRangeValues(20, 60);
-
-  TextEditingController maxController = TextEditingController();
-
-  TextEditingController minController = TextEditingController();
+  final EmployeesController _employeesController = Get.find();
+  final GlobalController _globalController = Get.find();
   int genderGroupValue = 0;
   String nationality = "";
   String status = "";
-  List<String> jobs = [
-    "cleaner",
-    "driver",
-    "chef",
-    "babysitter",
-    "nurse",
-    "sewing",
-    "washing",
-  ];
+  List<String> jobs = [];
   List<String> selectedJobs = [];
+
   @override
   void initState() {
-    maxController.text = values.end.toString();
-    minController.text = values.start.toString();
+    _employeesController.employeesFilter = EmployeesFilter();
+    _employeesController.employeesFilter.maritalStatus = 1;
+    _employeesController.employeesFilter.maritalStatus = 1;
+
+    jobs = _globalController.jobs
+        .map((e) =>
+            Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+        .toList();
     super.initState();
   }
 
@@ -62,7 +58,10 @@ class _CompanyEmployeesFilterPageState
         padding: const EdgeInsets.all(20),
         primary: false,
         children: [
-          coloredText(fontSize: 14.0.sp, text: "Job name"),
+          coloredText(
+            fontSize: 14.0.sp,
+            text: "job".tr,
+          ),
           spaceY(5),
           Theme(
             data: Theme.of(context).copyWith(
@@ -136,13 +135,7 @@ class _CompanyEmployeesFilterPageState
                               setState(() {});
                             },
                             child: Container(
-                              child: Center(
-                                  child: coloredText(
-                                      text: selectedJobs[index],
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary)),
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 20,
                               ),
                               decoration: BoxDecoration(
@@ -156,6 +149,12 @@ class _CompanyEmployeesFilterPageState
                                     .secondary
                                     .withOpacity(0.05),
                               ),
+                              child: Center(
+                                  child: coloredText(
+                                      text: selectedJobs[index],
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary)),
                             ),
                           ),
                       separatorBuilder: (context, index) => spaceX(10.sp),
@@ -170,13 +169,25 @@ class _CompanyEmployeesFilterPageState
               items: c.countries
                   .map(
                     (e) => DropdownMenuItem<String>(
-                      value: e.nameEn,
-                      child: coloredText(text: e.nameEn!, color: Colors.black),
+                      value: Get.locale == const Locale('en', 'US')
+                          ? e.nameEn
+                          : e.nameAr,
+                      child: coloredText(
+                          text: Get.locale == const Locale('en', 'US')
+                              ? e.nameEn!
+                              : e.nameAr!,
+                          color: Colors.black),
                     ),
                   )
                   .toList(),
               onChanged: (p0) {
                 nationality = p0!;
+                _employeesController.employeesFilter.nationalityId =
+                    _globalController.countries
+                        .where((element) =>
+                            element.nameAr == p0 || element.nameEn == p0)
+                        .first
+                        .id;
                 setState(() {});
               },
               borderc: Border.all(color: const Color(0xffE3E3E3)),
@@ -185,21 +196,25 @@ class _CompanyEmployeesFilterPageState
             );
           }),
           spaceY(10.sp),
-          coloredText(fontSize: 14.0.sp, text: "Status".tr),
+          coloredText(fontSize: 14.0.sp, text: "status".tr),
           spaceY(5.sp),
           GetBuilder<GlobalController>(builder: (c) {
             return CustomDropDownMenuButton(
               value: status == "" ? null : status,
-              items: c.countries
+              items: [
+                "booked".tr,
+                "not_booked".tr,
+              ]
                   .map(
                     (e) => DropdownMenuItem<String>(
-                      value: e.nameEn,
-                      child: coloredText(text: e.nameEn!, color: Colors.black),
+                      value: e,
+                      child: coloredText(text: e, color: Colors.black),
                     ),
                   )
                   .toList(),
               onChanged: (p0) {
                 status = p0!;
+                _employeesController.employeesFilter.status = p0;
                 setState(() {});
               },
               borderc: Border.all(color: const Color(0xffE3E3E3)),
@@ -207,35 +222,41 @@ class _CompanyEmployeesFilterPageState
               padding: const EdgeInsetsDirectional.symmetric(horizontal: 10),
             );
           }),
-          spaceY(10.sp),
-          coloredText(fontSize: 14.0.sp, text: "gender".tr),
-          Row(
-            children: [
-              MyRadioButton(
-                text: "male".tr,
-                value: 0,
-                color: Theme.of(Get.context!).colorScheme.secondary,
-                groupValue: genderGroupValue,
-                onChanged: (p0) {
-                  genderGroupValue = p0;
-                  setState(() {});
-                },
-              ),
-              spaceX(10),
-              MyRadioButton(
-                color: Theme.of(Get.context!).colorScheme.secondary,
-                text: "female".tr,
-                value: 1,
-                groupValue: genderGroupValue,
-                onChanged: (p0) {
-                  genderGroupValue = p0;
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
+          // spaceY(10.sp),
+          // coloredText(fontSize: 14.0.sp, text: "gender".tr),
+          // Row(
+          //   children: [
+          //     MyRadioButton(
+          //       text: "male".tr,
+          //       value: 0,
+          //       color: Theme.of(Get.context!).colorScheme.secondary,
+          //       groupValue: genderGroupValue,
+          //       onChanged: (p0) {
+          //         genderGroupValue = p0;
+          //         setState(() {});
+          //       },
+          //     ),
+          //     spaceX(10),
+          //     MyRadioButton(
+          //       color: Theme.of(Get.context!).colorScheme.secondary,
+          //       text: "female".tr,
+          //       value: 1,
+          //       groupValue: genderGroupValue,
+          //       onChanged: (p0) {
+          //         genderGroupValue = p0;
+          //         setState(() {});
+          //       },
+          //     ),
+          //   ],
+          // ),
+
           spaceY(20.sp),
           primaryButton(
+              onTap: () {
+                _employeesController.employeesFilter.jobs = selectedJobs;
+                _employeesController.applyCompanyFilter();
+                Get.back();
+              },
               height: 50,
               width: 50.0.w,
               gradient: LinearGradient(

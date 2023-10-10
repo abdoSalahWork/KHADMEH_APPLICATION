@@ -23,7 +23,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   TextEditingController emailController = TextEditingController();
   bool phoneEmailFlag = false;
   String phoneCode = "";
-  final PasswordController _passwordController = Get.put(PasswordController());
+  final PasswordController _passwordController = Get.find();
 
   final List<FocusNode> _focusNodes = [
     FocusNode(),

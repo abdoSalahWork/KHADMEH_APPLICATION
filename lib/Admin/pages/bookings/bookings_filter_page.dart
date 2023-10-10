@@ -217,7 +217,7 @@ class _BookingsFilterPageState extends State<BookingsFilterPage> {
             children: [
               SearchTextField(
                 textAlign: TextAlign.center,
-                hintText: "0 \$",
+                hintText: "0 KWD",
                 controller: minController,
                 width: 40.0.w,
                 height: 45,
@@ -235,7 +235,7 @@ class _BookingsFilterPageState extends State<BookingsFilterPage> {
               ),
               SearchTextField(
                 textAlign: TextAlign.center,
-                hintText: "5000 \$",
+                hintText: "5000 KWD",
                 controller: maxController,
                 width: 40.0.w,
                 height: 45,

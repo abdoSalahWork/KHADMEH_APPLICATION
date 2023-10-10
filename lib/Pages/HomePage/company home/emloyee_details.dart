@@ -2,12 +2,15 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/zero_app_bar.dart';
 import 'package:sizer/sizer.dart';
 
 class EmployeeDetailsPage extends StatelessWidget {
-  EmployeeDetailsPage({super.key});
+  EmployeeDetailsPage({super.key, required this.employee});
+  final EmployeeModel employee;
   final ExpandableController _expandableController =
       ExpandableController(initialExpanded: true);
   final ExpandableController _expandable2Controller =
@@ -16,6 +19,8 @@ class EmployeeDetailsPage extends StatelessWidget {
       ExpandableController(initialExpanded: false);
   final ExpandableController _expandable4Controller =
       ExpandableController(initialExpanded: false);
+
+  final GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,8 +94,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                   ],
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                      image: AssetImage("assets/images/image.png"),
-                      fit: BoxFit.contain),
+                      image: NetworkImage(employee.image), fit: BoxFit.contain),
                 ),
               ),
               spaceY(20.sp),
@@ -115,7 +119,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                     header: Padding(
                       padding: const EdgeInsets.all(10),
                       child: coloredText(
-                        text: "Personal info",
+                        text: "personal_info".tr,
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
@@ -133,44 +137,86 @@ class EmployeeDetailsPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const DetailsItemWidget(
-                            title1: "Full name",
-                            subTitle1: "Mohammed Hussien Ammourie",
-                            title2: "Number of children",
-                            subTitle2: "10",
+                          DetailsItemWidget(
+                            title1: "name".tr,
+                            subTitle1: employee.name,
+                            title2: "no_of_children".tr,
+                            subTitle2: employee.numOfChildren.toString(),
                           ),
                           spaceY(12.sp),
                           DetailsItemWidget(
                             title1: "nationality".tr,
-                            subTitle1: "Filipino",
-                            title2: "Religion",
-                            subTitle2: "Muslim",
+                            subTitle1: _globalController.countries
+                                .where((element) =>
+                                    element.id == employee.nationalityId)
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .first,
+                            title2: "religion".tr,
+                            subTitle2: _globalController.relegions
+                                .where((element) =>
+                                    element.id == employee.religionId)
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .first,
                           ),
                           spaceY(12.sp),
                           DetailsItemWidget(
                             title1: "date_of_birth".tr,
-                            subTitle1: "03/21/1992",
-                            title2: "Birthplace",
-                            subTitle2: "Filipino",
+                            subTitle1: employee.dateOfBirth,
+                            title2: "birth_place".tr,
+                            subTitle2: _globalController.countries
+                                .where((element) =>
+                                    element.id == employee.birthPlace)
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .first,
                           ),
                           spaceY(12.sp),
-                          const DetailsItemWidget(
-                            title1: "Living town",
-                            subTitle1: "lorem ipsum",
-                            title2: "Marital status",
-                            subTitle2: "Single",
+                          DetailsItemWidget(
+                            title1: "living_town".tr,
+                            subTitle1: _globalController.cities
+                                .where((element) =>
+                                    element.id == employee.livingTown)
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .first,
+                            title2: "marital_status".tr,
+                            subTitle2: _globalController.maritalStatusList
+                                .where((element) =>
+                                    element.id == employee.maritalStatus)
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .first,
                           ),
                           spaceY(12.sp),
-                          const DetailsItemWidget(
-                            title1: "Weight",
-                            subTitle1: "50 KG",
-                            title2: "Height",
-                            subTitle2: "170 CM",
+                          DetailsItemWidget(
+                            title1: "weight".tr,
+                            subTitle1: "${employee.weight} kg",
+                            title2: "height".tr,
+                            subTitle2: "${employee.hight} cm",
                           ),
                           spaceY(12.sp),
-                          const DetailsItemWidget(
-                            title1: "complexion",
-                            subTitle1: "White",
+                          DetailsItemWidget(
+                            title1: "complexion".tr,
+                            subTitle1: _globalController.complexionList
+                                .where((element) =>
+                                    element.id == employee.complexionId)
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .first,
                           ),
                         ],
                       ),
@@ -200,7 +246,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                     header: Padding(
                       padding: const EdgeInsets.all(10),
                       child: coloredText(
-                        text: "Passport data",
+                        text: "passport_data".tr,
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
@@ -218,18 +264,25 @@ class EmployeeDetailsPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const DetailsItemWidget(
-                            title1: "Passport No.",
-                            subTitle1: "A69123452",
-                            title2: "Issue date",
-                            subTitle2: "21/03/2022",
+                          DetailsItemWidget(
+                            title1: "passport_number".tr,
+                            subTitle1: employee.passportNum,
+                            title2: "issue_date".tr,
+                            subTitle2: employee.passportIssueDate,
                           ),
                           spaceY(12.sp),
-                          const DetailsItemWidget(
-                            title1: "Place of Issue ",
-                            subTitle1: "Filipino",
-                            title2: "Expiry date",
-                            subTitle2: "21/03/2022",
+                          DetailsItemWidget(
+                            title1: "issue_place".tr,
+                            subTitle1: _globalController.countries
+                                .where((element) =>
+                                    element.id == employee.passportPlaceOfIssue)
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .first,
+                            title2: "expiry_date".tr,
+                            subTitle2: employee.passportExpiryDate,
                           ),
                         ],
                       ),
@@ -279,34 +332,48 @@ class EmployeeDetailsPage extends StatelessWidget {
                         children: [
                           DetailsItemWidget(
                             width1: 80.w,
-                            title1: "Job name",
+                            title1: "job".tr,
+                            subTitle1: employee.jobs!
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .toList()
+                                .join(", "),
+                          ),
+                          spaceY(12.sp),
+                          // DetailsItemWidget(
+                          //   width1: 80.w,
+                          //   title1: "Monthly salary",
+                          //   subTitle1: "0 KD",
+                          // ),
+                          // spaceY(12.sp),
+                          DetailsItemWidget(
+                            width1: 80.w,
+                            title1: "contract_duration".tr,
                             subTitle1:
-                                "cleaner, driver, chef, babysitter, nurse, sewing, washing, ",
+                                "${employee.contractDuration} ${"years".tr}",
                           ),
                           spaceY(12.sp),
                           DetailsItemWidget(
                             width1: 80.w,
-                            title1: "Monthly salary",
-                            subTitle1: "0 KD",
+                            title1: "previous_work_abroad".tr,
+                            subTitle1: employee.previousWorkAbroad == 1
+                                ? "yes".tr
+                                : "no".tr,
                           ),
-                          spaceY(12.sp),
-                          DetailsItemWidget(
-                            width1: 80.w,
-                            title1: "Contract duration",
-                            subTitle1: "Select",
-                          ),
-                          spaceY(12.sp),
-                          DetailsItemWidget(
-                            width1: 80.w,
-                            title1: "Previous work abroad",
-                            subTitle1: "Yes",
-                          ),
-                          spaceY(12.sp),
-                          DetailsItemWidget(
-                            width1: 80.w,
-                            title1: "Duration of employment",
-                            subTitle1: "1 Year",
-                          ),
+                          employee.previousWorkAbroad == 0
+                              ? Container()
+                              : spaceY(12.sp),
+                          employee.previousWorkAbroad == 0
+                              ? Container()
+                              : DetailsItemWidget(
+                                  width1: 80.w,
+                                  title1: "duration_of_employment",
+                                  subTitle1:
+                                      employee.durationOfEmployment.toString() +
+                                          "years".tr,
+                                ),
                           spaceY(12.sp),
                         ],
                       ),
@@ -336,7 +403,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                     header: Padding(
                       padding: const EdgeInsets.all(10),
                       child: coloredText(
-                        text: "Other Data",
+                        text: "other_data".tr,
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
@@ -356,14 +423,28 @@ class EmployeeDetailsPage extends StatelessWidget {
                         children: [
                           DetailsItemWidget(
                             width1: 80.w,
-                            title1: "Educational certification",
-                            subTitle1: "Select",
+                            title1: "educational_certificates".tr,
+                            subTitle1: _globalController.certificates
+                                .where((element) =>
+                                    element.id ==
+                                    employee.educationCertification)
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .first,
                           ),
                           spaceY(12.sp),
                           DetailsItemWidget(
                             width1: 80.w,
-                            title1: "Knowledge of languages",
-                            subTitle1: "Select",
+                            title1: "knowledge_of_languages".tr,
+                            subTitle1: employee.languages!
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn!
+                                        : e.nameAr!)
+                                .toList()
+                                .join(", "),
                           ),
                           spaceY(12.sp),
                         ],

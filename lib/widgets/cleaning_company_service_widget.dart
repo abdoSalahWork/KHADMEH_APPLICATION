@@ -1,22 +1,34 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:khedma/Pages/HomePage/cleaning%20companies/controller/cleaning_companies_controller.dart';
+import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
 class CleaningServiceWidget extends StatefulWidget {
-  CleaningServiceWidget({super.key, this.added = false, required this.index});
+  CleaningServiceWidget(
+      {super.key,
+      this.added = false,
+      required this.index,
+      required this.price,
+      required this.name,
+      required this.image,
+      required this.serviceId});
   final int index;
   bool added;
+  final String price;
+  final String name;
+  final String image;
+  final int serviceId;
+
   @override
   State<CleaningServiceWidget> createState() => _CleaningServiceWidgetState();
 }
 
 class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
-  final CleaningCompanyController _cleaningCompanyController = Get.find();
-  int durationCounter = 0;
+  final CompaniesController _cleaningCompanyController = Get.find();
+  int quantityCounter = 0;
   @override
   void initState() {
     super.initState();
@@ -33,9 +45,9 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
             height: 35.w,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              image: const DecorationImage(
-                image: AssetImage("assets/images/image.png"),
-                fit: BoxFit.cover,
+              image: DecorationImage(
+                image: NetworkImage(widget.image),
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -44,10 +56,10 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              coloredText(text: "living room"),
+              coloredText(text: widget.name),
               spaceY(3.sp),
               coloredText(
-                  text: "150\$",
+                  text: "${widget.price} KWD",
                   color: Theme.of(context).colorScheme.secondary),
               spaceY(3.sp),
               Row(
@@ -55,7 +67,7 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      durationCounter++;
+                      quantityCounter++;
 
                       setState(() {});
                     },
@@ -65,12 +77,12 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
                     ),
                   ),
                   spaceX(10.sp),
-                  coloredText(text: "$durationCounter"),
+                  coloredText(text: "$quantityCounter"),
                   spaceX(10.sp),
                   GestureDetector(
                     onTap: () {
-                      if (durationCounter > 0) {
-                        durationCounter--;
+                      if (quantityCounter > 0) {
+                        quantityCounter--;
                       }
                       setState(() {});
                     },
@@ -85,9 +97,19 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
               primaryButton(
                   onTap: widget.added
                       ? null
-                      : () {
-                          _cleaningCompanyController.bookService(widget.index);
-                          widget.added = !widget.added;
+                      : () async {
+                          logSuccess(widget.serviceId);
+                          bool b = await _cleaningCompanyController
+                              .createCompanyService(
+                                  service: MyService(
+                            price: widget.price,
+                            name: widget.name,
+                            image: widget.image,
+                            serviceId: widget.serviceId,
+                            quantity: quantityCounter,
+                          ));
+                          if (b) widget.added = true;
+
                           setState(() {});
                         },
                   alignment: AlignmentDirectional.centerStart,
@@ -106,4 +128,19 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
       ),
     );
   }
+}
+
+class MyService {
+  final String price;
+  final String name;
+  final String image;
+  final int serviceId;
+  final int quantity;
+
+  MyService(
+      {required this.price,
+      required this.quantity,
+      required this.name,
+      required this.image,
+      required this.serviceId});
 }

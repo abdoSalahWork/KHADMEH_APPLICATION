@@ -9,51 +9,75 @@ class LanguagesController extends GetxController {
   final Dio dio = Utils().dio;
   List<LanguageModel> languages = [];
 
-  Future createlanguage({required LanguageModel language}) async {
+  Future<bool> createlanguage({required LanguageModel language}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(language.toJson());
 
-      await dio.post(EndPoints.storeLanguage, data: body);
+      await dio.post(
+        EndPoints.storeLanguage,
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await getlanguages();
       Get.back();
+      return true;
     } on DioException catch (e) {
       logError(e.message!);
       Get.back();
     }
+    return false;
   }
 
-  Future deletelanguage(
-      {required LanguageModel language, required int id}) async {
+  Future<bool> deletelanguage({
+    required LanguageModel language,
+  }) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(language.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
-      await dio.post(EndPoints.deleteLanguage(id), data: body);
+      await dio.post(
+        EndPoints.deleteLanguage(language.id!),
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await getlanguages();
       Get.back();
+      return true;
     } on DioException catch (e) {
       logError(e.message!);
       Get.back();
     }
+    return false;
   }
 
-  Future updatelanguage(
-      {required LanguageModel language, required int id}) async {
+  Future<bool> updatelanguage({required LanguageModel language}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(language.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      await dio.post(EndPoints.updateLanguage(id), data: body);
+      await dio.post(
+        EndPoints.updateLanguage(language.id!),
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await getlanguages();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
   bool getlanguagesFlag = false;

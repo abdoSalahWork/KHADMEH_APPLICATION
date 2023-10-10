@@ -218,7 +218,7 @@
 //             children: [
 //               SearchTextField(
 //                 textAlign: TextAlign.center,
-//                 hintText: "0 \$",
+//                 hintText: "0KWD",
 //                 controller: minController,
 //                 width: 40.0.w,
 //                 height: 45,

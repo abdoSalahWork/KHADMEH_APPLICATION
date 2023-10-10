@@ -218,7 +218,7 @@ class _AdvertismentsFilterPageState extends State<AdvertismentsFilterPage> {
             children: [
               SearchTextField(
                 textAlign: TextAlign.center,
-                hintText: "0 \$",
+                hintText: "0 KWD",
                 controller: minController,
                 width: 40.0.w,
                 height: 45,
@@ -236,7 +236,7 @@ class _AdvertismentsFilterPageState extends State<AdvertismentsFilterPage> {
               ),
               SearchTextField(
                 textAlign: TextAlign.center,
-                hintText: "5000 \$",
+                hintText: "5000 KWD",
                 controller: maxController,
                 width: 40.0.w,
                 height: 45,

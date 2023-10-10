@@ -158,6 +158,7 @@ class SendMessageTextField extends StatelessWidget {
     this.maxLength,
     this.wholeBorder,
     this.borderRadius,
+    this.textAlign = TextAlign.start,
   });
   final TextStyle? style;
   final String? hintText;
@@ -180,9 +181,9 @@ class SendMessageTextField extends StatelessWidget {
   final void Function()? onTap;
   bool? readOnly;
   AutovalidateMode? autovalidateMode;
-  EdgeInsetsGeometry? padding =
-      const EdgeInsets.only(left: 15, right: 15, top: 5);
+  EdgeInsetsGeometry? padding;
   TextDirection? textDirection;
+  TextAlign textAlign = TextAlign.start;
   final int? maxLength;
   bool isRTL(String text) {
     return intl.Bidi.detectRtlDirectionality(text);
@@ -200,6 +201,7 @@ class SendMessageTextField extends StatelessWidget {
           primaryColor: Colors.white,
         ),
         child: TextFormField(
+          textAlign: textAlign,
           onTap: onTap,
           readOnly: readOnly ?? false,
           maxLength: maxLength,
@@ -217,7 +219,7 @@ class SendMessageTextField extends StatelessWidget {
           inputFormatters: inputFormatters,
           style: style ?? GoogleFonts.poppins(fontSize: 13.0.sp),
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.all(10),
+            contentPadding: padding ?? const EdgeInsets.all(10),
             fillColor: fillColor ?? const Color(0xffF1F1F1),
             filled: true,
             enabledBorder: wholeBorder ??

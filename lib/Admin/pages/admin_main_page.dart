@@ -1,4 +1,3 @@
-import 'package:chips_choice/chips_choice.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,7 @@ import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:khedma/Admin/controllers/admin_home_controller.dart';
+import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:sizer/sizer.dart';
@@ -26,6 +25,7 @@ class _AdminMainPageState extends State<AdminMainPage>
     "bookings".tr,
     "ads".tr,
   ];
+  List<String> labels = ['payments'.tr, 'booking_no'.tr];
   List<String> tags = [
     "Y",
   ];
@@ -35,21 +35,45 @@ class _AdminMainPageState extends State<AdminMainPage>
     "Y",
   ];
   late TabController tabController;
-  List<StatisticBoxMdel> statsBoxList = [
-    StatisticBoxMdel("booking_no".tr, "354", EvaIcons.calendarOutline),
-    StatisticBoxMdel("payments".tr, "200\$", Icons.monetization_on_outlined),
-    StatisticBoxMdel("ads_payment".tr, "354", Icons.monetization_on_outlined),
-    StatisticBoxMdel("users_no".tr, "200\$", EvaIcons.peopleOutline),
-    StatisticBoxMdel("rec_com_no".tr, "354", Iconsax.buildings),
-    StatisticBoxMdel("clean_com_no".tr, "200\$", Iconsax.buildings),
-  ];
+  List<StatisticBoxMdel> statsBoxList = [];
 
   int switchIndex = 0;
   int selectedTabIndex = 0;
 
-  AdminHomeController _adminHomeController = Get.put(AdminHomeController());
+  AdminController _adminHomeController = Get.find();
+
   @override
   void initState() {
+    statsBoxList = [
+      StatisticBoxMdel(
+          "booking_no".tr,
+          _adminHomeController.adminHomePageModel.bookings!.round().toString(),
+          EvaIcons.calendarOutline),
+      StatisticBoxMdel(
+          "payments".tr,
+          "${_adminHomeController.adminHomePageModel.paymentBookingAmount!} KWD",
+          Icons.monetization_on_outlined),
+      StatisticBoxMdel(
+          "ads_payment".tr,
+          "${_adminHomeController.adminHomePageModel.adsAmount!} KWD",
+          Icons.monetization_on_outlined),
+      StatisticBoxMdel(
+          "users_no".tr,
+          _adminHomeController.adminHomePageModel.users!.round().toString(),
+          EvaIcons.peopleOutline),
+      StatisticBoxMdel(
+          "rec_com_no".tr,
+          _adminHomeController.adminHomePageModel.compnaiesRecruitment!
+              .round()
+              .toString(),
+          Iconsax.buildings),
+      StatisticBoxMdel(
+          "clean_com_no".tr,
+          _adminHomeController.adminHomePageModel.compnaiesCleaning!
+              .round()
+              .toString(),
+          Iconsax.buildings),
+    ];
     tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
@@ -160,7 +184,8 @@ class _AdminMainPageState extends State<AdminMainPage>
                           ),
                           spaceY(10.sp),
                           coloredText(
-                            text: "\$ 35,400",
+                            text:
+                                " KWD ${_adminHomeController.adminHomePageModel.totalBalance!.toStringAsFixed(2)}",
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 20.sp,
@@ -198,299 +223,317 @@ class _AdminMainPageState extends State<AdminMainPage>
             ),
           ),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: ListView(
-                primary: true,
-                // crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Container(
-                      padding: const EdgeInsets.only(bottom: 5),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom:
-                              BorderSide(color: Color(0xffDEDEDE), width: 2),
-                        ),
-                      ),
-                      child: coloredText(text: "reports".tr, fontSize: 14.sp),
-                    ),
-                  ),
-                  spaceY(10.sp),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: const Color(0xffF5F5F5),
-                          borderRadius: BorderRadius.circular(10)),
-                      padding: EdgeInsets.all(10),
-                      child: ToggleSwitch(
-                        minWidth: 42.w,
-                        minHeight: 30.sp,
-                        customTextStyles: [
-                          GoogleFonts.poppins(fontSize: 14.sp),
-                          GoogleFonts.poppins(fontSize: 14.sp),
-                        ],
-                        initialLabelIndex: switchIndex,
-                        activeBgColor: [Colors.white],
-                        inactiveBgColor: Colors.transparent,
-                        inactiveFgColor: const Color(0xffA7A7A7),
-                        activeFgColor: Colors.black,
-                        totalSwitches: 2,
-                        labels: ['payments'.tr, 'booking_no'.tr],
-                        onToggle: (index) {
-                          switchIndex = index!;
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                  ),
-                  spaceY(10.sp),
-                  switchIndex == 1
-                      ? Container()
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: TabBar(
-                              dividerColor: Colors.grey,
-                              // indicatorColor:
-                              //     Theme.of(context).colorScheme.primary,
-                              indicator: UnderlineTabIndicator(
-                                  borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.primary,
-                              )),
-                              indicatorSize: TabBarIndicatorSize.tab,
-                              isScrollable: false,
-                              controller: tabController,
-                              onTap: (value) {
-                                selectedTabIndex = value;
-                                setState(() {});
-                              },
-                              tabs: List<Widget>.generate(
-                                tabController.length,
-                                (index) => Tab(
-                                  child: Container(
-                                    // width: 45.w,
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: coloredText(
-                                      text: tabs[index],
-                                      fontSize: 13.sp,
-                                      color: selectedTabIndex == index
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              )),
-                        ),
-                  switchIndex == 1 ? Container() : spaceY(10.sp),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      height: 60,
-                      child: ChipsChoice<String>.multiple(
-                        padding: EdgeInsets.zero,
-                        value: tags,
-                        onChanged: (val) {},
-                        choiceItems: C2Choice.listFrom<String, String>(
-                          source: options,
-                          value: (i, v) => v,
-                          label: (i, v) => v,
-                        ),
-                        // choiceStyle: C2ChipStyle.outlined(),
-                        choiceCheckmark: true,
-
-                        choiceBuilder: (item, i) => GestureDetector(
-                          onTap: () {
-                            if (!tags.contains(item.label)) {
-                              tags = [];
-                              tags.add(item.label);
-                            }
-                            setState(() {});
-                          },
-                          child: Container(
-                            width: 28.sp,
-                            height: 28.sp,
-                            margin: EdgeInsetsDirectional.only(start: 10.sp),
-                            decoration: BoxDecoration(
-                                boxShadow: tags.contains(item.label)
-                                    ? [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.5),
-                                          spreadRadius: 2,
-                                          blurRadius: 2,
-                                          offset: const Offset(0,
-                                              2), // changes position of shadow
-                                        ),
-                                      ]
-                                    : null,
-                                color: !tags.contains(item.label)
-                                    ? const Color(0xffF6F6F6)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                  color: !tags.contains(item.label)
-                                      ? const Color(0xffF1F1F1)
-                                      : Colors.transparent,
-                                )),
-                            child: Center(
-                                child: coloredText(
-                              text: item.label,
-                              color: tags.contains(item.label)
-                                  ? Colors.black
-                                  : const Color(0xff8F8F8F),
-                            )),
+            child: GetBuilder<AdminController>(builder: (c) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: ListView(
+                  primary: true,
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Container(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom:
+                                BorderSide(color: Color(0xffDEDEDE), width: 2),
                           ),
                         ),
+                        child: coloredText(text: "reports".tr, fontSize: 14.sp),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 35.h,
-                    width: 100.w,
-                    child: Align(
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(
-                              top: 20,
-                            ),
-                            height: 35.h,
-                            width: 150.w,
-                            child: BarChart(
-                              BarChartData(
-                                gridData: const FlGridData(
-                                  show: true,
-                                  drawHorizontalLine: true,
-                                  drawVerticalLine: false,
-                                ),
-                                borderData: FlBorderData(show: false),
-                                titlesData: FlTitlesData(
-                                  show: true,
-                                  bottomTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      interval: 1,
-                                      getTitlesWidget: (value, meta) {
-                                        return Text(_adminHomeController
-                                            .data[value.toInt()].name
-                                            .toString());
-                                      },
-                                    ),
-                                  ),
-                                  leftTitles: AxisTitles(
-                                    // axisNameSize: 50,
-
-                                    sideTitles: SideTitles(
-                                      reservedSize: 40,
-                                      showTitles: true,
-                                      interval: 20,
-                                      getTitlesWidget: (value, meta) {
-                                        return Text("${value.toInt()} k");
-                                      },
-                                    ),
-                                  ),
-                                  rightTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      reservedSize: 40,
-                                      showTitles: true,
-                                      interval: 20,
-                                      getTitlesWidget: (value, meta) {
-                                        return Text("${value.toInt()} k");
-                                      },
-                                    ),
-                                  ),
-                                  topTitles: const AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: false,
-                                    ),
-                                  ),
-                                ), // alignment: BarChartAlignment.center,
-
-                                minY: 0,
-                                maxY: 100,
-                                groupsSpace: 12,
-                                // baselineY: 20,
-
-                                barTouchData: BarTouchData(
-                                  enabled: false,
-                                  touchTooltipData: BarTouchTooltipData(
-                                    tooltipBgColor: Colors.transparent,
-                                    tooltipMargin: -10,
-                                    getTooltipItem:
-                                        (group, groupIndex, rod, rodIndex) =>
-                                            BarTooltipItem(
-                                      rod.toY.round().toString(),
-                                      TextStyle(),
-                                    ),
-                                  ),
-                                ),
-                                barGroups: _adminHomeController.data
-                                    .map(
-                                      (e) => BarChartGroupData(
-                                        showingTooltipIndicators: [0, 1],
-                                        x: e.id!,
-                                        barsSpace: 10,
-                                        barRods: [
-                                          BarChartRodData(
-                                            toY: e.y!,
-                                            width: 10,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              topLeft: Radius.circular(5),
-                                              topRight: Radius.circular(5),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  spaceY(10.sp),
-                  Row(
-                    children: [
-                      Container(
-                        width: 18.sp,
-                        height: 18.sp,
+                    spaceY(10.sp),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 3,
-                              offset: const Offset(
-                                  0, 1), // changes position of shadow
+                            color: const Color(0xffF5F5F5),
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: EdgeInsets.all(10),
+                        child: ToggleSwitch(
+                          minWidth: 42.w,
+                          minHeight: 30.sp,
+                          customTextStyles: [
+                            GoogleFonts.poppins(fontSize: 14.sp),
+                            GoogleFonts.poppins(fontSize: 14.sp),
+                          ],
+                          initialLabelIndex: switchIndex,
+                          activeBgColor: [Colors.white],
+                          inactiveBgColor: Colors.transparent,
+                          inactiveFgColor: const Color(0xffA7A7A7),
+                          activeFgColor: Colors.black,
+                          totalSwitches: 2,
+                          labels: labels,
+                          onToggle: (index) {
+                            switchIndex = index!;
+                            if (labels[index] == "booking_no".tr) {
+                              c.getBookingsCountGraph();
+                            } else if (tabs[selectedTabIndex] ==
+                                "bookings".tr) {
+                              c.getBookingPaymentsGraph();
+                            } else {
+                              c.getAdsPaymentsGraph();
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    spaceY(10.sp),
+                    switchIndex == 1
+                        ? Container()
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: TabBar(
+                                dividerColor: Colors.grey,
+                                // indicatorColor:
+                                //     Theme.of(context).colorScheme.primary,
+                                indicator: UnderlineTabIndicator(
+                                    borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
+                                )),
+                                indicatorSize: TabBarIndicatorSize.tab,
+                                isScrollable: false,
+                                controller: tabController,
+                                onTap: (value) {
+                                  selectedTabIndex = value;
+
+                                  if (tabs[selectedTabIndex] == "bookings".tr) {
+                                    c.getBookingPaymentsGraph();
+                                  } else {
+                                    c.getAdsPaymentsGraph();
+                                  }
+                                },
+                                tabs: List<Widget>.generate(
+                                  tabController.length,
+                                  (index) => Tab(
+                                    child: Container(
+                                      // width: 45.w,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      child: coloredText(
+                                        text: tabs[index],
+                                        fontSize: 13.sp,
+                                        color: selectedTabIndex == index
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                          ),
+                    switchIndex == 1 ? Container() : spaceY(10.sp),
+                    // Align(
+                    //   alignment: Alignment.centerRight,
+                    //   child: SizedBox(
+                    //     height: 60,
+                    //     child: ChipsChoice<String>.multiple(
+                    //       padding: EdgeInsets.zero,
+                    //       value: tags,
+                    //       onChanged: (val) {},
+                    //       choiceItems: C2Choice.listFrom<String, String>(
+                    //         source: options,
+                    //         value: (i, v) => v,
+                    //         label: (i, v) => v,
+                    //       ),
+                    //       // choiceStyle: C2ChipStyle.outlined(),
+                    //       choiceCheckmark: true,
+
+                    //       choiceBuilder: (item, i) => GestureDetector(
+                    //         onTap: () {
+                    //           if (!tags.contains(item.label)) {
+                    //             tags = [];
+                    //             tags.add(item.label);
+                    //           }
+                    //           setState(() {});
+                    //         },
+                    //         child: Container(
+                    //           width: 28.sp,
+                    //           height: 28.sp,
+                    //           margin: EdgeInsetsDirectional.only(start: 10.sp),
+                    //           decoration: BoxDecoration(
+                    //               boxShadow: tags.contains(item.label)
+                    //                   ? [
+                    //                       BoxShadow(
+                    //                         color: Colors.grey.withOpacity(0.5),
+                    //                         spreadRadius: 2,
+                    //                         blurRadius: 2,
+                    //                         offset: const Offset(0,
+                    //                             2), // changes position of shadow
+                    //                       ),
+                    //                     ]
+                    //                   : null,
+                    //               color: !tags.contains(item.label)
+                    //                   ? const Color(0xffF6F6F6)
+                    //                   : Colors.white,
+                    //               borderRadius: BorderRadius.circular(5),
+                    //               border: Border.all(
+                    //                 color: !tags.contains(item.label)
+                    //                     ? const Color(0xffF1F1F1)
+                    //                     : Colors.transparent,
+                    //               )),
+                    //           child: Center(
+                    //               child: coloredText(
+                    //             text: item.label,
+                    //             color: tags.contains(item.label)
+                    //                 ? Colors.black
+                    //                 : const Color(0xff8F8F8F),
+                    //           )),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+
+                    SizedBox(
+                      height: 35.h,
+                      width: 100.w,
+                      child: Align(
+                        child: ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.only(
+                                top: 20,
+                              ),
+                              height: 35.h,
+                              width: 150.w,
+                              child: BarChart(
+                                BarChartData(
+                                  gridData: const FlGridData(
+                                    show: true,
+                                    drawHorizontalLine: true,
+                                    drawVerticalLine: false,
+                                  ),
+                                  borderData: FlBorderData(show: false),
+                                  titlesData: FlTitlesData(
+                                    show: true,
+                                    bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        interval: 1,
+                                        getTitlesWidget: (value, meta) {
+                                          return Text(_adminHomeController
+                                              .data[value.toInt()].name
+                                              .toString());
+                                        },
+                                      ),
+                                    ),
+                                    leftTitles: AxisTitles(
+                                      // axisNameSize: 50,
+
+                                      sideTitles: SideTitles(
+                                        reservedSize: 40,
+                                        showTitles: true,
+                                        interval: 20,
+                                        getTitlesWidget: (value, meta) {
+                                          return Text("${value.toInt()} k");
+                                        },
+                                      ),
+                                    ),
+                                    rightTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        reservedSize: 40,
+                                        showTitles: true,
+                                        interval: 20,
+                                        getTitlesWidget: (value, meta) {
+                                          return Text("${value.toInt()} k");
+                                        },
+                                      ),
+                                    ),
+                                    topTitles: const AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: false,
+                                      ),
+                                    ),
+                                  ), // alignment: BarChartAlignment.center,
+
+                                  minY: 0,
+                                  maxY: 100,
+                                  groupsSpace: 12,
+                                  // baselineY: 20,
+
+                                  barTouchData: BarTouchData(
+                                    enabled: false,
+                                    touchTooltipData: BarTouchTooltipData(
+                                      tooltipBgColor: Colors.transparent,
+                                      tooltipMargin: -10,
+                                      getTooltipItem:
+                                          (group, groupIndex, rod, rodIndex) =>
+                                              BarTooltipItem(
+                                        (rod.toY * 100) > 1000
+                                            ? "${(rod.toY / 10).toStringAsFixed(1)} K"
+                                            : (rod.toY * 100)
+                                                .toStringAsFixed(1),
+                                        TextStyle(),
+                                      ),
+                                    ),
+                                  ),
+                                  barGroups: _adminHomeController.data
+                                      .map(
+                                        (e) => BarChartGroupData(
+                                          showingTooltipIndicators: [0, 1],
+                                          x: e.id!,
+                                          barsSpace: 10,
+                                          barRods: [
+                                            BarChartRodData(
+                                              toY: e.y!,
+                                              width: 10,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              borderRadius:
+                                                  const BorderRadius.only(
+                                                topLeft: Radius.circular(5),
+                                                topRight: Radius.circular(5),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      spaceX(10.sp),
-                      coloredText(
-                          text: switchIndex == 0
-                              ? 'payments'.tr
-                              : 'booking_no'.tr)
-                    ],
-                  ),
-                  spaceY(10.sp),
-                ],
-              ),
-            ),
+                    ),
+                    spaceY(10.sp),
+                    // Row(
+                    //   children: [
+                    //     Container(
+                    //       width: 18.sp,
+                    //       height: 18.sp,
+                    //       decoration: BoxDecoration(
+                    //         color: Theme.of(context).colorScheme.primary,
+                    //         borderRadius: BorderRadius.circular(5),
+                    //         boxShadow: [
+                    //           BoxShadow(
+                    //             color: Colors.grey.withOpacity(0.3),
+                    //             spreadRadius: 2,
+                    //             blurRadius: 3,
+                    //             offset: const Offset(
+                    //                 0, 1), // changes position of shadow
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     spaceX(10.sp),
+                    //     coloredText(
+                    //         text: switchIndex == 0
+                    //             ? 'payments'.tr
+                    //             : 'booking_no'.tr)
+                    //   ],
+                    // ),
+                    // spaceY(10.sp),
+                  ],
+                ),
+              );
+            }),
           ),
         ],
       ),

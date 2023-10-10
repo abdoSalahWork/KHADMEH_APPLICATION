@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
@@ -24,6 +25,12 @@ import 'package:sizer/sizer.dart';
 
 // /
 class Utils {
+  static int age(DateTime today, DateTime dob) {
+    final year = today.year - dob.year;
+
+    return year;
+  }
+
   static NotificationService notificationService = NotificationService();
   static void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
@@ -250,13 +257,78 @@ class Utils {
         data: ThemeData(
             useMaterial3: false,
             dialogTheme: DialogTheme(
-                surfaceTintColor: Colors.red, backgroundColor: Colors.blue)),
+                surfaceTintColor: Colors.red,
+                backgroundColor: Theme.of(context).colorScheme.primary)),
         child: child,
       ),
       title: title,
       color: color ?? Colors.white,
       context: context,
       actions: actions,
+      dialogWidth: 100.0.w,
+    );
+  }
+
+  static void doneDialog(
+      {TextStyle? titleStyle,
+      int backTimes = 1,
+      CustomViewPosition? customViewPosition,
+      Color? color,
+      required BuildContext context,
+      dynamic Function(dynamic)? onClose}) {
+    Dialogs.materialDialog(
+      onClose: onClose,
+
+      // barrierColor: Colors.red,
+      titleStyle: titleStyle ??
+          coloredText(
+                  text: "text", textAlign: TextAlign.start, fontSize: 13.0.sp)
+              .style!,
+      customViewPosition:
+          customViewPosition ?? CustomViewPosition.BEFORE_MESSAGE,
+      customView: Theme(
+        data: Theme.of(context),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              spaceY(20),
+              Icon(
+                EvaIcons.checkmarkCircle,
+                color: Theme.of(context).colorScheme.secondary,
+                size: 40.sp,
+              ),
+              spaceY(20),
+              coloredText(text: "done".tr, fontSize: 12.0.sp),
+              coloredText(
+                text: "successfully".tr,
+                fontSize: 14.0.sp,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ],
+          ),
+        ),
+      ),
+      color: color ?? Colors.white,
+      context: context,
+      actions: [
+        primaryButton(
+          onTap: () {
+            for (var i = 0; i < backTimes; i++) {
+              Get.back();
+            }
+          },
+          width: 40.0.w,
+          height: 50,
+          radius: 10.w,
+          color: Theme.of(context).colorScheme.primary,
+          text: coloredText(
+            text: "ok".tr,
+            color: Colors.white,
+          ),
+        ),
+      ],
       dialogWidth: 100.0.w,
     );
   }

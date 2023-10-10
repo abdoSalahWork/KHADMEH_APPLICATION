@@ -1,47 +1,36 @@
-import 'package:custom_rating_bar/custom_rating_bar.dart' as r;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
+import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/invooice/invoice_page.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
-import '../../../widgets/my_rating_bar.dart';
-import 'filling_data_page.dart';
-import 'pay_page.dart';
 
+// ignore: must_be_immutable
 class EmployeePage extends StatefulWidget {
-  const EmployeePage({super.key, required this.employeeType});
-  final EmployeeType employeeType;
+  EmployeePage({
+    super.key,
+    required this.employeeModel,
+  });
+  EmployeeModel employeeModel;
   @override
   State<EmployeePage> createState() => _EmployeePageState();
 }
 
-class _EmployeePageState extends State<EmployeePage>
-    with SingleTickerProviderStateMixin {
-  List<String> tags = [
-    "employees",
-  ];
-
-  List<String> options = [
-    "employees",
-    "office_warrently",
-    "offers",
-  ];
-  List<String> tabs = [
-    "cleaner",
-    "driver",
-    "chef",
-    "babysitter",
-    "nurse",
-    "sewing",
-    "washing",
-  ];
-  late TabController tabController;
-  int selectedTabIndex = 0;
-
+class _EmployeePageState extends State<EmployeePage> {
+  List<JobModel?> jobs = [];
+  GlobalController _globalController = Get.find();
+  EmployeesController _employeesController = Get.find();
+  String invoiceId = "12314";
   @override
   void initState() {
-    tabController = TabController(length: 7, vsync: this);
+    jobs = widget.employeeModel.jobs!;
     super.initState();
   }
 
@@ -91,6 +80,17 @@ class _EmployeePageState extends State<EmployeePage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
+                      onTap: () {
+                        Get.to(() => InvoicePage(
+                              invoiceId: invoiceId,
+                              companyId: widget.employeeModel.company!.id!,
+                              employeeName: widget.employeeModel.name!,
+                              contractDuration:
+                                  widget.employeeModel.contractDuration!,
+                              contractAmount:
+                                  widget.employeeModel.contractAmount!,
+                            ));
+                      },
                       child: Container(
                         width: 75.0.sp,
                         height: 75.0.sp,
@@ -105,8 +105,8 @@ class _EmployeePageState extends State<EmployeePage>
                             ),
                           ],
                           borderRadius: BorderRadius.circular(20.0.w),
-                          image: const DecorationImage(
-                            image: AssetImage("assets/images/image.png"),
+                          image: DecorationImage(
+                            image: NetworkImage(widget.employeeModel.image!),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -121,7 +121,7 @@ class _EmployeePageState extends State<EmployeePage>
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               coloredText(
-                                  text: 'lorem ipsun',
+                                  text: widget.employeeModel.name!,
                                   color: Colors.white,
                                   fontSize: 15.0.sp),
                               spaceX(5),
@@ -133,7 +133,9 @@ class _EmployeePageState extends State<EmployeePage>
                                         .withOpacity(0.3),
                                     borderRadius: BorderRadius.circular(20)),
                                 child: coloredText(
-                                    text: "\$560/2y",
+                                    text: widget.employeeModel.isOffer == 1
+                                        ? "${int.parse(widget.employeeModel.contractAmount!) / int.parse(widget.employeeModel.contractDuration!)} KWD/y"
+                                        : "${widget.employeeModel.amountAfterDiscount! / int.parse(widget.employeeModel.contractDuration!)} KWD/y",
                                     color: Colors.white,
                                     fontSize: 9.0.sp),
                               )
@@ -157,12 +159,14 @@ class _EmployeePageState extends State<EmployeePage>
                                   ),
                                 ),
                                 child: coloredText(
-                                  text: tabs[index].tr,
+                                  text: Get.locale == const Locale('en', 'US')
+                                      ? jobs[index]!.nameEn!
+                                      : jobs[index]!.nameAr!,
                                   color: const Color(0xffE8E8E8),
                                   fontSize: 11.0.sp,
                                 ),
                               ),
-                              itemCount: 5,
+                              itemCount: jobs.length,
                               separatorBuilder:
                                   (BuildContext context, int index) =>
                                       spaceX(5),
@@ -179,7 +183,19 @@ class _EmployeePageState extends State<EmployeePage>
                               ),
                               spaceX(3),
                               coloredText(
-                                text: 'Philippines',
+                                text: Get.locale == const Locale('en', 'US')
+                                    ? _globalController.countries
+                                        .where((element) =>
+                                            element.id ==
+                                            widget.employeeModel.nationalityId!)
+                                        .first
+                                        .nameEn!
+                                    : _globalController.countries
+                                        .where((element) =>
+                                            element.id ==
+                                            widget.employeeModel.nationalityId!)
+                                        .first
+                                        .nameAr!,
                                 color: Theme.of(context).colorScheme.secondary,
                                 fontSize: 12.0.sp,
                               ),
@@ -196,7 +212,19 @@ class _EmployeePageState extends State<EmployeePage>
                               ),
                               spaceX(5),
                               coloredText(
-                                text: "Single",
+                                text: Get.locale == const Locale('en', 'US')
+                                    ? _globalController.maritalStatusList
+                                        .where((element) =>
+                                            element.id ==
+                                            widget.employeeModel.maritalStatus!)
+                                        .first
+                                        .nameEn!
+                                    : _globalController.maritalStatusList
+                                        .where((element) =>
+                                            element.id ==
+                                            widget.employeeModel.maritalStatus!)
+                                        .first
+                                        .nameAr!,
                                 fontSize: 12.0.sp,
                                 color: const Color(0xffD4D4D4),
                               ),
@@ -213,7 +241,13 @@ class _EmployeePageState extends State<EmployeePage>
                               ),
                               spaceX(5),
                               coloredText(
-                                text: "English, Arabic",
+                                text: widget.employeeModel.languages!
+                                    .map((e) =>
+                                        Get.locale == const Locale('en', 'US')
+                                            ? e.nameEn!
+                                            : e.nameAr!)
+                                    .toList()
+                                    .join(", "),
                                 fontSize: 12.0.sp,
                                 color: const Color(0xffD4D4D4),
                               ),
@@ -230,38 +264,155 @@ class _EmployeePageState extends State<EmployeePage>
                               ),
                               spaceX(5),
                               coloredText(
-                                text: "31 Years",
+                                text:
+                                    "${Utils.age(DateTime.now(), DateTime.parse(widget.employeeModel.dateOfBirth!))} Years",
                                 fontSize: 12.0.sp,
                                 color: const Color(0xffD4D4D4),
                               ),
                             ],
                           ),
                           spaceY(15),
-                          primaryButton(
-                            onTap: () {
-                              logSuccess(widget.employeeType);
-                              if (widget.employeeType ==
-                                  EmployeeType.recruitment) {
-                                Get.to(
-                                    () => PayPage(
-                                          employeeType: widget.employeeType,
-                                        ),
-                                    transition: Transition.downToUp);
-                              } else {
-                                Get.to(() => const FillingDataPage(),
-                                    transition: Transition.downToUp);
-                              }
-                            },
-                            text: coloredText(
-                                text: "Book",
-                                color: Colors.white,
-                                fontSize: 12.0.sp),
-                            color: Theme.of(context).colorScheme.secondary,
-                            width: 40.0.w,
-                            height: 30.0.sp,
-                            radius: 20,
-                            alignment: AlignmentDirectional.centerStart,
-                          ),
+                          widget.employeeModel.status != null &&
+                                  widget.employeeModel.status!.status ==
+                                      "booked"
+                              ? Container()
+                              : widget.employeeModel.status != null &&
+                                      widget.employeeModel.status!.status ==
+                                          "pending"
+                                  ? primaryButton(
+                                      onTap: widget.employeeModel.document ==
+                                                  null ||
+                                              widget.employeeModel.document!
+                                                      .approve ==
+                                                  null ||
+                                              widget.employeeModel.document!
+                                                      .approve ==
+                                                  0
+                                          ? null
+                                          : () async {
+                                              Map<String, String>? x =
+                                                  await _employeesController
+                                                      .bookEmployee(
+                                                          id: widget
+                                                              .employeeModel
+                                                              .id!);
+                                              if (x != null) {
+                                                invoiceId = x.keys.first;
+                                                Uri url =
+                                                    Uri.parse(x.values.first);
+                                                logSuccess(x);
+                                                await launchUrl(url,
+                                                    mode: LaunchMode
+                                                        .externalApplication);
+
+                                                await Future.delayed(Duration(
+                                                    milliseconds: 100));
+                                                while (WidgetsBinding.instance
+                                                        .lifecycleState !=
+                                                    AppLifecycleState.resumed) {
+                                                  await Future.delayed(Duration(
+                                                      milliseconds: 100));
+                                                }
+                                                EmployeeModel? b =
+                                                    await _employeesController
+                                                        .showMyEmployee(
+                                                            id: widget
+                                                                .employeeModel
+                                                                .id!,
+                                                            indicator: false);
+                                                if (b != null) {
+                                                  Utils.doneDialog(
+                                                      context: context);
+                                                  widget.employeeModel = b;
+                                                  setState(() {});
+                                                }
+                                                await _globalController.getMe();
+                                              }
+
+                                              // Get.to(() => PayPage(),
+                                              //     transition: Transition.downToUp);
+
+                                              // else {
+                                              //   Get.to(() => const FillingDataPage(),
+                                              //       transition: Transition.downToUp);
+                                              // }
+                                            },
+                                      text: coloredText(
+                                          text: "pay".tr,
+                                          color: Colors.white,
+                                          fontSize: 12.0.sp),
+                                      color: widget.employeeModel.document ==
+                                                  null ||
+                                              widget.employeeModel.document!
+                                                      .approve ==
+                                                  null ||
+                                              widget.employeeModel.document!
+                                                      .approve ==
+                                                  0
+                                          ? Colors.grey
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                      width: 40.0.w,
+                                      height: 30.0.sp,
+                                      radius: 20,
+                                      alignment:
+                                          AlignmentDirectional.centerStart,
+                                    )
+                                  : primaryButton(
+                                      onTap: () async {
+                                        String? x = await _employeesController
+                                            .pendingEmployee(
+                                                id: widget.employeeModel.id!);
+                                        if (x != null) {
+                                          Uri url = Uri.parse(x);
+                                          logSuccess(x);
+                                          await launchUrl(url,
+                                              mode: LaunchMode
+                                                  .externalApplication);
+
+                                          await Future.delayed(
+                                              Duration(milliseconds: 100));
+                                          while (WidgetsBinding
+                                                  .instance.lifecycleState !=
+                                              AppLifecycleState.resumed) {
+                                            await Future.delayed(
+                                                Duration(milliseconds: 100));
+                                          }
+                                          EmployeeModel? b =
+                                              await _employeesController
+                                                  .showMyEmployee(
+                                                      id: widget
+                                                          .employeeModel.id!,
+                                                      indicator: false);
+                                          if (b != null) {
+                                            Utils.doneDialog(context: context);
+                                            widget.employeeModel = b;
+                                          }
+                                          await _globalController.getMe();
+                                        }
+
+                                        // Get.to(() => PayPage(),
+                                        //     transition: Transition.downToUp);
+
+                                        // else {
+                                        //   Get.to(() => const FillingDataPage(),
+                                        //       transition: Transition.downToUp);
+                                        // }
+                                      },
+                                      text: coloredText(
+                                          text: "book".tr,
+                                          color: Colors.white,
+                                          fontSize: 12.0.sp),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      width: 40.0.w,
+                                      height: 30.0.sp,
+                                      radius: 20,
+                                      alignment:
+                                          AlignmentDirectional.centerStart,
+                                    ),
                           // Container(
                           //   width: 40.0.w,
                           //   height: 40,
@@ -291,123 +442,42 @@ class _EmployeePageState extends State<EmployeePage>
         // spaceY(1.0.h),
         Expanded(
           child: ListView(
+            primary: false,
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             children: [
               coloredText(
-                text: "rate_view".tr,
-                color: Theme.of(context).colorScheme.primary,
+                text: "${widget.employeeModel.name!}'s CV".tr,
+                fontWeight: FontWeight.bold,
               ),
               const Divider(
                 color: Color(0xffDBDBDB),
               ),
-              spaceY(10),
+              spaceY(10.sp),
               Row(
                 children: [
+                  const Icon(EvaIcons.briefcaseOutline, color: Colors.grey),
+                  spaceX(5.sp),
                   coloredText(
-                    text: "4.5",
-                    fontSize: 35.0.sp,
-                    color: Theme.of(context).colorScheme.primary,
-                    // fontWeight: FontWeight.bold,
-                  ),
-                  spaceX(30),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        const MyRatingBar(label: '5', value: 50),
-                        spaceY(3),
-                        const MyRatingBar(label: '4', value: 20),
-                        spaceY(3),
-                        const MyRatingBar(label: '3', value: 70),
-                        spaceY(3),
-                        const MyRatingBar(label: '2', value: 10),
-                        spaceY(3),
-                        const MyRatingBar(label: '1', value: 90),
-                      ],
-                    ),
-                  ),
+                      text: widget.employeeModel.previousWorkAbroad == 0
+                          ? "did_not_work_abroad".tr
+                          : "${"previous_work_abroad".tr} ${widget.employeeModel.durationOfEmployment} ${"years".tr}",
+                      color: Colors.grey,
+                      fontSize: 12.sp)
                 ],
               ),
-              spaceY(20),
-              ListView.separated(
-                  shrinkWrap: true,
-                  primary: false,
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 12.0.w,
-                                height: 12.0.w,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      image:
-                                          AssetImage("assets/images/image.png"),
-                                      fit: BoxFit.cover),
-                                ),
-                              ),
-                              spaceX(10),
-                              coloredText(
-                                text: "Ahmad ALi",
-                                color: Colors.black,
-                                fontSize: 14.0.sp,
-                              )
-                            ],
-                          ),
-                          Align(
-                              alignment: AlignmentDirectional.centerStart,
-                              child: r.RatingBar.readOnly(
-                                isHalfAllowed: true,
-                                filledIcon: Icons.star_rounded,
-                                halfFilledIcon: Icons.star_half_rounded,
-                                emptyIcon: Icons.star_border_rounded,
-                                filledColor: Colors.black,
-                                halfFilledColor: Colors.black,
-                                emptyColor: Colors.black,
-                                initialRating: 3.5,
-                                maxRating: 5,
-                                size: 18.0.sp,
-                              )
-                              //  RatingBar.builder(
-                              //   initialRating: 4.5,
-                              //   minRating: 0,
-                              //   direction: Axis.horizontal,
-                              //   allowHalfRating: true,
-                              //   itemCount: 5,
-                              //   itemSize: 17.0.sp,unratedColor: Colors.transparent,
-                              //   itemPadding:
-                              //       EdgeInsets.symmetric(horizontal: 4.0),
-                              //   itemBuilder: (context, index) {
-                              //     if (index < 4.5) {
-                              //       return const Icon(
-                              //         Icons.star_rounded,
-                              //         color: Colors.black,
-                              //       );
-                              //     } else {
-                              //       return const Icon(
-                              //         Icons.star_outline_rounded,
-                              //         color: Colors.black,
-                              //       );
-                              //     }
-                              //   },
-                              //   onRatingUpdate: (rating) {
-                              //     print(rating);
-                              //   },
-                              // ),
-
-                              ),
-                          spaceY(10),
-                          coloredText(
-                              text:
-                                  "Lorem ipsum dolor sit amet consectetur adipiscing elit",
-                              color: const Color(0xff919191))
-                        ],
-                      ),
-                  separatorBuilder: (context, index) => spaceY(20),
-                  itemCount: 10),
-              spaceY(20),
+              spaceY(10.sp),
+              Row(
+                children: [
+                  Icon(FontAwesomeIcons.graduationCap,
+                      size: 15.sp, color: Colors.grey),
+                  spaceX(5.sp),
+                  coloredText(
+                      text:
+                          "${"educational_certificates".tr}: ${Get.locale == const Locale('en', 'US') ? _globalController.certificates.where((element) => element.id == widget.employeeModel.educationCertification!).first.nameEn! : _globalController.certificates.where((element) => element.id == widget.employeeModel.educationCertification!).first.nameAr!}",
+                      color: Colors.grey,
+                      fontSize: 12.sp)
+                ],
+              )
             ],
           ),
         )

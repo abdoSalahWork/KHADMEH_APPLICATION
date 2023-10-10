@@ -135,7 +135,7 @@ class AccountStatmentCard extends StatelessWidget {
               ),
               Expanded(
                 child: coloredText(
-                  text: "500 \$",
+                  text: "500  KWD",
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w600,
                 ),

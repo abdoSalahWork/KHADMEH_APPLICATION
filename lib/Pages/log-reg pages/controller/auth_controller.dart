@@ -41,9 +41,8 @@ class AuthController extends GetxController {
     return decodedToken['complite_data'] != null;
   }
 
-  Future handleGoogleSignIn({
-    required bool saveToken,
-  }) async {
+  Future handleGoogleSignIn(
+      {required bool saveToken, required bool login}) async {
     try {
       GoogleSignInAccount? user = await _googleSignIn.signIn();
       await FirebaseApi().initNotifications();
@@ -54,22 +53,22 @@ class AuthController extends GetxController {
           child: CircularProgressIndicator(),
         ));
         String? fcsToken = await Utils.readFBToken();
-
+        logError("accessToken: " + auth.accessToken.toString());
+        logError("fcsToken: " + fcsToken.toString());
         var res = await dio.post(EndPoints.loginGoogle,
             options: Options(headers: {
               "accessToken": auth.accessToken,
               "fcsToken": fcsToken,
             }));
         String token = res.data["access_token"];
-        logSuccess(token);
+        logError(res.data);
         await Utils.saveToken(token: token);
         GlobalController g = Get.find();
-        await g.getMe();
+        if (login) await g.getMe();
 
         if (saveToken) {
           await Utils.saveRemmemberMe(rem: saveToken ? "yes" : "no");
-          String? x = await Utils.readRemmemberMe();
-          logSuccess(x.toString());
+          // String? x = await Utils.readRemmemberMe();
         }
         await handleSignOut();
         Get.back();
@@ -78,8 +77,8 @@ class AuthController extends GetxController {
       } else {
         logError("login error");
       }
-    } catch (error) {
-      logError(error.toString());
+    } on DioException catch (error) {
+      logError(error.response!.data);
       return null;
     }
   }
@@ -413,6 +412,9 @@ class AuthController extends GetxController {
         return LoginStates.accountNotFound;
       } else if (error.response!.data["error"] == "Unauthorized") {
         return LoginStates.credsError;
+      } else if (error.response!.data["message"] ==
+          "This User Is Not Found or blocked") {
+        return LoginStates.blocked;
       } else {
         return LoginStates.error;
       }
@@ -454,4 +456,11 @@ class AuthController extends GetxController {
   }
 }
 
-enum LoginStates { login, accountNotFound, credsError, needsVerify, error }
+enum LoginStates {
+  login,
+  accountNotFound,
+  credsError,
+  needsVerify,
+  blocked,
+  error
+}

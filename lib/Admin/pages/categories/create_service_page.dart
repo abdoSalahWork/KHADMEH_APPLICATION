@@ -4,22 +4,25 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/pages/categories/controller/categories_controller.dart';
+import 'package:khedma/Admin/pages/categories/models/categories_model.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
 
 // ignore: must_be_immutable
-class AdminCreateCategory extends StatefulWidget {
-  const AdminCreateCategory({super.key});
-
+class AdminCreateService extends StatefulWidget {
+  const AdminCreateService({super.key, this.categoryToEdit});
+  final CategoryModel? categoryToEdit;
   @override
-  State<AdminCreateCategory> createState() => _AdminCreateCategoryState();
+  State<AdminCreateService> createState() => _AdminCreateServiceState();
 }
 
-class _AdminCreateCategoryState extends State<AdminCreateCategory> {
-  String button1Text = "upload_category_icon".tr;
-
+class _AdminCreateServiceState extends State<AdminCreateService> {
+  String button1Text = "upload_service_icon".tr;
+  CategoryModel categoryToCreate = CategoryModel();
+  CategoriesController _categoriesController = Get.find();
   String? selectedValue;
   List<FocusNode> _focusNodes = [
     FocusNode(),
@@ -27,6 +30,10 @@ class _AdminCreateCategoryState extends State<AdminCreateCategory> {
   ];
   @override
   void initState() {
+    if (widget.categoryToEdit != null) {
+      button1Text = widget.categoryToEdit!.image.toString().substring(
+          widget.categoryToEdit!.image.toString().lastIndexOf("/") + 1);
+    }
     for (var i in _focusNodes) {
       i.addListener(() {
         setState(() {});
@@ -43,7 +50,10 @@ class _AdminCreateCategoryState extends State<AdminCreateCategory> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: coloredText(text: "crete_category".tr, fontSize: 15.0.sp),
+        title: coloredText(
+            text:
+                widget.categoryToEdit != null ? "edit".tr : "create_service".tr,
+            fontSize: 15.0.sp),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -54,14 +64,34 @@ class _AdminCreateCategoryState extends State<AdminCreateCategory> {
             coloredText(text: "name_ar".tr),
             spaceY(5.sp),
             SendMessageTextField(
+              initialValue: widget.categoryToEdit != null
+                  ? widget.categoryToEdit!.nameAr
+                  : null,
               focusNode: _focusNodes[0],
               borderRadius: 10,
+              onchanged: (s) {
+                if (widget.categoryToEdit != null) {
+                  widget.categoryToEdit!.nameAr = s;
+                } else {
+                  categoryToCreate.nameAr = s;
+                }
+              },
             ),
             spaceY(10.sp),
-            coloredText(text: "name_ar".tr),
+            coloredText(text: "name_en".tr),
             spaceY(5.sp),
             SendMessageTextField(
-              focusNode: _focusNodes[0],
+              initialValue: widget.categoryToEdit != null
+                  ? widget.categoryToEdit!.nameEn
+                  : null,
+              focusNode: _focusNodes[1],
+              onchanged: (s) {
+                if (widget.categoryToEdit != null) {
+                  widget.categoryToEdit!.nameEn = s;
+                } else {
+                  categoryToCreate.nameEn = s;
+                }
+              },
               borderRadius: 10,
             ),
             spaceY(20.sp),
@@ -76,6 +106,11 @@ class _AdminCreateCategoryState extends State<AdminCreateCategory> {
                   if (result != null) {
                     button1Text = result.files[0].name
                         .substring(0, min(15, result.files[0].name.length));
+                    if (widget.categoryToEdit != null) {
+                      widget.categoryToEdit!.image = result.files[0];
+                    } else {
+                      categoryToCreate.image = result.files[0];
+                    }
                     setState(() {});
                   }
                 },
@@ -109,7 +144,21 @@ class _AdminCreateCategoryState extends State<AdminCreateCategory> {
             ),
             spaceY(10.0.h),
             primaryButton(
-                onTap: () {},
+                onTap: () async {
+                  bool b = false;
+                  FocusScope.of(context).unfocus();
+                  if (widget.categoryToEdit != null) {
+                    b = await _categoriesController.updateCategory(
+                        category: widget.categoryToEdit!);
+                    logSuccess("edit");
+                  } else {
+                    b = await _categoriesController.createCategory(
+                        category: categoryToCreate);
+                    logSuccess("create");
+                  }
+                  // ignore: use_build_context_synchronously
+                  if (b) Utils.doneDialog(context: context, backTimes: 2);
+                },
                 width: 80.0.w,
                 gradient: LinearGradient(colors: [
                   Theme.of(context).colorScheme.primary,

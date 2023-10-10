@@ -194,7 +194,7 @@ class _AdminBookingsPageState extends State<AdminBookingsPage>
                       fontSize: 12.sp),
                 ),
                 coloredText(
-                  text: "500 \$",
+                  text: "500 KWD",
                   color: Theme.of(context).colorScheme.primary,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.bold,

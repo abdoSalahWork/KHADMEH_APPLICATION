@@ -35,6 +35,8 @@ class MenuPage extends StatelessWidget {
         // selected: currentItem == item,
         onTap: () async {
           if (item.titleEn == "Log out") {
+            logSuccess("msg");
+            Get.back();
           } else {
             onSelectedItem(item);
           }
@@ -108,8 +110,8 @@ class MyAdminMenuItems {
       titleEn: "Bookings", icon: EvaIcons.calendarOutline, titleAr: "الحجوزات");
   static const advertisements = DrawerMenuItem(
       titleEn: "Advertisements", icon: EvaIcons.volumeUp, titleAr: "الإعلانات");
-  static const refunds = DrawerMenuItem(
-      titleEn: "Refunds", icon: EvaIcons.refresh, titleAr: "المبالغ المستردة");
+  // static const refunds = DrawerMenuItem(
+  //     titleEn: "Refunds", icon: EvaIcons.refresh, titleAr: "المبالغ المستردة");
   static const acountStatment = DrawerMenuItem(
       titleEn: "Account statment",
       icon: EvaIcons.activity,
@@ -120,11 +122,15 @@ class MyAdminMenuItems {
       titleEn: "Languages", icon: EvaIcons.globe3, titleAr: "اللغات");
   static const contactUs = DrawerMenuItem(
       titleEn: "contact us", icon: EvaIcons.messageCircle, titleAr: "اتصل بنا");
+  static const commissions = DrawerMenuItem(
+      titleEn: "Commissions", icon: Icons.monetization_on, titleAr: "العمولات");
   static const about = DrawerMenuItem(
       titleEn: "About Khedma", icon: EvaIcons.info, titleAr: "حول خدمة");
 
   static const logOut = DrawerMenuItem(
       titleEn: "Log out", icon: EvaIcons.logOut, titleAr: "تسجيل الخروج");
+  static const dropDowns = DrawerMenuItem(
+      titleEn: "Dropdowns", icon: EvaIcons.arrowDownward, titleAr: "الخيارات");
 
   static const all = <DrawerMenuItem>[
     userProfiles,
@@ -132,10 +138,12 @@ class MyAdminMenuItems {
     categories,
     bookings,
     advertisements,
-    refunds,
+    // refunds,
     acountStatment,
     addresses,
+    commissions,
     languages,
+    dropDowns,
     contactUs,
     about,
     logOut,

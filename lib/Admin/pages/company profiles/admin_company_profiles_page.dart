@@ -1,14 +1,29 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/controllers/admin_controller.dart';
+import 'package:khedma/Admin/pages/company%20profiles/admin_company_details.dart';
 import 'package:khedma/Utils/utils.dart';
+import 'package:khedma/models/me.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:khedma/widgets/search_text_field.dart';
 import 'package:sizer/sizer.dart';
 
-import './admin_company_details.dart';
-
-class AdminCompanyProfilesPage extends StatelessWidget {
+class AdminCompanyProfilesPage extends StatefulWidget {
   const AdminCompanyProfilesPage({super.key});
+
+  @override
+  State<AdminCompanyProfilesPage> createState() =>
+      _AdminCompanyProfilesPageState();
+}
+
+class _AdminCompanyProfilesPageState extends State<AdminCompanyProfilesPage> {
+  final AdminController _adminController = Get.find();
+  @override
+  void initState() {
+    _adminController.getCompanyProfiles();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,38 +75,119 @@ class AdminCompanyProfilesPage extends StatelessWidget {
                 child: Column(
                   children: [
                     SearchTextField(
+                      onchanged: (s) {
+                        if (s != null) {
+                          _adminController.handleCompanyProfilesSearch(name: s);
+                        }
+                      },
                       hintText: "${"search".tr} ...",
                       prefixIcon: const Icon(
                         EvaIcons.search,
                         color: Color(0xffAFAFAF),
                       ),
-                      suffixIcon: GestureDetector(
-                        onTap: () {},
-                        child: const Image(
-                          width: 15,
-                          height: 15,
-                          image: AssetImage("assets/images/filter-icon.png"),
-                        ),
-                      ),
                     ),
                     spaceY(10.sp),
                     Expanded(
-                      child: ListView.separated(
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (context, index) => const AdminCompanyCard(
-                          img: "",
-                          name: "Mohammed Ammourie",
-                          phone: "+9561712313",
-                        ),
-                        separatorBuilder: (context, index) => Column(
-                          children: [
-                            spaceY(5.sp),
-                            const Divider(color: Color(0xffE5E5E5)),
-                            spaceY(5.sp),
-                          ],
-                        ),
-                        itemCount: 20,
-                      ),
+                      child: GetBuilder<AdminController>(builder: (c) {
+                        return c.getCompanyProfilesFlag
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : c.companyProfilesToShow.isEmpty
+                                ? const Center(
+                                    child: NoItemsWidget(),
+                                  )
+                                : ListView.separated(
+                                    padding: EdgeInsets.zero,
+                                    itemBuilder: (context, index) =>
+                                        AdminCompanyCard(
+                                      img: c.companyProfilesToShow[index]
+                                          .companyInformation!.companyLogo,
+                                      name: c.companyProfilesToShow[index]
+                                          .fullName!,
+                                      phone: c.companyProfilesToShow[index]
+                                          .companyInformation!.companyPhone!,
+                                      onTap: () async {
+                                        Me? companyProfile =
+                                            await c.showAdminCompany(
+                                                id: c
+                                                    .companyProfilesToShow[
+                                                        index]
+                                                    .id!,
+                                                indicator: true);
+                                        if (companyProfile != null) {
+                                          Get.to(() => AdminCompanyDetailsPage(
+                                                companyProfile: companyProfile,
+                                              ));
+                                        }
+                                      },
+                                      trailing: Theme(
+                                        data: ThemeData(
+                                            primaryColor: Colors.white),
+                                        child: PopupMenuButton(
+                                          constraints: BoxConstraints(
+                                            minWidth: 2.0 * 56.0,
+                                            maxWidth: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                          ),
+                                          itemBuilder: (BuildContext cc) => [
+                                            PopupMenuItem<int>(
+                                              value: 0,
+                                              child: Row(
+                                                children: [
+                                                  Icon(EvaIcons.slashOutline,
+                                                      size: 15.sp),
+                                                  spaceX(5.sp),
+                                                  coloredText(
+                                                      text:
+                                                          c.companyProfilesToShow[index]
+                                                                      .block ==
+                                                                  0
+                                                              ? 'block'.tr
+                                                              : "un_block".tr,
+                                                      fontSize: 12.0.sp),
+                                                ],
+                                              ),
+                                              onTap: () async {
+                                                bool b = await c.blockProfile(
+                                                  id: c
+                                                      .companyProfilesToShow[
+                                                          index]
+                                                      .id!,
+                                                  block:
+                                                      c.companyProfilesToShow[index]
+                                                                  .block ==
+                                                              0
+                                                          ? 1
+                                                          : 0,
+                                                  userIndicator: 'company',
+                                                );
+                                                if (b) {
+                                                  // ignore: use_build_context_synchronously
+                                                  Utils.doneDialog(
+                                                      context: context);
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                          child: const Icon(
+                                            EvaIcons.moreVertical,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    separatorBuilder: (context, index) =>
+                                        Column(
+                                      children: [
+                                        spaceY(5.sp),
+                                        const Divider(color: Color(0xffE5E5E5)),
+                                        spaceY(5.sp),
+                                      ],
+                                    ),
+                                    itemCount: c.companyProfilesToShow.length,
+                                  );
+                      }),
                     ),
                   ],
                 ),
@@ -110,24 +206,27 @@ class AdminCompanyCard extends StatelessWidget {
     required this.img,
     required this.name,
     required this.phone,
+    this.trailing,
+    this.onTap,
   });
   final String img;
   final String name;
   final String phone;
+  final Widget? trailing;
+  final Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.to(() => AdminCompanyDetailsPage()),
+      onTap: onTap,
       child: Row(
         children: [
           Container(
             width: 55.0.sp,
             height: 55.0.sp,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              image: DecorationImage(
-                  image: AssetImage("assets/images/image.png"),
-                  fit: BoxFit.cover),
+              image:
+                  DecorationImage(image: NetworkImage(img), fit: BoxFit.cover),
             ),
           ),
           spaceX(10.sp),
@@ -143,7 +242,7 @@ class AdminCompanyCard extends StatelessWidget {
             ],
           ),
           Spacer(),
-          Icon(Icons.more_vert)
+          trailing ?? Container()
         ],
       ),
     );

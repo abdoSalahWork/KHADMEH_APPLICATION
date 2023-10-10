@@ -46,7 +46,7 @@ class FirebaseApi {
     final fcmToken = await _firebaseMessaging.getToken();
     logError(fcmToken!);
     if (tmp == null) {
-      await Utils.saveFBToken(token: fcmToken!);
+      await Utils.saveFBToken(token: fcmToken);
     }
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message whilst in the foreground!');

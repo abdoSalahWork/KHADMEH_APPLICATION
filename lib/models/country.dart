@@ -4,7 +4,7 @@ class Country {
   String? nameAr;
   String? nationalityEn;
   String? nationalityAr;
-  String? flag;
+  var flag;
   String? code;
   String? currency;
   String? shortCurrency;
@@ -28,7 +28,7 @@ class Country {
     nameAr = json['name_ar'];
     nationalityEn = json['nationality_en'];
     nationalityAr = json['nationality_ar'];
-    flag = json['flag'];
+    flag = "https://khdmah.online/image/country/" + json['flag'];
     code = json['code'];
     currency = json['currency'];
     shortCurrency = json['short_currency'];
@@ -42,7 +42,7 @@ class Country {
     data['name_ar'] = this.nameAr;
     data['nationality_en'] = this.nationalityEn;
     data['nationality_ar'] = this.nationalityAr;
-    data['flag'] = this.flag;
+
     data['code'] = this.code;
     data['currency'] = this.currency;
     data['short_currency'] = this.shortCurrency;

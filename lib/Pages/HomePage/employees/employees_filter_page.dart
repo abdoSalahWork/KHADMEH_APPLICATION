@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
+import 'package:khedma/Pages/HomePage/employees/models/employees_filter.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:sizer/sizer.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -18,6 +21,8 @@ class EmployeesFilterPage extends StatefulWidget {
 }
 
 class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
+  final EmployeesController _employeesController = Get.find();
+  final GlobalController _globalController = Get.find();
   SfRangeValues values = const SfRangeValues(20, 60);
 
   TextEditingController maxController = TextEditingController();
@@ -25,11 +30,34 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
   TextEditingController minController = TextEditingController();
   int genderGroupValue = 0;
 
-  int maritalGroupValue = 0;
-  List<String> langs = ["Arabic", "English"];
+  int maritalGroupValue = 1;
+  List<String> langs = [];
   List<String> selectedLangs = [];
+  String nationality = "";
   @override
   void initState() {
+    _employeesController.employeesFilter = EmployeesFilter();
+    _employeesController.employeesFilter.maritalStatus = 1;
+    // _employeesController.employeesFilter.gender = 0;
+    if (_employeesController.employeesFilter.nationalityId != null) {
+      nationality = Get.locale == const Locale('en', 'US')
+          ? _globalController.countries
+              .where((element) =>
+                  element.id ==
+                  _employeesController.employeesFilter.nationalityId)
+              .first
+              .nameEn!
+          : _globalController.countries
+              .where((element) =>
+                  element.id ==
+                  _employeesController.employeesFilter.nationalityId)
+              .first
+              .nameAr!;
+    }
+    langs = _globalController.languages
+        .map((e) =>
+            Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+        .toList();
     maxController.text = values.end.toString();
     minController.text = values.start.toString();
     super.initState();
@@ -58,15 +86,31 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
           ),
           spaceY(10),
           CustomDropDownMenuButton(
-            items: ["item", "item2"]
+            items: _globalController.countries
                 .map(
                   (e) => DropdownMenuItem<String>(
-                    value: e,
-                    child: coloredText(text: e, color: Colors.black),
+                    value: Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!,
+                    child: coloredText(
+                        text: Get.locale == const Locale('en', 'US')
+                            ? e.nameEn!
+                            : e.nameAr!,
+                        color: Colors.black),
                   ),
                 )
                 .toList(),
-            onChanged: (p0) {},
+            onChanged: (p0) {
+              nationality = p0!;
+              _employeesController.employeesFilter.nationalityId =
+                  _globalController
+                      .countries
+                      .where((element) =>
+                          element.nameAr == p0 || element.nameEn == p0)
+                      .first
+                      .id;
+            },
+            value: nationality == "" ? null : nationality,
             borderc: Border.all(color: const Color(0xffE3E3E3)),
             borderRadius: BorderRadius.circular(8),
             padding: const EdgeInsetsDirectional.symmetric(horizontal: 10),
@@ -81,6 +125,10 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                 values = value;
                 minController.text = values.start.toString().split(".")[0];
                 maxController.text = values.end.toString().split(".")[0];
+                _employeesController.employeesFilter.minAge =
+                    int.parse(values.start.toString().split(".")[0]);
+                _employeesController.employeesFilter.maxAge =
+                    int.parse(values.end.toString().split(".")[0]);
                 setState(() {});
               },
               min: 20,
@@ -117,6 +165,10 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                 onchanged: (s) {
                   if (s != "" && int.parse(s!) >= 20 && int.parse(s) <= 60) {
                     values = SfRangeValues(int.parse(s), values.end);
+                    _employeesController.employeesFilter.minAge =
+                        int.parse(values.start.toString().split(".")[0]);
+                    _employeesController.employeesFilter.maxAge =
+                        int.parse(values.end.toString().split(".")[0]);
                     setState(() {});
                   }
                 },
@@ -135,6 +187,10 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                 onchanged: (s) {
                   if (s != "" && int.parse(s!) <= 60 && int.parse(s) >= 20) {
                     values = SfRangeValues(values.start, int.parse(s));
+                    _employeesController.employeesFilter.minAge =
+                        int.parse(values.start.toString().split(".")[0]);
+                    _employeesController.employeesFilter.maxAge =
+                        int.parse(values.end.toString().split(".")[0]);
                     setState(() {});
                   }
                 },
@@ -142,43 +198,47 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
             ],
           ),
           spaceY(20),
-          coloredText(fontSize: 14.0.sp, text: "gender".tr),
-          Row(
-            children: [
-              MyRadioButton(
-                text: "male".tr,
-                value: 0,
-                color: Theme.of(Get.context!).colorScheme.secondary,
-                groupValue: genderGroupValue,
-                onChanged: (p0) {
-                  genderGroupValue = p0;
-                  setState(() {});
-                },
-              ),
-              spaceX(10),
-              MyRadioButton(
-                color: Theme.of(Get.context!).colorScheme.secondary,
-                text: "female".tr,
-                value: 1,
-                groupValue: genderGroupValue,
-                onChanged: (p0) {
-                  genderGroupValue = p0;
-                  setState(() {});
-                },
-              ),
-            ],
-          ),
-          spaceY(20),
+          // coloredText(fontSize: 14.0.sp, text: "gender".tr),
+          // Row(
+          //   children: [
+          //     MyRadioButton(
+          //       text: "male".tr,
+          //       value: 0,
+          //       color: Theme.of(Get.context!).colorScheme.secondary,
+          //       groupValue: genderGroupValue,
+          //       onChanged: (p0) {
+          //         genderGroupValue = p0;
+          //         // _employeesController.employeesFilter.gender = 0;
+          //         setState(() {});
+          //       },
+          //     ),
+          //     spaceX(10),
+          //     MyRadioButton(
+          //       color: Theme.of(Get.context!).colorScheme.secondary,
+          //       text: "female".tr,
+          //       value: 1,
+          //       groupValue: genderGroupValue,
+          //       onChanged: (p0) {
+          //         genderGroupValue = p0;
+          //         // _employeesController.employeesFilter.gender = 1;
+          //         setState(() {});
+          //       },
+          //     ),
+          //   ],
+          // ),
+          // spaceY(20),
+
           coloredText(fontSize: 14.0.sp, text: "marital_status".tr),
           Row(
             children: [
               MyRadioButton(
                 color: Theme.of(Get.context!).colorScheme.secondary,
                 text: "single".tr,
-                value: 0,
+                value: 1,
                 groupValue: maritalGroupValue,
                 onChanged: (p0) {
                   maritalGroupValue = p0;
+                  _employeesController.employeesFilter.maritalStatus = 1;
                   setState(() {});
                 },
               ),
@@ -186,10 +246,11 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
               MyRadioButton(
                 color: Theme.of(Get.context!).colorScheme.secondary,
                 text: "married".tr,
-                value: 1,
+                value: 2,
                 groupValue: maritalGroupValue,
                 onChanged: (p0) {
                   maritalGroupValue = p0;
+                  _employeesController.employeesFilter.maritalStatus = 2;
                   setState(() {});
                 },
               ),
@@ -243,7 +304,7 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                 //     borderRadius: BorderRadius.circular(10),
                 //   ),
                 //   onTap: (p0) {
-                //     selectedLangs.remove(p0);
+                //     selectedLangs.rfemove(p0);
                 //     setState(() {});
                 //   },
                 //   textStyle: coloredText(
@@ -253,6 +314,7 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                 // ),
                 onConfirm: (values) {
                   selectedLangs = values;
+
                   setState(() {});
                 }),
           ),
@@ -297,6 +359,12 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
           spaceY(20),
           Align(
             child: primaryButton(
+                onTap: () {
+                  _employeesController.employeesFilter.langs = selectedLangs;
+
+                  _employeesController.applyFilter();
+                  Get.back();
+                },
                 height: 50,
                 width: 50.0.w,
                 gradient: LinearGradient(

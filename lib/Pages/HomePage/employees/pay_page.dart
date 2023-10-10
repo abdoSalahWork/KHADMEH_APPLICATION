@@ -10,11 +10,12 @@ import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
 import '../../../widgets/underline_text_field.dart';
-import '../../invooice/invoice.dart';
 
 class PayPage extends StatefulWidget {
-  const PayPage({super.key, required this.employeeType});
-  final EmployeeType employeeType;
+  const PayPage({
+    super.key,
+  });
+  // final EmployeeType employeeType;
   @override
   State<PayPage> createState() => _PayPageState();
 }
@@ -191,122 +192,117 @@ class _PayPageState extends State<PayPage> {
                     width: 100.0.w,
                     radius: 10,
                     onTap: () {
-                      if (widget.employeeType == EmployeeType.clean) {
-                        Get.to(
-                          () => InvoicePage(employeeType: widget.employeeType),
-                          transition: Transition.rightToLeft,
-                        );
-                      } else {
-                        Dialogs.materialDialog(
-                            msg:
-                                'The required procedures must be taken within 48 hours, except for holidays. The reservation will be canceled after 48 hours, unless a problem occurs. You can request an extension of the reservation.',
-                            msgStyle: coloredText(
-                                    text: "text",
-                                    textAlign: TextAlign.start,
-                                    color: const Color(0xff464646),
-                                    fontSize: 12.0.sp)
-                                .style,
-                            customView: Container(
-                              width: 22.0.w,
-                              height: 22.0.w,
-                              margin: const EdgeInsets.only(top: 20),
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image:
-                                      AssetImage("assets/images/warning.png"),
-                                ),
+                      // if (widget.employeeType == EmployeeType.clean) {
+                      //   Get.to(
+                      //     () => InvoicePage(employeeType: widget.employeeType),
+                      //     transition: Transition.rightToLeft,
+                      //   );
+                      // }
+                      //  else {
+                      Dialogs.materialDialog(
+                          msg:
+                              'The required procedures must be taken within 48 hours, except for holidays. The reservation will be canceled after 48 hours, unless a problem occurs. You can request an extension of the reservation.',
+                          msgStyle: coloredText(
+                                  text: "text",
+                                  textAlign: TextAlign.start,
+                                  color: const Color(0xff464646),
+                                  fontSize: 12.0.sp)
+                              .style,
+                          customView: Container(
+                            width: 22.0.w,
+                            height: 22.0.w,
+                            margin: const EdgeInsets.only(top: 20),
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage("assets/images/warning.png"),
                               ),
                             ),
-                            color: Colors.white,
-                            context: Get.context!,
-                            actions: [
-                              Container(
-                                margin: const EdgeInsets.only(top: 30),
-                                child: primaryButton(
-                                  onTap: () {
-                                    Get.back();
-                                    Dialogs.materialDialog(
-                                        // barrierColor: Colors.red,
-                                        titleStyle: coloredText(
-                                                text: "text",
-                                                textAlign: TextAlign.start,
-                                                fontSize: 13.0.sp)
-                                            .style!,
-                                        customViewPosition:
-                                            CustomViewPosition.BEFORE_MESSAGE,
-                                        customView: Theme(
-                                          data: ThemeData(
-                                            useMaterial3: false,
+                          ),
+                          color: Colors.white,
+                          context: Get.context!,
+                          actions: [
+                            Container(
+                              margin: const EdgeInsets.only(top: 30),
+                              child: primaryButton(
+                                onTap: () {
+                                  Get.back();
+                                  Dialogs.materialDialog(
+                                      // barrierColor: Colors.red,
+                                      titleStyle: coloredText(
+                                              text: "text",
+                                              textAlign: TextAlign.start,
+                                              fontSize: 13.0.sp)
+                                          .style!,
+                                      customViewPosition:
+                                          CustomViewPosition.BEFORE_MESSAGE,
+                                      customView: Theme(
+                                        data: ThemeData(
+                                          useMaterial3: false,
+                                        ),
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(top: 30),
+                                          width: 45.0.w,
+                                          height: 45.0.w,
+                                          decoration: BoxDecoration(
+                                            color: Colors.blueGrey.shade100,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
                                           ),
-                                          child: Container(
-                                            margin:
-                                                const EdgeInsets.only(top: 30),
-                                            width: 45.0.w,
-                                            height: 45.0.w,
-                                            decoration: BoxDecoration(
-                                              color: Colors.blueGrey.shade100,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Icon(
-                                                  EvaIcons.folder,
-                                                  size: 30.0.w,
-                                                  color:
-                                                      const Color(0xff5E5E5E),
-                                                ),
-                                                coloredText(
-                                                  text: "contracts".tr,
-                                                  color:
-                                                      const Color(0xff5E5E5E),
-                                                ),
-                                                coloredText(
-                                                  text: "1.45 MB".tr,
-                                                  color:
-                                                      const Color(0xffA5A5A5),
-                                                ),
-                                              ],
-                                            ),
+                                          child: Column(
+                                            children: [
+                                              Icon(
+                                                EvaIcons.folder,
+                                                size: 30.0.w,
+                                                color: const Color(0xff5E5E5E),
+                                              ),
+                                              coloredText(
+                                                text: "contracts".tr,
+                                                color: const Color(0xff5E5E5E),
+                                              ),
+                                              coloredText(
+                                                text: "1.45 MB".tr,
+                                                color: const Color(0xffA5A5A5),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        title: "Download Documents",
-                                        color: Colors.white,
-                                        context: Get.context!,
-                                        actions: [
-                                          Container(
-                                            child: primaryButton(
-                                              onTap: () {
-                                                Get.back();
-                                                if (widget.employeeType ==
-                                                    EmployeeType.recruitment) {
-                                                  Get.to(
-                                                    () => InvoicePage(
-                                                        employeeType: widget
-                                                            .employeeType),
-                                                  );
-                                                }
-                                              },
-                                              width: 60.0.w,
-                                              color: Colors.black,
-                                              text: coloredText(
-                                                  text: "download".tr,
-                                                  color: Colors.white,
-                                                  fontSize: 15.0.sp),
-                                            ),
-                                          )
-                                        ]);
-                                  },
-                                  width: 60.0.w,
-                                  color: Colors.black,
-                                  text: coloredText(
-                                      text: "agree".tr,
+                                      ),
+                                      title: "Download Documents",
                                       color: Colors.white,
-                                      fontSize: 15.0.sp),
-                                ),
-                              )
-                            ]);
-                      }
+                                      context: Get.context!,
+                                      actions: [
+                                        Container(
+                                          child: primaryButton(
+                                            onTap: () {
+                                              Get.back();
+                                              // if (widget.employeeType ==
+                                              //     EmployeeType.recruitment) {
+                                              // Get.to(
+                                              // () => InvoicePage(),
+                                              // );
+                                              // }
+                                            },
+                                            width: 60.0.w,
+                                            color: Colors.black,
+                                            text: coloredText(
+                                                text: "download".tr,
+                                                color: Colors.white,
+                                                fontSize: 15.0.sp),
+                                          ),
+                                        )
+                                      ]);
+                                },
+                                width: 60.0.w,
+                                color: Colors.black,
+                                text: coloredText(
+                                    text: "agree".tr,
+                                    color: Colors.white,
+                                    fontSize: 15.0.sp),
+                              ),
+                            )
+                          ]);
+                      // }
                     },
                     color: Colors.black,
                     text: coloredText(

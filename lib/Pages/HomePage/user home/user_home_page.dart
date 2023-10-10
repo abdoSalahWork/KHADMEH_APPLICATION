@@ -2,6 +2,7 @@ import 'dart:math' as math; // import this
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:badges/badges.dart' as badges;
 import 'package:carousel_slider/carousel_slider.dart'; // ignore_for_file: must_be_immutable
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
@@ -10,10 +11,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/cleaning%20companies/cleaning_company.dart';
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
+import 'package:khedma/Pages/HomePage/employees/employee_page.dart';
+import 'package:khedma/Pages/HomePage/models/company_model.dart';
+import 'package:khedma/Pages/HomePage/recruitment-companies/recruitment_company.dart';
+import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/user_register_model.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:sizer/sizer.dart';
 
@@ -39,7 +48,10 @@ class _UserHomePageState extends State<UserHomePage> {
   PageController pageController = PageController(initialPage: 0);
   var errors = {};
   UserRegisterData userCompleteData = UserRegisterData();
-  AuthController _authController = Get.find();
+  final AuthController _authController = Get.find();
+  final ChatController _chatController = Get.find();
+  final CompaniesController _companiesController = Get.find();
+
   List<String> tags = [];
 
   List<String> options = [
@@ -78,12 +90,11 @@ class _UserHomePageState extends State<UserHomePage> {
   String button1Text = "upload_id".tr;
   String button2Text = "upload_personal_photo".tr;
   final GlobalController _globalController = Get.find();
-  final EmployeesController _employeesController =
-      Get.put(EmployeesController());
+  final EmployeesController _employeesController = Get.find();
   String region = "";
   String nationality = "";
   String city = "";
-  String phoneCode = "";
+  // String phoneCode = "";
   final List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -103,6 +114,8 @@ class _UserHomePageState extends State<UserHomePage> {
   void initState() {
     completedRegisterFlag = _globalController.me.userInformation != null;
     _employeesController.getEmployees();
+    _chatController.getChats();
+    _globalController.getUserHomePage();
     h2 = 470.0.sp;
     h = 330.0.sp;
     h3 = 400.0.sp;
@@ -119,390 +132,588 @@ class _UserHomePageState extends State<UserHomePage> {
     return Scaffold(
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 55,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(children: [
-                      coloredText(
-                        text: "hello".tr,
-                        fontSize: 16.0.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      spaceX(10),
-                      coloredText(
-                        text: "Ammourie".tr,
-                        fontSize: 16.0.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ]),
-                    Row(children: [
-                      Badge(
-                        smallSize: 10,
-                        child: GestureDetector(
-                          onTap: () => Get.to(() => NotificationsPage(),
-                              transition: Transition.downToUp),
-                          child: Icon(
-                            EvaIcons.bell,
-                            color: const Color(0xffD1D1D1),
-                            size: 25.0.sp,
-                          ),
-                        ),
-                      ),
-                      spaceX(10),
-                      GestureDetector(
-                        child: Icon(
-                          EvaIcons.messageCircle,
-                          color: const Color(0xffD1D1D1),
-                          size: 22.0.sp,
-                        ),
-                        onTap: () => Get.to(() => const MessagesPage()),
-                      ),
-                      spaceX(10),
-                      GestureDetector(
-                        onTap: () => Get.to(
-                            () => const PersonalPage(
-                                employeeType: EmployeeType.clean),
-                            transition: Transition.downToUp),
-                        child: Container(
-                          width: 45,
-                          height: 45,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            // border: Border.all(
-                            //   width: 1,
-                            //   color: const Color(0xffD1D1D1),
-                            // ),
-                            image: DecorationImage(
-                              image: AssetImage("assets/images/image.png"),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]),
-                  ],
-                ),
-                spaceY(1.5.h),
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    physics: completedRegisterFlag
-                        ? null
-                        : const NeverScrollableScrollPhysics(),
-                    primary: false,
+          Visibility(
+            visible: completedRegisterFlag,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 55,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CarouselSlider(
-                        options: CarouselOptions(
-                          height: 150.0,
-                          aspectRatio: 16 / 9,
-                          initialPage: 0,
-                          enableInfiniteScroll: true,
-                          reverse: false,
-                          autoPlay: true,
-                          autoPlayInterval: const Duration(seconds: 3),
-                          autoPlayAnimationDuration:
-                              const Duration(milliseconds: 800),
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          enlargeCenterPage: true,
-                          enlargeFactor: 0.2,
-                          onPageChanged: (index, reason) {},
-                          scrollDirection: Axis.horizontal,
+                      Row(children: [
+                        coloredText(
+                          text: "hello".tr,
+                          fontSize: 16.0.sp,
+                          fontWeight: FontWeight.bold,
                         ),
-                        items: [1, 2, 3, 4, 5].map((i) {
-                          return Builder(
-                            builder: (BuildContext context) {
-                              return Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  // margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                                  decoration: BoxDecoration(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Center(
-                                    child: Text(
-                                      'text $i',
-                                      style: const TextStyle(
-                                          fontSize: 16.0, color: Colors.white),
-                                    ),
-                                  ));
-                            },
-                          );
-                        }).toList(),
-                      ),
-                      spaceY(2.0.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          coloredText(
-                            text: "rec_com".tr,
-                            fontSize: 13.0.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          GestureDetector(
-                            onTap: () => Get.to(
-                                () => const RecruitmentCompaniesSearchPage(),
-                                transition: Transition.downToUp),
-                            child: coloredText(
-                              text: "all".tr,
-                              fontSize: 13.0.sp,
-                              color: Colors.grey,
-                              decoration: TextDecoration.underline,
+                        spaceX(10),
+                        coloredText(
+                          text: "Ammourie".tr,
+                          fontSize: 16.0.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ]),
+                      GetBuilder<ChatController>(builder: (chatController) {
+                        return Row(children: [
+                          badges.Badge(
+                            position:
+                                badges.BadgePosition.topEnd(top: 0, end: 0),
+                            child: GestureDetector(
+                              onTap: () => Get.to(() => NotificationsPage(),
+                                  transition: Transition.downToUp),
+                              child: Icon(
+                                EvaIcons.bell,
+                                color: const Color(0xffD1D1D1),
+                                size: 25.0.sp,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                      spaceY(1.5.h),
-                      SizedBox(
-                        height: 18.0.h,
-                        child: ListView.separated(
-                          physics: completedRegisterFlag
-                              ? null
-                              : const NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.zero,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              width: 40.0.w,
-                              decoration: BoxDecoration(
-                                color: const Color(0xffF8F8F8),
-                                borderRadius: BorderRadius.circular(10),
+                          spaceX(10),
+                          badges.Badge(
+                            showBadge: chatController.unreadChatsFlag,
+                            position:
+                                badges.BadgePosition.topEnd(top: 0, end: 0),
+                            child: GestureDetector(
+                              child: Icon(
+                                EvaIcons.messageCircle,
+                                color: const Color(0xffD1D1D1),
+                                size: 22.0.sp,
                               ),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Image(
-                                    width: 60.0.sp,
-                                    height: 60.0.sp,
-                                    image: AssetImage(
-                                        "assets/images/logo${Random().nextInt(2 - 0)}.png"),
-                                    fit: BoxFit.contain,
-                                  ),
-                                  coloredText(
-                                    text: "lorem ipsum".length > 12
-                                        ? "${"lorem ipsum".substring(0, 12)}.."
-                                        : "lorem ipsum",
-                                    fontSize: 12.0.sp,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(EvaIcons.star,
-                                          color: Colors.yellow),
-                                      spaceX(5),
-                                      coloredText(
-                                        text: "4.5",
-                                        fontSize: 13.0.sp,
-                                        color: Colors.black,
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          itemCount: 10,
-                          separatorBuilder: (BuildContext context, int index) =>
-                              spaceX(10),
-                        ),
-                      ),
-                      spaceY(2.0.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          coloredText(
-                            text: "cl_com".tr,
-                            fontSize: 13.0.sp,
-                            fontWeight: FontWeight.w500,
+                              onTap: () => Get.to(() => const MessagesPage()),
+                            ),
                           ),
+                          spaceX(10),
                           GestureDetector(
                             onTap: () {
-                              Get.to(() => const CleaningCompaniesSearchPage(),
+                              Get.to(
+                                  () => const PersonalPage(
+                                      employeeType: EmployeeType.clean),
                                   transition: Transition.downToUp);
                             },
-                            child: coloredText(
-                              text: "all".tr,
-                              fontSize: 13.0.sp,
-                              color: Colors.grey,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
-                      ),
-                      spaceY(1.5.h),
-                      SizedBox(
-                        height: 18.0.h,
-                        child: ListView.separated(
-                          physics: completedRegisterFlag
-                              ? null
-                              : const NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.zero,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              width: 40.0.w,
+                            child: Container(
+                              width: 45,
+                              height: 45,
                               decoration: BoxDecoration(
-                                color: const Color(0xffF8F8F8),
-                                borderRadius: BorderRadius.circular(10),
+                                shape: BoxShape.circle,
+                                // border: Border.all(
+                                //   width: 1,
+                                //   color: const Color(0xffD1D1D1),
+                                // ),
+                                image: DecorationImage(
+                                  image: NetworkImage(_globalController
+                                      .me.userInformation!.personalPhoto!),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Image(
-                                    width: 60.0.sp,
-                                    height: 60.0.sp,
-                                    image: AssetImage(
-                                        "assets/images/logo${Random().nextInt(2 - 0)}.png"),
-                                    fit: BoxFit.contain,
-                                  ),
-                                  coloredText(
-                                    text: "lorem ipsum".length > 12
-                                        ? "${"lorem ipsum".substring(0, 12)}.."
-                                        : "lorem ipsum",
-                                    fontSize: 13.0.sp,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(EvaIcons.star,
-                                          color: Colors.yellow),
-                                      spaceX(5),
-                                      coloredText(
-                                        text: "4.5",
-                                        fontSize: 13.0.sp,
-                                        color: Colors.black,
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          itemCount: 10,
-                          separatorBuilder: (BuildContext context, int index) =>
-                              spaceX(10),
-                        ),
-                      ),
-                      spaceY(2.0.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          coloredText(
-                            text: "employees".tr,
-                            fontSize: 13.0.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          GestureDetector(
-                            onTap: () => Get.to(
-                                () => const EmployeesSearchPage(),
-                                transition: Transition.downToUp),
-                            child: coloredText(
-                              text: "all".tr,
-                              fontSize: 13.0.sp,
-                              color: Colors.grey,
-                              decoration: TextDecoration.underline,
                             ),
                           ),
-                        ],
-                      ),
-                      spaceY(2.0.h),
-                      SizedBox(
-                        height: 25.0.h,
-                        child: ListView.separated(
-                          physics: completedRegisterFlag
-                              ? null
-                              : const NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.zero,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 25.0.w,
-                                  height: 25.0.w,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                            "assets/images/image.png"),
-                                        fit: BoxFit.cover),
-                                  ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsetsDirectional.only(
-                                          start: 2),
-                                      child: coloredText(
-                                          text: 'lorem ipsun',
-                                          fontSize: 13.0.sp),
-                                    ),
-                                    spaceY(2),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          EvaIcons.pin,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          size: 13.0.sp,
-                                        ),
-                                        spaceX(3),
-                                        coloredText(
-                                          text: 'Homs',
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          fontSize: 12.0.sp,
-                                        ),
-                                      ],
-                                    ),
-                                    spaceY(2),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          EvaIcons.star,
-                                          color: Colors.yellow,
-                                          size: 15.0.sp,
-                                        ),
-                                        spaceX(5),
-                                        coloredText(
-                                          text: "4.5",
-                                          fontSize: 12.0.sp,
-                                          color: Colors.black,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              ],
-                            );
-                          },
-                          itemCount: 10,
-                          separatorBuilder: (BuildContext context, int index) =>
-                              spaceX(20),
-                        ),
-                      ),
-                      spaceY(3.0.h)
+                        ]);
+                      }),
                     ],
                   ),
-                ),
-              ],
+                  spaceY(1.5.h),
+                  GetBuilder<GlobalController>(builder: (globalController) {
+                    return Expanded(
+                      child: globalController.getUserHomePageFlag
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ListView(
+                              padding: EdgeInsets.zero,
+                              physics: completedRegisterFlag
+                                  ? null
+                                  : const NeverScrollableScrollPhysics(),
+                              primary: false,
+                              children: [
+                                globalController.userHomePage.ads == null ||
+                                        globalController
+                                            .userHomePage.ads!.isEmpty
+                                    ? Container()
+                                    : CarouselSlider(
+                                        options: CarouselOptions(
+                                          height: 150.0,
+                                          aspectRatio: 16 / 9,
+                                          initialPage: 0,
+                                          enableInfiniteScroll: true,
+                                          reverse: false,
+                                          autoPlay: true,
+                                          autoPlayInterval:
+                                              const Duration(seconds: 3),
+                                          autoPlayAnimationDuration:
+                                              const Duration(milliseconds: 800),
+                                          autoPlayCurve: Curves.fastOutSlowIn,
+                                          enlargeCenterPage: true,
+                                          enlargeFactor: 0.2,
+                                          onPageChanged: (index, reason) {},
+                                          scrollDirection: Axis.horizontal,
+                                        ),
+                                        items: globalController
+                                            .userHomePage.ads!
+                                            .map((i) {
+                                          return Builder(
+                                            builder: (BuildContext context) {
+                                              return Container(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  // margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                                                  decoration: BoxDecoration(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  child: Center(
+                                                    child: Text(
+                                                      'text ${i.id}',
+                                                      style: const TextStyle(
+                                                          fontSize: 16.0,
+                                                          color: Colors.white),
+                                                    ),
+                                                  ));
+                                            },
+                                          );
+                                        }).toList(),
+                                      ),
+                                spaceY(2.0.h),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    coloredText(
+                                      text: "rec_com".tr,
+                                      fontSize: 13.0.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => Get.to(
+                                          () =>
+                                              const RecruitmentCompaniesSearchPage(),
+                                          transition: Transition.downToUp),
+                                      child: coloredText(
+                                        text: "all".tr,
+                                        fontSize: 13.0.sp,
+                                        color: Colors.grey,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                spaceY(1.5.h),
+                                SizedBox(
+                                  height: 18.0.h,
+                                  child: globalController.userHomePage
+                                                  .companiesRecruitment ==
+                                              null ||
+                                          globalController.userHomePage
+                                              .companiesRecruitment!.isEmpty
+                                      ? const NoItemsWidget()
+                                      : ListView.separated(
+                                          physics: completedRegisterFlag
+                                              ? null
+                                              : const NeverScrollableScrollPhysics(),
+                                          padding: EdgeInsets.zero,
+                                          scrollDirection: Axis.horizontal,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () async {
+                                                CompanyModel? x =
+                                                    await _companiesController
+                                                        .showCompany(
+                                                            indicator: true,
+                                                            id: globalController
+                                                                .userHomePage
+                                                                .companiesRecruitment![
+                                                                    index]
+                                                                .id!);
+
+                                                if (x != null) {
+                                                  Get.to(
+                                                      () => RecruitmentCompany(
+                                                          company: x),
+                                                      transition: Transition
+                                                          .rightToLeftWithFade);
+                                                }
+                                              },
+                                              child: Container(
+                                                width: 40.0.w,
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      const Color(0xffF8F8F8),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    Image(
+                                                      width: 60.0.sp,
+                                                      height: 60.0.sp,
+                                                      image: NetworkImage(
+                                                          "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesRecruitment![index].companyInformation!.companyLogo!}/"),
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                    coloredText(
+                                                      text: globalController
+                                                                  .userHomePage
+                                                                  .companiesRecruitment![
+                                                                      index]
+                                                                  .fullName!
+                                                                  .length >
+                                                              12
+                                                          ? "${globalController.userHomePage.companiesRecruitment![index].fullName!.substring(0, 12)}.."
+                                                          : globalController
+                                                              .userHomePage
+                                                              .companiesRecruitment![
+                                                                  index]
+                                                              .fullName!,
+                                                      fontSize: 12.0.sp,
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        const Icon(
+                                                            EvaIcons.star,
+                                                            color:
+                                                                Colors.yellow),
+                                                        spaceX(5),
+                                                        coloredText(
+                                                          text: globalController
+                                                              .userHomePage
+                                                              .companiesRecruitment![
+                                                                  index]
+                                                              .reviewCompanyCount
+                                                              .toString(),
+                                                          fontSize: 13.0.sp,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          itemCount: globalController
+                                              .userHomePage
+                                              .companiesRecruitment!
+                                              .length,
+                                          separatorBuilder:
+                                              (BuildContext context,
+                                                      int index) =>
+                                                  spaceX(10),
+                                        ),
+                                ),
+                                spaceY(2.0.h),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    coloredText(
+                                      text: "cl_com".tr,
+                                      fontSize: 13.0.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.to(
+                                            () =>
+                                                const CleaningCompaniesSearchPage(),
+                                            transition: Transition.downToUp);
+                                      },
+                                      child: coloredText(
+                                        text: "all".tr,
+                                        fontSize: 13.0.sp,
+                                        color: Colors.grey,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                spaceY(1.5.h),
+                                SizedBox(
+                                  height: 18.0.h,
+                                  child: globalController.userHomePage
+                                                  .companiesCleaning ==
+                                              null ||
+                                          globalController.userHomePage
+                                              .companiesCleaning!.isEmpty
+                                      ? const NoItemsWidget()
+                                      : ListView.separated(
+                                          physics: completedRegisterFlag
+                                              ? null
+                                              : const NeverScrollableScrollPhysics(),
+                                          padding: EdgeInsets.zero,
+                                          scrollDirection: Axis.horizontal,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () async {
+                                                CompanyModel? x =
+                                                    await _companiesController
+                                                        .showCompany(
+                                                            indicator: true,
+                                                            id: globalController
+                                                                .userHomePage
+                                                                .companiesCleaning![
+                                                                    index]
+                                                                .id!);
+
+                                                if (x != null) {
+                                                  if (x.companyInformation !=
+                                                      null) {
+                                                    logSuccess(x
+                                                        .companyInformation!
+                                                        .companyType!);
+                                                    if (x.companyInformation!
+                                                            .companyType ==
+                                                        "recruitment") {
+                                                      Get.to(
+                                                        () =>
+                                                            RecruitmentCompany(
+                                                                company: x),
+                                                      );
+                                                    } else {
+                                                      Get.to(
+                                                        () => CleaningCompany(
+                                                            cleaningCompany: x),
+                                                      );
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              child: Container(
+                                                width: 40.0.w,
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      const Color(0xffF8F8F8),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    Image(
+                                                      width: 60.0.sp,
+                                                      height: 60.0.sp,
+                                                      image: NetworkImage(
+                                                          "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesCleaning![index].companyInformation!.companyLogo!}/"),
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                                    coloredText(
+                                                      text: globalController
+                                                                  .userHomePage
+                                                                  .companiesCleaning![
+                                                                      index]
+                                                                  .fullName!
+                                                                  .length >
+                                                              12
+                                                          ? "${globalController.userHomePage.companiesCleaning![index].fullName!.substring(0, 12)}.."
+                                                          : globalController
+                                                              .userHomePage
+                                                              .companiesCleaning![
+                                                                  index]
+                                                              .fullName!,
+                                                      fontSize: 13.0.sp,
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        const Icon(
+                                                            EvaIcons.star,
+                                                            color:
+                                                                Colors.yellow),
+                                                        spaceX(5),
+                                                        coloredText(
+                                                          text: globalController
+                                                              .userHomePage
+                                                              .companiesCleaning![
+                                                                  index]
+                                                              .reviewCompanyCount
+                                                              .toString(),
+                                                          fontSize: 13.0.sp,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          itemCount: globalController
+                                              .userHomePage
+                                              .companiesCleaning!
+                                              .length,
+                                          separatorBuilder:
+                                              (BuildContext context,
+                                                      int index) =>
+                                                  spaceX(10),
+                                        ),
+                                ),
+                                spaceY(2.0.h),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    coloredText(
+                                      text: "employees".tr,
+                                      fontSize: 13.0.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => Get.to(
+                                          () => const EmployeesSearchPage(),
+                                          transition: Transition.downToUp),
+                                      child: coloredText(
+                                        text: "all".tr,
+                                        fontSize: 13.0.sp,
+                                        color: Colors.grey,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                spaceY(2.0.h),
+                                SizedBox(
+                                  height: 25.0.h,
+                                  child: globalController
+                                                  .userHomePage.employees ==
+                                              null ||
+                                          globalController
+                                              .userHomePage.employees!.isEmpty
+                                      ? const NoItemsWidget()
+                                      : ListView.separated(
+                                          physics: completedRegisterFlag
+                                              ? null
+                                              : const NeverScrollableScrollPhysics(),
+                                          padding: EdgeInsets.zero,
+                                          scrollDirection: Axis.horizontal,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () async {
+                                                EmployeeModel? em =
+                                                    await _employeesController
+                                                        .showEmployee(
+                                                            id: globalController
+                                                                .userHomePage
+                                                                .employees![
+                                                                    index]
+                                                                .id!,
+                                                            indicator: true);
+                                                if (em != null) {
+                                                  Get.to(
+                                                      () => EmployeePage(
+                                                          employeeModel: em),
+                                                      transition: Transition
+                                                          .rightToLeft);
+                                                }
+                                              },
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    width: 25.0.w,
+                                                    height: 25.0.w,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      image: DecorationImage(
+                                                          image: NetworkImage(
+                                                              "${globalController.userHomePage.imageUrlEmployee!}/${globalController.userHomePage.employees![index].image}/"),
+                                                          fit: BoxFit.cover),
+                                                    ),
+                                                  ),
+                                                  spaceY(5.sp),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsetsDirectional
+                                                                .only(start: 2),
+                                                        child: coloredText(
+                                                            text: globalController
+                                                                        .userHomePage
+                                                                        .employees![
+                                                                            index]
+                                                                        .name!
+                                                                        .length >
+                                                                    12
+                                                                ? "${globalController.userHomePage.employees![index].name!.substring(0, 12)}.."
+                                                                : globalController
+                                                                    .userHomePage
+                                                                    .employees![
+                                                                        index]
+                                                                    .name!,
+                                                            fontSize: 13.0.sp),
+                                                      ),
+                                                      spaceY(2),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Icon(
+                                                            EvaIcons.pin,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .secondary,
+                                                            size: 13.0.sp,
+                                                          ),
+                                                          spaceX(3),
+                                                          coloredText(
+                                                            text: globalController
+                                                                .userHomePage
+                                                                .employees![
+                                                                    index]
+                                                                .nationality!
+                                                                .nameEn!,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .secondary,
+                                                            fontSize: 12.0.sp,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          itemCount: globalController
+                                              .userHomePage.employees!.length,
+                                          separatorBuilder:
+                                              (BuildContext context,
+                                                      int index) =>
+                                                  spaceX(20),
+                                        ),
+                                ),
+                                spaceY(3.0.h)
+                              ],
+                            ),
+                    );
+                  }),
+                ],
+              ),
             ),
           ),
           Visibility(
@@ -650,7 +861,7 @@ class _UserHomePageState extends State<UserHomePage> {
                 return null;
               },
               prefixIcon: Container(
-                margin: const EdgeInsetsDirectional.only(start: 10),
+                margin: const EdgeInsetsDirectional.only(start: 10, end: 10),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -658,26 +869,28 @@ class _UserHomePageState extends State<UserHomePage> {
                       EvaIcons.phoneOutline,
                       size: 20.0.sp,
                     ),
-                    GetBuilder<GlobalController>(builder: (c) {
-                      return CustomDropDownMenuButton(
-                        width: 65.sp,
-                        hintPadding: 5,
-                        hintSize: 13,
-                        value: phoneCode == "" ? null : phoneCode,
-                        items: c.countries
-                            .map((e) => DropdownMenuItem<String>(
-                                  value: e.code!,
-                                  child: coloredText(
-                                    text: e.code!,
-                                    fontSize: 17,
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (s) {
-                          phoneCode = s!;
-                        },
-                      );
-                    }),
+                    spaceX(5.sp),
+                    coloredText(text: "+965", color: Colors.grey)
+                    // GetBuilder<GlobalController>(builder: (c) {
+                    //   return CustomDropDownMenuButton(
+                    //     width: 65.sp,
+                    //     hintPadding: 5,
+                    //     hintSize: 13,
+                    //     value: phoneCode == "" ? null : phoneCode,
+                    //     items: c.countries
+                    //         .map((e) => DropdownMenuItem<String>(
+                    //               value: e.code!,
+                    //               child: coloredText(
+                    //                 text: e.code!,
+                    //                 fontSize: 17,
+                    //               ),
+                    //             ))
+                    //         .toList(),
+                    //     onChanged: (s) {
+                    //       phoneCode = s!;
+                    //     },
+                    //   );
+                    // }),
                   ],
                 ),
               ),
@@ -1155,8 +1368,7 @@ class _UserHomePageState extends State<UserHomePage> {
 
                       FocusScope.of(context).unfocus();
                       // userRegisterData.phone ??= "";
-                      userCompleteData.phone =
-                          phoneCode + _phoneNumberController.text;
+                      userCompleteData.phone = _phoneNumberController.text;
                       var x = await _authController.usercompleteData(
                           userCompleteData: userCompleteData);
 

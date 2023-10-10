@@ -4,6 +4,7 @@ import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,6 +18,7 @@ import 'package:khedma/Pages/log-reg%20pages/otp_page.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:sizer/sizer.dart';
 import 'package:textfield_datepicker/textfield_datepicker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Themes/themes.dart';
 import '../../../Utils/utils.dart';
@@ -48,10 +50,11 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   CompanyRegisterData companyRegisterData = CompanyRegisterData();
 
   PageController pageController = PageController(initialPage: 0);
+  bool privacyFlag = false;
   var errors = {};
-  String ownerphoneCode = "";
+  // String ownerphoneCode = "";
   String ownerNationality = "";
-  String companyphoneCode = "";
+  // String companyphoneCode = "";
   String companyType = "recruitment";
   String city = "";
   String region = "";
@@ -416,7 +419,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   return null;
                 },
                 prefixIcon: Container(
-                  margin: const EdgeInsetsDirectional.only(start: 10),
+                  margin: const EdgeInsetsDirectional.only(start: 10, end: 10),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -424,24 +427,26 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                         EvaIcons.phoneOutline,
                         size: 20.0.sp,
                       ),
-                      CustomDropDownMenuButton(
-                        width: 65.sp,
-                        hintPadding: 5,
-                        hintSize: 14,
-                        value: ownerphoneCode == "" ? null : ownerphoneCode,
-                        items: c.countries
-                            .map((e) => DropdownMenuItem<String>(
-                                  value: e.code!,
-                                  child: coloredText(
-                                    text: e.code!,
-                                    fontSize: 17,
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (p0) {
-                          ownerphoneCode = p0!;
-                        },
-                      ),
+                      spaceX(5.sp),
+                      coloredText(text: "+965", color: Colors.grey)
+                      // CustomDropDownMenuButton(
+                      //   width: 65.sp,
+                      //   hintPadding: 5,
+                      //   hintSize: 14,
+                      //   value: ownerphoneCode == "" ? null : ownerphoneCode,
+                      //   items: c.countries
+                      //       .map((e) => DropdownMenuItem<String>(
+                      //             value: e.code!,
+                      //             child: coloredText(
+                      //               text: e.code!,
+                      //               fontSize: 17,
+                      //             ),
+                      //           ))
+                      //       .toList(),
+                      //   onChanged: (p0) {
+                      //     ownerphoneCode = p0!;
+                      //   },
+                      // ),
                     ],
                   ),
                 ),
@@ -780,7 +785,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   return null;
                 },
                 prefixIcon: Container(
-                  margin: const EdgeInsetsDirectional.only(start: 10),
+                  margin: const EdgeInsetsDirectional.only(start: 10, end: 10),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -788,24 +793,26 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                         EvaIcons.phoneOutline,
                         size: 20.0.sp,
                       ),
-                      CustomDropDownMenuButton(
-                        width: 65.sp,
-                        hintPadding: 5,
-                        hintSize: 13,
-                        value: companyphoneCode == "" ? null : companyphoneCode,
-                        items: c.countries
-                            .map((e) => DropdownMenuItem<String>(
-                                  value: e.code!,
-                                  child: coloredText(
-                                    text: e.code!,
-                                    fontSize: 17,
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (p0) {
-                          companyphoneCode = p0!;
-                        },
-                      ),
+                      spaceX(5.sp),
+                      coloredText(text: "+965", color: Colors.grey)
+                      // CustomDropDownMenuButton(
+                      //   width: 65.sp,
+                      //   hintPadding: 5,
+                      //   hintSize: 13,
+                      //   value: companyphoneCode == "" ? null : companyphoneCode,
+                      //   items: c.countries
+                      //       .map((e) => DropdownMenuItem<String>(
+                      //             value: e.code!,
+                      //             child: coloredText(
+                      //               text: e.code!,
+                      //               fontSize: 17,
+                      //             ),
+                      //           ))
+                      //       .toList(),
+                      //   onChanged: (p0) {
+                      //     companyphoneCode = p0!;
+                      //   },
+                      // ),
                     ],
                   ),
                 ),
@@ -1518,135 +1525,250 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   return null;
                 },
               ),
-              spaceY(20.0.sp),
-              primaryButton(
-                onTap: () async {
-                  // Get.offAll(() => const CompanyHomePage());
-                  companyRegisterData.dateOfBirth = _dateController.text;
-                  var x = await await _authController.companyRegister(
-                      companyRegisterData: companyRegisterData);
-                  if (x == true) {
-                    // ignore: use_build_context_synchronously
-                    Utils.customDialog(
-                        actions: [
-                          primaryButton(
-                            onTap: () {
-                              Get.back();
-                              Get.to(
-                                () => OTPPage(
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                ),
-                                transition: Transition.rightToLeft,
-                              );
-                            },
-                            width: 40.0.w,
-                            height: 50,
-                            radius: 10.w,
-                            color: Theme.of(context).colorScheme.primary,
-                            text: coloredText(
-                              text: "ok".tr,
-                              color: Colors.white,
+              spaceY(20.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 25,
+                    child: Checkbox(
+                      checkColor: Colors.white,
+                      fillColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.selected)) {
+                          return Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.5);
+                        }
+                        return Colors.white;
+                      }),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(5.0),
+                        ),
+                      ), // Rounded Checkbox
+                      onChanged: (value) {
+                        privacyFlag = value!;
+                        FocusManager.instance.primaryFocus?.unfocus();
+
+                        setState(() {});
+                      },
+                      value: privacyFlag,
+                    ),
+                  ),
+                  spaceX(10),
+                  Get.locale == const Locale("en", "US")
+                      ? SizedBox(
+                          width: 80.w,
+                          child: Text.rich(
+                            style: coloredText(text: "text").style,
+                            softWrap: true,
+                            TextSpan(
+                              children: [
+                                const TextSpan(text: 'I agree to the '),
+                                TextSpan(
+                                    text: 'Privacy policy',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () async => await launchUrl(
+                                          Uri.parse("https://www.google.com"))),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                    text: 'Terms & Conditions',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () async => await launchUrl(
+                                          Uri.parse("https://www.google.com"))),
+                              ],
                             ),
                           ),
-                        ],
-                        context: context,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              spaceY(20),
-                              Icon(
-                                EvaIcons.checkmarkCircle,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 40.sp,
-                              ),
-                              spaceY(20),
-                              coloredText(
-                                  text: "you_have_been_registered".tr,
-                                  fontSize: 12.0.sp),
-                              coloredText(
-                                text: "successfully".tr,
-                                fontSize: 14.0.sp,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ],
+                        )
+                      : SizedBox(
+                          width: 80.w,
+                          child: Text.rich(
+                            style: coloredText(text: "text").style,
+                            softWrap: true,
+                            TextSpan(
+                              children: [
+                                const TextSpan(text: 'أنا أوافق على '),
+                                TextSpan(
+                                    text: 'سياسة الخصوصية',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () async => await launchUrl(
+                                          Uri.parse("https://www.google.com"))),
+                                const TextSpan(text: ' و '),
+                                TextSpan(
+                                    text: 'شروط الاستخدام',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () async => await launchUrl(
+                                          Uri.parse("https://www.google.com"))),
+                              ],
+                            ),
                           ),
-                        ));
-                  } else if (x['message'] == "The given data was invalid.") {
-                    errors = x['errors'];
-                    if (errors['first_name'] != null ||
-                        errors['last_name'] != null ||
-                        errors['phone'] != null ||
-                        errors['nationality_id'] != null ||
-                        errors['id_number'] != null ||
-                        errors['date_of_birth'] != null) {
-                      _currentStep = 0;
-                      setState(() {});
-                      pageController.jumpToPage(_currentStep);
-                    } else if (errors['company_name'] != null ||
-                        errors['url'] != null ||
-                        errors['company_phone'] != null ||
-                        errors['company_type'] != null ||
-                        errors['company_email'] != null ||
-                        errors['city_id'] != null ||
-                        errors['region_id'] != null ||
-                        errors['piece_number'] != null ||
-                        errors['street'] != null ||
-                        errors['building'] != null ||
-                        errors['automated_address_number'] != null ||
-                        errors['commercial_registration_number'] != null ||
-                        errors['tax_number'] != null ||
-                        errors['license_number'] != null ||
-                        errors['company_logo'] != null) {
-                      _currentStep = 1;
-                      setState(() {});
-                      pageController.jumpToPage(_currentStep);
-                      String tmp = "";
-                      if (errors['company_logo'] != null &&
-                          errors['company_type'] != null) {
-                        tmp = errors['company_logo'].join("\n") +
-                            "\n" +
-                            errors['company_type'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['company_logo'] != null) {
-                        tmp = errors['company_logo'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['company_type'] != null) {
-                        tmp = errors['company_type'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      }
-                    } else if (errors['front_side_id_image'] != null ||
-                        errors['back_side_id_image'] != null ||
-                        errors['passport_image'] != null) {
-                      _currentStep = 2;
-                      setState(() {});
-                      pageController.jumpToPage(_currentStep);
-                      String tmp = "";
-                      if (errors['passport_image'] != null) {
-                        tmp = errors['passport_image'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['front_side_id_image'] != null) {
-                        tmp = errors['front_side_id_image'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['back_side_id_image'] != null) {
-                        tmp = errors['back_side_id_image'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      } else if (errors['front_side_id_image'] != null &&
-                          errors['back_side_id_image'] != null) {
-                        tmp = errors['front_side_id_image'].join("\n") +
-                            "\n" +
-                            errors['back_side_id_image'].join("\n");
-                        Utils.showSnackBar(message: tmp, fontSize: 12.0.sp);
-                      }
-                    } else if (errors['password'] != null) {
-                      _currentStep = 3;
-                      setState(() {});
-                      pageController.jumpToPage(_currentStep);
-                    }
-                  }
-                },
+                        )
+                ],
+              ),
+              spaceY(20.0.sp),
+              primaryButton(
+                onTap: !privacyFlag
+                    ? null
+                    : () async {
+                        // Get.offAll(() => const CompanyHomePage());
+                        companyRegisterData.dateOfBirth = _dateController.text;
+                        var x = await await _authController.companyRegister(
+                            companyRegisterData: companyRegisterData);
+                        if (x == true) {
+                          // ignore: use_build_context_synchronously
+                          Utils.customDialog(
+                              actions: [
+                                primaryButton(
+                                  onTap: () {
+                                    Get.back();
+                                    Get.to(
+                                      () => OTPPage(
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                      ),
+                                      transition: Transition.rightToLeft,
+                                    );
+                                  },
+                                  width: 40.0.w,
+                                  height: 50,
+                                  radius: 10.w,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  text: coloredText(
+                                    text: "ok".tr,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                              context: context,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    spaceY(20),
+                                    Icon(
+                                      EvaIcons.checkmarkCircle,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      size: 40.sp,
+                                    ),
+                                    spaceY(20),
+                                    coloredText(
+                                        text: "you_have_been_registered".tr,
+                                        fontSize: 12.0.sp),
+                                    coloredText(
+                                      text: "successfully".tr,
+                                      fontSize: 14.0.sp,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ],
+                                ),
+                              ));
+                        } else if (x['message'] ==
+                            "The given data was invalid.") {
+                          errors = x['errors'];
+                          if (errors['first_name'] != null ||
+                              errors['last_name'] != null ||
+                              errors['phone'] != null ||
+                              errors['nationality_id'] != null ||
+                              errors['id_number'] != null ||
+                              errors['date_of_birth'] != null) {
+                            _currentStep = 0;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                          } else if (errors['company_name'] != null ||
+                              errors['url'] != null ||
+                              errors['company_phone'] != null ||
+                              errors['company_type'] != null ||
+                              errors['company_email'] != null ||
+                              errors['city_id'] != null ||
+                              errors['region_id'] != null ||
+                              errors['piece_number'] != null ||
+                              errors['street'] != null ||
+                              errors['building'] != null ||
+                              errors['automated_address_number'] != null ||
+                              errors['commercial_registration_number'] !=
+                                  null ||
+                              errors['tax_number'] != null ||
+                              errors['license_number'] != null ||
+                              errors['company_logo'] != null) {
+                            _currentStep = 1;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                            String tmp = "";
+                            if (errors['company_logo'] != null &&
+                                errors['company_type'] != null) {
+                              tmp = errors['company_logo'].join("\n") +
+                                  "\n" +
+                                  errors['company_type'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['company_logo'] != null) {
+                              tmp = errors['company_logo'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['company_type'] != null) {
+                              tmp = errors['company_type'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            }
+                          } else if (errors['front_side_id_image'] != null ||
+                              errors['back_side_id_image'] != null ||
+                              errors['passport_image'] != null) {
+                            _currentStep = 2;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                            String tmp = "";
+                            if (errors['passport_image'] != null) {
+                              tmp = errors['passport_image'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['front_side_id_image'] != null) {
+                              tmp = errors['front_side_id_image'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['back_side_id_image'] != null) {
+                              tmp = errors['back_side_id_image'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['front_side_id_image'] != null &&
+                                errors['back_side_id_image'] != null) {
+                              tmp = errors['front_side_id_image'].join("\n") +
+                                  "\n" +
+                                  errors['back_side_id_image'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            }
+                          } else if (errors['password'] != null) {
+                            _currentStep = 3;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                          }
+                        }
+                      },
                 text: coloredText(
                   text: "submit".tr,
                   color: Colors.white,
@@ -1655,7 +1777,9 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 height: 50,
                 width: 45.0.w,
                 radius: 30,
-                color: Theme.of(context).colorScheme.primary,
+                color: privacyFlag
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
               ),
               spaceY(20.0.sp),
             ]),

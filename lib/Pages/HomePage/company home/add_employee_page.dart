@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:khedma/Admin/pages/jobs/controller/jobs_controller.dart';
 import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
 import 'package:khedma/Admin/pages/languages/models/language_model.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
@@ -24,7 +23,8 @@ import '../../../widgets/dropdown_menu_button.dart';
 
 // ignore: must_be_immutable
 class AddEmployeePage extends StatefulWidget {
-  const AddEmployeePage({super.key});
+  const AddEmployeePage({super.key, this.employeeToEdit});
+  final EmployeeModel? employeeToEdit;
 
   @override
   State<AddEmployeePage> createState() => _AddEmployeePageState();
@@ -32,7 +32,7 @@ class AddEmployeePage extends StatefulWidget {
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
   var errors = {};
-
+  String? imageToEdit;
   String nationality = "";
   String religion = "";
   String birthplace = "";
@@ -40,10 +40,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   String maritalStatus = "";
   String complexion = "";
   String issuePlace = "";
-  String contractDuration = "";
+  // String contractDuration = "";
   String workAbroad = "yes".tr;
   String educationalCertificate = "";
-  String languagesKnown = "";
 
   List<JobModel> jobs = [];
   List<JobModel> selectedJobs = [];
@@ -53,7 +52,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   int offerRadio = 0;
   String appLanguage = "en";
   final List<FocusNode> _focusNodes = List.generate(23, (index) => FocusNode());
-  final JobsController _jobsController = Get.find();
+
   final GlobalController _globalController = Get.find();
   String imagePath = "";
   Widget? imageWidget = Icon(
@@ -63,14 +62,17 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   );
   @override
   void initState() {
-    jobs = List.from(_jobsController.jobs);
+    jobs = List.from(_globalController.jobs);
     langs = _globalController.languages;
-
     _globalController.getAppLanguage().then((value) {
       setState(() {
         appLanguage = value;
       });
     });
+
+    if (widget.employeeToEdit != null) {
+      initFormIfEdit();
+    }
     for (var node in _focusNodes) {
       node.addListener(() {
         setState(() {});
@@ -110,8 +112,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final TextEditingController _expirydateController = TextEditingController();
   final TextEditingController _issuedateController = TextEditingController();
   final TextEditingController _passportNoController = TextEditingController();
-  final TextEditingController _monthlySaleryController =
-      TextEditingController();
+  // final TextEditingController _monthlySaleryController =
+  //     TextEditingController();
   // final TextEditingController _hourlySaleryController = TextEditingController();
   // final TextEditingController _timeToWorkPerDayController =
   //     TextEditingController();
@@ -151,8 +153,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         );
                         if (result != null) {
                           imageWidget = null;
+                          imageToEdit = null;
                           imagePath = result.files[0].path!;
-                          employeeToCreate.image = result.files[0];
+                          if (widget.employeeToEdit != null) {
+                            widget.employeeToEdit!.image = result.files[0];
+                          } else {
+                            employeeToCreate.image = result.files[0];
+                          }
                           setState(() {});
                         }
                       },
@@ -165,14 +172,19 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: const Color(0xffEFEFEF),
-                                image: imageWidget != null
-                                    ? null
-                                    : DecorationImage(
-                                        image: FileImage(
-                                          File(imagePath),
-                                        ),
+                                image: imageToEdit != null
+                                    ? DecorationImage(
+                                        image: NetworkImage(imageToEdit!),
                                         fit: BoxFit.cover,
-                                      ),
+                                      )
+                                    : imageWidget != null
+                                        ? null
+                                        : DecorationImage(
+                                            image: FileImage(
+                                              File(imagePath),
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
                               ),
                               child: imageWidget,
                             ),
@@ -252,7 +264,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     fillColor: const Color(0xffF8F8F8),
                                     controller: _fullNameController,
                                     onchanged: (s) {
-                                      employeeToCreate.name = s;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.name = s;
+                                      } else {
+                                        employeeToCreate.name = s;
+                                      }
                                     },
                                     validator: (s) {
                                       if (errors['name'] != null) {
@@ -299,13 +315,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
                                     onChanged: (p0) {
                                       nationality = p0!;
-
-                                      employeeToCreate.nationalityId = c
-                                          .countries
-                                          .lastWhere((element) =>
-                                              element.nameAr == p0 ||
-                                              element.nameEn == p0)
-                                          .id;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.nationalityId = c
+                                            .countries
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      } else {
+                                        employeeToCreate.nationalityId = c
+                                            .countries
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      }
 
                                       setState(() {});
                                     },
@@ -355,12 +379,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     border: null,
                                     onChanged: (p0) {
                                       religion = p0!;
-
-                                      employeeToCreate.religionId = c.relegions
-                                          .lastWhere((element) =>
-                                              element.nameAr == p0 ||
-                                              element.nameEn == p0)
-                                          .id;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.religionId = c
+                                            .relegions
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      } else {
+                                        employeeToCreate.religionId = c
+                                            .relegions
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      }
 
                                       setState(() {});
                                     },
@@ -465,11 +498,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       birthplace = p0!;
 
                                       setState(() {});
-                                      employeeToCreate.birthPlace = c.countries
-                                          .lastWhere((element) =>
-                                              element.nameAr == p0 ||
-                                              element.nameEn == p0)
-                                          .id;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.birthPlace = c
+                                            .countries
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      } else {
+                                        employeeToCreate.birthPlace = c
+                                            .countries
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      }
 
                                       setState(() {});
                                     },
@@ -492,7 +535,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     filled: true,
                                     width: 100.w,
                                     value: livingTown == "" ? null : livingTown,
-                                    items: c.countries
+                                    items: c.cities
                                         .map(
                                           (e) => DropdownMenuItem<String>(
                                             value: appLanguage == "en"
@@ -520,11 +563,20 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       livingTown = p0!;
 
                                       setState(() {});
-                                      employeeToCreate.livingTown = c.countries
-                                          .lastWhere((element) =>
-                                              element.nameAr == p0 ||
-                                              element.nameEn == p0)
-                                          .id;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.livingTown = c
+                                            .cities
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      } else {
+                                        employeeToCreate.livingTown = c.cities
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      }
 
                                       setState(() {});
                                     },
@@ -579,12 +631,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       maritalStatus = p0!;
 
                                       setState(() {});
-                                      employeeToCreate.maritalStatus = c
-                                          .maritalStatusList
-                                          .lastWhere((element) =>
-                                              element.nameAr == p0 ||
-                                              element.nameEn == p0)
-                                          .id;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.maritalStatus = c
+                                            .maritalStatusList
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      } else {
+                                        employeeToCreate.maritalStatus = c
+                                            .maritalStatusList
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      }
 
                                       setState(() {});
                                     },
@@ -620,8 +681,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     },
                                     onchanged: (p0) {
                                       if (p0 != "") {
-                                        employeeToCreate.numOfChildren =
-                                            int.parse(p0!);
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!.numOfChildren =
+                                              int.parse(p0!);
+                                        } else {
+                                          employeeToCreate.numOfChildren =
+                                              int.parse(p0!);
+                                        }
                                       }
                                       setState(() {});
                                     },
@@ -664,8 +730,15 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                 },
                                                 onchanged: (s) {
                                                   if (s != "") {
-                                                    employeeToCreate.weight =
-                                                        int.parse(s!);
+                                                    if (widget.employeeToEdit !=
+                                                        null) {
+                                                      widget.employeeToEdit!
+                                                              .weight =
+                                                          int.parse(s!);
+                                                    } else {
+                                                      employeeToCreate.weight =
+                                                          int.parse(s!);
+                                                    }
                                                   }
                                                 },
                                                 // padding:
@@ -705,8 +778,15 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                   setState(() {});
                                                   if (s != "") {
                                                     setState(() {});
-                                                    employeeToCreate.hight =
-                                                        int.parse(s!);
+                                                    if (widget.employeeToEdit !=
+                                                        null) {
+                                                      widget.employeeToEdit!
+                                                              .hight =
+                                                          int.parse(s!);
+                                                    } else {
+                                                      employeeToCreate.hight =
+                                                          int.parse(s!);
+                                                    }
                                                   }
                                                 },
                                                 // padding:
@@ -759,12 +839,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       complexion = p0!;
 
                                       setState(() {});
-                                      employeeToCreate.complexionId = c
-                                          .complexionList
-                                          .lastWhere((element) =>
-                                              element.nameAr == p0 ||
-                                              element.nameEn == p0)
-                                          .id;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.complexionId = c
+                                            .complexionList
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      } else {
+                                        employeeToCreate.complexionId = c
+                                            .complexionList
+                                            .lastWhere((element) =>
+                                                element.nameAr == p0 ||
+                                                element.nameEn == p0)
+                                            .id;
+                                      }
 
                                       setState(() {});
                                     },
@@ -844,7 +933,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     },
                                     onchanged: (s) {
                                       if (s != "") {
-                                        employeeToCreate.passportNum = s!;
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!.passportNum =
+                                              s!;
+                                        } else {
+                                          employeeToCreate.passportNum = s!;
+                                        }
                                       }
                                     },
                                   ),
@@ -938,13 +1032,22 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
                                     onChanged: (p0) {
                                       issuePlace = p0!;
-
-                                      employeeToCreate.passportPlaceOfIssue = c
-                                          .countries
-                                          .lastWhere((element) =>
-                                              element.nameAr == p0 ||
-                                              element.nameEn == p0)
-                                          .id;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!
+                                                .passportPlaceOfIssue =
+                                            c.countries
+                                                .lastWhere((element) =>
+                                                    element.nameAr == p0 ||
+                                                    element.nameEn == p0)
+                                                .id;
+                                      } else {
+                                        employeeToCreate.passportPlaceOfIssue =
+                                            c.countries
+                                                .lastWhere((element) =>
+                                                    element.nameAr == p0 ||
+                                                    element.nameEn == p0)
+                                                .id;
+                                      }
 
                                       setState(() {});
                                     },
@@ -1123,7 +1226,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                           .colorScheme
                                           .secondary
                                           .withOpacity(0.05),
-
+                                      onSelectionChanged: (p0) {
+                                        selectedJobs = [];
+                                        setState(() {});
+                                      },
                                       buttonIcon: Icon(
                                         FontAwesomeIcons.sortDown,
                                         color: Colors.grey.shade700,
@@ -1139,7 +1245,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       onConfirm: (values) {
                                         selectedJobs =
                                             List<JobModel>.from(values);
-                                        employeeToCreate.jobs = selectedJobs;
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!.jobs =
+                                              selectedJobs;
+                                        } else {
+                                          employeeToCreate.jobs = selectedJobs;
+                                        }
                                         setState(() {});
                                       },
                                     ),
@@ -1214,7 +1325,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                         groupValue: offerRadio,
                                         onChanged: (p0) {
                                           offerRadio = p0;
-                                          employeeToCreate.isOffer = p0;
+                                          if (widget.employeeToEdit != null) {
+                                            widget.employeeToEdit!.isOffer = p0;
+                                          } else {
+                                            employeeToCreate.isOffer = p0;
+                                          }
                                           setState(() {});
                                         },
                                       )
@@ -1253,44 +1368,52 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                           borderRadius: 8,
                                           onchanged: (s) {
                                             if (s != "") {
-                                              employeeToCreate
-                                                      .amountAfterDiscount =
-                                                  int.parse(s!);
+                                              if (widget.employeeToEdit !=
+                                                  null) {
+                                                widget.employeeToEdit!
+                                                        .amountAfterDiscount =
+                                                    int.parse(s!);
+                                              } else {
+                                                employeeToCreate
+                                                        .amountAfterDiscount =
+                                                    int.parse(s!);
+                                              }
                                             }
                                           },
                                           // padding:
                                           //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
                                         ),
                                   spaceY(10.sp),
-                                  coloredText(text: "monthly_salery".tr),
-                                  spaceY(5.sp),
-                                  SendMessageTextField(
-                                    focusNode: _focusNodes[15],
-                                    validator: (s) {
-                                      if (errors['salary_month'] != null) {
-                                        String tmp = "";
-                                        tmp = errors['salary_month'].join("\n");
+                                  // coloredText(text: "monthly_salery".tr),
+                                  // spaceY(5.sp),
+                                  // SendMessageTextField(
+                                  //   focusNode: _focusNodes[15],
+                                  //   validator: (s) {
+                                  //     if (errors['salary_month'] != null) {
+                                  //       String tmp = "";
+                                  //       tmp = errors['salary_month'].join("\n");
 
-                                        return tmp;
-                                      }
-                                      return null;
-                                    },
-                                    hintText: "0 KD",
-                                    controller: _monthlySaleryController,
-                                    keyBoardType: TextInputType.number,
-                                    fillColor: const Color(0xffF8F8F8),
-                                    width: 100.w,
-                                    onchanged: (s) {
-                                      if (s != "") {
-                                        employeeToCreate.salaryMonth = s;
-                                      }
-                                    },
-                                    // borderc: Border.all(color: const Color(0xffE3E3E3)),
-                                    borderRadius: 8,
-                                    // padding:
-                                    //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                                  ),
-                                  spaceY(10.sp),
+                                  //       return tmp;
+                                  //     }
+                                  //     return null;
+                                  //   },
+                                  //   hintText: "0 KD",
+                                  //   controller: _monthlySaleryController,
+                                  //   keyBoardType: TextInputType.number,
+                                  //   fillColor: const Color(0xffF8F8F8),
+                                  //   width: 100.w,
+                                  //   onchanged: (s) {
+                                  //     if (s != "") {
+                                  //       employeeToCreate.salaryMonth = s;
+                                  //     }
+                                  //   },
+                                  //   // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                                  //   borderRadius: 8,
+                                  //   // padding:
+                                  //   //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                                  // ),
+
+                                  // spaceY(10.sp),
                                   coloredText(text: "contract_duration".tr),
                                   spaceY(5.sp),
                                   SendMessageTextField(
@@ -1312,7 +1435,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     width: 100.w,
                                     onchanged: (s) {
                                       if (s != "") {
-                                        employeeToCreate.contractDuration = s;
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!
+                                              .contractDuration = s;
+                                        } else {
+                                          employeeToCreate.contractDuration = s;
+                                        }
                                       }
                                     },
                                     // borderc: Border.all(color: const Color(0xffE3E3E3)),
@@ -1320,6 +1448,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     // padding:
                                     //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
                                   ),
+                                  spaceY(10.sp),
+
                                   coloredText(text: "contract_amount".tr),
                                   SendMessageTextField(
                                     focusNode: _focusNodes[22],
@@ -1341,7 +1471,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     width: 100.w,
                                     onchanged: (s) {
                                       if (s != "") {
-                                        employeeToCreate.contractAmount = s;
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!
+                                              .contractAmount = s;
+                                        } else {
+                                          employeeToCreate.contractAmount = s;
+                                        }
                                       }
                                     },
                                     // borderc: Border.all(color: const Color(0xffE3E3E3)),
@@ -1349,7 +1484,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     // padding:
                                     //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
                                   ),
-                                  spaceY(10.sp),
                                   spaceY(10.sp),
                                   coloredText(text: "previous_work_abroad".tr),
                                   spaceY(5.sp),
@@ -1382,8 +1516,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
                                     onChanged: (p0) {
                                       workAbroad = p0!;
-                                      employeeToCreate.previousWorkAbroad =
-                                          p0 == "no".tr ? 0 : 1;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!
+                                                .previousWorkAbroad =
+                                            p0 == "no".tr ? 0 : 1;
+                                      } else {
+                                        employeeToCreate.previousWorkAbroad =
+                                            p0 == "no".tr ? 0 : 1;
+                                      }
                                       setState(() {});
                                     },
 
@@ -1431,9 +1571,16 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                           borderRadius: 8,
                                           onchanged: (s) {
                                             if (s != "") {
-                                              employeeToCreate
-                                                      .durationOfEmployment =
-                                                  int.parse(s!);
+                                              if (widget.employeeToEdit !=
+                                                  null) {
+                                                widget.employeeToEdit!
+                                                        .durationOfEmployment =
+                                                    int.parse(s!);
+                                              } else {
+                                                employeeToCreate
+                                                        .durationOfEmployment =
+                                                    int.parse(s!);
+                                              }
                                             }
                                           },
                                           // padding:
@@ -1535,13 +1682,23 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
                                     onChanged: (p0) {
                                       educationalCertificate = p0!;
-
-                                      employeeToCreate.educationCertification =
-                                          c.certificates
-                                              .lastWhere((element) =>
-                                                  element.nameAr == p0 ||
-                                                  element.nameEn == p0)
-                                              .id;
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!
+                                                .educationCertification =
+                                            c.certificates
+                                                .lastWhere((element) =>
+                                                    element.nameAr == p0 ||
+                                                    element.nameEn == p0)
+                                                .id;
+                                      } else {
+                                        employeeToCreate
+                                                .educationCertification =
+                                            c.certificates
+                                                .lastWhere((element) =>
+                                                    element.nameAr == p0 ||
+                                                    element.nameEn == p0)
+                                                .id;
+                                      }
 
                                       setState(() {});
                                     },
@@ -1640,8 +1797,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       onConfirm: (values) {
                                         selectedLangs =
                                             List<LanguageModel>.from(values);
-                                        employeeToCreate.languages =
-                                            selectedLangs;
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!.languages =
+                                              selectedLangs;
+                                        } else {
+                                          employeeToCreate.languages =
+                                              selectedLangs;
+                                        }
                                         setState(() {});
                                       },
                                     ),
@@ -1704,17 +1866,34 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     spaceY(10.sp),
                     primaryButton(
                         onTap: () async {
-                          employeeToCreate.dateOfBirth = _dateController.text;
-                          employeeToCreate.passportIssueDate =
-                              _issuedateController.text;
-                          employeeToCreate.passportExpiryDate =
-                              _expirydateController.text;
-                          employeeToCreate.isOffer ??= 0;
-                          employeeToCreate.previousWorkAbroad ??= 1;
+                          if (widget.employeeToEdit != null) {
+                            widget.employeeToEdit!.dateOfBirth =
+                                _dateController.text;
+                            widget.employeeToEdit!.passportIssueDate =
+                                _issuedateController.text;
+                            widget.employeeToEdit!.passportExpiryDate =
+                                _expirydateController.text;
+                            widget.employeeToEdit!.isOffer ??= 0;
+                            widget.employeeToEdit!.previousWorkAbroad ??= 1;
+                          } else {
+                            employeeToCreate.dateOfBirth = _dateController.text;
+                            employeeToCreate.passportIssueDate =
+                                _issuedateController.text;
+                            employeeToCreate.passportExpiryDate =
+                                _expirydateController.text;
+                            employeeToCreate.isOffer ??= 0;
+                            employeeToCreate.previousWorkAbroad ??= 1;
+                          }
                           errors = {};
                           formKey.currentState!.validate();
-                          var x = await _employeesController.createEmployee(
-                              employee: employeeToCreate);
+                          var x;
+                          if (widget.employeeToEdit != null) {
+                            x = await _employeesController.updateEmployee(
+                                employee: widget.employeeToEdit!);
+                          } else {
+                            x = await _employeesController.createEmployee(
+                                employee: employeeToCreate);
+                          }
                           if (x == true) {
                             // ignore: use_build_context_synchronously
                             Utils.customDialog(
@@ -1752,7 +1931,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       ),
                                       spaceY(20),
                                       coloredText(
-                                          text: "employee_added".tr,
+                                          text: widget.employeeToEdit != null
+                                              ? "done".tr
+                                              : "employee_added".tr,
                                           fontSize: 12.0.sp),
                                       coloredText(
                                         text: "successfully".tr,
@@ -1793,12 +1974,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                               }
                               Scrollable.ensureVisible(
                                   dataKey2.currentContext!);
-                            } else if (errors['salary_month'] != null ||
+                            } else if (
+                                // errors['salary_month'] != null ||
                                 errors['contract_amount'] != null ||
-                                errors['contract_duration'] != null ||
-                                errors['jobs'] != null ||
-                                errors['previous_work_abroad'] != null ||
-                                errors['amount_after_discount'] != null) {
+                                    errors['contract_duration'] != null ||
+                                    errors['jobs'] != null ||
+                                    errors['previous_work_abroad'] != null ||
+                                    errors['amount_after_discount'] != null) {
                               if (!_expandable3Controller.expanded) {
                                 _expandable3Controller.toggle();
                               }
@@ -1837,5 +2019,67 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         ),
       ),
     );
+  }
+
+  initFormIfEdit() {
+    selectedJobs = List.from(widget.employeeToEdit!.jobs!);
+    selectedLangs = List.from(widget.employeeToEdit!.languages!);
+    _dateController.text = DateFormat('y/MM/dd')
+        .format(DateTime.parse(widget.employeeToEdit!.dateOfBirth!));
+    _issuedateController.text = DateFormat('y/MM/dd')
+        .format(DateTime.parse(widget.employeeToEdit!.passportIssueDate!));
+    _expirydateController.text = DateFormat('y/MM/dd')
+        .format(DateTime.parse(widget.employeeToEdit!.passportExpiryDate!));
+    _fullNameController.text = widget.employeeToEdit!.name!;
+    imageToEdit = widget.employeeToEdit!.image!;
+    imageWidget = null;
+    _passportNoController.text = widget.employeeToEdit!.passportNum!;
+    _amountAfterDiscountController.text =
+        widget.employeeToEdit!.amountAfterDiscount!.toString();
+    _employmentDurationController.text =
+        widget.employeeToEdit!.durationOfEmployment!.toString();
+    _contractAmountController.text = widget.employeeToEdit!.contractAmount!;
+    _contractDurationController.text = widget.employeeToEdit!.contractDuration!;
+    _heightController.text = widget.employeeToEdit!.weight!.toString();
+    _weightController.text = widget.employeeToEdit!.hight!.toString();
+    _childrenNumController.text =
+        widget.employeeToEdit!.numOfChildren!.toString();
+    nationality = _globalController.countries
+        .where((element) => element.id == widget.employeeToEdit!.nationalityId)
+        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
+        .first;
+    religion = _globalController.relegions
+        .where((element) => element.id == widget.employeeToEdit!.religionId)
+        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
+        .first;
+    birthplace = _globalController.countries
+        .where((element) => element.id == widget.employeeToEdit!.birthPlace)
+        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
+        .first;
+    livingTown = _globalController.cities
+        .where((element) => element.id == widget.employeeToEdit!.livingTown)
+        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
+        .first;
+    maritalStatus = _globalController.maritalStatusList
+        .where((element) => element.id == widget.employeeToEdit!.maritalStatus)
+        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
+        .first;
+    complexion = _globalController.complexionList
+        .where((element) => element.id == widget.employeeToEdit!.complexionId)
+        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
+        .first;
+    issuePlace = _globalController.countries
+        .where((element) =>
+            element.id == widget.employeeToEdit!.passportPlaceOfIssue)
+        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
+        .first;
+
+    workAbroad =
+        widget.employeeToEdit!.previousWorkAbroad == 1 ? "yes".tr : 'no'.tr;
+    educationalCertificate = _globalController.certificates
+        .where((element) =>
+            element.id == widget.employeeToEdit!.educationCertification)
+        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
+        .first;
   }
 }

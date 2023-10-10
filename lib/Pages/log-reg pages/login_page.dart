@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -313,6 +314,10 @@ class _LoginPageState extends State<LoginPage> {
                                       LoginStates.accountNotFound) {
                                     Utils.showSnackBar(
                                         message: "Account not found!!");
+                                  } else if (state == LoginStates.blocked) {
+                                    Utils.showSnackBar(
+                                        message:
+                                            "This User Is Not Found or blocked");
                                   } else {
                                     Utils.showSnackBar(
                                         message:
@@ -367,7 +372,8 @@ class _LoginPageState extends State<LoginPage> {
                                                 await _authController
                                                     .handleGoogleSignIn(
                                                         saveToken:
-                                                            _rememberMeFlag);
+                                                            _rememberMeFlag,
+                                                        login: true);
 
                                             if (token != null) {
                                               if (_globalController
@@ -420,7 +426,8 @@ class _LoginPageState extends State<LoginPage> {
                                                         await _authController
                                                             .handleGoogleSignIn(
                                                                 saveToken:
-                                                                    _rememberMeFlag);
+                                                                    _rememberMeFlag,
+                                                                login: false);
 
                                                     if (token != null) {
                                                       Get.off(
@@ -447,7 +454,8 @@ class _LoginPageState extends State<LoginPage> {
                                                         await _authController
                                                             .handleGoogleSignIn(
                                                                 saveToken:
-                                                                    _rememberMeFlag);
+                                                                    _rememberMeFlag,
+                                                                login: false);
 
                                                     if (token != null) {
                                                       Get.off(
@@ -517,9 +525,10 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () {
-                                    logSuccess(
-                                        _globalController.fallbackLocale);
+                                  onTap: () async {
+                                    var res = await Dio()
+                                        .get("https://www.google.com");
+                                    logSuccess(res.data);
                                   },
                                   child: Container(
                                     width: 40.0.sp,
@@ -541,24 +550,24 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-                                Container(
-                                  width: 40.0.sp,
-                                  height: 40.0.sp,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.grey.withOpacity(0.2)),
-                                      shape: BoxShape.circle,
-                                      color: Colors.grey.withOpacity(0.1)),
-                                  child: Center(
-                                    child: Image(
-                                      width: 20.0.sp,
-                                      height: 20.0.sp,
-                                      image: const AssetImage(
-                                          "assets/images/apple.png"),
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
+                                // Container(
+                                //   width: 40.0.sp,
+                                //   height: 40.0.sp,
+                                //   decoration: BoxDecoration(
+                                //       border: Border.all(
+                                //           color: Colors.grey.withOpacity(0.2)),
+                                //       shape: BoxShape.circle,
+                                //       color: Colors.grey.withOpacity(0.1)),
+                                //   child: Center(
+                                //     child: Image(
+                                //       width: 20.0.sp,
+                                //       height: 20.0.sp,
+                                //       image: const AssetImage(
+                                //           "assets/images/apple.png"),
+                                //       fit: BoxFit.contain,
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
                             spaceY(20.0.sp),

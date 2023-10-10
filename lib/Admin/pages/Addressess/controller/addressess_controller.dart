@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
@@ -12,138 +14,236 @@ class AddressessController extends GetxController {
   final Dio dio = Utils().dio;
 
   GlobalController _globalController = Get.find();
-  Future createCity({required City city}) async {
+  Future<bool> createCity({required City city}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(city.toJson());
+      body.fields.add(MapEntry("country_id", "2"));
 
-      await dio.post(EndPoints.storeCity, data: body);
+      await dio.post(
+        EndPoints.storeCity,
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getCities();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future deleteCity({required City city, required int id}) async {
+  Future<bool> deleteCity({required City city}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(city.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
-      await dio.post(EndPoints.deleteCity(id), data: body);
+      await dio.post(
+        EndPoints.deleteCity(city.id!),
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getCities();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future updateCity({required City city, required int id}) async {
+  Future<bool> updateCity({required City city}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(city.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      await dio.post(EndPoints.updateCity(id), data: body);
+      await dio.post(
+        EndPoints.updateCity(city.id!),
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getCities();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future createRegion({required Region region}) async {
+  Future<bool> createRegion({required Region region}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(region.toJson());
+      body.fields.add(MapEntry("city_id", "1"));
 
-      await dio.post(EndPoints.storeRegion, data: body);
+      await dio.post(
+        EndPoints.storeRegion,
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getRegions();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future deleteRegion({required Region region, required int id}) async {
+  Future<bool> deleteRegion({required Region region}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(region.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
-      await dio.post(EndPoints.deleteRegion(id), data: body);
+      await dio.post(
+        EndPoints.deleteRegion(region.id!),
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getRegions();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future updateRegion({required Region region, required int id}) async {
+  Future<bool> updateRegion({required Region region}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(region.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      await dio.post(EndPoints.updateRegion(id), data: body);
+      await dio.post(
+        EndPoints.updateRegion(region.id!),
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getRegions();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future createCountry({required Country country}) async {
+  Future<bool> createCountry({required Country country}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(country.toJson());
+      PlatformFile? flag = country.flag;
 
-      await dio.post(EndPoints.storeCountry, data: body);
+      if (flag != null) {
+        body.files.add(MapEntry(
+          "flag",
+          await d.MultipartFile.fromFile(
+            flag.path!,
+            filename: flag.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      await dio.post(
+        EndPoints.storeCountry,
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getCountries();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future deleteCountry({required Country country, required int id}) async {
+  Future<bool> deleteCountry({required Country country}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(country.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
-      await dio.post(EndPoints.deleteCountry(id), data: body);
+      await dio.post(
+        EndPoints.deleteCountry(country.id!),
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getCountries();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 
-  Future updateCountry({required Country country, required int id}) async {
+  Future<bool> updateCountry({required Country country}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(country.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      await dio.post(EndPoints.updateCountry(id), data: body);
+      PlatformFile? flag;
+      if (country.flag.runtimeType != String) flag = country.flag;
+
+      if (flag != null) {
+        body.files.add(MapEntry(
+          "flag",
+          await d.MultipartFile.fromFile(
+            flag.path!,
+            filename: flag.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      await dio.post(
+        EndPoints.updateCountry(country.id!),
+        data: body,
+        options: Options(
+          headers: {"Accept": "application/json"},
+        ),
+      );
 
       await _globalController.getCountries();
       Get.back();
+      return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
+    return false;
   }
 }

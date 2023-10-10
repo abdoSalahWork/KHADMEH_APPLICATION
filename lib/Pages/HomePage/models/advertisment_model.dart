@@ -1,9 +1,11 @@
 class AdvertismentModel {
   int? id;
+  int? refund;
   var image;
   int? durationByDay = 0;
   int? promotionType;
   String? externalLink;
+  String? amount;
   int? confirm;
   int? adminApprove;
   String? startDate;
@@ -14,6 +16,8 @@ class AdvertismentModel {
 
   AdvertismentModel({
     this.id,
+    this.refund,
+    this.amount,
     this.image,
     this.durationByDay = 0,
     this.promotionType,
@@ -29,8 +33,9 @@ class AdvertismentModel {
 
   AdvertismentModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    image =
-        "https://wazzfny.online/api/files/images/addvertisment/${json['image']}";
+    amount = json['amount'];
+    refund = json['refund'];
+    image = "https://khdmah.online/api/images/addvertisment/${json['image']}";
     durationByDay = json['duration_by_day'];
     promotionType = json['promotion_type'];
     externalLink = json['external_link'];
@@ -45,12 +50,13 @@ class AdvertismentModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = id;
-    // data['image'] = this.image;
-    data['duration_by_day'] = durationByDay;
-    data['promotion_type'] = promotionType;
-    data['external_link'] = externalLink;
-    data['start_date'] = startDate;
+    if (id != null) data['id'] = id;
+    if (amount != null) data['amount'] = amount;
+    if (refund != null) data['refund'] = refund;
+    if (durationByDay != null) data['duration_by_day'] = durationByDay;
+    if (promotionType != null) data['promotion_type'] = promotionType;
+    if (externalLink != null) data['external_link'] = externalLink;
+    if (startDate != null) data['start_date'] = startDate;
 
     return data;
   }

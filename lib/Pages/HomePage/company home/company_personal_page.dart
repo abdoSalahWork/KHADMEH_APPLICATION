@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/personal%20page/personal_settings.dart';
 import 'package:khedma/widgets/ad_card.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
@@ -38,6 +39,7 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
     "refused".tr,
   ];
   final AdvertismentController _advertismentController = Get.find();
+  final GlobalController _globalController = Get.find();
   PageController pageController = PageController(initialPage: 0);
   @override
   void initState() {
@@ -124,26 +126,27 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                               ),
                               // shape: BoxShape.circle,
                               borderRadius: BorderRadius.circular(20.0.w),
-                              image: const DecorationImage(
-                                image: AssetImage("assets/images/image.png"),
+                              image: DecorationImage(
+                                image: NetworkImage(_globalController
+                                    .me.companyInformation!.companyLogo!),
                                 fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                          PositionedDirectional(
-                              bottom: 0,
-                              end: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black.withOpacity(0.4)),
-                                child: const Icon(
-                                  FontAwesomeIcons.camera,
-                                  size: 15,
-                                  color: Colors.white,
-                                ),
-                              ))
+                          // PositionedDirectional(
+                          //     bottom: 0,
+                          //     end: 0,
+                          //     child: Container(
+                          //       padding: const EdgeInsets.all(10),
+                          //       decoration: BoxDecoration(
+                          //           shape: BoxShape.circle,
+                          //           color: Colors.black.withOpacity(0.4)),
+                          //       child: const Icon(
+                          //         FontAwesomeIcons.camera,
+                          //         size: 15,
+                          //         color: Colors.white,
+                          //       ),
+                          //     ))
                         ],
                       ),
                     ),
@@ -153,9 +156,9 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           coloredText(
-                              text: 'Ahmad Khaled',
+                              text: _globalController.me.fullName!,
                               color: Colors.white,
-                              fontSize: 15.0.sp),
+                              fontSize: 14.0.sp),
                           spaceY(10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -167,7 +170,16 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                               ),
                               spaceX(3),
                               coloredText(
-                                text: 'Philippines',
+                                text: _globalController.cities
+                                    .where((element) =>
+                                        _globalController
+                                            .me.companyInformation!.cityId! ==
+                                        element.id)
+                                    .map((e) =>
+                                        Get.locale == const Locale('en', 'US')
+                                            ? e.nameEn!
+                                            : e.nameAr!)
+                                    .first,
                                 color: Theme.of(context).colorScheme.secondary,
                                 fontSize: 12.0.sp,
                               ),
@@ -184,7 +196,8 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                               ),
                               spaceX(5),
                               coloredText(
-                                text: "+965 5632 4224",
+                                text: _globalController
+                                    .me.companyInformation!.companyPhone!,
                                 fontSize: 13.0.sp,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
@@ -322,14 +335,14 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                               ? const Center(
                                   child: CircularProgressIndicator(),
                                 )
-                              : c.companyAds.isEmpty
+                              : c.pendingCompanyAds.isEmpty
                                   ? const NoItemsWidget()
                                   : ListView.separated(
                                       padding: EdgeInsets.zero,
                                       itemBuilder: (context, index) =>
                                           AdvertismentCard(
                                               advertismentModel:
-                                                  c.companyAds[index]),
+                                                  c.pendingCompanyAds[index]),
                                       separatorBuilder: (context, index) =>
                                           Column(
                                         children: [
@@ -340,7 +353,7 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                                           spaceY(5.sp),
                                         ],
                                       ),
-                                      itemCount: c.companyAds.length,
+                                      itemCount: c.pendingCompanyAds.length,
                                     );
                         }),
                         GetBuilder<AdvertismentController>(builder: (c) {
@@ -348,14 +361,15 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                               ? const Center(
                                   child: CircularProgressIndicator(),
                                 )
-                              : c.companyAds.isEmpty
+                              : c.refusedCompanyAds.isEmpty
                                   ? const NoItemsWidget()
                                   : ListView.separated(
                                       padding: EdgeInsets.zero,
                                       itemBuilder: (context, index) =>
                                           AdvertismentCard(
-                                        advertismentModel: c.companyAds[index],
-                                        refused: true,
+                                        advertismentModel:
+                                            c.refusedCompanyAds[index],
+                                        // refused: true,
                                       ),
                                       separatorBuilder: (context, index) =>
                                           Column(
@@ -367,7 +381,7 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                                           spaceY(5.sp),
                                         ],
                                       ),
-                                      itemCount: c.companyAds.length,
+                                      itemCount: c.refusedCompanyAds.length,
                                     );
                         }),
                       ],

@@ -2,6 +2,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Utils/notification_service.dart';
 import 'package:khedma/firebase_api.dart';
@@ -18,13 +19,15 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService().initializePlatformNotifications();
   await FirebaseApi().initNotifications();
+  await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
+
   // await FirebaseApi().handleNotifications();
 
   // await Utils.initializeNotifications(Utils.flutterLocalNotificationsPlugin);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.black, // navigation bar color
-    statusBarColor: Colors.transparent, // status bar color
-  ));
+  // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+  //   systemNavigationBarColor: Colors.transparent, // navigation bar color
+  //   statusBarColor: Colors.transparent, // status bar color
+  // ));
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,

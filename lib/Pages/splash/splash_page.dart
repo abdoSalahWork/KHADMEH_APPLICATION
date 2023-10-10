@@ -3,13 +3,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/controllers/admin_controller.dart';
+import 'package:khedma/Admin/pages/Addressess/controller/addressess_controller.dart';
+import 'package:khedma/Admin/pages/categories/controller/categories_controller.dart';
+import 'package:khedma/Admin/pages/dropdowns/controller/dropdown_controller.dart';
 import 'package:khedma/Admin/pages/jobs/controller/jobs_controller.dart';
-import 'package:khedma/Pages/HomePage/cleaning%20companies/controller/cleaning_companies_controller.dart';
+import 'package:khedma/Admin/pages/languages/controller/languages_controller.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
 import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
+import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
+import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/forget%20password/controller/password_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Utils/utils.dart';
 
@@ -24,13 +32,24 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
+  final EmployeesController _employeesController =
+      Get.put(EmployeesController());
+  final CompaniesController _companiesController =
+      Get.put(CompaniesController());
+  AdminController _adminHomeController = Get.put(AdminController());
+  LanguagesController _langsController = Get.put(LanguagesController());
   final GlobalController _globalController = Get.put(GlobalController());
+  AddressessController _addressessController = Get.put(AddressessController());
+  DropDownsController _dropDownsController = Get.put(DropDownsController());
+
   final JobsController _jobsController = Get.put(JobsController());
-  final CleaningCompanyController _cleaningCompanyController =
-      Get.put(CleaningCompanyController());
+  final CategoriesController _categoriesController =
+      Get.put(CategoriesController());
   final AdvertismentController _advertismentController =
       Get.put(AdvertismentController());
   final AuthController _authController = Get.put(AuthController());
+  final ChatController _chatController = Get.put(ChatController());
+  final PasswordController _passwordController = Get.put(PasswordController());
 
   @override
   void initState() {
@@ -45,7 +64,13 @@ class _SplashPageState extends State<SplashPage>
     _globalController.getCertificates();
     _globalController.getlanguages();
     _globalController.getjobs();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    _globalController.getCategories();
+    _adminHomeController.getSettingAdmin();
+    _adminHomeController.getAdminHomePage();
+    _adminHomeController.getContacts();
+    _adminHomeController.getMessages();
+    _adminHomeController.getAbouts();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     Future.delayed(
       const Duration(seconds: 2),
       () async {
@@ -82,8 +107,10 @@ class _SplashPageState extends State<SplashPage>
   @override
   void dispose() {
     super.dispose();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+    //     overlays: SystemUiOverlay.values);
   }
 
   @override

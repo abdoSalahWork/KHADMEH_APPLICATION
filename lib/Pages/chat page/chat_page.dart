@@ -1,14 +1,15 @@
-import 'dart:convert';
-
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+// import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
+import 'package:khedma/Pages/chat%20page/model/my_message.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:mime/mime.dart';
 import 'package:sizer/sizer.dart';
 import 'package:uuid/uuid.dart';
@@ -19,8 +20,17 @@ import '../../models/send_items_model.dart';
 import '../../widgets/underline_text_field.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
-
+  const ChatPage({
+    super.key,
+    required this.chatId,
+    required this.receiverId,
+    required this.recieverName,
+    required this.recieverImage,
+  });
+  final int chatId;
+  final int receiverId;
+  final String recieverName;
+  final String recieverImage;
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
@@ -29,14 +39,17 @@ class _ChatPageState extends State<ChatPage> {
   List<SendMenuItems> menuItems = [];
 
   List<types.Message> _messages = [];
-  final _user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
-  );
+  List<MMessage> _myMessages = [];
+  GlobalController _globalController = Get.find();
+  late final types.User _user;
   TextEditingController sendController = TextEditingController(text: "");
+  ChatController _chatController = Get.find();
 
   FocusNode sendFocus = FocusNode();
   @override
   void initState() {
+    logWarning(widget.chatId);
+    _user = types.User(id: _globalController.me.id!.toString());
     super.initState();
     sendFocus.addListener(
       () {
@@ -292,7 +305,7 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  Future<void> _handleSendPressed(types.PartialText message) async {
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -301,17 +314,45 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     _addMessage(textMessage);
+    sendController.text = "";
+
+    logError("reciever id : " + widget.receiverId.toString());
+    await _chatController.storeMessage(
+        id: widget.receiverId, message: message.text);
+    setState(() {});
+  }
+
+  int _mySortComparison(MMessage a, MMessage b) {
+    final propertyA = DateTime.parse(a.createdAt!);
+    final propertyB = DateTime.parse(b.createdAt!);
+    if (propertyA.isBefore(propertyB)) {
+      return 1;
+    } else if (propertyA.isAfter(propertyB)) {
+      return -1;
+    } else {
+      return 0;
+    }
   }
 
   void _loadMessages() async {
-    final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List)
-        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-        .toList();
+    // final response = await rootBundle.loadString('assets/messages.json');
+    final response = await _chatController.showChat(id: widget.chatId);
+    final messages = MyChat.fromJson(response);
 
     setState(() {
-      _messages = messages;
+      _myMessages = messages.messages!;
+      _myMessages.sort(_mySortComparison);
+      _messages = _myMessages
+          .map(
+            (e) => types.TextMessage(
+                author: types.User(id: e.user!.id!.toString()),
+                id: e.id.toString(),
+                createdAt: DateTime.parse(e.createdAt!).millisecondsSinceEpoch,
+                text: e.message!),
+          )
+          .toList();
     });
+    await _chatController.getChats();
   }
 
   @override
@@ -333,71 +374,80 @@ class _ChatPageState extends State<ChatPage> {
                 backgroundImage: AssetImage("assets/images/image.png"),
               ),
               spaceX(20),
-              coloredText(text: "Lorem Ipsum", fontSize: 15.0.sp),
+              coloredText(text: widget.recieverName, fontSize: 15.0.sp),
             ],
           ),
         ),
-        body: Theme(
-          data: ThemeData(
-              colorScheme:
-                  ColorScheme.fromSeed(seedColor: AppThemes.colorCustom),
-              primaryColor: Colors.white),
-          child: Chat(
-            messages: _messages,
-            customBottomWidget: Container(
-              padding: const EdgeInsets.all(20),
-              child: SendMessageTextField(
-                focusNode: sendFocus,
-                hintText: "Type a message",
-                textDirection: isRTL(sendController.text)
-                    ? TextDirection.rtl
-                    : TextDirection.ltr,
-                suffixIcon: GestureDetector(
-                    onTap: () {
-                      _handleSendPressed(
-                        types.PartialText(
-                          text: sendController.text,
-                        ),
-                      );
-                      sendController.text = "";
-                    },
-                    child: Icon(
-                      Icons.send,
-                      color: sendController.text == ""
-                          ? const Color(0xff919191)
-                          : Theme.of(context).colorScheme.secondary,
-                    )),
+        body: GetBuilder<ChatController>(builder: (c) {
+          return c.getChatFlag
+              ? const Center(child: CircularProgressIndicator())
+              : Theme(
+                  data: ThemeData(
+                      colorScheme: ColorScheme.fromSeed(
+                          seedColor: AppThemes.colorCustom),
+                      primaryColor: Colors.white),
+                  child: Chat(
+                    messages: _messages,
+                    customBottomWidget: Container(
+                      padding: const EdgeInsets.all(20),
+                      child: SendMessageTextField(
+                        focusNode: sendFocus,
+                        hintText: "Type a message",
+                        padding: const EdgeInsetsDirectional.only(start: 20),
 
-                prefixIcon: GestureDetector(
-                  onTap: () {
-                    _handleAttachmentPressed();
-                  },
-                  child: const Icon(
-                    EvaIcons.attach,
-                    color: Color(0xff919191),
+                        textDirection: isRTL(sendController.text)
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                        suffixIcon: GestureDetector(
+                            onTap: () {
+                              _handleSendPressed(
+                                types.PartialText(
+                                  text: sendController.text,
+                                ),
+                              );
+                              sendController.text = "";
+                            },
+                            child: Icon(
+                              Icons.send,
+                              color: sendController.text == ""
+                                  ? const Color(0xff919191)
+                                  : Theme.of(context).colorScheme.secondary,
+                            )),
+
+                        // prefixIcon: GestureDetector(
+                        //   onTap: () {
+                        //     _handleAttachmentPressed();
+                        //   },
+                        //   child: const Icon(
+                        //     EvaIcons.attach,
+                        //     color: Color(0xff919191),
+                        //   ),
+                        // ),
+
+                        controller: sendController,
+                        onchanged: (s) {
+                          setState(() {});
+                        },
+                        // textDirection: TextDirection.ltr,
+                      ),
+                    ),
+                    // dateHeaderBuilder: (p0) =>
+                    //     coloredText(text: p0.text, color: Colors.red),
+
+                    customDateHeaderText: (p0) =>
+                        intl.DateFormat('yyyy-MM-dd hh:mm a').format(p0),
+                    // onAttachmentPressed: _handleAttachmentPressed,
+                    theme: DefaultChatTheme(
+                      primaryColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    // onMessageTap: _handleMessageTap,
+                    // onPreviewDataFetched: _handlePreviewDataFetched,
+                    onSendPressed: _handleSendPressed,
+                    showUserAvatars: false,
+                    showUserNames: true,
+                    user: _user,
                   ),
-                ),
-
-                controller: sendController,
-                onchanged: (s) {
-                  setState(() {});
-                },
-                // textDirection: TextDirection.ltr,
-              ),
-            ),
-            customDateHeaderText: (p0) =>
-                intl.DateFormat('yyyy-MM-dd').format(p0),
-            onAttachmentPressed: _handleAttachmentPressed,
-            theme: DefaultChatTheme(
-              primaryColor: Theme.of(context).colorScheme.primary,
-            ),
-            onMessageTap: _handleMessageTap,
-            onPreviewDataFetched: _handlePreviewDataFetched,
-            onSendPressed: _handleSendPressed,
-            showUserAvatars: true,
-            showUserNames: true,
-            user: _user,
-          ),
-        ),
+                );
+        }),
       );
 }

@@ -9,18 +9,21 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
 import 'package:khedma/Themes/themes.dart';
 import 'package:khedma/widgets/radio_button.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 
 // ignore: must_be_immutable
 class AddAdvertismentPage extends StatefulWidget {
-  const AddAdvertismentPage({super.key});
+  const AddAdvertismentPage({super.key, this.advertismentToEdit});
+  final AdvertismentModel? advertismentToEdit;
   @override
   State<AddAdvertismentPage> createState() => _AddAdvertismentPageState();
 }
@@ -28,6 +31,7 @@ class AddAdvertismentPage extends StatefulWidget {
 class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
   AdvertismentController _advertismentController = Get.find();
   AdvertismentModel advertismentToCreate = AdvertismentModel();
+  AdminController _adminController = Get.find();
 
   int durationRadio = 0;
   int promotionRadio = 1;
@@ -95,8 +99,8 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                               child: coloredText(
                                 text: "image_ratio".tr,
                                 textAlign: TextAlign.center,
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
@@ -307,7 +311,8 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
             spaceY(20),
             Row(
               children: [
-                coloredText(text: "Payment summary:", fontSize: 15.sp),
+                coloredText(
+                    text: "${"advertisment_price".tr} :", fontSize: 15.sp),
                 spaceX(50),
                 primaryButton(
                   color:
@@ -316,7 +321,8 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                   height: 45,
                   radius: 8,
                   text: coloredText(
-                      text: "${10 * durationCounter}\$",
+                      text:
+                          "${int.parse(_adminController.settingAdmin.advertisementPrice!) * durationCounter} KWD",
                       fontSize: 13.0.sp,
                       color: Theme.of(context).colorScheme.secondary),
                 ),
@@ -327,14 +333,29 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                 onTap: () async {
                   advertismentToCreate.startDate = _dateController.text;
                   advertismentToCreate.promotionType = promotionRadio;
-                  bool b = await _advertismentController.createAdvertisment(
+                  advertismentToCreate.amount = (int.parse(_adminController
+                              .settingAdmin.advertisementPrice!) *
+                          durationCounter)
+                      .toString();
+
+                  String? b = await _advertismentController.createAdvertisment(
                       advertisment: advertismentToCreate);
-                  if (b) {
+                  if (b != null) {
                     Utils.customDialog(
                         actions: [
                           primaryButton(
-                            onTap: () {
+                            onTap: () async {
                               Get.back();
+                              Uri url = Uri.parse(b);
+                              await launchUrl(url,
+                                  mode: LaunchMode.externalApplication);
+
+                              await Future.delayed(Duration(milliseconds: 100));
+                              while (WidgetsBinding.instance.lifecycleState !=
+                                  AppLifecycleState.resumed) {
+                                await Future.delayed(
+                                    Duration(milliseconds: 100));
+                              }
                               Get.back();
                             },
                             width: 40.0.w,

@@ -82,38 +82,31 @@ class PasswordController extends GetxController {
     }
   }
 
-  // Future chagerPassWord(String old, String neww, String confirm) async {
-  //   try {
-  //     await sslProblem();
-  //     Get.dialog(const Center(
-  //       child: CircularProgressIndicator(),
-  //     ));
-  //     final data = d.FormData();
-  //     data.fields.add(MapEntry("old_password", old));
-  //     data.fields.add(MapEntry("new_password", neww));
-  //     data.fields.add(MapEntry("new_password_confirmation", confirm));
-  //     await AuthService().saveCredentials(await AuthService().loadEmail(), neww,
-  //         await AuthService().loadRememberMe() ? "1" : "0");
-  //     var res = await dio.post(EndPoints.changePassword, data: data);
-  //     logSuccess(res.data);
-  //     Get.back();
-  //     MyDialogs.showSavedSuccessfullyDialoge(
-  //       title: "pass_word_changed".tr,
-  //       btnTXT: "close".tr,
-  //       onTap: () {
-  //         Get.back();
-  //         Get.back();
-  //       },
-  //     );
-  //   } on DioException catch (e) {
-  //     logError(e.response!.data);
-  //     Get.back();
-  //     MyDialogs.showWarningDialoge2(
-  //         onProceed: () {
-  //           Get.back();
-  //         },
-  //         message: "old_pass_invalid".tr,
-  //         yesBTN: "close".tr);
-  //   }
-  // }
+  Future chageePassWord(String old, String neww, String confirm) async {
+    try {
+      Utils.circularIndicator();
+      final data = d.FormData();
+      data.fields.add(MapEntry("oldPassword", old));
+      data.fields.add(MapEntry("newPassword", neww));
+      data.fields.add(MapEntry("newPassword_confirmation", confirm));
+      String? token = await Utils.readToken();
+
+      var res = await dio.post(
+        EndPoints.changePassword,
+        data: data,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+      logSuccess(res.data);
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      Get.back();
+      return e.response!.data;
+    }
+  }
 }

@@ -1,5 +1,9 @@
 import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
 import 'package:khedma/Admin/pages/languages/models/language_model.dart';
+import 'package:khedma/Pages/HomePage/models/company_model.dart';
+import 'package:khedma/models/company_request_model.dart';
+import 'package:khedma/models/country.dart';
+import 'package:khedma/models/me.dart';
 
 class EmployeeModel {
   int? id;
@@ -18,6 +22,7 @@ class EmployeeModel {
   int? durationOfEmployment;
   var image;
   String? passportNum;
+  Booking? status;
   String? passportIssueDate;
   String? passportExpiryDate;
   int? isOffer;
@@ -37,18 +42,24 @@ class EmployeeModel {
   int? religionId;
   int? maritalStatus;
   int? educationCertification;
-  String? favourite;
+  Favourite? favourite;
+  CompanyModel? company;
+  DocumentModel? document;
+  Country? nationality;
   List<LanguageModel>? languages = [];
   List<JobModel>? jobs = [];
 
   EmployeeModel({
     this.id,
+    this.nationality,
     this.name,
     this.dateOfBirth,
     this.timeWorkPerDay,
     this.hourSalary,
     this.numOfChildren,
     this.hight,
+    this.document,
+    this.company,
     this.weight,
     this.salaryMonth,
     this.numberYearContract,
@@ -58,6 +69,7 @@ class EmployeeModel {
     this.durationOfEmployment,
     this.image,
     this.passportNum,
+    this.status,
     this.passportIssueDate,
     this.passportExpiryDate,
     this.isOffer,
@@ -81,12 +93,16 @@ class EmployeeModel {
     this.languages,
     this.jobs,
   }) {
-    languages = [];
-    jobs = [];
+    // languages = [];
+    // jobs = [];
   }
 
   EmployeeModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    if (json['status'] != null) status = Booking.fromJson(json['status']);
+    if (json['document'] != null) {
+      document = DocumentModel.fromJson(json['document']);
+    }
     name = json['name'];
     dateOfBirth = json['date_of_birth'];
     timeWorkPerDay = json['time_work_per_day'];
@@ -100,8 +116,7 @@ class EmployeeModel {
     contractDuration = json['contract_duration'];
     previousWorkAbroad = json['previous_work_abroad'];
     durationOfEmployment = json['duration_of_employment'];
-    image =
-        "https://wazzfny.online/api/files/images/employees/${json['image']}";
+    image = "https://khdmah.online/api/images/employee/${json['image']}/";
     passportNum = json['passport_num'];
     passportIssueDate = json['passport_issue_date'];
     passportExpiryDate = json['passport_expiry_date'];
@@ -122,7 +137,16 @@ class EmployeeModel {
     religionId = json['religion_id'];
     maritalStatus = json['marital_status'];
     educationCertification = json['education_certification'];
-    favourite = json['favourite'];
+
+    if (json['favourite'] != null) {
+      favourite = Favourite.fromJson(json['favourite']);
+    }
+    if (json['nationality'] != null) {
+      nationality = Country.fromJson(json['nationality']);
+    }
+    if (json['company'] != null) {
+      company = CompanyModel.fromJson(json['company']);
+    }
     if (json['languages'] != null) {
       languages = <LanguageModel>[];
       json['languages'].forEach((v) {
@@ -139,7 +163,9 @@ class EmployeeModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+
     if (id != null) data['id'] = id;
+    if (status != null) data['status'] = status!.toJson();
     if (name != null) data['name'] = name;
     if (dateOfBirth != null) data['date_of_birth'] = dateOfBirth;
     if (timeWorkPerDay != null) data['time_work_per_day'] = timeWorkPerDay;
@@ -160,6 +186,8 @@ class EmployeeModel {
       data['duration_of_employment'] = durationOfEmployment;
     }
     if (passportNum != null) data['passport_num'] = passportNum;
+    if (nationality != null) data['nationality'] = nationality!.toJson();
+    if (company != null) data['company'] = company!.toJson();
     if (passportIssueDate != null) {
       data['passport_issue_date'] = passportIssueDate;
     }
@@ -189,13 +217,20 @@ class EmployeeModel {
     if (educationCertification != null) {
       data['education_certification'] = educationCertification;
     }
-    if (favourite != null) data['favourite'] = favourite;
+    if (favourite != null) data['favourite'] = favourite!.toJson();
+    if (document != null) data['document'] = document!.toJson();
 
     for (var i = 0; i < languages!.length; i++) {
       data["languages[$i]"] = languages![i].id;
     }
     for (var i = 0; i < jobs!.length; i++) {
       data["jobs[$i]"] = jobs![i].id;
+    }
+    for (var i = 0; i < languages!.length; i++) {
+      data["languagesName[$i]"] = languages![i].name;
+    }
+    for (var i = 0; i < jobs!.length; i++) {
+      data["jobsName[$i]"] = jobs![i].nameEn;
     }
     // data['languages'] = languages!.map((e) => e.id).toList();
     // data['jobs'] = jobs!.map((e) => e.id).toList();

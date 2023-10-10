@@ -1,5 +1,8 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Utils/utils.dart';
@@ -7,10 +10,12 @@ import '../Utils/utils.dart';
 // ignore: must_be_immutable
 class CompanyEmployeeCard extends StatelessWidget {
   CompanyEmployeeCard(
-      {super.key, this.trailing, required this.booked, this.onTap});
-  bool isOffer = false;
+      {super.key, this.trailing, this.onTap, required this.employee});
+  final EmployeeModel employee;
+
   final Widget? trailing;
-  bool booked;
+  GlobalController _globalController = Get.find();
+
   void Function()? onTap;
   @override
   Widget build(BuildContext context) {
@@ -22,11 +27,10 @@ class CompanyEmployeeCard extends StatelessWidget {
           Container(
             width: 70.0.sp,
             height: 70.0.sp,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                  image: AssetImage("assets/images/image.png"),
-                  fit: BoxFit.cover),
+                  image: NetworkImage(employee.image), fit: BoxFit.cover),
             ),
           ),
           spaceX(10),
@@ -40,24 +44,27 @@ class CompanyEmployeeCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        coloredText(text: 'lorem ipsun', fontSize: 13.0.sp),
-                        spaceX(8),
+                        coloredText(text: employee.name!, fontSize: 13.0.sp),
+                        spaceX(4),
                         coloredText(
-                          text: '300\$/Y',
-                          color: isOffer
+                          text:
+                              '${int.parse(employee.contractAmount!) / int.parse(employee.contractDuration!)} KWD/Y',
+                          color: employee.isOffer == 1
                               ? const Color(0xff919191)
                               : Theme.of(context).colorScheme.tertiary,
-                          fontSize: 9.0.sp,
-                          decoration:
-                              isOffer ? TextDecoration.lineThrough : null,
+                          fontSize: 8.0.sp,
+                          decoration: employee.isOffer == 1
+                              ? TextDecoration.lineThrough
+                              : null,
                         ),
-                        !isOffer ? Container() : spaceX(8),
-                        !isOffer
+                        employee.isOffer != 1 ? Container() : spaceX(8),
+                        employee.isOffer != 1
                             ? Container()
                             : coloredText(
-                                text: '300\$/2y',
+                                text:
+                                    '${employee.amountAfterDiscount! / int.parse(employee.contractDuration!)} KWD/Y',
                                 color: Theme.of(context).colorScheme.tertiary,
-                                fontSize: 9.0.sp,
+                                fontSize: 8.0.sp,
                               ),
                       ],
                     ),
@@ -81,12 +88,14 @@ class CompanyEmployeeCard extends StatelessWidget {
                         ),
                       ),
                       child: coloredText(
-                        text: "Nurse",
+                        text: Get.locale == const Locale('en', 'US')
+                            ? employee.jobs![index].nameEn!
+                            : employee.jobs![index].nameAr!,
                         color: const Color(0xff787878),
                         fontSize: 11.0.sp,
                       ),
                     ),
-                    itemCount: 5,
+                    itemCount: employee.jobs!.length,
                     separatorBuilder: (BuildContext context, int index) =>
                         spaceX(5),
                   ),
@@ -102,7 +111,13 @@ class CompanyEmployeeCard extends StatelessWidget {
                     ),
                     spaceX(3),
                     coloredText(
-                      text: 'Philippines',
+                      text: _globalController.countries
+                          .where(
+                              (element) => element.id == employee.nationalityId)
+                          .map((e) => Get.locale == const Locale('en', 'US')
+                              ? e.nameEn!
+                              : e.nameAr!)
+                          .first,
                       color: Theme.of(context).colorScheme.secondary,
                       fontSize: 13.0.sp,
                     ),
@@ -111,16 +126,29 @@ class CompanyEmployeeCard extends StatelessWidget {
                 spaceY(10),
                 primaryButton(
                   alignment: AlignmentDirectional.centerStart,
-                  color: booked ? const Color(0xff9A9A9A) : Colors.black,
+                  color: employee.status == null ||
+                          employee.status!.status != "booked"
+                      ? Colors.black
+                      : const Color(0xff9A9A9A),
                   width: 35.w,
                   height: 30.sp,
                   radius: 10,
                   text: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      coloredText(text: "Book", color: Colors.white),
-                      !booked ? Container() : spaceX(10),
-                      !booked
+                      coloredText(
+                          text: employee.status == null
+                              ? "not_booked".tr
+                              : employee.status!.status!,
+                          color: Colors.white),
+                      employee.status == null ||
+                              (employee.status != null &&
+                                  employee.status!.status != "booked")
+                          ? Container()
+                          : spaceX(10),
+                      employee.status == null ||
+                              (employee.status != null &&
+                                  employee.status!.status != "booked")
                           ? Container()
                           : Icon(
                               EvaIcons.checkmarkCircle,

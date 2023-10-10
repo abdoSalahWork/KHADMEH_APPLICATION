@@ -2,6 +2,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:sizer/sizer.dart';
 
@@ -12,15 +13,14 @@ import '../Utils/utils.dart';
 class UserProfileCard extends StatelessWidget {
   UserProfileCard({
     super.key,
-    this.employeeType = EmployeeType.recruitment,
     this.trailing,
     required this.employeeModel,
   });
   final EmployeeModel employeeModel;
-  final EmployeeType employeeType;
   final Widget? trailing;
   // ignore: unused_field
   final GlobalController _globalController = Get.find();
+  EmployeesController _employeeController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +28,25 @@ class UserProfileCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () {
-            Get.to(() => EmployeePage(employeeType: employeeType),
-                transition: Transition.rightToLeft);
+          onTap: () async {
+            EmployeeModel? em = await _employeeController.showEmployee(
+                id: employeeModel.id!, indicator: true);
+            if (em != null) {
+              Get.to(() => EmployeePage(employeeModel: em),
+                  transition: Transition.rightToLeft);
+            } else {
+              logWarning(employeeModel.toJson());
+              Get.to(() => EmployeePage(employeeModel: employeeModel),
+                  transition: Transition.rightToLeft);
+            }
           },
           child: Container(
             width: 70.0.sp,
             height: 70.0.sp,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                  image: AssetImage("assets/images/image.png"),
-                  fit: BoxFit.cover),
+                  image: NetworkImage(employeeModel.image!), fit: BoxFit.cover),
             ),
           ),
         ),
@@ -57,15 +64,14 @@ class UserProfileCard extends StatelessWidget {
                       coloredText(
                           text: employeeModel.name ?? 'lorem ipsun',
                           fontSize: 13.0.sp),
-                      spaceX(8),
+                      spaceX(4),
                       coloredText(
-                        text: employeeType == EmployeeType.clean
-                            ? '${employeeModel.hourSalary}\$/H'
-                            : '${employeeModel.salaryMonth}\$/M',
+                        text:
+                            '${int.parse(employeeModel.contractAmount!) / int.parse(employeeModel.contractDuration!)} KWD/Y',
                         color: employeeModel.isOffer == 1
                             ? const Color(0xff919191)
                             : Theme.of(context).colorScheme.tertiary,
-                        fontSize: 9.0.sp,
+                        fontSize: 8.0.sp,
                         decoration: employeeModel.isOffer == 1
                             ? TextDecoration.lineThrough
                             : null,
@@ -74,42 +80,50 @@ class UserProfileCard extends StatelessWidget {
                       employeeModel.isOffer != 1
                           ? Container()
                           : coloredText(
-                              text: '${employeeModel.salaryMonth}\$/M',
+                              text:
+                                  '${employeeModel.amountAfterDiscount! / int.parse(employeeModel.contractDuration!)} KWD/Y',
                               color: Theme.of(context).colorScheme.tertiary,
-                              fontSize: 9.0.sp,
+                              fontSize: 8.0.sp,
                             ),
                     ],
                   ),
                   trailing ?? Container(),
                 ],
               ),
-              spaceY(10),
-              SizedBox(
-                height: 30,
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) => Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color(0xffF8F8F8),
-                      border: Border.all(
-                        color: const Color(0xffE8E8E8),
+              employeeModel.jobs == null || employeeModel.jobs!.isEmpty
+                  ? Container()
+                  : spaceY(10),
+              employeeModel.jobs == null || employeeModel.jobs!.isEmpty
+                  ? Container()
+                  : SizedBox(
+                      height: 30,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) =>
+                            Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: const Color(0xffF8F8F8),
+                            border: Border.all(
+                              color: const Color(0xffE8E8E8),
+                            ),
+                          ),
+                          child: coloredText(
+                            text: Get.locale == const Locale('en', 'US')
+                                ? employeeModel.jobs![index].nameEn!
+                                : employeeModel.jobs![index].nameAr!,
+                            color: const Color(0xff787878),
+                            fontSize: 11.0.sp,
+                          ),
+                        ),
+                        itemCount: employeeModel.jobs!.length,
+                        separatorBuilder: (BuildContext context, int index) =>
+                            spaceX(5),
                       ),
                     ),
-                    child: coloredText(
-                      text: "Nurse",
-                      color: const Color(0xff787878),
-                      fontSize: 11.0.sp,
-                    ),
-                  ),
-                  itemCount: 5,
-                  separatorBuilder: (BuildContext context, int index) =>
-                      spaceX(5),
-                ),
-              ),
               spaceY(10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -124,7 +138,7 @@ class UserProfileCard extends StatelessWidget {
                     text: Get.locale != const Locale('en', 'US')
                         ? _globalController.countries
                             .firstWhere((element) =>
-                                element.id == employeeModel.livingTown)
+                                element.id == employeeModel.birthPlace)
                             .nameAr!
                         : _globalController.countries
                             .firstWhere((element) =>
@@ -135,19 +149,19 @@ class UserProfileCard extends StatelessWidget {
                   ),
                 ],
               ),
-              spaceY(10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Icon(EvaIcons.star, color: Colors.yellow),
-                  spaceX(5),
-                  coloredText(
-                    text: "4.5",
-                    fontSize: 13.0.sp,
-                    color: Colors.black,
-                  ),
-                ],
-              )
+              //   spaceY(10),
+              //   Row(
+              //     mainAxisAlignment: MainAxisAlignment.start,
+              //     children: [
+              //       const Icon(EvaIcons.star, color: Colors.yellow),
+              //       spaceX(5),
+              //       coloredText(
+              //         text: "4.5",
+              //         fontSize: 13.0.sp,
+              //         color: Colors.black,
+              //       ),
+              //     ],
+              //   )
             ],
           ),
         )

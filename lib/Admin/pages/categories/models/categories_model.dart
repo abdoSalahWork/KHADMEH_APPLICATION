@@ -19,18 +19,18 @@ class CategoryModel {
     id = json['id'];
     nameEn = json['name_en'];
     nameAr = json['name_ar'];
-    image = json['image'];
+    image = "https://khdmah.online/api/images/service/${json['image']}";
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name_en'] = this.nameEn;
-    data['name_ar'] = this.nameAr;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name_en'] = nameEn;
+    data['name_ar'] = nameAr;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

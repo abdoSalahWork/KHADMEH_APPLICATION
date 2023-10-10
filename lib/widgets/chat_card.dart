@@ -1,9 +1,8 @@
-import 'dart:math';
-
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Pages/chat%20page/model/my_message.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Pages/chat%20page/chat_page.dart';
@@ -11,11 +10,14 @@ import '../Utils/utils.dart';
 
 // ignore: must_be_immutable
 class ChatCard extends StatelessWidget {
-  const ChatCard({
+  ChatCard({
     super.key,
     required this.chatType,
+    required this.chat,
   });
   final ChatType chatType;
+  final MyChat chat;
+  final GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -23,7 +25,20 @@ class ChatCard extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            Get.to(() => const ChatPage(), transition: Transition.downToUp);
+            Get.to(
+                () => ChatPage(
+                      chatId: chat.id!,
+                      receiverId: _globalController.me.id ==
+                              chat.participants![0].userId
+                          ? chat.participants![1].chatId!
+                          : chat.participants![0].chatId!,
+                      recieverName: _globalController.me.id ==
+                              chat.participants![0].userId
+                          ? chat.participants![1].user!.fullName!
+                          : chat.participants![0].user!.fullName!,
+                      recieverImage: '',
+                    ),
+                transition: Transition.downToUp);
           },
           child: Container(
             width: 70.0.sp,
@@ -46,16 +61,22 @@ class ChatCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    coloredText(text: 'lorem ipsun', fontSize: 13.0.sp),
+                    coloredText(
+                        text: (_globalController.me.id ==
+                                            chat.participants![0].userId
+                                        ? chat.participants![1].user!.fullName!
+                                        : chat.participants![0].user!.fullName!)
+                                    .length >
+                                13
+                            ? "${(_globalController.me.id == chat.participants![0].userId ? chat.participants![1].user!.fullName! : chat.participants![0].user!.fullName!).substring(0, 13)}..."
+                            : (_globalController.me.id ==
+                                    chat.participants![0].userId
+                                ? chat.participants![1].user!.fullName!
+                                : chat.participants![0].user!.fullName!),
+                        fontSize: 12.0.sp),
                     coloredText(
                         text: DateFormat('hh:mm a').format(
-                          DateTime.now().add(
-                            Duration(
-                              hours: Random().nextInt(24),
-                              minutes: Random().nextInt(60),
-                            ),
-                          ),
-                        ),
+                            DateTime.parse(chat.lastMessage!.createdAt!)),
                         fontSize: 12.0.sp,
                         color: Colors.grey),
                   ],
@@ -70,9 +91,9 @@ class ChatCard extends StatelessWidget {
                             color: const Color(0xff2BB294),
                           )
                         : coloredText(
-                            text: "Lorem Ipsum dolor sit".length > 15
-                                ? "${"Lorem Ipsum dolor sit".substring(0, 15)}..."
-                                : "Lorem Ipsum dolor sit",
+                            text: chat.lastMessage!.message!.length > 15
+                                ? "${chat.lastMessage!.message!.substring(0, 15)}..."
+                                : chat.lastMessage!.message!,
                             fontSize: 12.0.sp,
                             color: const Color(0xff919191),
                           ),
@@ -86,20 +107,21 @@ class ChatCard extends StatelessWidget {
                             ),
                             child: Center(
                               child: coloredText(
-                                text: "3",
+                                text: chat.unreadMessagesCount!.toString(),
                                 color: Colors.white,
                               ),
                             ),
                           )
-                        : chatType == ChatType.delivered ||
-                                chatType == ChatType.read
-                            ? Icon(
-                                EvaIcons.doneAll,
-                                color: chatType == ChatType.delivered
-                                    ? const Color(0xff617FEA)
-                                    : const Color(0xff919191),
-                              )
-                            : Container()
+                        // :
+                        // chatType == ChatType.delivered ||
+                        //         chatType == ChatType.read
+                        //     ? Icon(
+                        //         EvaIcons.doneAll,
+                        //         color: chatType == ChatType.delivered
+                        //             ? const Color(0xff617FEA)
+                        //             : const Color(0xff919191),
+                        //       )
+                        : Container()
                   ],
                 )
               ],

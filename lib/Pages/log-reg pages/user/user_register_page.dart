@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:email_validator/email_validator.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,6 +13,7 @@ import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/user_register_model.dart';
 import 'package:khedma/Pages/log-reg%20pages/otp_page.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 import '../../../widgets/dropdown_menu_button.dart';
@@ -61,7 +63,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   String region = "";
   String nationality = "";
   String city = "";
-  String phoneCode = "";
+  // String phoneCode = "";
   var errors = {};
   final AuthController _authController = Get.find();
   void toggleObsecure() {
@@ -74,6 +76,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     setState(() {});
   }
 
+  bool privacyFlag = false;
   final List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -140,131 +143,147 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                           height: 50,
                           width: 45.0.w,
                           radius: 30,
-                          onTap: () async {
-                            if (_currentStep < stepList(0, 0).length - 1) {
-                              setState(() => _currentStep += 1);
-                            } else {
-                              FocusScope.of(context).unfocus();
-                              // userRegisterData.phone ??= "";
-                              userRegisterData.phone =
-                                  phoneCode + _phoneNumberController.text;
-                              var x = await _authController.userRegister(
-                                  userRegisterData: userRegisterData);
-                              if (x == true) {
-                                // ignore: use_build_context_synchronously
-                                Utils.customDialog(
-                                    actions: [
-                                      primaryButton(
-                                        onTap: () {
-                                          Get.back();
-                                          Get.to(
-                                            () => OTPPage(
-                                              email: _emailController.text,
-                                              password:
-                                                  _passwordController.text,
+                          onTap: _currentStep == 3 && !privacyFlag
+                              ? null
+                              : () async {
+                                  if (_currentStep <
+                                      stepList(0, 0).length - 1) {
+                                    setState(() => _currentStep += 1);
+                                  } else {
+                                    FocusScope.of(context).unfocus();
+                                    // userRegisterData.phone ??= "";
+                                    userRegisterData.phone =
+                                        _phoneNumberController.text;
+                                    var x = await _authController.userRegister(
+                                        userRegisterData: userRegisterData);
+                                    if (x == true) {
+                                      // ignore: use_build_context_synchronously
+                                      Utils.customDialog(
+                                          actions: [
+                                            primaryButton(
+                                              onTap: () {
+                                                Get.back();
+                                                Get.to(
+                                                  () => OTPPage(
+                                                    email:
+                                                        _emailController.text,
+                                                    password:
+                                                        _passwordController
+                                                            .text,
+                                                  ),
+                                                  transition:
+                                                      Transition.rightToLeft,
+                                                );
+                                              },
+                                              width: 40.0.w,
+                                              height: 50,
+                                              radius: 10.w,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              text: coloredText(
+                                                text: "ok".tr,
+                                                color: Colors.white,
+                                              ),
                                             ),
-                                            transition: Transition.rightToLeft,
-                                          );
-                                        },
-                                        width: 40.0.w,
-                                        height: 50,
-                                        radius: 10.w,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        text: coloredText(
-                                          text: "ok".tr,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                    context: context,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          spaceY(20),
-                                          Icon(
-                                            EvaIcons.checkmarkCircle,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            size: 40.sp,
-                                          ),
-                                          spaceY(20),
-                                          coloredText(
-                                              text:
-                                                  "you_have_been_registered".tr,
-                                              fontSize: 12.0.sp),
-                                          coloredText(
-                                            text: "successfully".tr,
-                                            fontSize: 14.0.sp,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                          ),
-                                        ],
-                                      ),
-                                    ));
-                              } else if (x['message'] ==
-                                  "The given data was invalid.") {
-                                errors = x['errors'];
-                                if (errors['full_name'] != null ||
-                                    errors['phone'] != null ||
-                                    errors['email'] != null ||
-                                    errors['jon_name'] != null ||
-                                    errors['nationality_id'] != null) {
-                                  setState(() => _currentStep = 0);
-                                } else if (errors['city_id'] != null ||
-                                    errors['region_id'] != null ||
-                                    errors['piece_number'] != null ||
-                                    errors['street'] != null ||
-                                    errors['building'] != null ||
-                                    errors['automated_address_number'] !=
-                                        null) {
-                                  setState(() => _currentStep = 1);
-                                } else if (errors['id_number_nationality'] !=
-                                        null ||
-                                    errors['refrence_number'] != null ||
-                                    errors['id_photo_nationality'] != null ||
-                                    errors['personal_photo'] != null) {
-                                  setState(() => _currentStep = 2);
-                                  String tmp = "";
-                                  if (errors['id_photo_nationality'] != null &&
-                                      errors['personal_photo'] != null) {
-                                    tmp = errors['id_photo_nationality']
-                                            .join("\n") +
-                                        "\n" +
-                                        errors['personal_photo'].join("\n");
-                                    Utils.showSnackBar(
-                                        message: tmp, fontSize: 12.0.sp);
-                                  } else if (errors['id_photo_nationality'] !=
-                                      null) {
-                                    tmp = errors['id_photo_nationality']
-                                        .join("\n");
-                                    Utils.showSnackBar(
-                                        message: tmp, fontSize: 12.0.sp);
-                                  } else if (errors['personal_photo'] != null) {
-                                    tmp = errors['personal_photo'].join("\n");
-                                    Utils.showSnackBar(
-                                        message: tmp, fontSize: 12.0.sp);
-                                  }
-                                } else {
-                                  setState(() => _currentStep = 3);
-                                }
+                                          ],
+                                          context: context,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                spaceY(20),
+                                                Icon(
+                                                  EvaIcons.checkmarkCircle,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  size: 40.sp,
+                                                ),
+                                                spaceY(20),
+                                                coloredText(
+                                                    text:
+                                                        "you_have_been_registered"
+                                                            .tr,
+                                                    fontSize: 12.0.sp),
+                                                coloredText(
+                                                  text: "successfully".tr,
+                                                  fontSize: 14.0.sp,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                ),
+                                              ],
+                                            ),
+                                          ));
+                                    } else if (x['message'] ==
+                                        "The given data was invalid.") {
+                                      errors = x['errors'];
+                                      if (errors['full_name'] != null ||
+                                          errors['phone'] != null ||
+                                          errors['email'] != null ||
+                                          errors['jon_name'] != null ||
+                                          errors['nationality_id'] != null) {
+                                        setState(() => _currentStep = 0);
+                                      } else if (errors['city_id'] != null ||
+                                          errors['region_id'] != null ||
+                                          errors['piece_number'] != null ||
+                                          errors['street'] != null ||
+                                          errors['building'] != null ||
+                                          errors['automated_address_number'] !=
+                                              null) {
+                                        setState(() => _currentStep = 1);
+                                      } else if (errors[
+                                                  'id_number_nationality'] !=
+                                              null ||
+                                          errors['refrence_number'] != null ||
+                                          errors['id_photo_nationality'] !=
+                                              null ||
+                                          errors['personal_photo'] != null) {
+                                        setState(() => _currentStep = 2);
+                                        String tmp = "";
+                                        if (errors['id_photo_nationality'] !=
+                                                null &&
+                                            errors['personal_photo'] != null) {
+                                          tmp = errors['id_photo_nationality']
+                                                  .join("\n") +
+                                              "\n" +
+                                              errors['personal_photo']
+                                                  .join("\n");
+                                          Utils.showSnackBar(
+                                              message: tmp, fontSize: 12.0.sp);
+                                        } else if (errors[
+                                                'id_photo_nationality'] !=
+                                            null) {
+                                          tmp = errors['id_photo_nationality']
+                                              .join("\n");
+                                          Utils.showSnackBar(
+                                              message: tmp, fontSize: 12.0.sp);
+                                        } else if (errors['personal_photo'] !=
+                                            null) {
+                                          tmp = errors['personal_photo']
+                                              .join("\n");
+                                          Utils.showSnackBar(
+                                              message: tmp, fontSize: 12.0.sp);
+                                        }
+                                      } else {
+                                        setState(() => _currentStep = 3);
+                                      }
 
-                                // setState(() {});
-                              }
-                            }
-                          },
+                                      // setState(() {});
+                                    }
+                                  }
+                                },
                           text: coloredText(
                             text: _currentStep == 3 ? "submit".tr : "next".tr,
                             color: Colors.white,
                             fontSize: 16.0.sp,
                           ),
-                          color: Theme.of(context).primaryColor,
+                          color: _currentStep == 3 && !privacyFlag
+                              ? Colors.grey
+                              : Theme.of(context).primaryColor,
                         );
                       }),
                 ),
@@ -428,7 +447,8 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                         return null;
                       },
                       prefixIcon: Container(
-                        margin: const EdgeInsetsDirectional.only(start: 10),
+                        margin: const EdgeInsetsDirectional.only(
+                            start: 10, end: 10),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -436,27 +456,8 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                               EvaIcons.phoneOutline,
                               size: 20.0.sp,
                             ),
-                            GetBuilder<GlobalController>(builder: (c) {
-                              return CustomDropDownMenuButton(
-                                width: 65.sp,
-                                hintPadding: 5,
-                                contentPadding: 10,
-                                hintSize: 13,
-                                value: phoneCode == "" ? null : phoneCode,
-                                items: c.countries
-                                    .map((e) => DropdownMenuItem<String>(
-                                          value: e.code!,
-                                          child: coloredText(
-                                            text: e.code!,
-                                            fontSize: 17,
-                                          ),
-                                        ))
-                                    .toList(),
-                                onChanged: (s) {
-                                  phoneCode = s!;
-                                },
-                              );
-                            }),
+                            spaceX(5.sp),
+                            coloredText(text: "+965", color: Colors.grey)
                           ],
                         ),
                       ),
@@ -1026,6 +1027,114 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                           onPressed: toggleObsecure2),
                       hintText: "password_confirm".tr,
                       obsecureText: _obsecureflag2,
+                    ),
+                    spaceY(20.sp),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 25,
+                          child: Checkbox(
+                            checkColor: Colors.white,
+                            fillColor: MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.selected)) {
+                                return Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.5);
+                              }
+                              return Colors.white;
+                            }),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5.0),
+                              ),
+                            ), // Rounded Checkbox
+                            onChanged: (value) {
+                              privacyFlag = value!;
+                              FocusManager.instance.primaryFocus?.unfocus();
+
+                              setState(() {});
+                            },
+                            value: privacyFlag,
+                          ),
+                        ),
+                        spaceX(10),
+                        Get.locale == const Locale("en", "US")
+                            ? SizedBox(
+                                width: 80.w,
+                                child: Text.rich(
+                                  style: coloredText(text: "text").style,
+                                  softWrap: true,
+                                  TextSpan(
+                                    children: [
+                                      const TextSpan(text: 'I agree to the '),
+                                      TextSpan(
+                                          text: 'Privacy policy',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async =>
+                                                await launchUrl(Uri.parse(
+                                                    "https://www.google.com"))),
+                                      const TextSpan(text: ' and '),
+                                      TextSpan(
+                                          text: 'Terms & Conditions',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async =>
+                                                await launchUrl(Uri.parse(
+                                                    "https://www.google.com"))),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : SizedBox(
+                                width: 80.w,
+                                child: Text.rich(
+                                  style: coloredText(text: "text").style,
+                                  softWrap: true,
+                                  TextSpan(
+                                    children: [
+                                      const TextSpan(text: 'أنا أوافق على '),
+                                      TextSpan(
+                                          text: 'سياسة الخصوصية',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async =>
+                                                await launchUrl(Uri.parse(
+                                                    "https://www.google.com"))),
+                                      const TextSpan(text: ' و '),
+                                      TextSpan(
+                                          text: 'شروط الاستخدام',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async =>
+                                                await launchUrl(Uri.parse(
+                                                    "https://www.google.com"))),
+                                    ],
+                                  ),
+                                ),
+                              )
+                      ],
                     ),
                   ]),
             ),
