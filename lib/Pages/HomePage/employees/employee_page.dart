@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:dio/dio.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +10,8 @@ import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart'
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/invooice/invoice_page.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,9 +33,13 @@ class _EmployeePageState extends State<EmployeePage> {
   GlobalController _globalController = Get.find();
   EmployeesController _employeesController = Get.find();
   String invoiceId = "12314";
+  bool contractFlag = false;
   @override
   void initState() {
     jobs = widget.employeeModel.jobs!;
+
+    if (widget.employeeModel.status != null &&
+        widget.employeeModel.status!.status == "pending") contractFlag = true;
     super.initState();
   }
 
@@ -61,7 +70,7 @@ class _EmployeePageState extends State<EmployeePage> {
               ],
             )),
             width: 100.0.w,
-            height: 48.0.h,
+            height: contractFlag ? 52.0.h : 48.0.h,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -80,17 +89,7 @@ class _EmployeePageState extends State<EmployeePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Get.to(() => InvoicePage(
-                              invoiceId: invoiceId,
-                              companyId: widget.employeeModel.company!.id!,
-                              employeeName: widget.employeeModel.name!,
-                              contractDuration:
-                                  widget.employeeModel.contractDuration!,
-                              contractAmount:
-                                  widget.employeeModel.contractAmount!,
-                            ));
-                      },
+                      onTap: () {},
                       child: Container(
                         width: 75.0.sp,
                         height: 75.0.sp,
@@ -133,7 +132,7 @@ class _EmployeePageState extends State<EmployeePage> {
                                         .withOpacity(0.3),
                                     borderRadius: BorderRadius.circular(20)),
                                 child: coloredText(
-                                    text: widget.employeeModel.isOffer == 1
+                                    text: widget.employeeModel.isOffer != 1
                                         ? "${int.parse(widget.employeeModel.contractAmount!) / int.parse(widget.employeeModel.contractDuration!)} KWD/y"
                                         : "${widget.employeeModel.amountAfterDiscount! / int.parse(widget.employeeModel.contractDuration!)} KWD/y",
                                     color: Colors.white,
@@ -275,7 +274,70 @@ class _EmployeePageState extends State<EmployeePage> {
                           widget.employeeModel.status != null &&
                                   widget.employeeModel.status!.status ==
                                       "booked"
-                              ? Container()
+                              ? _globalController.guest
+                                  ? Container()
+                                  : primaryButton(
+                                      onTap: widget.employeeModel.document ==
+                                                  null ||
+                                              widget.employeeModel.document!
+                                                      .approve ==
+                                                  null ||
+                                              widget.employeeModel.document!
+                                                      .approve ==
+                                                  0
+                                          ? null
+                                          : () async {
+                                              Get.to(() => InvoicePage(
+                                                    invoiceId: invoiceId,
+                                                    companyId: widget
+                                                        .employeeModel
+                                                        .company!
+                                                        .id!,
+                                                    employeeName: widget
+                                                        .employeeModel.name!,
+                                                    contractDuration: widget
+                                                        .employeeModel
+                                                        .contractDuration!,
+                                                    contractAmount: widget
+                                                        .employeeModel
+                                                        .contractAmount!,
+                                                    isOffer: widget
+                                                        .employeeModel.isOffer!,
+                                                    contractAmountAfterDiscount:
+                                                        widget.employeeModel
+                                                            .amountAfterDiscount!,
+                                                  ));
+
+                                              // Get.to(() => PayPage(),
+                                              //     transition: Transition.downToUp);
+
+                                              // else {
+                                              //   Get.to(() => const FillingDataPage(),
+                                              //       transition: Transition.downToUp);
+                                              // }
+                                            },
+                                      text: coloredText(
+                                          text: "invoice".tr,
+                                          color: Colors.white,
+                                          fontSize: 12.0.sp),
+                                      color: widget.employeeModel.document ==
+                                                  null ||
+                                              widget.employeeModel.document!
+                                                      .approve ==
+                                                  null ||
+                                              widget.employeeModel.document!
+                                                      .approve ==
+                                                  0
+                                          ? Colors.grey
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                      width: 40.0.w,
+                                      height: 30.0.sp,
+                                      radius: 20,
+                                      alignment:
+                                          AlignmentDirectional.centerStart,
+                                    )
                               : widget.employeeModel.status != null &&
                                       widget.employeeModel.status!.status ==
                                           "pending"
@@ -295,6 +357,7 @@ class _EmployeePageState extends State<EmployeePage> {
                                                       .bookEmployee(
                                                           id: widget
                                                               .employeeModel
+                                                              .document!
                                                               .id!);
                                               if (x != null) {
                                                 invoiceId = x.keys.first;
@@ -361,35 +424,54 @@ class _EmployeePageState extends State<EmployeePage> {
                                     )
                                   : primaryButton(
                                       onTap: () async {
-                                        String? x = await _employeesController
-                                            .pendingEmployee(
-                                                id: widget.employeeModel.id!);
-                                        if (x != null) {
-                                          Uri url = Uri.parse(x);
-                                          logSuccess(x);
-                                          await launchUrl(url,
-                                              mode: LaunchMode
-                                                  .externalApplication);
+                                        if (_globalController.guest) {
+                                          Utils.loginFirstDialoge(
+                                              context: context);
+                                        } else {
+                                          String? x = await _employeesController
+                                              .pendingEmployee(
+                                                  id: widget.employeeModel.id!);
+                                          if (x != null) {
+                                            Uri url = Uri.parse(x);
+                                            logSuccess(x);
+                                            await launchUrl(url,
+                                                mode: LaunchMode
+                                                    .externalApplication);
 
-                                          await Future.delayed(
-                                              Duration(milliseconds: 100));
-                                          while (WidgetsBinding
-                                                  .instance.lifecycleState !=
-                                              AppLifecycleState.resumed) {
                                             await Future.delayed(
                                                 Duration(milliseconds: 100));
+                                            while (WidgetsBinding
+                                                    .instance.lifecycleState !=
+                                                AppLifecycleState.resumed) {
+                                              await Future.delayed(
+                                                  Duration(milliseconds: 100));
+                                            }
+                                            EmployeeModel? b =
+                                                await _employeesController
+                                                    .showMyEmployee(
+                                                        id: widget
+                                                            .employeeModel.id!,
+                                                        indicator: false);
+                                            if (b != null) {
+                                              Utils.doneDialog(
+                                                  context: context);
+                                              widget.employeeModel = b;
+                                              if (widget.employeeModel.status !=
+                                                      null &&
+                                                  widget.employeeModel.status!
+                                                          .status ==
+                                                      "pending") {
+                                                contractFlag = true;
+                                              }
+                                              setState(() {});
+                                            }
+                                            _globalController.getMe();
+                                            _globalController.getUserHomePage();
+                                            Utils().rateDialoge(
+                                                context: context,
+                                                companyId: widget
+                                                    .employeeModel.companyId!);
                                           }
-                                          EmployeeModel? b =
-                                              await _employeesController
-                                                  .showMyEmployee(
-                                                      id: widget
-                                                          .employeeModel.id!,
-                                                      indicator: false);
-                                          if (b != null) {
-                                            Utils.doneDialog(context: context);
-                                            widget.employeeModel = b;
-                                          }
-                                          await _globalController.getMe();
                                         }
 
                                         // Get.to(() => PayPage(),
@@ -413,6 +495,49 @@ class _EmployeePageState extends State<EmployeePage> {
                                       alignment:
                                           AlignmentDirectional.centerStart,
                                     ),
+
+                          !contractFlag ? Container() : spaceY(10.sp),
+                          !contractFlag
+                              ? Container()
+                              : primaryButton(
+                                  onTap: () async {
+                                    String? token = await Utils.readToken();
+                                    logSuccess(widget
+                                        .employeeModel.residenceContract!);
+                                    logSuccess(token!);
+                                    Utils.circularIndicator();
+                                    var res = await Dio().get(
+                                      widget.employeeModel.residenceContract!,
+                                      options: Options(
+                                        headers: {
+                                          "Accept": "application/json",
+                                          "Authorization": "Bearer $token"
+                                        },
+                                      ),
+                                    );
+                                    Get.back();
+                                    await Printing.layoutPdf(
+                                        format: PdfPageFormat.a3,
+                                        name:
+                                            "${widget.employeeModel.name!} contract",
+                                        onLayout:
+                                            (PdfPageFormat format) async =>
+                                                await Printing.convertHtml(
+                                                  format: format,
+                                                  html: res.data,
+                                                ));
+                                  },
+                                  text: coloredText(
+                                      text: "contract".tr,
+                                      color: Colors.white,
+                                      fontSize: 12.0.sp),
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  width: 40.0.w,
+                                  height: 30.0.sp,
+                                  radius: 20,
+                                  alignment: AlignmentDirectional.centerStart,
+                                ),
                           // Container(
                           //   width: 40.0.w,
                           //   height: 40,

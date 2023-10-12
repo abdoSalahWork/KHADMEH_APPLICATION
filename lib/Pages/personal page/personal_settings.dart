@@ -3,6 +3,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Pages/personal%20page/about_page.dart';
 import 'package:khedma/Pages/personal%20page/company_profile_edit.dart';
@@ -167,6 +168,8 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                 await Utils.deleteRemmemberMe();
                 await Utils.deleteFBToken();
                 Get.offAll(() => const LoginPage());
+                AuthController _authController = Get.find();
+                _authController.handleSignOut();
               },
               width: 100.w,
               text: Row(

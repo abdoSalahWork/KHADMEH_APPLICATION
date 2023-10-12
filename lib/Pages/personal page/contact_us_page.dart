@@ -44,14 +44,16 @@ class _ContactUsPageState extends State<ContactUsPage> {
             ),
             spaceY(3.sp),
             coloredText(
-              text: "+965${_adminController.contactModel!.phoneNumber!}",
+              text:
+                  "+965${_adminController.contactModel != null ? _adminController.contactModel!.phoneNumber! : ""}",
               fontSize: 12.sp,
               color: Colors.grey,
               // textAlign: TextAlign.justify,
             ),
             spaceY(3.sp),
             coloredText(
-              text: "${_adminController.contactModel!.email!}",
+              text:
+                  "${_adminController.contactModel != null ? _adminController.contactModel!.email! : ""}",
               fontSize: 12.sp,
               color: Colors.grey,
               // textAlign: TextAlign.justify,

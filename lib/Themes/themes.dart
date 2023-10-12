@@ -21,10 +21,12 @@ class AppThemes {
 
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
+
     // primaryColor: colorCustom,
     // primarySwatch: MaterialColor(primary, swatch),
     sliderTheme: const SliderThemeData(activeTrackColor: Color(0xff1BAFB2)),
     colorScheme: ColorScheme(
+      surfaceTint: Colors.white,
       brightness: Brightness.light,
       primary: const Color(0xff225153),
       onPrimary: const Color(0xff225153),

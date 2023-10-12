@@ -19,12 +19,15 @@ class AddressessController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(city.toJson());
       body.fields.add(MapEntry("country_id", "2"));
-
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeCity,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -43,11 +46,15 @@ class AddressessController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(city.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteCity(city.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -66,11 +73,15 @@ class AddressessController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(city.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateCity(city.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -89,12 +100,15 @@ class AddressessController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(region.toJson());
       body.fields.add(MapEntry("city_id", "1"));
-
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeRegion,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -113,11 +127,15 @@ class AddressessController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(region.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteRegion(region.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -134,13 +152,17 @@ class AddressessController extends GetxController {
   Future<bool> updateRegion({required Region region}) async {
     try {
       Utils.circularIndicator();
+      String? token = await Utils.readToken();
       final body = d.FormData.fromMap(region.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
       await dio.post(
         EndPoints.updateRegion(region.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -170,11 +192,15 @@ class AddressessController extends GetxController {
           ),
         ));
       }
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeCountry,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -193,11 +219,15 @@ class AddressessController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(country.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteCountry(country.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -218,7 +248,7 @@ class AddressessController extends GetxController {
       body.fields.add(const MapEntry("_method", "PUT"));
       PlatformFile? flag;
       if (country.flag.runtimeType != String) flag = country.flag;
-
+      String? token = await Utils.readToken();
       if (flag != null) {
         body.files.add(MapEntry(
           "flag",
@@ -233,7 +263,10 @@ class AddressessController extends GetxController {
         EndPoints.updateCountry(country.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 

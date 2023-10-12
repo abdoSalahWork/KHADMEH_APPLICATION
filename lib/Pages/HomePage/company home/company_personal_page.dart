@@ -1,7 +1,8 @@
 import 'package:chips_choice/chips_choice.dart';
-import 'package:custom_rating_bar/custom_rating_bar.dart' as r;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
@@ -41,10 +42,22 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
   final AdvertismentController _advertismentController = Get.find();
   final GlobalController _globalController = Get.find();
   PageController pageController = PageController(initialPage: 0);
+  List<double> rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  double rate = 0;
+  var sum;
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
     _advertismentController.getCompanyAdvertisments();
+    for (var i in _globalController.me.reviewCompany!) {
+      rates[i.reviewValue!]++;
+    }
+    for (var i = 0; i < rates.length; i++) {
+      if (rates[i] > 0) {
+        rate += i * rates[i];
+      }
+    }
+
     super.initState();
   }
 
@@ -133,20 +146,38 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                               ),
                             ),
                           ),
-                          // PositionedDirectional(
-                          //     bottom: 0,
-                          //     end: 0,
-                          //     child: Container(
-                          //       padding: const EdgeInsets.all(10),
-                          //       decoration: BoxDecoration(
-                          //           shape: BoxShape.circle,
-                          //           color: Colors.black.withOpacity(0.4)),
-                          //       child: const Icon(
-                          //         FontAwesomeIcons.camera,
-                          //         size: 15,
-                          //         color: Colors.white,
-                          //       ),
-                          //     ))
+                          PositionedDirectional(
+                              bottom: 0,
+                              end: 0,
+                              child: GestureDetector(
+                                onTap: () async {
+                                  final result =
+                                      await FilePicker.platform.pickFiles(
+                                    allowMultiple: false,
+                                    type: FileType.image,
+                                  );
+                                  if (result != null) {
+                                    await _globalController
+                                        .updateCompanyProfile(
+                                            companyInformation:
+                                                _globalController
+                                                    .me.companyInformation!,
+                                            logo: result.files[0]);
+                                    setState(() {});
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.black.withOpacity(0.4)),
+                                  child: const Icon(
+                                    FontAwesomeIcons.camera,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ))
                         ],
                       ),
                     ),
@@ -404,7 +435,7 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                 Row(
                   children: [
                     coloredText(
-                      text: "4.5",
+                      text: "$rate",
                       fontSize: 35.0.sp,
                       color: Theme.of(context).colorScheme.primary,
                       // fontWeight: FontWeight.bold,
@@ -413,15 +444,40 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                     Expanded(
                       child: Column(
                         children: [
-                          const MyRatingBar(label: '5', value: 50),
+                          MyRatingBar(
+                            label: '5',
+                            value: rates[5],
+                            maxVal: _globalController.me.reviewCompany!.length
+                                .toDouble(),
+                          ),
                           spaceY(3),
-                          const MyRatingBar(label: '4', value: 20),
+                          MyRatingBar(
+                            label: '4',
+                            value: rates[4],
+                            maxVal: _globalController.me.reviewCompany!.length
+                                .toDouble(),
+                          ),
                           spaceY(3),
-                          const MyRatingBar(label: '3', value: 70),
+                          MyRatingBar(
+                            label: '3',
+                            value: rates[3],
+                            maxVal: _globalController.me.reviewCompany!.length
+                                .toDouble(),
+                          ),
                           spaceY(3),
-                          const MyRatingBar(label: '2', value: 10),
+                          MyRatingBar(
+                            label: '2',
+                            value: rates[2],
+                            maxVal: _globalController.me.reviewCompany!.length
+                                .toDouble(),
+                          ),
                           spaceY(3),
-                          const MyRatingBar(label: '1', value: 90),
+                          MyRatingBar(
+                            label: '1',
+                            value: rates[1],
+                            maxVal: _globalController.me.reviewCompany!.length
+                                .toDouble(),
+                          ),
                         ],
                       ),
                     ),
@@ -434,42 +490,77 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                     padding: EdgeInsets.zero,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
                                 Container(
                                   width: 12.0.w,
                                   height: 12.0.w,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
+                                    border: Border.all(),
                                     image: DecorationImage(
-                                        image: AssetImage(
-                                            "assets/images/image.png"),
+                                        image: NetworkImage(_globalController
+                                            .me
+                                            .reviewCompany![index]
+                                            .user!
+                                            .userInformation!
+                                            .personalPhoto!),
                                         fit: BoxFit.cover),
                                   ),
                                 ),
                                 spaceX(10),
                                 coloredText(
-                                  text: "Ahmad ALi",
+                                  text: _globalController
+                                      .me.reviewCompany![index].user!.fullName!,
                                   color: Colors.black,
                                   fontSize: 14.0.sp,
                                 )
                               ],
                             ),
+                            spaceY(5.sp),
                             Align(
-                                alignment: AlignmentDirectional.centerStart,
-                                child: r.RatingBar.readOnly(
-                                  isHalfAllowed: true,
-                                  filledIcon: Icons.star_rounded,
-                                  halfFilledIcon: Icons.star_half_rounded,
-                                  emptyIcon: Icons.star_border_rounded,
-                                  filledColor: Colors.black,
-                                  halfFilledColor: Colors.black,
-                                  emptyColor: Colors.black,
-                                  initialRating: 3.5,
-                                  maxRating: 5,
-                                  size: 18.0.sp,
-                                )
+                              alignment: AlignmentDirectional.centerStart,
+                              child: RatingBar.builder(
+                                allowHalfRating: false,
+                                initialRating: _globalController
+                                    .me.reviewCompany![index].reviewValue!
+                                    .toDouble(),
+                                itemSize: 20.sp,
+                                itemCount: 5,
+                                ignoreGestures: true,
+                                itemBuilder: (context, index) {
+                                  switch (index) {
+                                    case 0:
+                                      return const Icon(
+                                        Icons.star,
+                                        color: Colors.black,
+                                      );
+                                    case 1:
+                                      return const Icon(
+                                        Icons.star,
+                                        color: Colors.black,
+                                      );
+                                    case 2:
+                                      return const Icon(
+                                        Icons.star,
+                                        color: Colors.black,
+                                      );
+                                    case 3:
+                                      return const Icon(
+                                        Icons.star,
+                                        color: Colors.black,
+                                      );
+                                    default:
+                                      return const Icon(
+                                        Icons.star,
+                                        color: Colors.black,
+                                      );
+                                  }
+                                },
+                                onRatingUpdate: (rating) {},
+
                                 //  RatingBar.builder(
                                 //   initialRating: 4.5,
                                 //   minRating: 0,
@@ -496,17 +587,20 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                                 //     print(rating);
                                 //   },
                                 // ),
-
-                                ),
+                              ),
+                            ),
                             spaceY(10),
-                            coloredText(
-                                text:
-                                    "Lorem ipsum dolor sit amet consectetur adipiscing elit",
-                                color: const Color(0xff919191))
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: coloredText(
+                                  text: _globalController
+                                      .me.reviewCompany![index].review!,
+                                  color: const Color(0xff919191)),
+                            )
                           ],
                         ),
                     separatorBuilder: (context, index) => spaceY(20),
-                    itemCount: 10),
+                    itemCount: _globalController.me.reviewCompany!.length),
                 spaceY(20),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -10,6 +11,7 @@ import 'package:khedma/Pages/personal%20page/submit_files_page.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:khedma/widgets/user_profile_card.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 import '../../widgets/profile_card.dart';
@@ -54,19 +56,19 @@ class _PersonalPageState extends State<PersonalPage>
     logSuccess(_globalController.me.toJson());
     // logSuccess(_globalController.me.userInformation!.booking[0].toJson());
     tabController = TabController(length: 4, vsync: this);
-    pendingEmployees = _globalController.me.userInformation!.booking
+    pendingEmployees = _globalController.me.booking
         .where((element) => element.status == "pending")
         .map((e) => e.employee!)
         .toList();
-    bookedEmployees = _globalController.me.userInformation!.booking
+    bookedEmployees = _globalController.me.booking
         .where((element) => element.status == "booked")
         .map((e) => e.employee!)
         .toList();
-    canceledEmployees = _globalController.me.userInformation!.booking
+    canceledEmployees = _globalController.me.booking
         .where((element) => element.status == "candeled")
         .map((e) => e.employee!)
         .toList();
-    retreivedEmployees = _globalController.me.userInformation!.booking
+    retreivedEmployees = _globalController.me.booking
         .where((element) => element.status == "retreived")
         .map((e) => e.employee!)
         .toList();
@@ -162,15 +164,32 @@ class _PersonalPageState extends State<PersonalPage>
                             PositionedDirectional(
                                 bottom: 0,
                                 end: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.black.withOpacity(0.4)),
-                                  child: const Icon(
-                                    FontAwesomeIcons.camera,
-                                    size: 15,
-                                    color: Colors.white,
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    final result =
+                                        await FilePicker.platform.pickFiles(
+                                      allowMultiple: false,
+                                      type: FileType.image,
+                                    );
+                                    if (result != null) {
+                                      await _globalController.updateUserProfile(
+                                          userInfo: _globalController
+                                              .me.userInformation!,
+                                          personaPhoto: result.files[0]);
+                                      // );
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.black.withOpacity(0.4)),
+                                    child: const Icon(
+                                      FontAwesomeIcons.camera,
+                                      size: 15,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ))
                           ],
@@ -504,160 +523,133 @@ class _PersonalPageState extends State<PersonalPage>
             ? const Center(child: NoItemsWidget())
             : ListView.separated(
                 padding: const EdgeInsets.all(20),
-                itemBuilder: (context, index) => ProfileCard(
-                  employee: pendingEmployees[index],
-                  trailing: Theme(
-                    data: ThemeData(primaryColor: Colors.white),
-                    child: PopupMenuButton(
-                      constraints: BoxConstraints(
-                        minWidth: 2.0 * 56.0,
-                        maxWidth: MediaQuery.of(context).size.width,
+                itemBuilder: (context, index) => index ==
+                        pendingEmployees.length
+                    ? spaceY(20.sp)
+                    : ProfileCard(
+                        employee: pendingEmployees[index],
+                        trailing: Theme(
+                          data: ThemeData(primaryColor: Colors.white),
+                          child: PopupMenuButton(
+                            constraints: BoxConstraints(
+                              minWidth: 2.0 * 56.0,
+                              maxWidth: MediaQuery.of(context).size.width,
+                            ),
+                            itemBuilder: (BuildContext context) => [
+                              PopupMenuItem<int>(
+                                value: 1,
+                                child: coloredText(
+                                    text: 'reservation_request'.tr,
+                                    fontSize: 11.0.sp),
+                                onTap: () {
+                                  Future(() => Get.to(() =>
+                                      ReservationExtensionRequestPage(
+                                        employeeId: pendingEmployees[index].id!,
+                                      )));
+                                },
+                              ),
+                              PopupMenuItem<int>(
+                                value: 4,
+                                child: coloredText(
+                                    text: 'submit_docs'.tr, fontSize: 12.0.sp),
+                                onTap: () {
+                                  Future(() => Get.to(() => SubmitFilesPage(
+                                        employeeId: pendingEmployees[index].id!,
+                                      )));
+                                },
+                              ),
+                            ],
+                            child: const Icon(
+                              EvaIcons.moreVertical,
+                            ),
+                          ),
+                        ),
+                        isOffer: false,
                       ),
-                      itemBuilder: (BuildContext context) => [
-                        PopupMenuItem<int>(
-                          value: 0,
-                          child: coloredText(
-                              text: 'medical_exam'.tr, fontSize: 11.0.sp),
-                          onTap: () {},
-                        ),
-                        PopupMenuItem<int>(
-                          value: 1,
-                          child: coloredText(
-                              text: 'reservation_request'.tr,
-                              fontSize: 11.0.sp),
-                          onTap: () {
-                            Future(() =>
-                                Get.to(() => ReservationExtensionRequestPage(
-                                      employeeId: pendingEmployees[index].id!,
-                                    )));
-                          },
-                        ),
-                        // PopupMenuItem<int>(
-                        //   value: 2,
-                        //   child: coloredText(text: 'Rebook', fontSize: 12.0.sp),
-                        //   onTap: () {},
-                        // ),
-                        // PopupMenuItem<int>(
-                        //   value: 3,
-                        //   child: coloredText(text: 'Recovery', fontSize: 12.0.sp),
-
-                        // ),
-                        PopupMenuItem<int>(
-                          value: 4,
-                          child: coloredText(
-                              text: 'submit_docs'.tr, fontSize: 12.0.sp),
-                          onTap: () {
-                            Future(() => Get.to(() => SubmitFilesPage(
-                                  employeeId: pendingEmployees[index].id!,
-                                )));
-                          },
-                        ),
-                      ],
-                      child: const Icon(
-                        EvaIcons.moreVertical,
-                      ),
-                    ),
-                  ),
-                  isOffer: false,
-                ),
                 separatorBuilder: (context, index) => spaceY(10),
-                itemCount: pendingEmployees.length,
+                itemCount: pendingEmployees.length + 1,
               ),
         bookedEmployees.isEmpty
             ? const Center(child: NoItemsWidget())
             : ListView.separated(
                 padding: const EdgeInsets.all(20),
-                itemBuilder: (context, index) => ProfileCard(
-                  employee: bookedEmployees[index],
-                  trailing: Theme(
-                    data: ThemeData(primaryColor: Colors.white),
-                    child: PopupMenuButton(
-                      constraints: BoxConstraints(
-                        minWidth: 2.0 * 56.0,
-                        maxWidth: MediaQuery.of(context).size.width,
-                      ),
-                      itemBuilder: (BuildContext context) => [
-                        PopupMenuItem<int>(
-                          value: 0,
-                          child: coloredText(
-                              text: 'Medical examination request',
-                              fontSize: 11.0.sp),
-                          onTap: () {},
+                itemBuilder: (context, index) => index == bookedEmployees.length
+                    ? spaceY(20.sp)
+                    : ProfileCard(
+                        employee: bookedEmployees[index],
+                        trailing: Theme(
+                          data: ThemeData(primaryColor: Colors.white),
+                          child: PopupMenuButton(
+                            constraints: BoxConstraints(
+                              minWidth: 2.0 * 56.0,
+                              maxWidth: MediaQuery.of(context).size.width,
+                            ),
+                            itemBuilder: (BuildContext context) => [
+                              PopupMenuItem<int>(
+                                value: 0,
+                                child: coloredText(
+                                    text: 'medical_exam'.tr, fontSize: 11.0.sp),
+                                onTap: () async {
+                                  Map<String, String>? x =
+                                      await _globalController
+                                          .requestMedicalExamination(
+                                              id: bookedEmployees[index].id!);
+                                  if (x != null) {
+                                    //String invoiceId = x.keys.first;
+                                    Uri url = Uri.parse(x.values.first);
+
+                                    await launchUrl(url,
+                                        mode: LaunchMode.externalApplication);
+
+                                    await Future.delayed(
+                                        const Duration(milliseconds: 100));
+                                    while (WidgetsBinding
+                                            .instance.lifecycleState !=
+                                        AppLifecycleState.resumed) {
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 100));
+                                    }
+                                  }
+                                },
+                              ),
+                            ],
+                            child: const Icon(
+                              EvaIcons.moreVertical,
+                            ),
+                          ),
                         ),
-                      ],
-                      child: const Icon(
-                        EvaIcons.moreVertical,
+                        isOffer: false,
                       ),
-                    ),
-                  ),
-                  isOffer: false,
-                ),
                 separatorBuilder: (context, index) => spaceY(10),
-                itemCount: bookedEmployees.length,
+                itemCount: bookedEmployees.length + 1,
               ),
         canceledEmployees.isEmpty
             ? const Center(child: NoItemsWidget())
             : ListView.separated(
                 padding: const EdgeInsets.all(20),
-                itemBuilder: (context, index) => ProfileCard(
-                  employee: canceledEmployees[index],
-                  trailing: Theme(
-                    data: ThemeData(primaryColor: Colors.white),
-                    child: PopupMenuButton(
-                      constraints: BoxConstraints(
-                        minWidth: 2.0 * 56.0,
-                        maxWidth: MediaQuery.of(context).size.width,
-                      ),
-                      itemBuilder: (BuildContext context) => [
-                        PopupMenuItem<int>(
-                          value: 0,
-                          child: coloredText(
-                              text: 'Medical examination request',
-                              fontSize: 11.0.sp),
-                          onTap: () {},
-                        ),
-                      ],
-                      child: const Icon(
-                        EvaIcons.moreVertical,
-                      ),
-                    ),
-                  ),
-                  isOffer: false,
-                ),
+                itemBuilder: (context, index) =>
+                    index == canceledEmployees.length
+                        ? spaceY(20.sp)
+                        : ProfileCard(
+                            employee: canceledEmployees[index],
+                            isOffer: false,
+                          ),
                 separatorBuilder: (context, index) => spaceY(10),
-                itemCount: canceledEmployees.length,
+                itemCount: canceledEmployees.length + 1,
               ),
         retreivedEmployees.isEmpty
             ? const Center(child: NoItemsWidget())
             : ListView.separated(
                 padding: const EdgeInsets.all(20),
-                itemBuilder: (context, index) => ProfileCard(
-                  employee: retreivedEmployees[index],
-                  trailing: Theme(
-                    data: ThemeData(primaryColor: Colors.white),
-                    child: PopupMenuButton(
-                      constraints: BoxConstraints(
-                        minWidth: 2.0 * 56.0,
-                        maxWidth: MediaQuery.of(context).size.width,
-                      ),
-                      itemBuilder: (BuildContext context) => [
-                        PopupMenuItem<int>(
-                          value: 0,
-                          child: coloredText(
-                              text: 'Medical examination request',
-                              fontSize: 11.0.sp),
-                          onTap: () {},
-                        ),
-                      ],
-                      child: const Icon(
-                        EvaIcons.moreVertical,
-                      ),
-                    ),
-                  ),
-                  isOffer: false,
-                ),
+                itemBuilder: (context, index) =>
+                    index == retreivedEmployees.length
+                        ? spaceY(20.sp)
+                        : ProfileCard(
+                            employee: retreivedEmployees[index],
+                            isOffer: false,
+                          ),
                 separatorBuilder: (context, index) => spaceY(10),
-                itemCount: retreivedEmployees.length,
+                itemCount: retreivedEmployees.length + 1,
               ),
       ];
 }

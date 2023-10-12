@@ -30,10 +30,17 @@ class CategoriesController extends GetxController {
           ),
         ));
       }
-
-      await dio.post(EndPoints.storeCategory,
-          data: body,
-          options: Options(headers: {"Accept": "application/json"}));
+      String? token = await Utils.readToken();
+      await dio.post(
+        EndPoints.storeCategory,
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
 
       await _globalController.getCategories();
       Get.back();
@@ -50,9 +57,17 @@ class CategoriesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(category.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
-      await dio.post(EndPoints.deleteCategory(category.id!),
-          data: body,
-          options: Options(headers: {"Accept": "application/json"}));
+      String? token = await Utils.readToken();
+      await dio.post(
+        EndPoints.deleteCategory(category.id!),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
 
       await _globalController.getCategories();
       Get.back();
@@ -83,9 +98,17 @@ class CategoriesController extends GetxController {
       }
 
       body.fields.add(const MapEntry("_method", "PUT"));
-      await dio.post(EndPoints.updateCategory(category.id!),
-          data: body,
-          options: Options(headers: {"Accept": "application/json"}));
+      String? token = await Utils.readToken();
+      await dio.post(
+        EndPoints.updateCategory(category.id!),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
 
       await _globalController.getCategories();
       Get.back();
@@ -101,7 +124,16 @@ class CategoriesController extends GetxController {
   Future getCategories() async {
     try {
       getCategoriesFlag = true;
-      var res = await dio.get(EndPoints.getAllCategories);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllCategories,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<CategoryModel> tmp = [];
       for (var i in res.data['data']) {
         CategoryModel t = CategoryModel.fromJson(i);

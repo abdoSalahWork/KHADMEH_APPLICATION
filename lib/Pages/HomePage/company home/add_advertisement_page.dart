@@ -317,7 +317,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                 primaryButton(
                   color:
                       Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                  width: 20.0.w,
+                  width: 25.0.w,
                   height: 45,
                   radius: 8,
                   text: coloredText(

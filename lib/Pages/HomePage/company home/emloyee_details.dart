@@ -369,7 +369,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                               ? Container()
                               : DetailsItemWidget(
                                   width1: 80.w,
-                                  title1: "duration_of_employment",
+                                  title1: "duration_of_employment".tr,
                                   subTitle1:
                                       employee.durationOfEmployment.toString() +
                                           "years".tr,

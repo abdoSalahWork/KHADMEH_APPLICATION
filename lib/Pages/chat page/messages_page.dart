@@ -38,7 +38,7 @@ class _MessagesPageState extends State<MessagesPage> {
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
         centerTitle: true,
-        title: coloredText(text: "Messages", fontSize: 15.0.sp),
+        title: coloredText(text: "messages".tr, fontSize: 15.0.sp),
       ),
       body: GetBuilder<ChatController>(builder: (c) {
         return Padding(

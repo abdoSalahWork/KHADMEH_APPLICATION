@@ -15,6 +15,7 @@ class CompaniesController extends GetxController {
   final Dio dio = Utils().dio;
   List<CompanyModel> recruitmentCompanies = [];
   List<CompanyModel> recruitmentCompaniesToShow = [];
+
   String companyPrice = "0";
   List<CartModel> carts = [];
   bool getCartsFlag = false;
@@ -50,12 +51,12 @@ class CompaniesController extends GetxController {
     }
   }
 
-  Future geCompanyPrice() async {
+  Future geCompanyPrice({required int companyId}) async {
     try {
       String? token = await Utils.readToken();
 
       var res = await dio.get(
-        EndPoints.getCompanySettingUser,
+        EndPoints.getCompanySetting(companyId),
         options: Options(
           headers: {
             "Accept": "application/json",
@@ -64,7 +65,7 @@ class CompaniesController extends GetxController {
         ),
       );
       companyPrice = res.data['data']['representative_from_company_price'];
-      logWarning(companyPrice);
+      logSuccess("companyPrice" + companyPrice.toString());
       update();
     } on DioException catch (e) {
       getCartsFlag = false;
@@ -74,12 +75,13 @@ class CompaniesController extends GetxController {
     }
   }
 
-  Future<bool> updateCompanyPrice(int price) async {
+  Future<bool> updateCompanyPrice(
+      {required int price, required int companyId}) async {
     try {
       Utils.circularIndicator();
       String? token = await Utils.readToken();
 
-      var res = await dio.post(
+      await dio.post(
         EndPoints.updateCompanySetting,
         data: d.FormData.fromMap({"representative_from_company_price": price}),
         options: Options(
@@ -89,7 +91,7 @@ class CompaniesController extends GetxController {
           },
         ),
       );
-      await geCompanyPrice();
+      await geCompanyPrice(companyId: companyId);
       Get.back();
       update();
       return true;
@@ -125,7 +127,7 @@ class CompaniesController extends GetxController {
       Get.back();
       return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
     return false;
@@ -412,6 +414,8 @@ class CompaniesController extends GetxController {
         "address": address,
         "receipt_method": receiptMethod,
       });
+      logSuccess(token!);
+
       var res = await dio.post(
         EndPoints.companyCheckout(id),
         data: body,
@@ -424,6 +428,7 @@ class CompaniesController extends GetxController {
       );
 
       Get.back();
+      logSuccess(res.data);
       return {res.data['InvoiceId'].toString(): res.data['InvoiceURL']};
     } on DioException catch (e) {
       logError(e.response!.data);

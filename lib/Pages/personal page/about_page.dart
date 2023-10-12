@@ -47,7 +47,9 @@ class _AboutPageState extends State<AboutPage> {
             ),
             spaceY(10.sp),
             coloredText(
-              text: _adminController.aboutModel!.about!,
+              text: _adminController.aboutModel != null
+                  ? _adminController.aboutModel!.about!
+                  : "",
               fontSize: 14.sp,
               textAlign: TextAlign.justify,
             ),

@@ -5,9 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Utils/notification_service.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
@@ -331,6 +334,171 @@ class Utils {
       ],
       dialogWidth: 100.0.w,
     );
+  }
+
+  static void loginFirstDialoge(
+      {TextStyle? titleStyle,
+      int backTimes = 1,
+      CustomViewPosition? customViewPosition,
+      Color? color,
+      required BuildContext context,
+      dynamic Function(dynamic)? onClose}) {
+    Dialogs.materialDialog(
+      onClose: onClose,
+
+      // barrierColor: Colors.red,
+      titleStyle: titleStyle ??
+          coloredText(
+                  text: "text", textAlign: TextAlign.start, fontSize: 13.0.sp)
+              .style!,
+      customViewPosition:
+          customViewPosition ?? CustomViewPosition.BEFORE_MESSAGE,
+      customView: Theme(
+        data: Theme.of(context),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              spaceY(20),
+              Icon(
+                EvaIcons.checkmarkCircle,
+                color: Theme.of(context).colorScheme.secondary,
+                size: 40.sp,
+              ),
+              spaceY(20),
+              coloredText(text: "login_first".tr, fontSize: 12.0.sp),
+              spaceY(20),
+            ],
+          ),
+        ),
+      ),
+      color: color ?? Colors.white,
+      context: context,
+      actions: [
+        primaryButton(
+          onTap: () {
+            Get.offAll(() => const LoginPage());
+          },
+          width: 40.0.w,
+          height: 50,
+          radius: 10.w,
+          color: Theme.of(context).colorScheme.primary,
+          text: coloredText(
+            text: "ok".tr,
+            color: Colors.white,
+          ),
+        ),
+      ],
+      dialogWidth: 100.0.w,
+    );
+  }
+
+  void rateDialoge({
+    required BuildContext context,
+    void Function()? onOk,
+    required int companyId,
+  }) {
+    int rate = 0;
+    String desc = "";
+    final GlobalController _globalController = Get.find();
+
+    showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Center(
+              child: coloredText(
+                text: "rate_us".tr,
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            content: SizedBox(
+              width: 100.w,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RatingBar.builder(
+                    allowHalfRating: false,
+                    initialRating: 0,
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      switch (index) {
+                        case 0:
+                          return const Icon(
+                            Icons.sentiment_very_dissatisfied,
+                            color: Colors.red,
+                          );
+                        case 1:
+                          return const Icon(
+                            Icons.sentiment_dissatisfied,
+                            color: Colors.redAccent,
+                          );
+                        case 2:
+                          return const Icon(
+                            Icons.sentiment_neutral,
+                            color: Colors.amber,
+                          );
+                        case 3:
+                          return const Icon(
+                            Icons.sentiment_satisfied,
+                            color: Colors.lightGreen,
+                          );
+                        default:
+                          return const Icon(
+                            Icons.sentiment_very_satisfied,
+                            color: Colors.green,
+                          );
+                      }
+                    },
+                    onRatingUpdate: (rating) {
+                      rate = rating.toInt();
+                    },
+                  ),
+                  spaceY(10.sp),
+                  TextFormField(
+                    onChanged: (value) {
+                      desc = value;
+                    },
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      hintText: "write_your_notes".tr,
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Color(0xffF5F5F5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              primaryButton(
+                onTap: () async {
+                  await _globalController.storeReview(
+                      companyId: companyId, reviewValue: rate, review: desc);
+                  Get.back();
+                },
+                width: 40.0.w,
+                height: 50,
+                radius: 10.w,
+                color: Theme.of(context).colorScheme.primary,
+                text: coloredText(
+                  text: "ok".tr,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+            surfaceTintColor: Colors.white,
+          );
+        });
   }
 }
 

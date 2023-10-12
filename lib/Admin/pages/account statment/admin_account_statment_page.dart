@@ -1,8 +1,10 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart' as intl;
+import 'package:khedma/Admin/controllers/admin_controller.dart';
+import 'package:khedma/Admin/models/account_statment.dart';
 import 'package:khedma/Utils/utils.dart';
-import 'package:khedma/widgets/search_text_field.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
 
 class AdminAccountStatmentPage extends StatefulWidget {
@@ -14,8 +16,10 @@ class AdminAccountStatmentPage extends StatefulWidget {
 }
 
 class _AdminAccountStatmentPageState extends State<AdminAccountStatmentPage> {
+  AdminController _adminController = Get.find();
   @override
   void initState() {
+    _adminController.getAccountStatments();
     super.initState();
   }
 
@@ -69,29 +73,40 @@ class _AdminAccountStatmentPageState extends State<AdminAccountStatmentPage> {
                 child: Column(
                   children: [
                     spaceY(10.sp),
-                    SearchTextField(
-                      hintText: "${"search".tr} ...",
-                      prefixIcon: const Icon(
-                        EvaIcons.search,
-                        color: Color(0xffAFAFAF),
-                      ),
-                      suffixIcon: GestureDetector(
-                        onTap: () {},
-                        child: const Image(
-                          width: 15,
-                          height: 15,
-                          image: AssetImage("assets/images/filter-icon.png"),
-                        ),
-                      ),
-                    ),
-                    spaceY(10.sp),
-                    Expanded(
-                      child: ListView.separated(
-                          itemBuilder: (context, index) =>
-                              const AccountStatmentCard(),
-                          separatorBuilder: (context, index) => spaceY(10.sp),
-                          itemCount: 20),
-                    ),
+                    // SearchTextField(
+                    //   hintText: "${"search".tr} ...",
+                    //   prefixIcon: const Icon(
+                    //     EvaIcons.search,
+                    //     color: Color(0xffAFAFAF),
+                    //   ),
+                    //   suffixIcon: GestureDetector(
+                    //     onTap: () {},
+                    //     child: const Image(
+                    //       width: 15,
+                    //       height: 15,
+                    //       image: AssetImage("assets/images/filter-icon.png"),
+                    //     ),
+                    //   ),
+                    // ),
+                    // spaceY(10.sp),
+                    GetBuilder<AdminController>(builder: (c) {
+                      return Expanded(
+                        child: c.accountStatmentFlag
+                            ? Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : c.accountStatments.isEmpty
+                                ? NoItemsWidget()
+                                : ListView.separated(
+                                    itemBuilder: (context, index) =>
+                                        AccountStatmentCard(
+                                            accountStatmentModel:
+                                                c.accountStatments[index]),
+                                    separatorBuilder: (context, index) =>
+                                        spaceY(10.sp),
+                                    itemCount: c.accountStatments.length),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -106,14 +121,15 @@ class _AdminAccountStatmentPageState extends State<AdminAccountStatmentPage> {
 class AccountStatmentCard extends StatelessWidget {
   const AccountStatmentCard({
     super.key,
+    required this.accountStatmentModel,
   });
-
+  final AccountStatmentModel accountStatmentModel;
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 100.w,
-      padding: const EdgeInsets.all(20),
-      height: 25.h,
+      padding: const EdgeInsets.all(10),
+      // height: 25.h,
       decoration: BoxDecoration(
         color: const Color(0xffF8F8F8),
         borderRadius: BorderRadius.circular(15),
@@ -122,20 +138,32 @@ class AccountStatmentCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          depositLine(title: "depositor".tr, content: "Depositor name"),
-          depositLine(title: "beneficiary".tr, content: "Beneficiary name"),
-          depositLine(title: "deposit_type".tr, content: "Advertisement"),
-          depositLine(title: "payment_date".tr, content: "19-10-1231"),
+          depositLine(
+              title: "depositor".tr, content: accountStatmentModel.depositor!),
+          spaceY(10.sp),
+          depositLine(
+              title: "beneficiary".tr,
+              content: accountStatmentModel.beneficiary!),
+          spaceY(10.sp),
+          depositLine(
+              title: "deposit_type".tr,
+              content: accountStatmentModel.depositType!),
+          spaceY(10.sp),
+          depositLine(
+              title: "payment_date".tr,
+              content: intl.DateFormat(intl.DateFormat.YEAR_NUM_MONTH_DAY)
+                  .format(DateTime.parse(accountStatmentModel.createdAt!))),
+          spaceY(10.sp),
           Row(
             children: [
               SizedBox(
-                width: 40.w,
+                width: 30.w,
                 child:
                     coloredText(text: "${"amount".tr}: ", color: Colors.grey),
               ),
               Expanded(
                 child: coloredText(
-                  text: "500  KWD",
+                  text: "${accountStatmentModel.amount} KWD",
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w600,
                 ),
@@ -143,23 +171,32 @@ class AccountStatmentCard extends StatelessWidget {
             ],
           )
           // depositLine(title: "amount".tr, content: "lorem ipsum etc"),
+          ,
+          spaceY(10.sp),
+          depositLine(
+            title: "about".tr,
+            content: accountStatmentModel.about!,
+            textDirection: TextDirection.ltr,
+          ),
         ],
       ),
     );
   }
+}
 
-  Row depositLine({
-    required String title,
+Row depositLine(
+    {required String title,
     required String content,
-  }) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 40.w,
-          child: coloredText(text: "$title: ", color: Colors.grey),
-        ),
-        Expanded(child: coloredText(text: content, fontSize: 12.sp))
-      ],
-    );
-  }
+    TextDirection? textDirection}) {
+  return Row(
+    children: [
+      SizedBox(
+        width: 30.w,
+        child: coloredText(text: "$title: ", color: Colors.grey),
+      ),
+      Expanded(
+          child: coloredText(
+              text: content, fontSize: 12.sp, textDirection: textDirection))
+    ],
+  );
 }

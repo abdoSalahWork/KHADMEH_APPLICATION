@@ -1,5 +1,6 @@
 // ignore_for_file: unused_field
 
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,6 +12,7 @@ import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/company_request_model.dart';
+import 'package:khedma/models/me.dart';
 import 'package:khedma/models/reservation_model.dart';
 import 'package:sizer/sizer.dart';
 
@@ -246,6 +248,221 @@ class ReservationRequestWidget extends StatelessWidget {
             text: coloredText(text: "view".tr, fontSize: 12.sp),
             color: const Color(0xff919191),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class CleanCompanyBookingWidget extends StatelessWidget {
+  CleanCompanyBookingWidget({
+    super.key,
+    required this.cleaningBooking,
+  });
+  final CleaningBooking cleaningBooking;
+  final GlobalController _globalController = Get.find();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(5),
+      padding: const EdgeInsetsDirectional.only(
+          top: 20, bottom: 20, start: 20, end: 10),
+      width: 100.w,
+      // height: 42.w,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 3,
+            offset: const Offset(0, 0), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40.0.sp,
+            height: 40.0.sp,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                  image: NetworkImage(
+                      cleaningBooking.user!.userInformation!.personalPhoto!),
+                  fit: BoxFit.cover),
+            ),
+          ),
+          spaceX(10.sp),
+          Expanded(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              coloredText(
+                  text: cleaningBooking.user!.fullName!, fontSize: 14.sp),
+              spaceY(5.sp),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  coloredText(text: "${"order".tr}:", fontSize: 12.sp),
+                  spaceX(5.sp),
+                  Expanded(
+                    child: coloredText(
+                        text: cleaningBooking.order!
+                            .map((e) =>
+                                "${e.quantity} ${Get.locale == const Locale('en', 'US') ? e.services!.adminService!.nameEn! : e.services!.adminService!.nameAr!}")
+                            .toList()
+                            .join(", "),
+                        fontSize: 11.sp),
+                  ),
+                ],
+              ),
+              spaceY(5.sp),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  coloredText(text: "${"date".tr}:", fontSize: 12.sp),
+                  spaceX(5.sp),
+                  Expanded(
+                    child: coloredText(
+                        text:
+                            "${cleaningBooking.startDate} : ${cleaningBooking.endDate}",
+                        fontSize: 11.sp),
+                  ),
+                ],
+              ),
+              spaceY(5.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  primaryBorderedButton(
+                    onTap: () async {
+                      await _globalController.approveCleanOrder(
+                          approve: 1, id: cleaningBooking.id!);
+                    },
+                    alignment: AlignmentDirectional.centerStart,
+                    width: 25.w,
+                    height: 25.sp,
+                    radius: 20,
+                    text: coloredText(text: "accept".tr, fontSize: 12.sp),
+                    color: const Color(0xff919191),
+                  ),
+                  primaryBorderedButton(
+                    onTap: () async {
+                      String desc = "";
+                      Utils.showDialogBox(
+                        context: context,
+                        actions: [
+                          primaryButton(
+                            onTap: () async {
+                              Get.back();
+                              bool b =
+                                  await _globalController.approveCleanOrder(
+                                      approve: 0,
+                                      id: cleaningBooking.id!,
+                                      desc: desc);
+                              if (b) {
+                                // ignore: use_build_context_synchronously
+                                Utils.customDialog(
+                                    actions: [
+                                      primaryButton(
+                                        onTap: () {
+                                          Get.back();
+                                          Get.back();
+                                        },
+                                        width: 40.0.w,
+                                        height: 50,
+                                        radius: 10.w,
+                                        color: Colors.black,
+                                        text: coloredText(
+                                          text: "ok".tr,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                    context: context,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          spaceY(20),
+                                          Icon(
+                                            EvaIcons.checkmarkCircle,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: 40.sp,
+                                          ),
+                                          spaceY(20),
+                                          coloredText(
+                                              text:
+                                                  "your_note_have_been_sent".tr,
+                                              fontSize: 12.0.sp),
+                                          coloredText(
+                                            text: "successfully".tr,
+                                            fontSize: 14.0.sp,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                        ],
+                                      ),
+                                    ));
+                              }
+                            },
+                            color: Colors.black,
+                            width: 45.w,
+                            height: 50,
+                            text: coloredText(
+                                text: "submit".tr, color: Colors.white),
+                          ),
+                        ],
+                        content: TextFormField(
+                          onChanged: (value) {
+                            desc = value;
+                          },
+                          maxLines: 5,
+                          decoration: InputDecoration(
+                            hintText: "write_your_notes".tr,
+                            border: const OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: Color(0xffF5F5F5),
+                          ),
+                        ),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: () => Get.back(),
+                              child: const Icon(
+                                EvaIcons.close,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                    alignment: AlignmentDirectional.centerStart,
+                    width: 25.w,
+                    height: 25.sp,
+                    radius: 20,
+                    text: coloredText(text: "refuse".tr, fontSize: 12.sp),
+                    color: const Color(0xff919191),
+                  ),
+                ],
+              ),
+            ],
+          ))
         ],
       ),
     );

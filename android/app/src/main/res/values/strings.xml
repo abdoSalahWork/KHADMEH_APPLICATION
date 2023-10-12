@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="appName">Khedma</string>
+    <string name="facebook_app_id">6495877303862734</string>
+    <string name="facebook_client_token">982d1934cd86d6332339517f8610c18a</string>
 </resources>

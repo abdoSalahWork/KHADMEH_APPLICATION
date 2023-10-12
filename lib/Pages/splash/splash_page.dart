@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/pages/Addressess/controller/addressess_controller.dart';
+import 'package:khedma/Admin/pages/admin_home.dart';
 import 'package:khedma/Admin/pages/categories/controller/categories_controller.dart';
 import 'package:khedma/Admin/pages/dropdowns/controller/dropdown_controller.dart';
 import 'package:khedma/Admin/pages/jobs/controller/jobs_controller.dart';
@@ -32,13 +33,14 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
+  final GlobalController _globalController = Get.put(GlobalController());
   final EmployeesController _employeesController =
       Get.put(EmployeesController());
   final CompaniesController _companiesController =
       Get.put(CompaniesController());
+
   AdminController _adminHomeController = Get.put(AdminController());
   LanguagesController _langsController = Get.put(LanguagesController());
-  final GlobalController _globalController = Get.put(GlobalController());
   AddressessController _addressessController = Get.put(AddressessController());
   DropDownsController _dropDownsController = Get.put(DropDownsController());
 
@@ -54,22 +56,10 @@ class _SplashPageState extends State<SplashPage>
   @override
   void initState() {
     super.initState();
-    _globalController.getCities();
+    _globalController.getBanks();
     _globalController.getCountries();
+    _globalController.getCities();
     _globalController.getRegions();
-    _globalController.setLocale();
-    _globalController.getComplexion();
-    _globalController.getRelegions();
-    _globalController.getMaritalStatuss();
-    _globalController.getCertificates();
-    _globalController.getlanguages();
-    _globalController.getjobs();
-    _globalController.getCategories();
-    _adminHomeController.getSettingAdmin();
-    _adminHomeController.getAdminHomePage();
-    _adminHomeController.getContacts();
-    _adminHomeController.getMessages();
-    _adminHomeController.getAbouts();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     Future.delayed(
       const Duration(seconds: 2),
@@ -90,6 +80,9 @@ class _SplashPageState extends State<SplashPage>
               } else if (_globalController.me.userType == "company") {
                 Get.offAll(() => const CompanyHomePage(),
                     transition: Transition.downToUp);
+              } else if (_globalController.me.userType == "admin") {
+                Get.offAll(() => AdminHomePage(),
+                    transition: Transition.downToUp);
               } else {
                 Get.off(() => LoginPage(), transition: Transition.downToUp);
               }
@@ -107,10 +100,10 @@ class _SplashPageState extends State<SplashPage>
   @override
   void dispose() {
     super.dispose();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-    //     overlays: SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
   }
 
   @override

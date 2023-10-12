@@ -23,42 +23,55 @@ class CompanyRegisterData {
   String? identityConfirmation;
   String? password;
   String? passwordConfirmation;
+  String? bankId;
+  String? iban;
+  String? accountNumber;
+  String? bankAccountName;
   var companyLogo;
   var passportImage;
   var frontSideIdImage;
   var backSideIdImage;
 
-  CompanyRegisterData(
-      {this.userType,
-      this.firstName,
-      this.lastName,
-      this.phone,
-      this.nationalityId,
-      this.idNumber,
-      this.dateOfBirth,
-      this.companyName,
-      this.companyPhone,
-      this.companyEmail,
-      this.url,
-      this.companyType = "recruitment",
-      this.cityId,
-      this.regionId,
-      this.pieceNumber,
-      this.street,
-      this.building,
-      this.automatedAddressNumber,
-      this.commercialRegistrationNumber,
-      this.taxNumber,
-      this.licenseNumber,
-      this.identityConfirmation = "id",
-      this.password,
-      this.passwordConfirmation,
-      this.companyLogo,
-      this.passportImage,
-      this.frontSideIdImage,
-      this.backSideIdImage});
+  CompanyRegisterData({
+    this.userType,
+    this.firstName,
+    this.lastName,
+    this.phone,
+    this.nationalityId,
+    this.idNumber,
+    this.dateOfBirth,
+    this.companyName,
+    this.companyPhone,
+    this.companyEmail,
+    this.url,
+    this.companyType = "recruitment",
+    this.cityId,
+    this.regionId,
+    this.pieceNumber,
+    this.street,
+    this.building,
+    this.automatedAddressNumber,
+    this.commercialRegistrationNumber,
+    this.taxNumber,
+    this.licenseNumber,
+    this.identityConfirmation = "id",
+    this.password,
+    this.passwordConfirmation,
+    this.companyLogo,
+    this.passportImage,
+    this.frontSideIdImage,
+    this.backSideIdImage,
+    this.bankId,
+    this.iban,
+    this.accountNumber,
+    this.bankAccountName,
+  });
 
   CompanyRegisterData.fromJson(Map<String, dynamic> json) {
+    bankId = json['bank_id'];
+    iban = json['iban'];
+    accountNumber = json['account_number'];
+    bankAccountName = json['bank_account_name'];
     userType = json['user_type'];
     firstName = json['first_name'];
     lastName = json['last_name'];
@@ -91,30 +104,34 @@ class CompanyRegisterData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['user_type'] = this.userType;
-    data['first_name'] = this.firstName;
-    data['last_name'] = this.lastName;
-    data['phone'] = this.phone;
-    data['nationality_id'] = this.nationalityId;
-    data['id_number'] = this.idNumber;
-    data['date_of_birth'] = this.dateOfBirth;
-    data['company_name'] = this.companyName;
-    data['company_phone'] = this.companyPhone;
-    data['company_email'] = this.companyEmail;
-    data['url'] = this.url;
-    data['company_type'] = this.companyType;
-    data['city_id'] = this.cityId;
-    data['region_id'] = this.regionId;
-    data['piece_number'] = this.pieceNumber;
-    data['street'] = this.street;
-    data['building'] = this.building;
-    data['automated_address_number'] = this.automatedAddressNumber;
-    data['commercial_registration_number'] = this.commercialRegistrationNumber;
-    data['tax_number'] = this.taxNumber;
-    data['license_number'] = this.licenseNumber;
-    data['identity_confirmation'] = this.identityConfirmation;
-    data['password'] = this.password;
-    data['password_confirmation'] = this.passwordConfirmation;
+    data['bank_id'] = bankId;
+    data['iban'] = iban;
+    data['account_number'] = accountNumber;
+    data['bank_account_name'] = bankAccountName;
+    data['user_type'] = userType;
+    data['first_name'] = firstName;
+    data['last_name'] = lastName;
+    data['phone'] = phone;
+    data['nationality_id'] = nationalityId;
+    data['id_number'] = idNumber;
+    data['date_of_birth'] = dateOfBirth;
+    data['company_name'] = companyName;
+    data['company_phone'] = companyPhone;
+    data['company_email'] = companyEmail;
+    data['url'] = url;
+    data['company_type'] = companyType;
+    data['city_id'] = cityId;
+    data['region_id'] = regionId;
+    data['piece_number'] = pieceNumber;
+    data['street'] = street;
+    data['building'] = building;
+    data['automated_address_number'] = automatedAddressNumber;
+    data['commercial_registration_number'] = commercialRegistrationNumber;
+    data['tax_number'] = taxNumber;
+    data['license_number'] = licenseNumber;
+    data['identity_confirmation'] = identityConfirmation;
+    data['password'] = password;
+    data['password_confirmation'] = passwordConfirmation;
 
     return data;
   }

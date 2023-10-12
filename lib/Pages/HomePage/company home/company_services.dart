@@ -34,7 +34,7 @@ class _CompanyServicesPageState extends State<CompanyServicesPage> {
     _employeesController.employeesFilter = EmployeesFilter();
     _employeesController.employeesFilter.maritalStatus = 1;
     _employeesController.employeesFilter.maritalStatus = 1;
-    _companiesController.geCompanyPrice();
+    _companiesController.geCompanyPrice(companyId: _globalController.me.id!);
     _globalController.getCompanyServices();
     jobs = _globalController.jobs
         .map((e) =>
@@ -169,7 +169,9 @@ class _CompanyServicesPageState extends State<CompanyServicesPage> {
                               onTap: () async {
                                 FocusScope.of(context).unfocus();
                                 bool b = await _companiesController
-                                    .updateCompanyPrice(price);
+                                    .updateCompanyPrice(
+                                        price: price,
+                                        companyId: _globalController.me.id!);
                                 if (b)
                                   Utils.doneDialog(
                                       context: context, backTimes: 2);

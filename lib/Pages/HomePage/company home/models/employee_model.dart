@@ -20,9 +20,11 @@ class EmployeeModel {
   String? contractDuration;
   int? previousWorkAbroad;
   int? durationOfEmployment;
+  String? residenceContract;
+
   var image;
   String? passportNum;
-  Booking? status;
+  RecruuitmentBooking? status;
   String? passportIssueDate;
   String? passportExpiryDate;
   int? isOffer;
@@ -52,6 +54,7 @@ class EmployeeModel {
   EmployeeModel({
     this.id,
     this.nationality,
+    this.residenceContract,
     this.name,
     this.dateOfBirth,
     this.timeWorkPerDay,
@@ -99,11 +102,13 @@ class EmployeeModel {
 
   EmployeeModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    if (json['status'] != null) status = Booking.fromJson(json['status']);
+    if (json['status'] != null)
+      status = RecruuitmentBooking.fromJson(json['status']);
     if (json['document'] != null) {
       document = DocumentModel.fromJson(json['document']);
     }
     name = json['name'];
+    residenceContract = json['residence_contract'];
     dateOfBirth = json['date_of_birth'];
     timeWorkPerDay = json['time_work_per_day'];
     hourSalary = json['hour_salary'];
@@ -165,6 +170,8 @@ class EmployeeModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
 
     if (id != null) data['id'] = id;
+    if (residenceContract != null)
+      data['residence_contract'] = residenceContract;
     if (status != null) data['status'] = status!.toJson();
     if (name != null) data['name'] = name;
     if (dateOfBirth != null) data['date_of_birth'] = dateOfBirth;

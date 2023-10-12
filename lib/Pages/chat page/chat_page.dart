@@ -370,8 +370,8 @@ class _ChatPageState extends State<ChatPage> {
           iconTheme: const IconThemeData(color: Colors.black),
           title: Row(
             children: [
-              const CircleAvatar(
-                backgroundImage: AssetImage("assets/images/image.png"),
+              CircleAvatar(
+                backgroundImage: NetworkImage(widget.recieverImage),
               ),
               spaceX(20),
               coloredText(text: widget.recieverName, fontSize: 15.0.sp),

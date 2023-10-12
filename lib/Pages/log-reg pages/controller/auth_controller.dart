@@ -70,7 +70,7 @@ class AuthController extends GetxController {
           await Utils.saveRemmemberMe(rem: saveToken ? "yes" : "no");
           // String? x = await Utils.readRemmemberMe();
         }
-        await handleSignOut();
+        // await handleSignOut();
         Get.back();
 
         return token;

@@ -1,43 +1,44 @@
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/models/me.dart';
 
 class CompanyRequest {
   int? id;
-  int? companyId;
-  int? available;
-  String? name;
-  Booking? status;
-  DocumentModel? document;
+  int? approve;
+  int? userId;
+  int? employeeId;
+  EmployeeModel? employee;
+  Me? user;
 
   CompanyRequest(
       {this.id,
-      this.companyId,
-      this.available,
-      this.name,
-      this.status,
-      this.document});
+      this.approve,
+      this.userId,
+      this.employeeId,
+      this.employee,
+      this.user});
 
   CompanyRequest.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    companyId = json['company_id'];
-    available = json['available'];
-    name = json['name'];
-    status = json['status'] != null ? Booking.fromJson(json['status']) : null;
-    document = json['document'] != null
-        ? DocumentModel.fromJson(json['document'])
+    approve = json['approve'];
+    userId = json['user_id'];
+    employeeId = json['employee_id'];
+    employee = json['employee'] != null
+        ? new EmployeeModel.fromJson(json['employee'])
         : null;
+    user = json['user'] != null ? new Me.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
-    data['company_id'] = companyId;
-    data['available'] = available;
-    data['name'] = name;
-    if (status != null) {
-      data['status'] = status!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['approve'] = this.approve;
+    data['user_id'] = this.userId;
+    data['employee_id'] = this.employeeId;
+    if (this.employee != null) {
+      data['employee'] = this.employee!.toJson();
     }
-    if (document != null) {
-      data['document'] = document!.toJson();
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
     }
     return data;
   }

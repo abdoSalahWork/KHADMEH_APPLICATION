@@ -226,50 +226,62 @@ class _EmployeesSearchPageState extends State<EmployeesSearchPage> {
                             primary: false,
                             itemBuilder: (context, index) => UserProfileCard(
                               employeeModel: c.employeeToShow[index],
-                              trailing: GestureDetector(
-                                onTap: () async {
-                                  if (_employeesController.employeeToShow[index]
-                                              .favourite !=
-                                          null &&
-                                      _employeesController.employeeToShow[index]
-                                              .favourite!.userId ==
-                                          _globalController.me.id &&
-                                      _employeesController.employeeToShow[index]
-                                              .favourite!.type ==
-                                          0) {
-                                    await _globalController.deleteFavourite(
-                                      detect: 0,
-                                      id: _employeesController
-                                          .employeeToShow[index].favourite!.id!,
-                                    );
-                                  } else {
-                                    await _globalController.storeFavourite(
-                                        typeId: _employeesController
-                                            .employeeToShow[index].id!,
-                                        type: 0);
-                                  }
-                                },
-                                child: Icon(
-                                  EvaIcons.heart,
-                                  color: _employeesController
-                                                  .employeeToShow[index]
-                                                  .favourite !=
-                                              null &&
-                                          _employeesController
-                                                  .employeeToShow[index]
-                                                  .favourite!
-                                                  .userId ==
-                                              _globalController.me.id &&
-                                          _employeesController
-                                                  .employeeToShow[index]
-                                                  .favourite!
-                                                  .type ==
-                                              0
-                                      ? Colors.red
-                                      : const Color(0xffD4D4D4),
-                                  size: 13.0.sp,
-                                ),
-                              ),
+                              trailing: _globalController.guest
+                                  ? Container()
+                                  : GestureDetector(
+                                      onTap: () async {
+                                        if (_employeesController
+                                                    .employeeToShow[index]
+                                                    .favourite !=
+                                                null &&
+                                            _employeesController
+                                                    .employeeToShow[index]
+                                                    .favourite!
+                                                    .userId ==
+                                                _globalController.me.id &&
+                                            _employeesController
+                                                    .employeeToShow[index]
+                                                    .favourite!
+                                                    .type ==
+                                                0) {
+                                          await _globalController
+                                              .deleteFavourite(
+                                            detect: 0,
+                                            id: _employeesController
+                                                .employeeToShow[index]
+                                                .favourite!
+                                                .id!,
+                                          );
+                                        } else {
+                                          await _globalController
+                                              .storeFavourite(
+                                                  typeId: _employeesController
+                                                      .employeeToShow[index]
+                                                      .id!,
+                                                  type: 0);
+                                        }
+                                      },
+                                      child: Icon(
+                                        EvaIcons.heart,
+                                        color: _employeesController
+                                                        .employeeToShow[index]
+                                                        .favourite !=
+                                                    null &&
+                                                _employeesController
+                                                        .employeeToShow[index]
+                                                        .favourite!
+                                                        .userId ==
+                                                    _globalController.me.id &&
+                                                _employeesController
+                                                        .employeeToShow[index]
+                                                        .favourite!
+                                                        .type ==
+                                                    0
+                                            ? Colors.red
+                                            : const Color(0xffD4D4D4),
+                                        size: 13.0.sp,
+                                      ),
+                                    ),
                             ),
                             separatorBuilder: (context, index) => Column(
                               children: [

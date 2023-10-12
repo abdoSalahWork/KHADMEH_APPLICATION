@@ -12,8 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:iban/iban.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/pages/jobs/controller/jobs_controller.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_personal_page.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_services.dart';
@@ -55,9 +57,8 @@ class _CompanyHomePageState extends State<CompanyHomePage>
 
   ChatController _chatController = Get.find();
   var errors = {};
-  String ownerphoneCode = "";
   String ownerNationality = "";
-  String companyphoneCode = "";
+  String bankName = "";
   String companyType = "recruitment";
   String logobuttonText = "upload_company_logo".tr;
   String frontIdButton = "upload_front_side_of_id".tr;
@@ -85,6 +86,9 @@ class _CompanyHomePageState extends State<CompanyHomePage>
 
   final formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _bankAccountName = TextEditingController();
+  final TextEditingController _iban = TextEditingController();
+  final TextEditingController _accountNumber = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -107,7 +111,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
   final TextEditingController _licenseController = TextEditingController();
   final GlobalController _globalController = Get.find();
   final AuthController _authController = Get.find();
-  final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(24, (index) => FocusNode());
 
   final NotificationService notificationService = Utils.notificationService;
   final JobsController _jobsController = Get.find();
@@ -120,19 +124,40 @@ class _CompanyHomePageState extends State<CompanyHomePage>
   ];
   late TabController tabController;
   int selectedTabIndex = 0;
+  final AdminController _adminController = Get.find();
+
+  Future getAllThings() async {
+    await _adminController.getSettingAdmin();
+    await _globalController.setLocale();
+    await _globalController.getComplexion();
+    await _globalController.getRelegions();
+    await _globalController.getMaritalStatuss();
+    await _globalController.getCertificates();
+    await _globalController.getlanguages();
+    await _globalController.getjobs();
+    await _adminController.getContacts();
+    await _adminController.getAbouts();
+    await _globalController.getCategories();
+  }
+
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
-    meCompanyType = _globalController.me.companyInformation!.companyType!;
-    _chatController.getChats();
-    notificationService.initializePlatformNotifications();
+    if (_globalController.me.companyInformation != null) {
+      meCompanyType = _globalController.me.companyInformation!.companyType!;
+    }
+    logError(meCompanyType);
     meCompanyType == "recruitment"
         ? _employeesController
             .getCompanyEmployees()
             .then((value) => _globalController.getRecruitmentCompanyHomePage())
-        : _globalController.getRecruitmentCompanyHomePage();
-
+        : _globalController.getCleanCompanyHomePage();
+    getAllThings();
     completedRegisterFlag = _globalController.me.companyInformation != null;
+
+    _chatController.getChats();
+    notificationService.initializePlatformNotifications();
+
     _globalController.getjobs();
 
     h2 = 100.0.h;
@@ -188,269 +213,328 @@ class _CompanyHomePageState extends State<CompanyHomePage>
     return Scaffold(
       floatingActionButton: !completedRegisterFlag
           ? null
-          : Theme(
-              data: ThemeData(
-                useMaterial3: false,
-              ),
-              child: FloatingActionButton(
-                onPressed: () {
-                  Get.to(() => const AddEmployeePage(),
-                      transition: Transition.downToUp);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: AlignmentDirectional.bottomStart,
-                      end: AlignmentDirectional.topEnd,
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.secondary
-                      ],
+          : meCompanyType != "recruitment"
+              ? Container()
+              : Theme(
+                  data: ThemeData(
+                    useMaterial3: false,
+                  ),
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      Get.to(() => const AddEmployeePage(),
+                          transition: Transition.downToUp);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: AlignmentDirectional.bottomStart,
+                          end: AlignmentDirectional.topEnd,
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.secondary
+                          ],
+                        ),
+                      ),
+                      width: 60,
+                      height: 60,
+                      child: const Icon(
+                        EvaIcons.plus,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  width: 60,
-                  height: 60,
-                  child: const Icon(
-                    EvaIcons.plus,
-                    color: Colors.white,
-                  ),
                 ),
-              ),
-            ),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 55,
-            ),
-            child: GetBuilder<GlobalController>(builder: (c) {
-              return Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      meCompanyType == "cleaning"
-                          ? GestureDetector(
-                              onTap: () =>
-                                  Get.to(() => const CompanyServicesPage()),
-                              child: Icon(
-                                EvaIcons.grid,
-                                color: const Color(0xffD1D1D1),
-                                size: 25.0.sp,
+          Visibility(
+            visible: completedRegisterFlag,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 55,
+              ),
+              child: GetBuilder<GlobalController>(builder: (c) {
+                return Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        meCompanyType == "cleaning"
+                            ? GestureDetector(
+                                onTap: () =>
+                                    Get.to(() => const CompanyServicesPage()),
+                                child: Icon(
+                                  EvaIcons.grid,
+                                  color: const Color(0xffD1D1D1),
+                                  size: 25.0.sp,
+                                ),
+                              )
+                            : GestureDetector(
+                                onTap: () =>
+                                    Get.to(() => CompanyEmployeesSearchPage()),
+                                child: Icon(
+                                  EvaIcons.people,
+                                  color: const Color(0xffD1D1D1),
+                                  size: 25.0.sp,
+                                ),
                               ),
-                            )
-                          : GestureDetector(
-                              onTap: () =>
-                                  Get.to(() => CompanyEmployeesSearchPage()),
-                              child: Icon(
-                                EvaIcons.people,
-                                color: const Color(0xffD1D1D1),
-                                size: 25.0.sp,
-                              ),
+                        spaceX(10),
+                        Badge(
+                          smallSize: 10,
+                          child: GestureDetector(
+                            onTap: () => Get.to(() => NotificationsPage(),
+                                transition: Transition.downToUp),
+                            child: Icon(
+                              EvaIcons.bell,
+                              color: const Color(0xffD1D1D1),
+                              size: 25.0.sp,
                             ),
-                      spaceX(10),
-                      Badge(
-                        smallSize: 10,
-                        child: GestureDetector(
-                          onTap: () => Get.to(() => NotificationsPage(),
-                              transition: Transition.downToUp),
+                          ),
+                        ),
+                        spaceX(10),
+                        GestureDetector(
                           child: Icon(
-                            EvaIcons.bell,
+                            EvaIcons.messageCircle,
                             color: const Color(0xffD1D1D1),
-                            size: 25.0.sp,
+                            size: 22.0.sp,
                           ),
+                          onTap: () => Get.to(() => const MessagesPage()),
                         ),
-                      ),
-                      spaceX(10),
-                      GestureDetector(
-                        child: Icon(
-                          EvaIcons.messageCircle,
-                          color: const Color(0xffD1D1D1),
-                          size: 22.0.sp,
-                        ),
-                        onTap: () => Get.to(() => const MessagesPage()),
-                      ),
-                      spaceX(10),
-                      GestureDetector(
-                        onTap: () => Get.to(
-                            () => const CompanyPersonalPage(
-                                employeeType: EmployeeType.clean),
-                            transition: Transition.downToUp),
-                        child: Container(
-                          width: 45,
-                          height: 45,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            // border: Border.all(
-                            //   width: 1,
-                            //   color: const Color(0xffD1D1D1),
-                            // ),
-                            image: DecorationImage(
-                              image: NetworkImage(_globalController
-                                  .me.companyInformation!.companyLogo!),
-                              fit: BoxFit.contain,
+                        spaceX(10),
+                        GestureDetector(
+                          onTap: () => Get.to(
+                              () => const CompanyPersonalPage(
+                                  employeeType: EmployeeType.clean),
+                              transition: Transition.downToUp),
+                          child: Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              // border: Border.all(
+                              //   width: 1,
+                              //   color: const Color(0xffD1D1D1),
+                              // ),
+                              image: DecorationImage(
+                                image: NetworkImage(_globalController
+                                    .me.companyInformation!.companyLogo!),
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: c.getCompanyHomePageFlag
-                        ? const Center(child: CircularProgressIndicator())
-                        : Column(
-                            children: [
-                              spaceY(1.5.h),
-                              GestureDetector(
-                                onTap: () {
-                                  Get.to(() => const AddAdvertismentPage());
-                                },
-                                child: Container(
-                                  width: 100.w,
-                                  height: 40.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    image: const DecorationImage(
-                                        image: AssetImage(
-                                            "assets/images/adv_background.png"),
-                                        fit: BoxFit.cover),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      coloredText(
-                                        text: "add_your".tr,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16.sp,
-                                        color: Colors.white,
-                                      ),
-                                      spaceY(10),
-                                      coloredText(
-                                        text: "ad".tr,
-                                        textstyle: TextStyle(
-                                          fontSize: 24.sp,
-                                          color: Colors.white,
-                                          fontFamily: "Gabriola",
-                                          fontStyle: FontStyle.normal,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              spaceY(10),
-                              GestureDetector(
-                                onTap: () {
-                                  // Utils.showBigTextNotification(
-                                  //     title: "title",
-                                  //     body: "body",
-                                  //     fln: Utils.flutterLocalNotificationsPlugin);
-                                },
-                                child: Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: coloredText(
-                                      text: "overview".tr, fontSize: 16.0.sp),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 30.w,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (ctx, index) => Container(
+                      ],
+                    ),
+                    Expanded(
+                      child: c.getCompanyHomePageFlag
+                          ? const Center(child: CircularProgressIndicator())
+                          : Column(
+                              children: [
+                                spaceY(1.5.h),
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.to(() => const AddAdvertismentPage());
+                                  },
+                                  child: Container(
+                                    width: 100.w,
+                                    height: 40.w,
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.3),
-                                          spreadRadius: 2,
-                                          blurRadius: 3,
-                                          offset: const Offset(0,
-                                              0), // changes position of shadow
-                                        ),
-                                      ],
-                                    ),
-                                    width: 45.w,
-                                    height: 25.w,
-                                    margin: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                      horizontal: 10,
+                                      borderRadius: BorderRadius.circular(15),
+                                      image: const DecorationImage(
+                                          image: AssetImage(
+                                              "assets/images/adv_background.png"),
+                                          fit: BoxFit.cover),
                                     ),
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
                                         coloredText(
-                                          text: c.overView[index].number
-                                              .toString(),
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          fontSize: 14.sp,
+                                          text: "add_your".tr,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16.sp,
+                                          color: Colors.white,
                                         ),
                                         spaceY(10),
                                         coloredText(
-                                          text: c.overView[index].string,
-                                          fontSize: 14.sp,
+                                          text: "ad".tr,
+                                          textstyle: TextStyle(
+                                            fontSize: 24.sp,
+                                            color: Colors.white,
+                                            fontFamily: "Gabriola",
+                                            fontStyle: FontStyle.normal,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  itemCount: c.overView.length,
                                 ),
-                              ),
-                              spaceY(10),
-                              // Align(
-                              //   alignment: AlignmentDirectional.centerStart,
-                              //   child: coloredText(
-                              //       text: "requests".tr, fontSize: 15.sp),
-                              // ),
-                              TabBar(
-                                  dividerColor: Colors.grey,
-                                  // indicatorColor: Colors.black,
-                                  indicator: UnderlineTabIndicator(
-                                      borderSide: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  )),
-                                  indicatorSize: TabBarIndicatorSize.tab,
-                                  labelPadding: EdgeInsets.zero,
-                                  // isScrollable: true,
-                                  controller: tabController,
-                                  onTap: (value) {
-                                    selectedTabIndex = value;
-                                    setState(() {});
-                                  },
-                                  tabs: List<Widget>.generate(
-                                    tabController.length,
-                                    (index) => Tab(
-                                      child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 5),
-                                        child: coloredText(
-                                            fontSize: 10.sp,
-                                            text: tabs[index].tr,
-                                            color: selectedTabIndex == index
-                                                ? Colors.black
-                                                : Colors.grey),
+                                meCompanyType != "recruitment"
+                                    ? Container()
+                                    : spaceY(10),
+                                meCompanyType != "recruitment"
+                                    ? Container()
+                                    : GestureDetector(
+                                        onTap: () {
+                                          // Utils.showBigTextNotification(
+                                          //     title: "title",
+                                          //     body: "body",
+                                          //     fln: Utils.flutterLocalNotificationsPlugin);
+                                        },
+                                        child: Align(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          child: coloredText(
+                                              text: "overview".tr,
+                                              fontSize: 16.0.sp),
+                                        ),
                                       ),
-                                    ),
-                                  )),
-                              Expanded(
-                                  child: TabBarView(
-                                      controller: tabController,
-                                      children: tapList)),
-                              // Expanded(
-                              //   child:         )
-                            ],
-                          ),
-                  ),
-                ],
-              );
-            }),
+                                meCompanyType != "recruitment"
+                                    ? Container()
+                                    : SizedBox(
+                                        height: 30.w,
+                                        child: ListView.builder(
+                                          scrollDirection: Axis.horizontal,
+                                          itemBuilder: (ctx, index) =>
+                                              Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.3),
+                                                  spreadRadius: 2,
+                                                  blurRadius: 3,
+                                                  offset: const Offset(0,
+                                                      0), // changes position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            width: 45.w,
+                                            height: 25.w,
+                                            margin: const EdgeInsets.symmetric(
+                                              vertical: 10,
+                                              horizontal: 10,
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                coloredText(
+                                                  text: c.overView[index].number
+                                                      .toString(),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  fontSize: 14.sp,
+                                                ),
+                                                spaceY(10),
+                                                coloredText(
+                                                  text:
+                                                      c.overView[index].string,
+                                                  fontSize: 14.sp,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          itemCount: c.overView.length,
+                                        ),
+                                      ),
+                                spaceY(10),
+                                // Align(
+                                //   alignment: AlignmentDirectional.centerStart,
+                                //   child: coloredText(
+                                //       text: "requests".tr, fontSize: 15.sp),
+                                // ),
+                                meCompanyType != "recruitment"
+                                    ? Container()
+                                    : TabBar(
+                                        dividerColor: Colors.grey,
+                                        // indicatorColor: Colors.black,
+                                        indicator: UnderlineTabIndicator(
+                                            borderSide: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        )),
+                                        indicatorSize: TabBarIndicatorSize.tab,
+                                        labelPadding: EdgeInsets.zero,
+                                        // isScrollable: true,
+                                        controller: tabController,
+                                        onTap: (value) {
+                                          selectedTabIndex = value;
+                                          setState(() {});
+                                        },
+                                        tabs: List<Widget>.generate(
+                                          tabController.length,
+                                          (index) => Tab(
+                                            child: Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5),
+                                              child: coloredText(
+                                                  fontSize: 10.sp,
+                                                  text: tabs[index].tr,
+                                                  color:
+                                                      selectedTabIndex == index
+                                                          ? Colors.black
+                                                          : Colors.grey),
+                                            ),
+                                          ),
+                                        )),
+                                meCompanyType != "recruitment"
+                                    ? spaceY(10.sp)
+                                    : Container(),
+                                meCompanyType != "recruitment"
+                                    ? Align(
+                                        alignment:
+                                            AlignmentDirectional.centerStart,
+                                        child: coloredText(
+                                            text: "bookings".tr,
+                                            fontSize: 15.sp),
+                                      )
+                                    : Container(),
+
+                                Expanded(
+                                    child: meCompanyType != "recruitment"
+                                        ? GetBuilder<GlobalController>(
+                                            builder: (c) {
+                                            return c.cleaningBookings.isEmpty
+                                                ? const Center(
+                                                    child: NoItemsWidget())
+                                                : ListView.separated(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 10),
+                                                    itemBuilder: (ctx, index) =>
+                                                        CleanCompanyBookingWidget(
+                                                            cleaningBooking:
+                                                                c.cleaningBookings[
+                                                                    index]),
+                                                    separatorBuilder:
+                                                        (ctx, index) =>
+                                                            spaceY(10.sp),
+                                                    itemCount: _globalController
+                                                        .cleaningBookings
+                                                        .length,
+                                                  );
+                                          })
+                                        : TabBarView(
+                                            controller: tabController,
+                                            children: tapList)),
+                                // Expanded(
+                                //   child:         )
+                              ],
+                            ),
+                    ),
+                  ],
+                );
+              }),
+            ),
           ),
           Visibility(
             visible: !completedRegisterFlag,
@@ -490,7 +574,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                           spaceY(100),
                           EasyStepper(
                             activeStep: _currentStep,
-                            lineLength: 20.0.w,
+                            lineLength: 15.0.w,
                             lineSpace: 0,
                             lineType: LineType.normal,
                             defaultLineColor: Colors.grey,
@@ -653,7 +737,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                   return null;
                 },
                 prefixIcon: Container(
-                  margin: const EdgeInsetsDirectional.only(start: 10),
+                  margin: const EdgeInsetsDirectional.only(start: 10, end: 10),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -661,25 +745,8 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                         EvaIcons.phoneOutline,
                         size: 20.0.sp,
                       ),
-                      CustomDropDownMenuButton(
-                        width: 65.sp,
-                        hintPadding: 5,
-                        contentPadding: 10,
-                        hintSize: 14,
-                        value: ownerphoneCode == "" ? null : ownerphoneCode,
-                        items: c.countries
-                            .map((e) => DropdownMenuItem<String>(
-                                  value: e.code!,
-                                  child: coloredText(
-                                    text: e.code!,
-                                    fontSize: 17,
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (p0) {
-                          ownerphoneCode = p0!;
-                        },
-                      ),
+                      spaceX(5.sp),
+                      coloredText(text: "+965", color: Colors.grey)
                     ],
                   ),
                 ),
@@ -865,8 +932,6 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                       if (_currentStep < stepList().length - 1) {
                         setState(() => _currentStep += 1);
                         pageController.jumpToPage(_currentStep);
-                      } else {
-                        completedRegisterFlag = true;
                       }
 
                       logSuccess(_currentStep);
@@ -1013,7 +1078,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                   return null;
                 },
                 prefixIcon: Container(
-                  margin: const EdgeInsetsDirectional.only(start: 10),
+                  margin: const EdgeInsetsDirectional.only(start: 10, end: 10),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -1021,25 +1086,8 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                         EvaIcons.phoneOutline,
                         size: 20.0.sp,
                       ),
-                      CustomDropDownMenuButton(
-                        width: 65.sp,
-                        hintPadding: 5,
-                        contentPadding: 10,
-                        hintSize: 13,
-                        value: companyphoneCode == "" ? null : companyphoneCode,
-                        items: c.countries
-                            .map((e) => DropdownMenuItem<String>(
-                                  value: e.code!,
-                                  child: coloredText(
-                                    text: e.code!,
-                                    fontSize: 17,
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (p0) {
-                          companyphoneCode = p0!;
-                        },
-                      ),
+                      spaceX(5.sp),
+                      coloredText(text: "+965", color: Colors.grey)
                     ],
                   ),
                 ),
@@ -1424,8 +1472,6 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                       if (_currentStep < stepList().length - 1) {
                         setState(() => _currentStep += 1);
                         pageController.jumpToPage(_currentStep);
-                      } else {
-                        completedRegisterFlag = true;
                       }
 
                       logSuccess(_currentStep);
@@ -1687,148 +1733,6 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                         if (_currentStep < stepList().length - 1) {
                           setState(() => _currentStep += 1);
                           pageController.jumpToPage(_currentStep);
-                        } else {
-                          FocusScope.of(context).unfocus();
-                          companyCompleteData.phone =
-                              ownerphoneCode + _ownerPhoneNumberController.text;
-                          companyCompleteData.companyPhone = companyphoneCode +
-                              _companyPhoneNumberController.text;
-                          companyCompleteData.dateOfBirth =
-                              _dateController.text;
-                          var x = await _authController.companycompleteData(
-                              companyCompleteData: companyCompleteData);
-                          if (x == true) {
-                            // ignore: use_build_context_synchronously
-                            Utils.customDialog(
-                                actions: [
-                                  primaryButton(
-                                    onTap: () {
-                                      Get.back();
-                                      completedRegisterFlag = true;
-                                      Restart.restartApp();
-
-                                      setState(() {});
-                                    },
-                                    width: 40.0.w,
-                                    height: 50,
-                                    radius: 10.w,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    text: coloredText(
-                                      text: "ok".tr,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                                context: context,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      spaceY(20),
-                                      Icon(
-                                        EvaIcons.checkmarkCircle,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        size: 40.sp,
-                                      ),
-                                      spaceY(20),
-                                      coloredText(
-                                          text: "your_data_have_been_completed"
-                                              .tr,
-                                          fontSize: 12.0.sp),
-                                      coloredText(
-                                        text: "successfully".tr,
-                                        fontSize: 14.0.sp,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ),
-                                    ],
-                                  ),
-                                ));
-                          } else if (x['message'] ==
-                              "The given data was invalid.") {
-                            errors = x['errors'];
-                            if (errors['first_name'] != null ||
-                                errors['last_name'] != null ||
-                                errors['phone'] != null ||
-                                errors['nationality_id'] != null ||
-                                errors['id_number'] != null ||
-                                errors['date_of_birth'] != null) {
-                              _currentStep = 0;
-                              setState(() {});
-                              pageController.jumpToPage(_currentStep);
-                            } else if (errors['company_name'] != null ||
-                                errors['url'] != null ||
-                                errors['company_phone'] != null ||
-                                errors['company_type'] != null ||
-                                errors['company_email'] != null ||
-                                errors['city_id'] != null ||
-                                errors['region_id'] != null ||
-                                errors['piece_number'] != null ||
-                                errors['street'] != null ||
-                                errors['building'] != null ||
-                                errors['automated_address_number'] != null ||
-                                errors['commercial_registration_number'] !=
-                                    null ||
-                                errors['tax_number'] != null ||
-                                errors['license_number'] != null ||
-                                errors['company_logo'] != null) {
-                              _currentStep = 1;
-                              setState(() {});
-                              pageController.jumpToPage(_currentStep);
-                              String tmp = "";
-                              if (errors['company_logo'] != null &&
-                                  errors['company_type'] != null) {
-                                tmp = errors['company_logo'].join("\n") +
-                                    "\n" +
-                                    errors['company_type'].join("\n");
-                                Utils.showSnackBar(
-                                    message: tmp, fontSize: 12.0.sp);
-                              } else if (errors['company_logo'] != null) {
-                                tmp = errors['company_logo'].join("\n");
-                                Utils.showSnackBar(
-                                    message: tmp, fontSize: 12.0.sp);
-                              } else if (errors['company_type'] != null) {
-                                tmp = errors['company_type'].join("\n");
-                                Utils.showSnackBar(
-                                    message: tmp, fontSize: 12.0.sp);
-                              }
-                            } else if (errors['front_side_id_image'] != null &&
-                                    errors['back_side_id_image'] != null ||
-                                errors['passport_image'] != null) {
-                              _currentStep = 2;
-                              setState(() {});
-                              pageController.jumpToPage(_currentStep);
-                              String tmp = "";
-                              if (errors['passport_image'] != null) {
-                                tmp = errors['passport_image'].join("\n");
-                                Utils.showSnackBar(
-                                    message: tmp, fontSize: 12.0.sp);
-                              } else if (errors['front_side_id_image'] !=
-                                      null &&
-                                  errors['back_side_id_image'] != null) {
-                                tmp = errors['front_side_id_image'].join("\n") +
-                                    "\n" +
-                                    errors['back_side_id_image'].join("\n");
-                                Utils.showSnackBar(
-                                    message: tmp, fontSize: 12.0.sp);
-                              } else if (errors['back_side_id_image'] != null) {
-                                tmp = errors['back_side_id_image'].join("\n");
-                                Utils.showSnackBar(
-                                    message: tmp, fontSize: 12.0.sp);
-                              } else if (errors['front_side_id_image'] !=
-                                  null) {
-                                tmp = errors['front_side_id_image'].join("\n");
-                                Utils.showSnackBar(
-                                    message: tmp, fontSize: 12.0.sp);
-                              }
-                            }
-                          }
                         }
 
                         setState(() {});
@@ -1865,6 +1769,316 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                 spaceY(20),
               ],
             ),
+          );
+        }),
+        GetBuilder<GlobalController>(builder: (c) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child:
+                ListView(padding: EdgeInsets.zero, primary: false, children: [
+              CustomDropDownMenuButton(
+                hintPadding: 0, focusNode: _focusNodes[20],
+                hint: "bank_name".tr,
+                autovalidateMode: AutovalidateMode.always,
+                validator: (String? value) {
+                  if (errors['bank_id'] != null) {
+                    String tmp = "";
+                    tmp = errors['bank_id'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+                width: 100.w,
+                value: bankName == "" ? null : bankName,
+                items: c.banks
+                    .map(
+                      (e) => DropdownMenuItem<String>(
+                        value: e.bankName,
+                        child:
+                            coloredText(text: e.bankName!, color: Colors.black),
+                      ),
+                    )
+                    .toList(),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: _focusNodes[20].hasFocus
+                        ? Theme.of(context).colorScheme.secondary
+                        : const Color(0xffBDC1C8),
+                  ),
+                ),
+                onChanged: (p0) {
+                  bankName = p0!;
+                  errors['bank_id'] = null;
+                  setState(() {});
+                  companyCompleteData.bankId = c.banks
+                      .where((element) => element.bankName == p0)
+                      .first
+                      .bankId
+                      .toString();
+                  ;
+                },
+
+                // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                borderRadius: BorderRadius.circular(8),
+                // padding:
+                //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[21],
+                controller: _bankAccountName,
+                hintText: "bank_account_name".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['bank_account_name'] = null;
+                  setState(() {});
+                  companyCompleteData.bankAccountName = s;
+                },
+                validator: (String? value) {
+                  if (errors['bank_account_name'] != null) {
+                    String tmp = "";
+                    tmp = errors['bank_account_name'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.sp),
+              UnderlinedCustomTextField(
+                keyBoardType: TextInputType.number,
+                focusNode: _focusNodes[22],
+                controller: _accountNumber,
+                hintText: "account_number".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['account_number'] = null;
+                  setState(() {});
+                  companyCompleteData.accountNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['account_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['account_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[23],
+                controller: _iban,
+                hintText: "iban".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['iban'] = null;
+                  setState(() {});
+                  companyCompleteData.iban = s;
+                },
+                validator: (String? value) {
+                  if (!isValid(value!)) return "invalid iban";
+                  if (errors['iban'] != null) {
+                    String tmp = "";
+                    tmp = errors['iban'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(20.0.sp),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  coloredText(
+                      text: "next".tr,
+                      fontSize: 16.0.sp,
+                      color: Theme.of(context).colorScheme.tertiary),
+                  spaceX(10),
+                  GestureDetector(
+                    onTap: () async {
+                      if (_currentStep < stepList().length - 1) {
+                        setState(() => _currentStep += 1);
+                        pageController.jumpToPage(_currentStep);
+                      } else {
+                        FocusScope.of(context).unfocus();
+                        companyCompleteData.phone =
+                            _ownerPhoneNumberController.text;
+                        companyCompleteData.companyPhone =
+                            _companyPhoneNumberController.text;
+                        companyCompleteData.dateOfBirth = _dateController.text;
+                        var x = await _authController.companycompleteData(
+                            companyCompleteData: companyCompleteData);
+                        if (x == true) {
+                          // ignore: use_build_context_synchronously
+                          Utils.customDialog(
+                              actions: [
+                                primaryButton(
+                                  onTap: () {
+                                    Get.back();
+                                    completedRegisterFlag = true;
+                                    Restart.restartApp();
+
+                                    setState(() {});
+                                  },
+                                  width: 40.0.w,
+                                  height: 50,
+                                  radius: 10.w,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  text: coloredText(
+                                    text: "ok".tr,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                              context: context,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    spaceY(20),
+                                    Icon(
+                                      EvaIcons.checkmarkCircle,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      size: 40.sp,
+                                    ),
+                                    spaceY(20),
+                                    coloredText(
+                                        text:
+                                            "your_data_have_been_completed".tr,
+                                        fontSize: 12.0.sp),
+                                    coloredText(
+                                      text: "successfully".tr,
+                                      fontSize: 14.0.sp,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ],
+                                ),
+                              ));
+                        } else if (x['message'] ==
+                            "The given data was invalid.") {
+                          errors = x['errors'];
+                          if (errors['first_name'] != null ||
+                              errors['last_name'] != null ||
+                              errors['phone'] != null ||
+                              errors['nationality_id'] != null ||
+                              errors['id_number'] != null ||
+                              errors['date_of_birth'] != null) {
+                            _currentStep = 0;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                          } else if (errors['bank_account_name'] != null ||
+                              errors['iban'] != null ||
+                              errors['bank_id'] != null ||
+                              errors['account_number'] != null) {
+                            _currentStep = 3;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                          } else if (errors['company_name'] != null ||
+                              errors['url'] != null ||
+                              errors['company_phone'] != null ||
+                              errors['company_type'] != null ||
+                              errors['company_email'] != null ||
+                              errors['city_id'] != null ||
+                              errors['region_id'] != null ||
+                              errors['piece_number'] != null ||
+                              errors['street'] != null ||
+                              errors['building'] != null ||
+                              errors['automated_address_number'] != null ||
+                              errors['commercial_registration_number'] !=
+                                  null ||
+                              errors['tax_number'] != null ||
+                              errors['license_number'] != null ||
+                              errors['company_logo'] != null) {
+                            _currentStep = 1;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                            String tmp = "";
+                            if (errors['company_logo'] != null &&
+                                errors['company_type'] != null) {
+                              tmp = errors['company_logo'].join("\n") +
+                                  "\n" +
+                                  errors['company_type'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['company_logo'] != null) {
+                              tmp = errors['company_logo'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['company_type'] != null) {
+                              tmp = errors['company_type'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            }
+                          } else if (errors['front_side_id_image'] != null &&
+                                  errors['back_side_id_image'] != null ||
+                              errors['passport_image'] != null) {
+                            _currentStep = 2;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
+                            String tmp = "";
+                            if (errors['passport_image'] != null) {
+                              tmp = errors['passport_image'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['front_side_id_image'] != null &&
+                                errors['back_side_id_image'] != null) {
+                              tmp = errors['front_side_id_image'].join("\n") +
+                                  "\n" +
+                                  errors['back_side_id_image'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['back_side_id_image'] != null) {
+                              tmp = errors['back_side_id_image'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            } else if (errors['front_side_id_image'] != null) {
+                              tmp = errors['front_side_id_image'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            }
+                          }
+                        }
+                      }
+                      setState(() {});
+                    },
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(
+                          Get.locale == const Locale('en', 'US') ? 0 : math.pi),
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: AlignmentDirectional.topStart,
+                            end: AlignmentDirectional.bottomEnd,
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                            ],
+                          ),
+                        ),
+                        child: const Icon(
+                          FontAwesomeIcons.anglesRight,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              spaceY(20.0.sp),
+            ]),
           );
         }),
       ];
@@ -1908,6 +2122,19 @@ class _CompanyHomePageState extends State<CompanyHomePage>
           ),
           title: _currentStep == 2 ? 'docs'.tr : "",
         ),
+        EasyStep(
+          customStep: CircleAvatar(
+            radius: 12,
+            backgroundColor: _currentStep >= 3
+                ? Theme.of(context).colorScheme.tertiary
+                : Colors.grey,
+            child: const CircleAvatar(
+              radius: 4,
+              backgroundColor: Colors.white,
+            ),
+          ),
+          title: _currentStep == 3 ? 'bank_details'.tr : "",
+        ),
       ];
 
   List<Widget> get tapList => [
@@ -1918,19 +2145,15 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   itemBuilder: (ctx, index) => CompanyRequestWidget(
                     image: _globalController.companyHomePage.requests![index]
-                        .document!.user!.userInformation!.personalPhoto!,
-                    userName: _globalController.companyHomePage.requests![index]
-                        .document!.user!.fullName!,
+                        .user!.userInformation!.personalPhoto!,
+                    userName: _globalController
+                        .companyHomePage.requests![index].user!.fullName!,
                     employeeId: _globalController
-                        .companyHomePage.requests![index].document!.employeeId!,
-                    docsId: _globalController
-                        .companyHomePage.requests![index].document!.id!,
+                        .companyHomePage.requests![index].employeeId!,
+                    docsId:
+                        _globalController.companyHomePage.requests![index].id!,
                   ),
-                  separatorBuilder: (ctx, index) => _globalController
-                              .companyHomePage.requests![index].document ==
-                          null
-                      ? Container()
-                      : spaceY(10.sp),
+                  separatorBuilder: (ctx, index) => spaceY(10.sp),
                   itemCount: _globalController.companyHomePage.requests!.length,
                 );
         }),

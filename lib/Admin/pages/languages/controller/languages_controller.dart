@@ -14,11 +14,15 @@ class LanguagesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(language.toJson());
 
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeLanguage,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -39,11 +43,15 @@ class LanguagesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(language.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteLanguage(language.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -62,11 +70,15 @@ class LanguagesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(language.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateLanguage(language.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -84,7 +96,16 @@ class LanguagesController extends GetxController {
   Future getlanguages() async {
     try {
       getlanguagesFlag = true;
-      var res = await dio.get(EndPoints.getAllLanguages);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllLanguages,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<LanguageModel> tmp = [];
       for (var i in res.data['data']) {
         LanguageModel t = LanguageModel.fromJson(i);

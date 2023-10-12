@@ -28,15 +28,18 @@ class ChatController extends GetxController {
         ),
       );
       List<MyChat> tmp = [];
+      int cc = 0;
       for (var i in res.data['data']) {
         MyChat t = MyChat.fromJson(i);
         if (t.unreadMessagesCount! > 0 &&
             _globalController.me.id! != t.lastMessage!.userId) {
           unreadChatsFlag = true;
+          cc = cc + 1;
         }
 
         tmp.add(t);
       }
+      if (cc == 0) unreadChatsFlag = false;
       chats = tmp;
       chats.sort(_mySortComparison);
       logSuccess("Chats get done");

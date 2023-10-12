@@ -48,7 +48,7 @@ class CompanyEmployeeCard extends StatelessWidget {
                         spaceX(4),
                         coloredText(
                           text:
-                              '${int.parse(employee.contractAmount!) / int.parse(employee.contractDuration!)} KWD/Y',
+                              '${(int.parse(employee.contractAmount!) / int.parse(employee.contractDuration!)).toStringAsFixed(2)} /Y',
                           color: employee.isOffer == 1
                               ? const Color(0xff919191)
                               : Theme.of(context).colorScheme.tertiary,
@@ -62,7 +62,7 @@ class CompanyEmployeeCard extends StatelessWidget {
                             ? Container()
                             : coloredText(
                                 text:
-                                    '${employee.amountAfterDiscount! / int.parse(employee.contractDuration!)} KWD/Y',
+                                    '${(employee.amountAfterDiscount! / int.parse(employee.contractDuration!)).toStringAsFixed(2)} /Y',
                                 color: Theme.of(context).colorScheme.tertiary,
                                 fontSize: 8.0.sp,
                               ),

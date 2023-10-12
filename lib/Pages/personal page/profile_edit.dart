@@ -238,6 +238,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             spaceY(15.0.sp),
             UnderlinedCustomTextField(
               focusNode: _focusNodes[2],
+              hintText: "job".tr,
               controller: _jobNameController,
               keyBoardType: TextInputType.text,
               prefixIcon: Icon(
@@ -352,6 +353,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             UnderlinedCustomTextField(
               focusNode: _focusNodes[3],
               controller: _pieceNumberController,
+              hintText: "piece_num".tr,
               keyBoardType: TextInputType.number,
               autovalidateMode: AutovalidateMode.always,
               validator: (String? value) {
@@ -373,6 +375,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             UnderlinedCustomTextField(
               focusNode: _focusNodes[4],
               controller: _streetController,
+              hintText: "street".tr,
               keyBoardType: TextInputType.text,
               autovalidateMode: AutovalidateMode.always,
               validator: (String? value) {
@@ -394,6 +397,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             UnderlinedCustomTextField(
               focusNode: _focusNodes[5],
               controller: _buildingController,
+              hintText: "building".tr,
               keyBoardType: TextInputType.text,
               autovalidateMode: AutovalidateMode.always,
               validator: (String? value) {
@@ -415,6 +419,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             UnderlinedCustomTextField(
               focusNode: _focusNodes[6],
               controller: _adnController,
+              hintText: "adn".tr,
               keyBoardType: TextInputType.number,
               autovalidateMode: AutovalidateMode.always,
               validator: (String? value) {

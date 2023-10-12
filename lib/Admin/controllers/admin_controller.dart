@@ -3,6 +3,7 @@ import 'package:dio/dio.dart' as d;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/models/about_model.dart';
+import 'package:khedma/Admin/models/account_statment.dart';
 import 'package:khedma/Admin/models/admin_home_page.dart';
 import 'package:khedma/Admin/models/contact_message_model.dart';
 import 'package:khedma/Admin/models/contact_model.dart';
@@ -11,6 +12,7 @@ import 'package:khedma/Admin/models/setting_admin_model.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/me.dart';
+import 'package:khedma/models/medicals_model.dart';
 
 class AdminController extends GetxController {
   final Dio dio = Utils().dio;
@@ -20,8 +22,45 @@ class AdminController extends GetxController {
   List<Me> userProfilesToShow = [];
   List<Me> companyProfiles = [];
   List<Me> companyProfilesToShow = [];
+  List<MedicalsModel> medicalRequests = [];
+  List<AccountStatmentModel> accountStatments = [];
   bool getUserProfilesFlag = false;
+  bool getmedicalsRequestsFlag = false;
   bool getCompanyProfilesFlag = false;
+  Future<bool> getMedicals() async {
+    try {
+      getmedicalsRequestsFlag = true;
+      String? token = await Utils.readToken();
+
+      var res = await dio.get(
+        EndPoints.getMedicals,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      List<MedicalsModel> tmp = [];
+      for (var i in res.data['message']) {
+        MedicalsModel t = MedicalsModel.fromJson(i);
+        tmp.add(t);
+      }
+      medicalRequests = tmp;
+
+      logSuccess("Medicals get done");
+
+      getmedicalsRequestsFlag = false;
+      update();
+      return true;
+    } on DioException catch (e) {
+      getmedicalsRequestsFlag = false;
+      logError(e.response!.data);
+      update();
+      logError("Medicals failed");
+      return false;
+    }
+  }
 
   handleUserProfilesSearch({required String name}) {
     List<Me> tmp = [];
@@ -62,7 +101,8 @@ class AdminController extends GetxController {
         EndPoints.getAllAdminUserProfiles,
         options: Options(
           headers: {
-            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );
@@ -97,7 +137,8 @@ class AdminController extends GetxController {
         EndPoints.getAllAdminCompanyProfiles,
         options: Options(
           headers: {
-            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );
@@ -119,6 +160,42 @@ class AdminController extends GetxController {
       logError(e.response!.data);
       update();
       logError("CompanyProfiles failed");
+      return false;
+    }
+  }
+
+  bool accountStatmentFlag = true;
+  Future<bool> getAccountStatments() async {
+    try {
+      accountStatmentFlag = true;
+      String? token = await Utils.readToken();
+
+      var res = await dio.get(
+        EndPoints.getAllAccountStatments,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      List<AccountStatmentModel> tmp = [];
+      for (var i in res.data['data']) {
+        AccountStatmentModel t = AccountStatmentModel.fromJson(i);
+        tmp.add(t);
+      }
+      accountStatments = tmp;
+
+      logSuccess("account statments get done");
+
+      accountStatmentFlag = false;
+      update();
+      return true;
+    } on DioException catch (e) {
+      accountStatmentFlag = false;
+      logError(e.response!.data);
+      update();
+      logError("account statments failed");
       return false;
     }
   }
@@ -206,10 +283,20 @@ class AdminController extends GetxController {
   Future getAdminHomePage() async {
     try {
       getAdminHomePageflag = true;
-      var res = await dio.get(EndPoints.getAdminHomePage);
+      update();
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAdminHomePage,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
 
       adminHomePageModel = AdminHomePageModel.fromJson(res.data);
-      logSuccess(adminHomePageModel.toJson());
+
       getBookingPaymentsGraph();
       logSuccess("Admin Home Page get done");
       getAdminHomePageflag = false;
@@ -360,8 +447,19 @@ class AdminController extends GetxController {
   Future getContacts() async {
     try {
       getContactsFlag = true;
-      var res = await dio.get(EndPoints.getContact);
-      contactModel = ContactModel.fromJson(res.data['data'][0]);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getContact,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      if (res.data['data'].isNotEmpty) {
+        contactModel = ContactModel.fromJson(res.data['data'][0]);
+      }
       logSuccess("Contacts get done");
       getContactsFlag = false;
       update();
@@ -383,11 +481,15 @@ class AdminController extends GetxController {
         body.fields.add(const MapEntry("_method", "PUT"));
       }
       logSuccess(body.fields);
+      String? token = await Utils.readToken();
       await dio.post(
         aboutModel == null ? EndPoints.storeAbout : EndPoints.updateAbout(1),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -405,8 +507,19 @@ class AdminController extends GetxController {
   Future getAbouts() async {
     try {
       getAboutsFlag = true;
-      var res = await dio.get(EndPoints.getAbout);
-      aboutModel = AboutModel.fromJson(res.data['data'][0]);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAbout,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      if (res.data['data'].isNotEmpty) {
+        aboutModel = AboutModel.fromJson(res.data['data'][0]);
+      }
       logSuccess("About get done");
       getAboutsFlag = false;
       update();
@@ -420,10 +533,20 @@ class AdminController extends GetxController {
   SettingAdmin settingAdmin = SettingAdmin();
   Future getSettingAdmin() async {
     try {
-      var res = await dio.get(EndPoints.getSettingAdmin);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getSettingAdmin,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       settingAdmin = SettingAdmin.fromJson(res.data['data']);
       logSuccess("SettingAdmin get done");
-    } on DioException {
+    } on DioException catch (e) {
+      logError(e.response!.data);
       logError("SettingAdmin failed");
     }
   }
@@ -435,12 +558,15 @@ class AdminController extends GetxController {
       logSuccess(settingAdmin.toJson());
 
       body.fields.add(const MapEntry("_method", "PUT"));
-
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateSettingAdmin,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 

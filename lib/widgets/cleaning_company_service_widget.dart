@@ -2,6 +2,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:sizer/sizer.dart';
 
@@ -28,6 +29,7 @@ class CleaningServiceWidget extends StatefulWidget {
 
 class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
   final CompaniesController _cleaningCompanyController = Get.find();
+  final GlobalController _globalController = Get.find();
   int quantityCounter = 0;
   @override
   void initState() {
@@ -98,19 +100,22 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
                   onTap: widget.added
                       ? null
                       : () async {
-                          logSuccess(widget.serviceId);
-                          bool b = await _cleaningCompanyController
-                              .createCompanyService(
-                                  service: MyService(
-                            price: widget.price,
-                            name: widget.name,
-                            image: widget.image,
-                            serviceId: widget.serviceId,
-                            quantity: quantityCounter,
-                          ));
-                          if (b) widget.added = true;
+                          if (_globalController.guest) {
+                            Utils.loginFirstDialoge(context: context);
+                          } else {
+                            bool b = await _cleaningCompanyController
+                                .createCompanyService(
+                                    service: MyService(
+                              price: widget.price,
+                              name: widget.name,
+                              image: widget.image,
+                              serviceId: widget.serviceId,
+                              quantity: quantityCounter,
+                            ));
+                            if (b) widget.added = true;
 
-                          setState(() {});
+                            setState(() {});
+                          }
                         },
                   alignment: AlignmentDirectional.centerStart,
                   width: 30.w,

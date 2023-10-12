@@ -1,3 +1,5 @@
+import 'package:khedma/models/me.dart';
+
 class MyChat {
   int? id;
   String? name;
@@ -73,7 +75,7 @@ class MMessage {
   int? userId;
   String? createdAt;
   String? updatedAt;
-  User? user;
+  Me? user;
 
   MMessage(
       {this.id,
@@ -93,7 +95,7 @@ class MMessage {
     userId = json['user_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    user = json['user'] != null ? Me.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -112,41 +114,13 @@ class MMessage {
   }
 }
 
-class User {
-  int? id;
-  String? fullName;
-  String? email;
-  int? status;
-  String? userType;
-
-  User({this.id, this.fullName, this.email, this.status, this.userType});
-
-  User.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    fullName = json['full_name'];
-    email = json['email'];
-    status = json['status'];
-    userType = json['user_type'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['full_name'] = this.fullName;
-    data['email'] = this.email;
-    data['status'] = this.status;
-    data['user_type'] = this.userType;
-    return data;
-  }
-}
-
 class Participants {
   int? id;
   int? chatId;
   int? userId;
   String? createdAt;
   String? updatedAt;
-  User? user;
+  Me? user;
 
   Participants(
       {this.id,
@@ -162,7 +136,7 @@ class Participants {
     userId = json['user_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    user = json['user'] != null ? Me.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {

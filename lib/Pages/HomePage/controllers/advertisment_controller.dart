@@ -160,10 +160,18 @@ class AdvertismentController extends GetxController {
         tmp.add(t);
       }
       adminAds = tmp;
-      adminRequestedAds =
-          adminAds.where((element) => element.adminApprove == null).toList();
-      adminRefundAds =
-          adminAds.where((element) => element.refund == 0).toList();
+      adminRequestedAds = adminAds
+          .where((element) =>
+              element.adminApprove == null &&
+              DateTime.parse(element.startDate!).isAfter(DateTime.now()))
+          .toList();
+      adminRefundAds = adminAds
+          .where((element) =>
+              (element.refund == null &&
+                  DateTime.parse(element.startDate!)
+                      .isBefore(DateTime.now())) ||
+              element.refund == 0)
+          .toList();
       logSuccess("Company Advertisments get done");
       getAdminAdvertismentsFlag = false;
       update();
@@ -183,6 +191,7 @@ class AdvertismentController extends GetxController {
         "admin_approve": approve,
         "_method": "PUT",
       });
+      String? token = await Utils.readToken();
 
       await Dio().post(
         EndPoints.updateAdminAdvertisment(advertismentId),
@@ -190,6 +199,7 @@ class AdvertismentController extends GetxController {
         options: Options(
           headers: {
             "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );
@@ -212,6 +222,7 @@ class AdvertismentController extends GetxController {
         "admin_refund": refund,
         "_method": "PUT",
       });
+      String? token = await Utils.readToken();
 
       await Dio().post(
         EndPoints.refundAdminAdvertisment(advertismentId),
@@ -219,6 +230,7 @@ class AdvertismentController extends GetxController {
         options: Options(
           headers: {
             "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );

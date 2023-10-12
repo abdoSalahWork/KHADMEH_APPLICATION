@@ -36,17 +36,39 @@ class ChatCard extends StatelessWidget {
                               chat.participants![0].userId
                           ? chat.participants![1].user!.fullName!
                           : chat.participants![0].user!.fullName!,
-                      recieverImage: '',
+                      recieverImage: _globalController.me.userType == "company"
+                          ? _globalController.me.id ==
+                                  chat.participants![0].userId
+                              ? chat.participants![1].user!.userInformation!
+                                  .personalPhoto!
+                              : chat.participants![0].user!.userInformation!
+                                  .personalPhoto!
+                          : _globalController.me.id ==
+                                  chat.participants![0].userId
+                              ? chat.participants![1].user!.companyInformation!
+                                  .companyLogo!
+                              : chat.participants![0].user!.companyInformation!
+                                  .companyLogo,
                     ),
                 transition: Transition.downToUp);
           },
           child: Container(
             width: 70.0.sp,
             height: 70.0.sp,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                  image: AssetImage("assets/images/image.png"),
+                  image: NetworkImage(_globalController.me.userType == "company"
+                      ? _globalController.me.id == chat.participants![0].userId
+                          ? chat.participants![1].user!.userInformation!
+                              .personalPhoto!
+                          : chat.participants![0].user!.userInformation!
+                              .personalPhoto!
+                      : _globalController.me.id == chat.participants![0].userId
+                          ? chat.participants![1].user!.companyInformation!
+                              .companyLogo!
+                          : chat.participants![0].user!.companyInformation!
+                              .companyLogo!),
                   fit: BoxFit.cover),
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/models/company_model.dart';
-import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/city.dart';
+import 'package:khedma/models/company_service_model.dart';
 
 class Me {
   int? id;
@@ -17,10 +17,14 @@ class Me {
   CompanyInformation? companyInformation;
   List<Favourite>? favouriteCompany;
   List<Favourite>? favouriteEmployee;
+  List<RecruuitmentBooking> booking = [];
+  List<ReviewCompany>? reviewCompany;
+
   Me({
     this.id,
     this.fullName,
     this.email,
+    this.reviewCompany,
     this.emailVerifiedAt,
     this.status,
     this.block,
@@ -34,6 +38,12 @@ class Me {
   });
 
   Me.fromJson(Map<String, dynamic> json) {
+    if (json['review_company'] != null) {
+      reviewCompany = <ReviewCompany>[];
+      json['review_company'].forEach((v) {
+        reviewCompany!.add(new ReviewCompany.fromJson(v));
+      });
+    }
     id = json['id'];
     block = json['block'];
     fullName = json['full_name'];
@@ -61,6 +71,13 @@ class Me {
         favouriteEmployee!.add(Favourite.fromJson(v));
       });
     }
+    if (json['booking_me'] != null) {
+      booking = <RecruuitmentBooking>[];
+      json['booking_me'].forEach((v) {
+        RecruuitmentBooking x = RecruuitmentBooking.fromJson(v);
+        booking.add(x);
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -72,6 +89,11 @@ class Me {
     if (data['email_verified_at'] != null) {
       data['email_verified_at'] = emailVerifiedAt;
     }
+    if (this.reviewCompany != null) {
+      data['review_company'] =
+          this.reviewCompany!.map((v) => v.toJson()).toList();
+    }
+    data['booking_me'] = booking.map((v) => v.toJson()).toList();
     if (data['status'] != null) data['status'] = status;
     if (data['created_at'] != null) data['created_at'] = createdAt;
     if (data['updated_at'] != null) data['updated_at'] = updatedAt;
@@ -109,13 +131,12 @@ class UserInformation {
   String? automatedAddressNumber;
   String? idNumberNationality;
   String? idPhotoNationality;
-  String? personalPhoto;
+  var personalPhoto;
   String? referenceNumber;
   String? phoneVerifiedAt;
   String? createdAt;
   String? updatedAt;
   String? userName;
-  List<Booking> booking = [];
   UserInformation(
       {this.id,
       this.phone,
@@ -161,14 +182,6 @@ class UserInformation {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     userName = json['user_name'];
-    if (json['booking_me'] != null) {
-      booking = <Booking>[];
-      json['booking_me'].forEach((v) {
-        Booking x = Booking.fromJson(v);
-        logSuccess(v);
-        booking.add(x);
-      });
-    }
   }
 
   Map<String, dynamic> toJson() {
@@ -186,15 +199,13 @@ class UserInformation {
     data['building'] = building;
     data['automated_address_number'] = automatedAddressNumber;
     data['id_number_nationality'] = idNumberNationality;
-    data['id_photo_nationality'] = idPhotoNationality;
-    data['personal_photo'] = personalPhoto;
+    // data['id_photo_nationality'] = idPhotoNationality;
+    // data['personal_photo'] = personalPhoto;
     data['reference_number'] = referenceNumber;
     data['phone_verified_at'] = phoneVerifiedAt;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     data['user_name'] = userName;
-
-    data['booking_me'] = booking.map((v) => v.toJson()).toList();
 
     return data;
   }
@@ -401,7 +412,7 @@ class Favourite {
   }
 }
 
-class Booking {
+class RecruuitmentBooking {
   int? id;
   String? status;
   int? employeeId;
@@ -413,7 +424,7 @@ class Booking {
   String? pendingAmount;
   String? bookingAmount;
   EmployeeModel? employee;
-  Booking(
+  RecruuitmentBooking(
       {this.id,
       this.status,
       this.employeeId,
@@ -426,7 +437,7 @@ class Booking {
       this.employee,
       this.bookingAmount});
 
-  Booking.fromJson(Map<String, dynamic> json) {
+  RecruuitmentBooking.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     status = json['status'];
     employeeId = json['employee_id'];
@@ -456,6 +467,132 @@ class Booking {
     if (pendingAmount != null) data['pending_amount'] = pendingAmount;
     if (bookingAmount != null) data['booking_amount'] = bookingAmount;
     if (employee != null) data['employee'] = employee!.toJson();
+    return data;
+  }
+}
+
+class CleaningBooking {
+  int? id;
+  int? userId;
+  int? companyId;
+  String? startDate;
+  String? endDate;
+  Me? user;
+  List<Order>? order;
+
+  CleaningBooking(
+      {this.id,
+      this.userId,
+      this.companyId,
+      this.startDate,
+      this.endDate,
+      this.user,
+      this.order});
+
+  CleaningBooking.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    userId = json['user_id'];
+    companyId = json['company_id'];
+    startDate = json['start_date'];
+    endDate = json['end_date'];
+    user = json['user'] != null ? Me.fromJson(json['user']) : null;
+    if (json['order'] != null) {
+      order = <Order>[];
+      json['order'].forEach((v) {
+        order!.add(new Order.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['user_id'] = this.userId;
+    data['company_id'] = this.companyId;
+    data['start_date'] = this.startDate;
+    data['end_date'] = this.endDate;
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
+    }
+    if (this.order != null) {
+      data['order'] = this.order!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Order {
+  int? quantity;
+  int? checkoutId;
+  int? serviceId;
+  CompanyServiceModel? services;
+
+  Order({this.quantity, this.checkoutId, this.serviceId, this.services});
+
+  Order.fromJson(Map<String, dynamic> json) {
+    quantity = json['quantity'];
+    checkoutId = json['checkout_id'];
+    serviceId = json['service_id'];
+    services = json['services'] != null
+        ? new CompanyServiceModel.fromJson(json['services'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['quantity'] = this.quantity;
+    data['checkout_id'] = this.checkoutId;
+    data['service_id'] = this.serviceId;
+    if (this.services != null) {
+      data['services'] = this.services!.toJson();
+    }
+    return data;
+  }
+}
+
+class ReviewCompany {
+  int? id;
+  int? reviewValue;
+  String? review;
+  int? companyId;
+  int? userId;
+  String? createdAt;
+  String? updatedAt;
+  Me? user;
+
+  ReviewCompany(
+      {this.id,
+      this.reviewValue,
+      this.review,
+      this.companyId,
+      this.userId,
+      this.createdAt,
+      this.updatedAt,
+      this.user});
+
+  ReviewCompany.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    reviewValue = json['review_value'];
+    review = json['review'];
+    companyId = json['company_id'];
+    userId = json['user_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    user = json['user'] != null ? new Me.fromJson(json['user']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['review_value'] = this.reviewValue;
+    data['review'] = this.review;
+    data['company_id'] = this.companyId;
+    data['user_id'] = this.userId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
+    }
     return data;
   }
 }

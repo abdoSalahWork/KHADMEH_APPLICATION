@@ -29,11 +29,15 @@ class JobsController extends GetxController {
           ),
         ));
       }
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeJob,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -52,11 +56,15 @@ class JobsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(job.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteJob(job.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
 
@@ -88,13 +96,16 @@ class JobsController extends GetxController {
           ),
         ));
       }
-      logSuccess(job.toJson());
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateJob(job.id!),
         data: body,
-        // options: Options(
-        //   headers: {"Accept": "application/json"},
-        // ),
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
       );
 
       await _globalController.getjobs();

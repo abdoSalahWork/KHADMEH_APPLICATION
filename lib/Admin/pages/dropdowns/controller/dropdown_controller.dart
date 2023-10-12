@@ -18,14 +18,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(relegionModel.toJson());
 
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeReligion,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getRelegions();
       Get.back();
       return true;
@@ -41,14 +44,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(relegionModel.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteReligion(relegionModel.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getRelegions();
       Get.back();
       return true;
@@ -64,14 +70,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(relegionModel.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateReligion(relegionModel.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getRelegions();
       Get.back();
       return true;
@@ -88,14 +97,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(certificateModel.toJson());
 
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeCertificate,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getCertificates();
       Get.back();
       return true;
@@ -112,14 +124,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(certificateModel.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteCertificate(certificateModel.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getCertificates();
       Get.back();
       return true;
@@ -136,14 +151,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(certificateModel.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateCertificate(certificateModel.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getCertificates();
       Get.back();
       return true;
@@ -160,14 +178,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(complexionModel.toJson());
 
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeComplexion,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getComplexion();
       Get.back();
       return true;
@@ -184,14 +205,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(complexionModel.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteComplexion(complexionModel.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getComplexion();
       Get.back();
       return true;
@@ -209,14 +233,17 @@ class DropDownsController extends GetxController {
       final body = d.FormData.fromMap(complexionModel.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
 
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateComplexion(complexionModel.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getComplexion();
       Get.back();
       return true;
@@ -232,14 +259,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(marital.toJson());
 
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeMaritalStatus,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getMaritalStatuss();
       Get.back();
       return true;
@@ -255,14 +285,17 @@ class DropDownsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(marital.toJson());
       body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.deleteMaritalStatus(marital.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getMaritalStatuss();
       Get.back();
       return true;
@@ -279,14 +312,17 @@ class DropDownsController extends GetxController {
       final body = d.FormData.fromMap(marital.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
 
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateMaritalStatus(marital.id!),
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
       await _globalController.getMaritalStatuss();
       Get.back();
       return true;

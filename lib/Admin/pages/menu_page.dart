@@ -4,6 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/models/drawer_menu_item.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:sizer/sizer.dart';
 
@@ -11,7 +13,7 @@ import 'package:sizer/sizer.dart';
 class MenuPage extends StatelessWidget {
   MenuPage(
       {super.key, required this.onSelectedItem, required this.currentItem});
-
+  AuthController _authController = Get.find();
   final ValueChanged<DrawerMenuItem> onSelectedItem;
   final DrawerMenuItem currentItem;
   Widget buildMenuItem(DrawerMenuItem item) => ListTile(
@@ -35,8 +37,11 @@ class MenuPage extends StatelessWidget {
         // selected: currentItem == item,
         onTap: () async {
           if (item.titleEn == "Log out") {
-            logSuccess("msg");
-            Get.back();
+            await _authController.handleSignOut();
+            await Utils.deleteToken();
+            await Utils.deleteRemmemberMe();
+            await Utils.deleteFBToken();
+            Get.offAll(() => const LoginPage());
           } else {
             onSelectedItem(item);
           }
@@ -106,8 +111,10 @@ class MyAdminMenuItems {
       titleAr: "ملفات الشركات الشخصية");
   static const categories = DrawerMenuItem(
       titleEn: "Categories", icon: EvaIcons.grid, titleAr: "الفئات");
-  static const bookings = DrawerMenuItem(
-      titleEn: "Bookings", icon: EvaIcons.calendarOutline, titleAr: "الحجوزات");
+  static const medicalRequests = DrawerMenuItem(
+      titleEn: "Medical request",
+      icon: EvaIcons.calendarOutline,
+      titleAr: "طلبات الكشوف الطبية");
   static const advertisements = DrawerMenuItem(
       titleEn: "Advertisements", icon: EvaIcons.volumeUp, titleAr: "الإعلانات");
   // static const refunds = DrawerMenuItem(
@@ -136,7 +143,7 @@ class MyAdminMenuItems {
     userProfiles,
     companyProfiles,
     categories,
-    bookings,
+    medicalRequests,
     advertisements,
     // refunds,
     acountStatment,

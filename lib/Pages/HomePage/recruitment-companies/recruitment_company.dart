@@ -51,6 +51,8 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
         .map((e) =>
             Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
         .toList();
+    tabController = TabController(length: tabs.length, vsync: this);
+
     for (var employee in widget.company.companyInformation!.employees!) {
       jobsForFilter.addAll(employee.jobs!
           .where((job) =>
@@ -72,7 +74,6 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
         .toList();
 
     employeesToShow = employees;
-    tabController = TabController(length: tabs.length, vsync: this);
     super.initState();
   }
 
@@ -120,34 +121,64 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                         size: 22.0.sp,
                       ),
                     ),
-                    GestureDetector(
-                      child: Icon(
-                        EvaIcons.messageCircle,
-                        color: Colors.white,
-                        size: 22.0.sp,
-                      ),
-                      onTap: () async {
-                        MyChat? chat = await _chatController.storeChat(
-                            id: widget.company.id!);
-                        if (chat != null) {
-                          Get.to(
-                            () => ChatPage(
-                              chatId: chat.id!,
-                              receiverId: _globalController.me.id ==
-                                      chat.participants![0].userId
-                                  ? chat.participants![1].chatId!
-                                  : chat.participants![0].chatId!,
-                              recieverName: _globalController.me.id ==
-                                      chat.participants![0].userId
-                                  ? chat.participants![1].user!.fullName!
-                                  : chat.participants![0].user!.fullName!,
-                              recieverImage: '',
+                    _globalController.guest
+                        ? Container()
+                        : GestureDetector(
+                            child: Icon(
+                              EvaIcons.messageCircle,
+                              color: Colors.white,
+                              size: 22.0.sp,
                             ),
-                          );
-                        }
-                        // Get.to(() => const MessagesPage());
-                      },
-                    ),
+                            onTap: () async {
+                              logSuccess(widget.company.id!);
+                              MyChat? chat = await _chatController.storeChat(
+                                  id: widget.company.id!);
+
+                              if (chat != null) {
+                                Get.to(
+                                  () => ChatPage(
+                                    chatId: chat.id!,
+                                    receiverId: _globalController.me.id ==
+                                            chat.participants![0].userId
+                                        ? chat.participants![1].chatId!
+                                        : chat.participants![0].chatId!,
+                                    recieverName: _globalController.me.id ==
+                                            chat.participants![0].userId
+                                        ? chat.participants![1].user!.fullName!
+                                        : chat.participants![0].user!.fullName!,
+                                    recieverImage:
+                                        _globalController.me.userType ==
+                                                "company"
+                                            ? _globalController.me.id ==
+                                                    chat.participants![0].userId
+                                                ? chat
+                                                    .participants![1]
+                                                    .user!
+                                                    .userInformation!
+                                                    .personalPhoto!
+                                                : chat
+                                                    .participants![0]
+                                                    .user!
+                                                    .userInformation!
+                                                    .personalPhoto!
+                                            : _globalController.me.id ==
+                                                    chat.participants![0].userId
+                                                ? chat
+                                                    .participants![1]
+                                                    .user!
+                                                    .companyInformation!
+                                                    .companyLogo!
+                                                : chat
+                                                    .participants![0]
+                                                    .user!
+                                                    .companyInformation!
+                                                    .companyLogo!,
+                                  ),
+                                );
+                              }
+                              // Get.to(() => const MessagesPage());
+                            },
+                          ),
                   ],
                 ),
                 spaceY(1.0.h),
@@ -388,10 +419,56 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                                     .isNotEmpty,
                                 child: ProfileCard(
                                   employee: employeesToShow[index],
-                                  trailing: const Icon(
-                                    EvaIcons.heart,
-                                    color: Color(0xffBFBFBF),
-                                  ),
+                                  trailing: _globalController.guest
+                                      ? Container()
+                                      : GestureDetector(
+                                          onTap: () async {
+                                            if (employeesToShow[index]
+                                                        .favourite !=
+                                                    null &&
+                                                employeesToShow[index]
+                                                        .favourite!
+                                                        .userId ==
+                                                    _globalController.me.id &&
+                                                employeesToShow[index]
+                                                        .favourite!
+                                                        .type ==
+                                                    0) {
+                                              await _globalController
+                                                  .deleteFavourite(
+                                                detect: 0,
+                                                id: employeesToShow[index]
+                                                    .favourite!
+                                                    .id!,
+                                              );
+                                            } else {
+                                              await _globalController
+                                                  .storeFavourite(
+                                                      typeId:
+                                                          employeesToShow[index]
+                                                              .id!,
+                                                      type: 0);
+                                            }
+                                          },
+                                          child: Icon(
+                                            EvaIcons.heart,
+                                            color: employeesToShow[index]
+                                                            .favourite !=
+                                                        null &&
+                                                    employeesToShow[index]
+                                                            .favourite!
+                                                            .userId ==
+                                                        _globalController
+                                                            .me.id &&
+                                                    employeesToShow[index]
+                                                            .favourite!
+                                                            .type ==
+                                                        0
+                                                ? Colors.red
+                                                : const Color(0xffD4D4D4),
+                                            size: 13.0.sp,
+                                          ),
+                                        ),
                                   isOffer: offerFlag,
                                 ),
                               ),

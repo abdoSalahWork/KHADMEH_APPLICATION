@@ -17,6 +17,7 @@ import 'package:khedma/Pages/HomePage/models/user_home_page_model.dart';
 import 'package:khedma/Pages/personal%20page/submit_files_page.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
+import 'package:khedma/models/bank_model.dart';
 import 'package:khedma/models/certificate_.dart';
 import 'package:khedma/models/city.dart';
 import 'package:khedma/models/company_request_model.dart';
@@ -31,8 +32,11 @@ import 'package:khedma/models/relegion.dart';
 import 'package:khedma/models/reservation_model.dart';
 
 class GlobalController extends GetxController {
-  EmployeesController _employeesController = Get.find();
-  CompaniesController _companiesController = Get.find();
+  bool guest = false;
+  void updateGuest({required bool g}) {
+    guest = g;
+  }
+
   final Dio dio = Utils().dio;
   List<Country> countries = [];
   List<City> cities = [];
@@ -46,14 +50,52 @@ class GlobalController extends GetxController {
   List<CategoryModel> categories = [];
   UserHomePageModel userHomePage = UserHomePageModel();
   CompanyHomePageModel companyHomePage = CompanyHomePageModel();
+  List<CleaningBooking> cleaningBookings = [];
   bool getUserHomePageFlag = false;
   List<OverView> overView = [];
+  List<BankModel> banks = [];
+  Future getBanks() async {
+    try {
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getBanks,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      List<BankModel> tmp = [];
+      for (var i in res.data['data']) {
+        BankModel t = BankModel.fromJson(i);
+        tmp.add(t);
+      }
+      banks = tmp;
+      logSuccess("Banks get done");
+
+      update();
+    } on DioException catch (e) {
+      update();
+      logError(e.response!.data);
+      logError("Banks failed");
+    }
+  }
 
   bool getCategoriesFlag = false;
   Future getCategories() async {
     try {
       getCategoriesFlag = true;
-      var res = await dio.get(EndPoints.getAllCategories);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllCategories,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<CategoryModel> tmp = [];
       for (var i in res.data['data']) {
         CategoryModel t = CategoryModel.fromJson(i);
@@ -63,9 +105,10 @@ class GlobalController extends GetxController {
       logSuccess("Categories get done");
       getCategoriesFlag = false;
       update();
-    } on DioException {
+    } on DioException catch (e) {
       getCategoriesFlag = false;
       update();
+      logError(e.response!.data);
       logError("Categories failed");
     }
   }
@@ -81,7 +124,8 @@ class GlobalController extends GetxController {
         EndPoints.getAllCompanyServices,
         options: Options(
           headers: {
-            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );
@@ -125,7 +169,7 @@ class GlobalController extends GetxController {
       Get.back();
       return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
     return false;
@@ -169,7 +213,8 @@ class GlobalController extends GetxController {
         EndPoints.getUserHomePage,
         options: Options(
           headers: {
-            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );
@@ -195,7 +240,8 @@ class GlobalController extends GetxController {
         EndPoints.getRecruitmentCompanyHomePage,
         options: Options(
           headers: {
-            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );
@@ -209,9 +255,7 @@ class GlobalController extends GetxController {
         OverView(companyHomePage.bookedEmployeesCount!, "booked".tr),
       ];
       await getReservations();
-      companyHomePage.requests!
-          .removeWhere((element) => element.document == null);
-      logSuccess("length:" + companyHomePage.requests!.length.toString());
+
       getCompanyHomePageFlag = false;
       update();
     } on DioException catch (e) {
@@ -231,23 +275,17 @@ class GlobalController extends GetxController {
         EndPoints.getCleanCompanyHomePage,
         options: Options(
           headers: {
-            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );
-      companyHomePage = CompanyHomePageModel.fromJson(res.data['employees']);
-      logSuccess("CompanyHomePage get done");
-      // logError(companyHomePage.toJson());
-      overView = [
-        OverView(companyHomePage.allEmplyeesCount!, "all_employees".tr),
-        OverView(companyHomePage.availableEmployeesCount!, "available".tr),
-        OverView(companyHomePage.pendingEmployeesCount!, "pending".tr),
-        OverView(companyHomePage.bookedEmployeesCount!, "booked".tr),
-      ];
-      await getReservations();
-      companyHomePage.requests!
-          .removeWhere((element) => element.document == null);
-      logSuccess("length:" + companyHomePage.requests!.length.toString());
+      List<CleaningBooking> tmp = [];
+      for (var i in res.data['bookings']) {
+        CleaningBooking t = CleaningBooking.fromJson(i);
+        tmp.add(t);
+      }
+      cleaningBookings = tmp;
       getCompanyHomePageFlag = false;
       update();
     } on DioException catch (e) {
@@ -262,7 +300,16 @@ class GlobalController extends GetxController {
   Future getjobs() async {
     try {
       getjobsFlag = true;
-      var res = await dio.get(EndPoints.getAllJobs);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllJobs,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<JobModel> tmp = [];
       for (var i in res.data['data']) {
         JobModel t = JobModel.fromJson(i);
@@ -285,7 +332,16 @@ class GlobalController extends GetxController {
   Future getlanguages() async {
     try {
       getlanguagesFlag = true;
-      var res = await dio.get(EndPoints.getAllLanguages);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllLanguages,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<LanguageModel> tmp = [];
       for (var i in res.data['data']) {
         LanguageModel t = LanguageModel.fromJson(i);
@@ -306,7 +362,16 @@ class GlobalController extends GetxController {
   Future getCertificates() async {
     try {
       getCertificatesFlag = true;
-      var res = await dio.get(EndPoints.getAllCertificate);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllCertificate,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<CertificateModel> tmp = [];
       for (var i in res.data['data']) {
         CertificateModel t = CertificateModel.fromJson(i);
@@ -327,7 +392,16 @@ class GlobalController extends GetxController {
   Future getMaritalStatuss() async {
     try {
       getMaritalStatusFlag = true;
-      var res = await dio.get(EndPoints.getAllMaritalStatus);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllMaritalStatus,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<MaritalStatusModel> tmp = [];
       for (var i in res.data['data']) {
         MaritalStatusModel t = MaritalStatusModel.fromJson(i);
@@ -348,7 +422,16 @@ class GlobalController extends GetxController {
   Future getRelegions() async {
     try {
       getRelegionsFlag = true;
-      var res = await dio.get(EndPoints.getAllRelegions);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllRelegions,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<RelegionModel> tmp = [];
       for (var i in res.data['data']) {
         RelegionModel t = RelegionModel.fromJson(i);
@@ -369,7 +452,16 @@ class GlobalController extends GetxController {
   Future getComplexion() async {
     try {
       getComplexionFlag = true;
-      var res = await dio.get(EndPoints.getAllComplexions);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllComplexions,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<ComplexionModel> tmp = [];
       for (var i in res.data['data']) {
         ComplexionModel t = ComplexionModel.fromJson(i);
@@ -390,7 +482,16 @@ class GlobalController extends GetxController {
   Future getCountries() async {
     try {
       getCountriesFlag = true;
-      var res = await dio.get(EndPoints.getAllCountries);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllCountries,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<Country> tmp = [];
       for (var i in res.data['data']) {
         Country t = Country.fromJson(i);
@@ -412,7 +513,16 @@ class GlobalController extends GetxController {
   Future getCities() async {
     try {
       getCitiesFlag = true;
-      var res = await dio.get(EndPoints.getAllCities);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllCities,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<City> tmp = [];
       for (var i in res.data['data']) {
         City t = City.fromJson(i);
@@ -440,14 +550,21 @@ class GlobalController extends GetxController {
         EndPoints.me,
         options: Options(
           headers: {
-            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
           },
         ),
       );
 
-      // logError(res.data.runtimeType);
-      if (res.data == "") return false;
-      me = Me.fromJson(res.data['data']);
+      logError(res.data);
+      if (res.data == "") {
+        return false;
+      } else if (res.data != "" && res.data['data'] == null) {
+        me = Me.fromJson(res.data);
+      } else {
+        me = Me.fromJson(res.data['data']);
+      }
+
       if (me.userInformation != null) {
         if (me.userInformation!.nationalityId == null) {
           me.userInformation!.nationalityId = 2;
@@ -489,7 +606,16 @@ class GlobalController extends GetxController {
   Future getRegions() async {
     try {
       getRegionsFlag = true;
-      var res = await dio.get(EndPoints.getAllRegions);
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getAllRegions,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<Region> tmp = [];
       for (var i in res.data['data']) {
         Region t = Region.fromJson(i);
@@ -531,7 +657,8 @@ class GlobalController extends GetxController {
     }
   }
 
-  Future updateUserProfile({required UserInformation userInfo}) async {
+  Future updateUserProfile(
+      {required UserInformation userInfo, PlatformFile? personaPhoto}) async {
     try {
       Get.dialog(const Center(
         child: CircularProgressIndicator(),
@@ -540,7 +667,6 @@ class GlobalController extends GetxController {
       final body = d.FormData.fromMap(userInfo.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
       // PlatformFile? idPhotoNationality = userInfo.idPhotoNationality;
-      // PlatformFile? personaPhoto = userInfo.personalPhoto;
 
       // if (idPhotoNationality != null) {
       //   body.files.add(MapEntry(
@@ -552,21 +678,27 @@ class GlobalController extends GetxController {
       //     ),
       //   ));
       // }
-      // if (personaPhoto != null) {
-      //   body.files.add(MapEntry(
-      //     "personal_photo",
-      //     await d.MultipartFile.fromFile(
-      //       personaPhoto.path!,
-      //       filename: personaPhoto.name,
-      //       contentType: MediaType('image', '*'),
-      //     ),
-      //   ));
-      // }
+      if (personaPhoto != null) {
+        body.files.add(MapEntry(
+          "personal_photo",
+          await d.MultipartFile.fromFile(
+            personaPhoto.path!,
+            filename: personaPhoto.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      logSuccess(body.files);
+      String? token = await Utils.readToken();
+
       await dio.post(
         EndPoints.updateProfileUser,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
         ),
       );
       await getMe();
@@ -582,7 +714,8 @@ class GlobalController extends GetxController {
   }
 
   Future updateCompanyProfile(
-      {required m.CompanyInformation companyInformation}) async {
+      {required m.CompanyInformation companyInformation,
+      PlatformFile? logo}) async {
     try {
       Get.dialog(const Center(
         child: CircularProgressIndicator(),
@@ -590,21 +723,20 @@ class GlobalController extends GetxController {
 
       final body = d.FormData.fromMap(companyInformation.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      if (companyInformation.companyLogo.runtimeType == PlatformFile) {
-        PlatformFile? logo = companyInformation.companyLogo;
-        // PlatformFile? personaPhoto = userInfo.personalPhoto;
 
-        if (logo != null) {
-          body.files.add(MapEntry(
-            "company_logo",
-            await d.MultipartFile.fromFile(
-              logo.path!,
-              filename: logo.name,
-              contentType: MediaType('image', '*'),
-            ),
-          ));
-        }
+      // PlatformFile? personaPhoto = userInfo.personalPhoto;
+
+      if (logo != null) {
+        body.files.add(MapEntry(
+          "company_logo",
+          await d.MultipartFile.fromFile(
+            logo.path!,
+            filename: logo.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
       }
+
       // if (personaPhoto != null) {
       //   body.files.add(MapEntry(
       //     "personal_photo",
@@ -615,11 +747,15 @@ class GlobalController extends GetxController {
       //     ),
       //   ));
       // }
+      String? token = await Utils.readToken();
       await dio.post(
         EndPoints.updateProfileCompany,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
       await getMe();
@@ -649,22 +785,25 @@ class GlobalController extends GetxController {
         "review_value": reviewValue,
         "review": review,
       });
-
-      await dio.post(
+      String? token = await Utils.readToken();
+      var res = await dio.post(
         EndPoints.storeReview,
         data: body,
         options: Options(
-          headers: {"Accept": "application/json"},
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
         ),
       );
-
+      logSuccess(res.data);
       Get.back();
       return true;
     } on DioException catch (error) {
       Get.back();
       logError(error.response!.data);
 
-      return error.response!.data;
+      return null;
     }
   }
 
@@ -694,7 +833,8 @@ class GlobalController extends GetxController {
       );
 
       Get.back();
-
+      EmployeesController _employeesController = Get.find();
+      CompaniesController _companiesController = Get.find();
       if (type == 0) {
         await _employeesController.getEmployees();
         // _employeesController.employeeToShow
@@ -734,6 +874,8 @@ class GlobalController extends GetxController {
       Get.back();
       // employeeToShow.where((element) => element.id == typeId).first.favourite =
       //     Favourite();
+      EmployeesController _employeesController = Get.find();
+      CompaniesController _companiesController = Get.find();
       if (detect == 0) await _employeesController.getEmployees();
       if (detect == 1) await _companiesController.getRecruitmentCompanies();
       if (detect == 1) await _companiesController.getCleaningCompanies();
@@ -762,14 +904,15 @@ class GlobalController extends GetxController {
     }
   }
 
-  Future<bool> requestMedicalExamination() async {
+  Future<Map<String, String>?> requestMedicalExamination(
+      {required int id}) async {
     try {
       Utils.circularIndicator();
       // final body = d.FormData.fromMap(employee.toJson());
       // body.fields.add(const MapEntry("_method", "DELETE"));
       String? token = await Utils.readToken();
 
-      await dio.post(EndPoints.requestMedicalExamination,
+      var res = await dio.get(EndPoints.requestMedicalExamination(id),
           // data: body,
           options: Options(headers: {
             "Accept": "application/json",
@@ -778,12 +921,12 @@ class GlobalController extends GetxController {
 
       // await getCompanyEmployees();
       Get.back();
-      return true;
+      return {res.data['InvoiceId'].toString(): res.data['InvoiceURL']};
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
-    return false;
+    return null;
   }
 
   Future<bool> requestReservationExtension(
@@ -948,24 +1091,53 @@ class GlobalController extends GetxController {
     return false;
   }
 
-  Future<bool> approveDocs(
+  Future<bool> approveCleanOrder(
       {required int approve, required int id, String? desc}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap({
+        "_method": "PUT",
         "admin_approve": approve,
         if (desc != null) "desc": desc,
       });
-
+      logSuccess(approve);
       String? token = await Utils.readToken();
 
-      await dio.post(EndPoints.approveDocs(id),
+      await dio.post(EndPoints.updateCleanOrder(id),
           data: body,
           options: Options(headers: {
             "Accept": "application/json",
             "Authorization": "Bearer $token"
           }));
 
+      await getCleanCompanyHomePage();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      Get.back();
+    }
+    return false;
+  }
+
+  Future<bool> approveDocs(
+      {required int approve, required int id, String? desc}) async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData.fromMap({
+        "approve": approve,
+        if (desc != null) "desc": desc,
+      });
+
+      String? token = await Utils.readToken();
+
+      var res = await dio.post(EndPoints.approveDocs(id),
+          data: body,
+          options: Options(headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          }));
+      logSuccess(res.data);
       await getRecruitmentCompanyHomePage();
       Get.back();
       return true;

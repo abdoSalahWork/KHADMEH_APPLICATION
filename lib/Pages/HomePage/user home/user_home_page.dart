@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Pages/HomePage/cleaning%20companies/cleaning_company.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
@@ -90,6 +91,24 @@ class _UserHomePageState extends State<UserHomePage> {
   String button1Text = "upload_id".tr;
   String button2Text = "upload_personal_photo".tr;
   final GlobalController _globalController = Get.find();
+  final AdminController _adminController = Get.find();
+  Future getAllThings() async {
+    await _adminController.getSettingAdmin();
+    await _globalController.getCities();
+    await _globalController.getCountries();
+    await _globalController.getRegions();
+    await _globalController.setLocale();
+    await _globalController.getComplexion();
+    await _globalController.getRelegions();
+    await _globalController.getMaritalStatuss();
+    await _globalController.getCertificates();
+    await _globalController.getlanguages();
+    await _globalController.getjobs();
+    await _adminController.getContacts();
+    await _adminController.getAbouts();
+    await _globalController.getCategories();
+  }
+
   final EmployeesController _employeesController = Get.find();
   String region = "";
   String nationality = "";
@@ -112,10 +131,18 @@ class _UserHomePageState extends State<UserHomePage> {
   ];
   @override
   void initState() {
-    completedRegisterFlag = _globalController.me.userInformation != null;
-    _employeesController.getEmployees();
-    _chatController.getChats();
-    _globalController.getUserHomePage();
+    if (_globalController.guest) {
+      completedRegisterFlag = true;
+      _globalController.getUserHomePage();
+      getAllThings();
+    } else {
+      completedRegisterFlag = _globalController.me.userInformation != null;
+      _globalController.getUserHomePage();
+
+      _employeesController.getEmployees();
+      _chatController.getChats();
+      getAllThings();
+    }
     h2 = 470.0.sp;
     h = 330.0.sp;
     h3 = 400.0.sp;
@@ -153,67 +180,74 @@ class _UserHomePageState extends State<UserHomePage> {
                         ),
                         spaceX(10),
                         coloredText(
-                          text: "Ammourie".tr,
+                          text: _globalController.guest
+                              ? "Guest"
+                              : _globalController.me.fullName ?? "",
                           fontSize: 16.0.sp,
                           fontWeight: FontWeight.w500,
                         ),
                       ]),
-                      GetBuilder<ChatController>(builder: (chatController) {
-                        return Row(children: [
-                          badges.Badge(
-                            position:
-                                badges.BadgePosition.topEnd(top: 0, end: 0),
-                            child: GestureDetector(
-                              onTap: () => Get.to(() => NotificationsPage(),
-                                  transition: Transition.downToUp),
-                              child: Icon(
-                                EvaIcons.bell,
-                                color: const Color(0xffD1D1D1),
-                                size: 25.0.sp,
-                              ),
-                            ),
-                          ),
-                          spaceX(10),
-                          badges.Badge(
-                            showBadge: chatController.unreadChatsFlag,
-                            position:
-                                badges.BadgePosition.topEnd(top: 0, end: 0),
-                            child: GestureDetector(
-                              child: Icon(
-                                EvaIcons.messageCircle,
-                                color: const Color(0xffD1D1D1),
-                                size: 22.0.sp,
-                              ),
-                              onTap: () => Get.to(() => const MessagesPage()),
-                            ),
-                          ),
-                          spaceX(10),
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(
-                                  () => const PersonalPage(
-                                      employeeType: EmployeeType.clean),
-                                  transition: Transition.downToUp);
-                            },
-                            child: Container(
-                              width: 45,
-                              height: 45,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                // border: Border.all(
-                                //   width: 1,
-                                //   color: const Color(0xffD1D1D1),
-                                // ),
-                                image: DecorationImage(
-                                  image: NetworkImage(_globalController
-                                      .me.userInformation!.personalPhoto!),
-                                  fit: BoxFit.cover,
+                      _globalController.guest
+                          ? Container()
+                          : GetBuilder<ChatController>(
+                              builder: (chatController) {
+                              return Row(children: [
+                                badges.Badge(
+                                  position: badges.BadgePosition.topEnd(
+                                      top: 0, end: 0),
+                                  child: GestureDetector(
+                                    onTap: () => Get.to(
+                                        () => NotificationsPage(),
+                                        transition: Transition.downToUp),
+                                    child: Icon(
+                                      EvaIcons.bell,
+                                      color: const Color(0xffD1D1D1),
+                                      size: 25.0.sp,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ]);
-                      }),
+                                spaceX(10),
+                                badges.Badge(
+                                  showBadge: chatController.unreadChatsFlag,
+                                  position: badges.BadgePosition.topEnd(
+                                      top: 0, end: 0),
+                                  child: GestureDetector(
+                                    child: Icon(
+                                      EvaIcons.messageCircle,
+                                      color: const Color(0xffD1D1D1),
+                                      size: 22.0.sp,
+                                    ),
+                                    onTap: () =>
+                                        Get.to(() => const MessagesPage()),
+                                  ),
+                                ),
+                                spaceX(10),
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.to(
+                                        () => const PersonalPage(
+                                            employeeType: EmployeeType.clean),
+                                        transition: Transition.downToUp);
+                                  },
+                                  child: Container(
+                                    width: 45,
+                                    height: 45,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      // border: Border.all(
+                                      //   width: 1,
+                                      //   color: const Color(0xffD1D1D1),
+                                      // ),
+                                      image: DecorationImage(
+                                        image: NetworkImage(_globalController.me
+                                            .userInformation!.personalPhoto!),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]);
+                            }),
                     ],
                   ),
                   spaceY(1.5.h),
@@ -392,7 +426,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                                               .userHomePage
                                                               .companiesRecruitment![
                                                                   index]
-                                                              .reviewCompanyCount
+                                                              .reviewCompanySumReviewValue
                                                               .toString(),
                                                           fontSize: 13.0.sp,
                                                           color: Colors.black,
@@ -542,7 +576,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                                               .userHomePage
                                                               .companiesCleaning![
                                                                   index]
-                                                              .reviewCompanyCount
+                                                              .reviewCompanySumReviewValue
                                                               .toString(),
                                                           fontSize: 13.0.sp,
                                                           color: Colors.black,

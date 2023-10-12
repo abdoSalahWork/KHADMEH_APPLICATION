@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -8,18 +10,23 @@ import '../../Utils/utils.dart';
 import '../HomePage/user home/user_home_page.dart';
 
 class InvoicePage extends StatefulWidget {
-  const InvoicePage(
-      {super.key,
-      required this.invoiceId,
-      required this.employeeName,
-      required this.companyId,
-      required this.contractDuration,
-      required this.contractAmount});
+  InvoicePage({
+    super.key,
+    required this.invoiceId,
+    required this.employeeName,
+    required this.companyId,
+    required this.contractDuration,
+    required this.contractAmount,
+    required this.isOffer,
+    this.contractAmountAfterDiscount,
+  });
   final String invoiceId;
   final String employeeName;
   final int companyId;
+  final int isOffer;
   final String contractDuration;
   final String contractAmount;
+  int? contractAmountAfterDiscount;
 
   @override
   State<InvoicePage> createState() => _InvoicePageState();
@@ -193,12 +200,13 @@ class _InvoicePageState extends State<InvoicePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   coloredText(
-                                      text: "Required period:",
+                                      text: "${"contract_duration".tr}:",
                                       color: const Color(0xff919191),
                                       fontSize: 12.0.sp),
                                   spaceY(6),
                                   coloredText(
-                                    text: "2 Years",
+                                    text:
+                                        "${widget.contractDuration} ${"years".tr}",
                                     fontSize: 13.0.sp,
                                   )
                                 ]),
@@ -206,7 +214,7 @@ class _InvoicePageState extends State<InvoicePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   coloredText(
-                                      text: "Payment method used:",
+                                      text: "${"pay_method".tr}:",
                                       color: const Color(0xff919191),
                                       fontSize: 12.0.sp),
                                   spaceY(6),
@@ -228,7 +236,8 @@ class _InvoicePageState extends State<InvoicePage> {
                     ),
                     spaceX(10),
                     coloredText(
-                        text: "30 KWD",
+                        text:
+                            "${widget.isOffer == 1 ? widget.contractAmountAfterDiscount : widget.contractAmount} KWD",
                         fontSize: 13.0.sp,
                         color: Theme.of(context).colorScheme.secondary),
                   ],

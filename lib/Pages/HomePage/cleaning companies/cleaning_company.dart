@@ -1,20 +1,20 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:chips_choice/chips_choice.dart';
-import 'package:custom_rating_bar/custom_rating_bar.dart' as r;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/cleaning%20companies/cart_page.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/models/company_model.dart';
+import 'package:khedma/Pages/chat%20page/chat_page.dart';
+import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
+import 'package:khedma/Pages/chat%20page/model/my_message.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/widgets/cleaning_company_service_widget.dart';
-import 'package:khedma/widgets/my_rating_bar.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
-import '../../chat%20page/messages_page.dart';
 
 class CleaningCompany extends StatefulWidget {
   const CleaningCompany({super.key, required this.cleaningCompany});
@@ -27,6 +27,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
   PageController _pageController = PageController(initialPage: 0);
   final CompaniesController _cleaningCompanyController = Get.find();
   final GlobalController _globalController = Get.find();
+  ChatController _chatController = Get.find();
 
   List<String> tags = [
     "services".tr,
@@ -34,13 +35,14 @@ class _CleaningCompanyState extends State<CleaningCompany> {
 
   List<String> options = [
     "services".tr,
-    "rate_view".tr,
+    // "rate_view".tr,
   ];
 
   @override
   void initState() {
-    _cleaningCompanyController.geCompanyPrice();
-
+    _cleaningCompanyController.geCompanyPrice(
+        companyId: widget.cleaningCompany.id!);
+    logSuccess("companyId:" + widget.cleaningCompany.id!.toString());
     super.initState();
   }
 
@@ -49,47 +51,49 @@ class _CleaningCompanyState extends State<CleaningCompany> {
     return Scaffold(
         floatingActionButton: !tags.contains("services".tr)
             ? null
-            : Theme(
-                data: ThemeData(
-                  useMaterial3: false,
-                ),
-                child: FloatingActionButton(
-                  onPressed: () {
-                    Get.to(() => CartPage(
-                          companyId: widget.cleaningCompany.id!,
-                        ));
-                  },
-                  child: GetBuilder<CompaniesController>(builder: (c) {
-                    return badges.Badge(
-                      showBadge: c.servicesBooked.isNotEmpty,
-                      badgeContent: coloredText(
-                          text: c.servicesBooked.length.toString(),
-                          color: Colors.white),
-                      position:
-                          badges.BadgePosition.topEnd(top: -5.sp, end: -5.sp),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: AlignmentDirectional.bottomStart,
-                            end: AlignmentDirectional.topEnd,
-                            colors: [
-                              Theme.of(context).colorScheme.primary,
-                              Theme.of(context).colorScheme.secondary
-                            ],
+            : _globalController.guest
+                ? Container()
+                : Theme(
+                    data: ThemeData(
+                      useMaterial3: false,
+                    ),
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Get.to(() => CartPage(
+                              companyId: widget.cleaningCompany.id!,
+                            ));
+                      },
+                      child: GetBuilder<CompaniesController>(builder: (c) {
+                        return badges.Badge(
+                          showBadge: c.servicesBooked.isNotEmpty,
+                          badgeContent: coloredText(
+                              text: c.servicesBooked.length.toString(),
+                              color: Colors.white),
+                          position: badges.BadgePosition.topEnd(
+                              top: -5.sp, end: -5.sp),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                begin: AlignmentDirectional.bottomStart,
+                                end: AlignmentDirectional.topEnd,
+                                colors: [
+                                  Theme.of(context).colorScheme.primary,
+                                  Theme.of(context).colorScheme.secondary
+                                ],
+                              ),
+                            ),
+                            width: 60,
+                            height: 60,
+                            child: const Icon(
+                              EvaIcons.shoppingCartOutline,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        width: 60,
-                        height: 60,
-                        child: const Icon(
-                          EvaIcons.shoppingCartOutline,
-                          color: Colors.white,
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
+                        );
+                      }),
+                    ),
+                  ),
         body: Column(
           children: [
             ClipPath(
@@ -131,14 +135,65 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                             size: 22.0.sp,
                           ),
                         ),
-                        GestureDetector(
-                          child: Icon(
-                            EvaIcons.messageCircle,
-                            color: Colors.white,
-                            size: 22.0.sp,
-                          ),
-                          onTap: () => Get.to(() => const MessagesPage()),
-                        ),
+                        _globalController.guest
+                            ? Container()
+                            : GestureDetector(
+                                child: Icon(
+                                  EvaIcons.messageCircle,
+                                  color: Colors.white,
+                                  size: 22.0.sp,
+                                ),
+                                onTap: () async {
+                                  MyChat? chat =
+                                      await _chatController.storeChat(
+                                          id: widget.cleaningCompany.id!);
+                                  if (chat != null) {
+                                    Get.to(
+                                      () => ChatPage(
+                                        chatId: chat.id!,
+                                        receiverId: _globalController.me.id ==
+                                                chat.participants![0].userId
+                                            ? chat.participants![1].chatId!
+                                            : chat.participants![0].chatId!,
+                                        recieverName: _globalController.me.id ==
+                                                chat.participants![0].userId
+                                            ? chat.participants![1].user!
+                                                .fullName!
+                                            : chat.participants![0].user!
+                                                .fullName!,
+                                        recieverImage: _globalController
+                                                    .me.userType ==
+                                                "company"
+                                            ? _globalController.me.id ==
+                                                    chat.participants![0].userId
+                                                ? chat
+                                                    .participants![1]
+                                                    .user!
+                                                    .userInformation!
+                                                    .personalPhoto!
+                                                : chat
+                                                    .participants![0]
+                                                    .user!
+                                                    .userInformation!
+                                                    .personalPhoto!
+                                            : _globalController.me.id ==
+                                                    chat.participants![0].userId
+                                                ? chat
+                                                    .participants![1]
+                                                    .user!
+                                                    .companyInformation!
+                                                    .companyLogo!
+                                                : chat
+                                                    .participants![0]
+                                                    .user!
+                                                    .companyInformation!
+                                                    .companyLogo!,
+                                      ),
+                                    );
+                                  }
+                                  // Get.to(() => const MessagesPage());
+                                },
+                              ),
                       ],
                     ),
                     spaceY(1.0.h),
@@ -233,61 +288,66 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                     color: Colors.white,
                                   ),
                                 ],
-                              )
+                              ),
+                              spaceY(3.0.h),
+                              ChipsChoice<String>.multiple(
+                                padding: EdgeInsets.zero,
+                                value: tags,
+                                onChanged: (val) {},
+                                choiceItems: C2Choice.listFrom<String, String>(
+                                  source: options,
+                                  value: (i, v) => v,
+                                  label: (i, v) => v,
+                                ),
+                                // choiceStyle: C2ChipStyle.outlined(),
+                                choiceCheckmark: true,
+
+                                choiceBuilder: (item, i) => GestureDetector(
+                                  onTap: () {
+                                    if (!tags.contains(item.label)) {
+                                      tags = [];
+                                      tags.add(item.label);
+                                    }
+                                    _pageController.jumpToPage(
+                                        options.indexOf(item.label));
+
+                                    setState(() {});
+                                  },
+                                  child: Container(
+                                    // width: 45.0.w,
+                                    height: 40,
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 2.0.w),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 6.w),
+                                    decoration: BoxDecoration(
+                                        color: !tags.contains(item.label)
+                                            ? const Color(0xffE8E8E8)
+                                                .withOpacity(0)
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: !tags.contains(item.label)
+                                              ? const Color(0xffF1F1F1)
+                                              : Colors.transparent,
+                                        )),
+                                    child: Center(
+                                      child: coloredText(
+                                          text: item.label.tr,
+                                          color: !tags.contains(item.label)
+                                              ? const Color(0xffF1F1F1)
+                                              : Colors.white,
+                                          fontSize: 12.0.sp),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         )
                       ],
-                    ),
-                    spaceY(3.0.h),
-                    ChipsChoice<String>.multiple(
-                      padding: EdgeInsets.zero,
-                      value: tags,
-                      onChanged: (val) {},
-                      choiceItems: C2Choice.listFrom<String, String>(
-                        source: options,
-                        value: (i, v) => v,
-                        label: (i, v) => v,
-                      ),
-                      // choiceStyle: C2ChipStyle.outlined(),
-                      choiceCheckmark: true,
-
-                      choiceBuilder: (item, i) => GestureDetector(
-                        onTap: () {
-                          if (!tags.contains(item.label)) {
-                            tags = [];
-                            tags.add(item.label);
-                          }
-                          _pageController
-                              .jumpToPage(options.indexOf(item.label));
-
-                          setState(() {});
-                        },
-                        child: Container(
-                          // width: 45.0.w,
-                          height: 40,
-                          margin: EdgeInsets.symmetric(horizontal: 2.0.w),
-                          padding: EdgeInsets.symmetric(horizontal: 6.w),
-                          decoration: BoxDecoration(
-                              color: !tags.contains(item.label)
-                                  ? const Color(0xffE8E8E8).withOpacity(0)
-                                  : Theme.of(context).colorScheme.secondary,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: !tags.contains(item.label)
-                                    ? const Color(0xffF1F1F1)
-                                    : Colors.transparent,
-                              )),
-                          child: Center(
-                            child: coloredText(
-                                text: item.label.tr,
-                                color: !tags.contains(item.label)
-                                    ? const Color(0xffF1F1F1)
-                                    : Colors.white,
-                                fontSize: 12.0.sp),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -345,125 +405,125 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                   itemCount: widget.cleaningCompany.cleaningServices!.length,
                 );
         }),
-        ListView(
-          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-          children: [
-            coloredText(
-              text: "rate_view".tr,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const Divider(
-              color: Color(0xffDBDBDB),
-            ),
-            spaceY(10),
-            Row(
-              children: [
-                coloredText(
-                  text: "4.5",
-                  fontSize: 35.0.sp,
-                  color: Theme.of(context).colorScheme.primary,
-                  // fontWeight: FontWeight.bold,
-                ),
-                spaceX(30),
-                Expanded(
-                  child: Column(
-                    children: [
-                      const MyRatingBar(label: '5', value: 50),
-                      spaceY(3),
-                      const MyRatingBar(label: '4', value: 20),
-                      spaceY(3),
-                      const MyRatingBar(label: '3', value: 70),
-                      spaceY(3),
-                      const MyRatingBar(label: '2', value: 10),
-                      spaceY(3),
-                      const MyRatingBar(label: '1', value: 90),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            spaceY(20),
-            ListView.separated(
-                shrinkWrap: true,
-                primary: false,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) => Column(
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 12.0.w,
-                              height: 12.0.w,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image:
-                                        AssetImage("assets/images/image.png"),
-                                    fit: BoxFit.cover),
-                              ),
-                            ),
-                            spaceX(10),
-                            coloredText(
-                              text: "Ahmad ALi",
-                              color: Colors.black,
-                              fontSize: 14.0.sp,
-                            )
-                          ],
-                        ),
-                        Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: r.RatingBar.readOnly(
-                              isHalfAllowed: true,
-                              filledIcon: Icons.star_rounded,
-                              halfFilledIcon: Icons.star_half_rounded,
-                              emptyIcon: Icons.star_border_rounded,
-                              filledColor: Colors.black,
-                              halfFilledColor: Colors.black,
-                              emptyColor: Colors.black,
-                              initialRating: 3.5,
-                              maxRating: 5,
-                              size: 18.0.sp,
-                            )
-                            //  RatingBar.builder(
-                            //   initialRating: 4.5,
-                            //   minRating: 0,
-                            //   direction: Axis.horizontal,
-                            //   allowHalfRating: true,
-                            //   itemCount: 5,
-                            //   itemSize: 17.0.sp,unratedColor: Colors.transparent,
-                            //   itemPadding:
-                            //       EdgeInsets.symmetric(horizontal: 4.0),
-                            //   itemBuilder: (context, index) {
-                            //     if (index < 4.5) {
-                            //       return const Icon(
-                            //         Icons.star_rounded,
-                            //         color: Colors.black,
-                            //       );
-                            //     } else {
-                            //       return const Icon(
-                            //         Icons.star_outline_rounded,
-                            //         color: Colors.black,
-                            //       );
-                            //     }
-                            //   },
-                            //   onRatingUpdate: (rating) {
-                            //     print(rating);
-                            //   },
-                            // ),
+        // ListView(
+        //   padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+        //   children: [
+        //     coloredText(
+        //       text: "rate_view".tr,
+        //       color: Theme.of(context).colorScheme.primary,
+        //     ),
+        //     const Divider(
+        //       color: Color(0xffDBDBDB),
+        //     ),
+        //     spaceY(10),
+        //     Row(
+        //       children: [
+        //         coloredText(
+        //           text: "4.5",
+        //           fontSize: 35.0.sp,
+        //           color: Theme.of(context).colorScheme.primary,
+        //           // fontWeight: FontWeight.bold,
+        //         ),
+        //         spaceX(30),
+        //         Expanded(
+        //           child: Column(
+        //             children: [
+        //               const MyRatingBar(label: '5', value: 50),
+        //               spaceY(3),
+        //               const MyRatingBar(label: '4', value: 20),
+        //               spaceY(3),
+        //               const MyRatingBar(label: '3', value: 70),
+        //               spaceY(3),
+        //               const MyRatingBar(label: '2', value: 10),
+        //               spaceY(3),
+        //               const MyRatingBar(label: '1', value: 90),
+        //             ],
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     spaceY(20),
+        //     ListView.separated(
+        //         shrinkWrap: true,
+        //         primary: false,
+        //         padding: EdgeInsets.zero,
+        //         physics: const NeverScrollableScrollPhysics(),
+        //         itemBuilder: (context, index) => Column(
+        //               children: [
+        //                 Row(
+        //                   children: [
+        //                     Container(
+        //                       width: 12.0.w,
+        //                       height: 12.0.w,
+        //                       decoration: const BoxDecoration(
+        //                         shape: BoxShape.circle,
+        //                         image: DecorationImage(
+        //                             image:
+        //                                 AssetImage("assets/images/image.png"),
+        //                             fit: BoxFit.cover),
+        //                       ),
+        //                     ),
+        //                     spaceX(10),
+        //                     coloredText(
+        //                       text: "Ahmad ALi",
+        //                       color: Colors.black,
+        //                       fontSize: 14.0.sp,
+        //                     )
+        //                   ],
+        //                 ),
+        //                 Align(
+        //                     alignment: AlignmentDirectional.centerStart,
+        //                     child: r.RatingBar.readOnly(
+        //                       isHalfAllowed: true,
+        //                       filledIcon: Icons.star_rounded,
+        //                       halfFilledIcon: Icons.star_half_rounded,
+        //                       emptyIcon: Icons.star_border_rounded,
+        //                       filledColor: Colors.black,
+        //                       halfFilledColor: Colors.black,
+        //                       emptyColor: Colors.black,
+        //                       initialRating: 3.5,
+        //                       maxRating: 5,
+        //                       size: 18.0.sp,
+        //                     )
+        //                     //  RatingBar.builder(
+        //                     //   initialRating: 4.5,
+        //                     //   minRating: 0,
+        //                     //   direction: Axis.horizontal,
+        //                     //   allowHalfRating: true,
+        //                     //   itemCount: 5,
+        //                     //   itemSize: 17.0.sp,unratedColor: Colors.transparent,
+        //                     //   itemPadding:
+        //                     //       EdgeInsets.symmetric(horizontal: 4.0),
+        //                     //   itemBuilder: (context, index) {
+        //                     //     if (index < 4.5) {
+        //                     //       return const Icon(
+        //                     //         Icons.star_rounded,
+        //                     //         color: Colors.black,
+        //                     //       );
+        //                     //     } else {
+        //                     //       return const Icon(
+        //                     //         Icons.star_outline_rounded,
+        //                     //         color: Colors.black,
+        //                     //       );
+        //                     //     }
+        //                     //   },
+        //                     //   onRatingUpdate: (rating) {
+        //                     //     print(rating);
+        //                     //   },
+        //                     // ),
 
-                            ),
-                        spaceY(10),
-                        coloredText(
-                            text:
-                                "Lorem ipsum dolor sit amet consectetur adipiscing elit",
-                            color: const Color(0xff919191))
-                      ],
-                    ),
-                separatorBuilder: (context, index) => spaceY(20),
-                itemCount: 10),
-            spaceY(20),
-          ],
-        ),
+        //                     ),
+        //                 spaceY(10),
+        //                 coloredText(
+        //                     text:
+        //                         "Lorem ipsum dolor sit amet consectetur adipiscing elit",
+        //                     color: const Color(0xff919191))
+        //               ],
+        //             ),
+        //         separatorBuilder: (context, index) => spaceY(20),
+        //         itemCount: 10),
+        //     spaceY(20),
+        //   ],
+        // ),
       ];
 }

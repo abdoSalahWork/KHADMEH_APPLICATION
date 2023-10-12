@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
+
 import '../Utils/utils.dart';
 
 class MyRatingBar extends StatelessWidget {
@@ -7,9 +8,11 @@ class MyRatingBar extends StatelessWidget {
     super.key,
     required this.label,
     required this.value,
+    required this.maxVal,
   });
   final String label;
   final double value;
+  final double maxVal;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -22,7 +25,7 @@ class MyRatingBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             backgroundColor: const Color(0xffE9E9E9),
             progressColor: Theme.of(context).colorScheme.secondary,
-            maxValue: 100,
+            maxValue: maxVal,
             currentValue: value,
           ),
         ),

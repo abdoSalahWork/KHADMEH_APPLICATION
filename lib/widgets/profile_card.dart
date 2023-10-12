@@ -72,11 +72,13 @@ class ProfileCard extends StatelessWidget {
                       coloredText(
                         text:
                             '${int.parse(employee.contractAmount!) / int.parse(employee.contractDuration!)}/Y',
-                        color: isOffer
+                        color: employee.isOffer == 1
                             ? const Color(0xff919191)
                             : Theme.of(context).colorScheme.tertiary,
                         fontSize: 8.0.sp,
-                        decoration: isOffer ? TextDecoration.lineThrough : null,
+                        decoration: employee.isOffer == 1
+                            ? TextDecoration.lineThrough
+                            : null,
                       ),
                       employee.isOffer != 1 ? Container() : spaceX(4.sp),
                       employee.isOffer != 1

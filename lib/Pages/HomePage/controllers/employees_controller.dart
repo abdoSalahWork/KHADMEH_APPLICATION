@@ -181,6 +181,7 @@ class EmployeesController extends GetxController {
 
   Future createEmployee({required EmployeeModel employee}) async {
     try {
+      employee.salaryMonth = "0";
       Utils.circularIndicator();
       final body = d.FormData.fromMap(employee.toJson());
       PlatformFile? image = employee.image;
@@ -272,17 +273,20 @@ class EmployeesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(employee.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      PlatformFile? image = employee.image;
+      PlatformFile? image;
+      if (employee.image.runtimeType != String) {
+        image = employee.image;
 
-      if (image != null) {
-        body.files.add(MapEntry(
-          "image",
-          await d.MultipartFile.fromFile(
-            image.path!,
-            filename: image.name,
-            contentType: MediaType('image', '*'),
-          ),
-        ));
+        if (image != null) {
+          body.files.add(MapEntry(
+            "image",
+            await d.MultipartFile.fromFile(
+              image.path!,
+              filename: image.name,
+              contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
       }
       String? token = await Utils.readToken();
       logSuccess(employee.toJson());
@@ -455,7 +459,7 @@ class EmployeesController extends GetxController {
       );
 
       Get.back();
-      return {res.data['InvoiceId']: res.data['InvoiceURL']};
+      return {res.data['InvoiceId'].toString(): res.data['InvoiceURL']};
     } on DioException catch (e) {
       logError(e.response!.data);
       Get.back();

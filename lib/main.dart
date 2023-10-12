@@ -24,10 +24,10 @@ void main() async {
   // await FirebaseApi().handleNotifications();
 
   // await Utils.initializeNotifications(Utils.flutterLocalNotificationsPlugin);
-  // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-  //   systemNavigationBarColor: Colors.transparent, // navigation bar color
-  //   statusBarColor: Colors.transparent, // status bar color
-  // ));
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.black, // navigation bar color
+    statusBarColor: Colors.transparent, // status bar color
+  ));
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,

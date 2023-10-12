@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:iban/iban.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Pages/global_controller.dart';
@@ -54,12 +55,17 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   var errors = {};
   // String ownerphoneCode = "";
   String ownerNationality = "";
+  String bankName = "";
+
   // String companyphoneCode = "";
   String companyType = "recruitment";
   String city = "";
   String region = "";
   int idPassRadio = 0;
   final formKey = GlobalKey<FormState>();
+  final TextEditingController _bankAccountName = TextEditingController();
+  final TextEditingController _iban = TextEditingController();
+  final TextEditingController _accountNumber = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
@@ -95,7 +101,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
     setState(() {});
   }
 
-  final List<FocusNode> _focusNodes = List.generate(20, (index) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(24, (index) => FocusNode());
   String logobuttonText = "upload_company_logo".tr;
   String frontIdButton = "upload_front_side_of_id".tr;
   String backIdButton = "upload_back_side_of_id".tr;
@@ -138,7 +144,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 children: [
                   EasyStepper(
                     activeStep: _currentStep,
-                    lineLength: 18.0.w,
+                    lineLength: 12.0.w,
                     lineSpace: 0,
                     lineType: LineType.normal,
                     defaultLineColor: Colors.grey,
@@ -334,7 +340,20 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               backgroundColor: Colors.white,
             ),
           ),
-          title: _currentStep == 3 ? 'security'.tr : "",
+          title: _currentStep == 3 ? 'bank_details'.tr : "",
+        ),
+        EasyStep(
+          customStep: CircleAvatar(
+            radius: 12,
+            backgroundColor: _currentStep >= 4
+                ? Theme.of(context).colorScheme.tertiary
+                : Colors.grey,
+            child: const CircleAvatar(
+              radius: 4,
+              backgroundColor: Colors.white,
+            ),
+          ),
+          title: _currentStep == 4 ? 'security'.tr : "",
         ),
       ];
   List<Widget> get pageList => [
@@ -1451,6 +1470,147 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
             padding: const EdgeInsets.all(20),
             child:
                 ListView(padding: EdgeInsets.zero, primary: false, children: [
+              CustomDropDownMenuButton(
+                hintPadding: 0, focusNode: _focusNodes[20],
+                hint: "bank_name".tr,
+                autovalidateMode: AutovalidateMode.always,
+                validator: (String? value) {
+                  if (errors['bank_id'] != null) {
+                    String tmp = "";
+                    tmp = errors['bank_id'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+                width: 100.w,
+                value: bankName == "" ? null : bankName,
+                items: c.banks
+                    .map(
+                      (e) => DropdownMenuItem<String>(
+                        value: e.bankName,
+                        child:
+                            coloredText(text: e.bankName!, color: Colors.black),
+                      ),
+                    )
+                    .toList(),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: _focusNodes[20].hasFocus
+                        ? Theme.of(context).colorScheme.secondary
+                        : const Color(0xffBDC1C8),
+                  ),
+                ),
+                onChanged: (p0) {
+                  bankName = p0!;
+                  errors['bank_id'] = null;
+                  setState(() {});
+                  companyRegisterData.bankId = c.banks
+                      .where((element) => element.bankName == p0)
+                      .first
+                      .bankId
+                      .toString();
+                  ;
+                },
+
+                // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                borderRadius: BorderRadius.circular(8),
+                // padding:
+                //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+              ),
+              spaceY(10.0.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[21],
+                controller: _bankAccountName,
+                hintText: "bank_account_name".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['bank_account_name'] = null;
+                  setState(() {});
+                  companyRegisterData.bankAccountName = s;
+                },
+                validator: (String? value) {
+                  if (errors['bank_account_name'] != null) {
+                    String tmp = "";
+                    tmp = errors['bank_account_name'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.sp),
+              UnderlinedCustomTextField(
+                keyBoardType: TextInputType.number,
+                focusNode: _focusNodes[22],
+                controller: _accountNumber,
+                hintText: "account_number".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['account_number'] = null;
+                  setState(() {});
+                  companyRegisterData.accountNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['account_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['account_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[23],
+                controller: _iban,
+                hintText: "iban".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['iban'] = null;
+                  setState(() {});
+                  companyRegisterData.iban = s;
+                },
+                validator: (String? value) {
+                  if (!isValid(value!))
+                    return "invalid iban";
+                  else if (errors['iban'] != null) {
+                    String tmp = "";
+                    tmp = errors['iban'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(20.0.sp),
+              primaryButton(
+                onTap: () {
+                  if (_currentStep < stepList().length - 1) {
+                    setState(() => _currentStep += 1);
+                    pageController.jumpToPage(_currentStep);
+                  }
+                },
+                text: coloredText(
+                  text: "next".tr,
+                  color: Colors.white,
+                  fontSize: 16.0.sp,
+                ),
+                height: 50,
+                width: 45.0.w,
+                radius: 30,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              spaceY(20.0.sp),
+            ]),
+          );
+        }),
+        GetBuilder<GlobalController>(builder: (c) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child:
+                ListView(padding: EdgeInsets.zero, primary: false, children: [
               UnderlinedCustomTextField(
                 prefixIcon: Icon(
                   EvaIcons.lockOutline,
@@ -1699,6 +1859,13 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                             _currentStep = 0;
                             setState(() {});
                             pageController.jumpToPage(_currentStep);
+                          } else if (errors['bank_account_name'] != null ||
+                              errors['iban'] != null ||
+                              errors['bank_id'] != null ||
+                              errors['account_number'] != null) {
+                            _currentStep = 3;
+                            setState(() {});
+                            pageController.jumpToPage(_currentStep);
                           } else if (errors['company_name'] != null ||
                               errors['url'] != null ||
                               errors['company_phone'] != null ||
@@ -1763,7 +1930,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                   message: tmp, fontSize: 12.0.sp);
                             }
                           } else if (errors['password'] != null) {
-                            _currentStep = 3;
+                            _currentStep = 4;
                             setState(() {});
                             pageController.jumpToPage(_currentStep);
                           }

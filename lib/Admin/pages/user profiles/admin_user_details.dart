@@ -113,7 +113,8 @@ class _AdminUserDetailsPageState extends State<AdminUserDetailsPage> {
                   ],
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                      image: AssetImage("assets/images/image.png"),
+                      image: NetworkImage(
+                          widget.userProfile.userInformation!.personalPhoto),
                       fit: BoxFit.contain),
                 ),
               ),

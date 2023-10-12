@@ -70,9 +70,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       });
     });
 
-    if (widget.employeeToEdit != null) {
-      initFormIfEdit();
-    }
+    initFormIfEdit();
     for (var node in _focusNodes) {
       node.addListener(() {
         setState(() {});
@@ -300,11 +298,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     items: c.countries
                                         .map(
                                           (e) => DropdownMenuItem<String>(
-                                            value: appLanguage == "en"
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
                                                 ? e.nameEn!
                                                 : e.nameAr!,
                                             child: coloredText(
-                                                text: appLanguage == "en"
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
                                                     ? e.nameEn!
                                                     : e.nameAr!,
                                                 color: Colors.black),
@@ -365,11 +365,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     items: c.relegions
                                         .map(
                                           (e) => DropdownMenuItem<String>(
-                                            value: appLanguage == "en"
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
                                                 ? e.nameEn!
                                                 : e.nameAr!,
                                             child: coloredText(
-                                                text: appLanguage == "en"
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
                                                     ? e.nameEn!
                                                     : e.nameAr!,
                                                 color: Colors.black),
@@ -473,11 +475,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     items: c.countries
                                         .map(
                                           (e) => DropdownMenuItem<String>(
-                                            value: appLanguage == "en"
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
                                                 ? e.nameEn!
                                                 : e.nameAr!,
                                             child: coloredText(
-                                                text: appLanguage == "en"
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
                                                     ? e.nameEn!
                                                     : e.nameAr!,
                                                 color: Colors.black),
@@ -538,11 +542,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     items: c.cities
                                         .map(
                                           (e) => DropdownMenuItem<String>(
-                                            value: appLanguage == "en"
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
                                                 ? e.nameEn!
                                                 : e.nameAr!,
                                             child: coloredText(
-                                                text: appLanguage == "en"
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
                                                     ? e.nameEn!
                                                     : e.nameAr!,
                                                 color: Colors.black),
@@ -605,11 +611,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     items: c.maritalStatusList
                                         .map(
                                           (e) => DropdownMenuItem<String>(
-                                            value: appLanguage == "en"
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
                                                 ? e.nameEn!
                                                 : e.nameAr!,
                                             child: coloredText(
-                                                text: appLanguage == "en"
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
                                                     ? e.nameEn!
                                                     : e.nameAr!,
                                                 color: Colors.black),
@@ -813,11 +821,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     items: c.complexionList
                                         .map(
                                           (e) => DropdownMenuItem<String>(
-                                            value: appLanguage == "en"
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
                                                 ? e.nameEn!
                                                 : e.nameAr!,
                                             child: coloredText(
-                                                text: appLanguage == "en"
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
                                                     ? e.nameEn!
                                                     : e.nameAr!,
                                                 color: Colors.black),
@@ -1017,11 +1027,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     items: c.countries
                                         .map(
                                           (e) => DropdownMenuItem<String>(
-                                            value: appLanguage == "en"
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
                                                 ? e.nameEn!
                                                 : e.nameAr!,
                                             child: coloredText(
-                                                text: appLanguage == "en"
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
                                                     ? e.nameEn!
                                                     : e.nameAr!,
                                                 color: Colors.black),
@@ -1207,7 +1219,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                           .map(
                                             (e) => MultiSelectItem(
                                               e,
-                                              appLanguage == "en"
+                                              Get.locale ==
+                                                      const Locale('en', 'US')
                                                   ? e.nameEn!
                                                   : e.nameAr!,
                                             ),
@@ -1246,8 +1259,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                         selectedJobs =
                                             List<JobModel>.from(values);
                                         if (widget.employeeToEdit != null) {
-                                          widget.employeeToEdit!.jobs =
-                                              selectedJobs;
+                                          if (selectedJobs.isNotEmpty)
+                                            widget.employeeToEdit!.jobs =
+                                                selectedJobs;
                                         } else {
                                           employeeToCreate.jobs = selectedJobs;
                                         }
@@ -1667,11 +1681,13 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     items: c.certificates
                                         .map(
                                           (e) => DropdownMenuItem<String>(
-                                            value: appLanguage == "en"
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
                                                 ? e.nameEn!
                                                 : e.nameAr!,
                                             child: coloredText(
-                                                text: appLanguage == "en"
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
                                                     ? e.nameEn!
                                                     : e.nameAr!,
                                                 color: Colors.black),
@@ -1736,6 +1752,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                         }
                                         return null;
                                       },
+                                      onSelectionChanged: (p0) {
+                                        selectedLangs = [];
+                                        setState(() {});
+                                      },
                                       cancelText: coloredText(
                                         text: "cancel".tr,
                                         color: Theme.of(context)
@@ -1762,7 +1782,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                           .map(
                                             (e) => MultiSelectItem(
                                               e,
-                                              appLanguage == "en"
+                                              Get.locale ==
+                                                      const Locale('en', 'US')
                                                   ? e.nameEn!
                                                   : e.nameAr!,
                                             ),
@@ -1798,8 +1819,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                         selectedLangs =
                                             List<LanguageModel>.from(values);
                                         if (widget.employeeToEdit != null) {
-                                          widget.employeeToEdit!.languages =
-                                              selectedLangs;
+                                          if (selectedLangs.isNotEmpty)
+                                            widget.employeeToEdit!.languages =
+                                                selectedLangs;
                                         } else {
                                           employeeToCreate.languages =
                                               selectedLangs;
@@ -2022,64 +2044,79 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   }
 
   initFormIfEdit() {
-    selectedJobs = List.from(widget.employeeToEdit!.jobs!);
-    selectedLangs = List.from(widget.employeeToEdit!.languages!);
-    _dateController.text = DateFormat('y/MM/dd')
-        .format(DateTime.parse(widget.employeeToEdit!.dateOfBirth!));
-    _issuedateController.text = DateFormat('y/MM/dd')
-        .format(DateTime.parse(widget.employeeToEdit!.passportIssueDate!));
-    _expirydateController.text = DateFormat('y/MM/dd')
-        .format(DateTime.parse(widget.employeeToEdit!.passportExpiryDate!));
-    _fullNameController.text = widget.employeeToEdit!.name!;
-    imageToEdit = widget.employeeToEdit!.image!;
-    imageWidget = null;
-    _passportNoController.text = widget.employeeToEdit!.passportNum!;
-    _amountAfterDiscountController.text =
-        widget.employeeToEdit!.amountAfterDiscount!.toString();
-    _employmentDurationController.text =
-        widget.employeeToEdit!.durationOfEmployment!.toString();
-    _contractAmountController.text = widget.employeeToEdit!.contractAmount!;
-    _contractDurationController.text = widget.employeeToEdit!.contractDuration!;
-    _heightController.text = widget.employeeToEdit!.weight!.toString();
-    _weightController.text = widget.employeeToEdit!.hight!.toString();
-    _childrenNumController.text =
-        widget.employeeToEdit!.numOfChildren!.toString();
-    nationality = _globalController.countries
-        .where((element) => element.id == widget.employeeToEdit!.nationalityId)
-        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
-        .first;
-    religion = _globalController.relegions
-        .where((element) => element.id == widget.employeeToEdit!.religionId)
-        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
-        .first;
-    birthplace = _globalController.countries
-        .where((element) => element.id == widget.employeeToEdit!.birthPlace)
-        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
-        .first;
-    livingTown = _globalController.cities
-        .where((element) => element.id == widget.employeeToEdit!.livingTown)
-        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
-        .first;
-    maritalStatus = _globalController.maritalStatusList
-        .where((element) => element.id == widget.employeeToEdit!.maritalStatus)
-        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
-        .first;
-    complexion = _globalController.complexionList
-        .where((element) => element.id == widget.employeeToEdit!.complexionId)
-        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
-        .first;
-    issuePlace = _globalController.countries
-        .where((element) =>
-            element.id == widget.employeeToEdit!.passportPlaceOfIssue)
-        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
-        .first;
+    if (widget.employeeToEdit != null) {
+      // selectedJobs = List.from(widget.employeeToEdit!.jobs!);
+      // selectedLangs = List.from(widget.employeeToEdit!.languages!);
+      _dateController.text = DateFormat('y/MM/dd')
+          .format(DateTime.parse(widget.employeeToEdit!.dateOfBirth!));
+      _issuedateController.text = DateFormat('y/MM/dd')
+          .format(DateTime.parse(widget.employeeToEdit!.passportIssueDate!));
+      _expirydateController.text = DateFormat('y/MM/dd')
+          .format(DateTime.parse(widget.employeeToEdit!.passportExpiryDate!));
+      _fullNameController.text = widget.employeeToEdit!.name!;
+      imageToEdit = widget.employeeToEdit!.image!;
+      imageWidget = null;
+      _passportNoController.text = widget.employeeToEdit!.passportNum!;
+      if (widget.employeeToEdit!.isOffer == 1) {
+        _amountAfterDiscountController.text =
+            widget.employeeToEdit!.amountAfterDiscount!.toString();
+      }
+      _employmentDurationController.text =
+          widget.employeeToEdit!.durationOfEmployment!.toString();
+      _contractAmountController.text = widget.employeeToEdit!.contractAmount!;
+      _contractDurationController.text =
+          widget.employeeToEdit!.contractDuration!;
+      _heightController.text = widget.employeeToEdit!.weight!.toString();
+      _weightController.text = widget.employeeToEdit!.hight!.toString();
+      _childrenNumController.text =
+          widget.employeeToEdit!.numOfChildren!.toString();
+      nationality = _globalController.countries
+          .where(
+              (element) => element.id == widget.employeeToEdit!.nationalityId)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
+      religion = _globalController.relegions
+          .where((element) => element.id == widget.employeeToEdit!.religionId)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
+      birthplace = _globalController.countries
+          .where((element) => element.id == widget.employeeToEdit!.birthPlace)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
+      livingTown = _globalController.cities
+          .where((element) => element.id == widget.employeeToEdit!.livingTown)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
+      maritalStatus = _globalController.maritalStatusList
+          .where(
+              (element) => element.id == widget.employeeToEdit!.maritalStatus)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
+      complexion = _globalController.complexionList
+          .where((element) => element.id == widget.employeeToEdit!.complexionId)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
+      issuePlace = _globalController.countries
+          .where((element) =>
+              element.id == widget.employeeToEdit!.passportPlaceOfIssue)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
 
-    workAbroad =
-        widget.employeeToEdit!.previousWorkAbroad == 1 ? "yes".tr : 'no'.tr;
-    educationalCertificate = _globalController.certificates
-        .where((element) =>
-            element.id == widget.employeeToEdit!.educationCertification)
-        .map((e) => appLanguage == "en" ? e.nameEn! : e.nameAr!)
-        .first;
+      workAbroad =
+          widget.employeeToEdit!.previousWorkAbroad == 1 ? "yes".tr : 'no'.tr;
+      educationalCertificate = _globalController.certificates
+          .where((element) =>
+              element.id == widget.employeeToEdit!.educationCertification)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
+    }
   }
 }

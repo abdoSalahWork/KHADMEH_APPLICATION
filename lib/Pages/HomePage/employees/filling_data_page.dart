@@ -41,7 +41,6 @@ class _FillingDataPageState extends State<FillingDataPage> {
   int reciptMethod = 0;
   @override
   void initState() {
-    diffPrice = int.parse(_companiesController.companyPrice);
     super.initState();
   }
 

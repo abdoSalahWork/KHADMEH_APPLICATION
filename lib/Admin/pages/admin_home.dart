@@ -7,7 +7,7 @@ import 'package:khedma/Admin/pages/about/admin_about_page.dart';
 import 'package:khedma/Admin/pages/account%20statment/admin_account_statment_page.dart';
 import 'package:khedma/Admin/pages/admin_main_page.dart';
 import 'package:khedma/Admin/pages/advertisments/admin_advertisment_page.dart';
-import 'package:khedma/Admin/pages/bookings/admin_bookings_page.dart';
+import 'package:khedma/Admin/pages/bookings/admin_medicals_page.dart';
 import 'package:khedma/Admin/pages/categories/admin_categories_page.dart';
 import 'package:khedma/Admin/pages/commissions/admin_commissions_page.dart';
 import 'package:khedma/Admin/pages/company%20profiles/admin_company_profiles_page.dart';
@@ -164,8 +164,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
       case MyAdminMenuItems.categories:
         Get.to(() => const AdminCategoriesPage());
         break;
-      case MyAdminMenuItems.bookings:
-        Get.to(() => const AdminBookingsPage());
+      case MyAdminMenuItems.medicalRequests:
+        Get.to(() => const AdminMedicalRequests());
         break;
       case MyAdminMenuItems.advertisements:
         Get.to(() => const AdminAdvertismentsPage());

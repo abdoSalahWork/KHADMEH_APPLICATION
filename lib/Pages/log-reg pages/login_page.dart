@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -45,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
+    _globalController.updateGuest(g: false);
     // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
     //     overlays: SystemUiOverlay.values);
     for (var node in _focusNodes) {
@@ -102,18 +102,13 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                         spaceY(8.0.h),
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(() => const AdminHomePage());
-                          },
-                          child: Container(
-                            width: 30.0.w,
-                            height: 30.0.w,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage("assets/images/logo.png"),
-                                  fit: BoxFit.contain),
-                            ),
+                        Container(
+                          width: 30.0.w,
+                          height: 30.0.w,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage("assets/images/logo.png"),
+                                fit: BoxFit.contain),
                           ),
                         )
                       ],
@@ -298,9 +293,12 @@ class _LoginPageState extends State<LoginPage> {
                                         "user") {
                                       Get.offAll(() => const UserHomePage(),
                                           transition: Transition.downToUp);
-                                    } else {
+                                    } else if (_globalController.me.userType ==
+                                        "company") {
                                       Get.offAll(() => const CompanyHomePage(),
                                           transition: Transition.downToUp);
+                                    } else {
+                                      Get.to(() => const AdminHomePage());
                                     }
                                   } else if (state == LoginStates.needsVerify) {
                                     Get.to(
@@ -526,9 +524,31 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 GestureDetector(
                                   onTap: () async {
-                                    var res = await Dio()
-                                        .get("https://www.google.com");
-                                    logSuccess(res.data);
+//                                     final LoginResult result = await FacebookAuth
+//                                         .instance
+//                                         .login(); // by default we request the email and the public profile
+// // or FacebookAuth.i.login()
+//                                     if (result.status == LoginStatus.success) {
+//                                       // you are logged
+//                                       final AccessToken accessToken =
+//                                           result.accessToken!;
+//                                       logSuccess(accessToken.token);
+//                                     } else {
+//                                       logError(result.status);
+//                                       logError(result.message!);
+//                                     }
+                                    // var res = await Dio()
+                                    //     .get("https://khdmah.online");
+
+                                    // await Printing.layoutPdf(
+                                    //     format: PdfPageFormat.a3,
+                                    //     name: "contract",
+                                    //     onLayout:
+                                    //         (PdfPageFormat format) async =>
+                                    //             await Printing.convertHtml(
+                                    //               format: format,
+                                    //               html: res.data,
+                                    //             ));
                                   },
                                   child: Container(
                                     width: 40.0.sp,
@@ -550,24 +570,24 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-                                // Container(
-                                //   width: 40.0.sp,
-                                //   height: 40.0.sp,
-                                //   decoration: BoxDecoration(
-                                //       border: Border.all(
-                                //           color: Colors.grey.withOpacity(0.2)),
-                                //       shape: BoxShape.circle,
-                                //       color: Colors.grey.withOpacity(0.1)),
-                                //   child: Center(
-                                //     child: Image(
-                                //       width: 20.0.sp,
-                                //       height: 20.0.sp,
-                                //       image: const AssetImage(
-                                //           "assets/images/apple.png"),
-                                //       fit: BoxFit.contain,
-                                //     ),
-                                //   ),
-                                // ),
+                                Container(
+                                  width: 40.0.sp,
+                                  height: 40.0.sp,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.grey.withOpacity(0.2)),
+                                      shape: BoxShape.circle,
+                                      color: Colors.grey.withOpacity(0.1)),
+                                  child: Center(
+                                    child: Image(
+                                      width: 20.0.sp,
+                                      height: 20.0.sp,
+                                      image: const AssetImage(
+                                          "assets/images/apple.png"),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                             spaceY(20.0.sp),
@@ -658,6 +678,17 @@ class _LoginPageState extends State<LoginPage> {
                 size: 22.0.sp,
               ),
               onTap: () => Get.back(),
+            ),
+          ),
+          PositionedDirectional(
+            top: 30,
+            end: 20,
+            child: GestureDetector(
+              child: coloredText(text: "geust".tr, color: Colors.white),
+              onTap: () {
+                _globalController.guest = true;
+                Get.offAll(() => UserHomePage());
+              },
             ),
           )
         ],

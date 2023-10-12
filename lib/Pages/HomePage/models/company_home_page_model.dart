@@ -16,17 +16,18 @@ class CompanyHomePageModel {
 
   CompanyHomePageModel.fromJson(Map<String, dynamic> json) {
     if (json['employees'] != null) {
-      if (json['all_emplyees_count'] != null) {
-        allEmplyeesCount = json['all_emplyees_count'];
+      if (json['employees']['all_emplyees_count'] != null) {
+        allEmplyeesCount = json['employees']['all_emplyees_count'];
       }
-      if (json['available_employees_count'] != null) {
-        availableEmployeesCount = json['available_employees_count'];
+      if (json['employees']['available_employees_count'] != null) {
+        availableEmployeesCount =
+            json['employees']['available_employees_count'];
       }
-      if (json['pending_employees_count'] != null) {
-        pendingEmployeesCount = json['pending_employees_count'];
+      if (json['employees']['pending_employees_count'] != null) {
+        pendingEmployeesCount = json['employees']['pending_employees_count'];
       }
-      if (json['booked_employees_count'] != null) {
-        bookedEmployeesCount = json['booked_employees_count'];
+      if (json['employees']['booked_employees_count'] != null) {
+        bookedEmployeesCount = json['employees']['booked_employees_count'];
       }
     }
     if (json['requests'] != null) {
