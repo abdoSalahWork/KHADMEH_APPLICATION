@@ -135,36 +135,45 @@ class _CompanyEmployeesSearchPageState
                                       value: 1,
                                       child: coloredText(
                                           text: 'edit'.tr, fontSize: 11.0.sp),
-                                      onTap: () async {
-                                        EmployeeModel? em =
-                                            await _employeesController
-                                                .showCompanyEmployee(
-                                                    id: c
-                                                        .companyEmployeeToShow[
-                                                            index]
-                                                        .id!,
-                                                    indicator: true);
-                                        if (em != null) {
-                                          Get.to(() => AddEmployeePage(
-                                                employeeToEdit: em,
-                                              ));
-                                        }
-                                      },
+                                      onTap: c.companyEmployeeToShow[index]
+                                                  .status !=
+                                              null
+                                          ? null
+                                          : () async {
+                                              EmployeeModel? em =
+                                                  await _employeesController
+                                                      .showCompanyEmployee(
+                                                          id: c
+                                                              .companyEmployeeToShow[
+                                                                  index]
+                                                              .id!,
+                                                          indicator: true);
+                                              if (em != null) {
+                                                Get.to(() => AddEmployeePage(
+                                                      employeeToEdit: em,
+                                                    ));
+                                              }
+                                            },
                                     ),
                                     PopupMenuItem<int>(
                                       value: 2,
                                       child: coloredText(
                                           text: 'delete'.tr, fontSize: 12.0.sp),
-                                      onTap: () async {
-                                        bool x = await _employeesController
-                                            .deleteEmployee(
-                                                employee:
-                                                    c.companyEmployeeToShow[
-                                                        index]);
-                                        if (x) {
-                                          Utils.doneDialog(context: context);
-                                        }
-                                      },
+                                      onTap: c.companyEmployeeToShow[index]
+                                                  .status !=
+                                              null
+                                          ? null
+                                          : () async {
+                                              bool x = await _employeesController
+                                                  .deleteEmployee(
+                                                      employee:
+                                                          c.companyEmployeeToShow[
+                                                              index]);
+                                              if (x) {
+                                                Utils.doneDialog(
+                                                    context: context);
+                                              }
+                                            },
                                     ),
                                   ],
                                   child: const Icon(

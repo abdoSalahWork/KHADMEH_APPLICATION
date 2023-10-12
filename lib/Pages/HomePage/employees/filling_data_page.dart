@@ -5,10 +5,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
-import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Themes/themes.dart';
 import 'package:sizer/sizer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 
@@ -198,7 +196,7 @@ class _FillingDataPageState extends State<FillingDataPage> {
             ),
             spaceY(10.sp),
             coloredText(
-              text: "Determine receipt method:",
+              text: "receipt_method".tr,
             ),
             ChipsChoice<String>.multiple(
               padding: EdgeInsets.zero,
@@ -297,8 +295,7 @@ class _FillingDataPageState extends State<FillingDataPage> {
                 ),
                 primaryButton(
                     onTap: () async {
-                      Map<String, String>? x =
-                          await _companiesController.checkOut(
+                      bool? x = await _companiesController.checkOut(
                         id: widget.companyId,
                         startDate: startDateController.text,
                         endDate: endDateController.text,
@@ -307,18 +304,18 @@ class _FillingDataPageState extends State<FillingDataPage> {
                       );
                       if (x != null) {
                         //String invoiceId = x.keys.first;
-                        Uri url = Uri.parse(x.values.first);
+                        // Uri url = Uri.parse(x.values.first);
 
-                        await launchUrl(url,
-                            mode: LaunchMode.externalApplication);
+                        // await launchUrl(url,
+                        //     mode: LaunchMode.externalApplication);
 
-                        await Future.delayed(const Duration(milliseconds: 100));
-                        while (WidgetsBinding.instance.lifecycleState !=
-                            AppLifecycleState.resumed) {
-                          await Future.delayed(
-                              const Duration(milliseconds: 100));
-                        }
-                        Get.offAll(() => UserHomePage());
+                        // await Future.delayed(const Duration(milliseconds: 100));
+                        // while (WidgetsBinding.instance.lifecycleState !=
+                        //     AppLifecycleState.resumed) {
+                        //   await Future.delayed(
+                        //       const Duration(milliseconds: 100));
+                        // }
+                        Utils.doneDialog(context: context, backTimes: 4);
                       }
                     },
                     width: 60.0.w,
@@ -327,7 +324,7 @@ class _FillingDataPageState extends State<FillingDataPage> {
                       Theme.of(context).colorScheme.secondary,
                     ]),
                     text: coloredText(
-                      text: "checkout".tr,
+                      text: "done".tr,
                       color: Colors.white,
                     )),
               ],

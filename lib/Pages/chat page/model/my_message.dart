@@ -152,3 +152,48 @@ class Participants {
     return data;
   }
 }
+
+class GlobalChat {
+  int? id;
+  int? chatId;
+  int? userId;
+  String? createdAt;
+  String? updatedAt;
+  Me? user;
+  MyChat? chat;
+
+  GlobalChat(
+      {this.id,
+      this.chatId,
+      this.userId,
+      this.createdAt,
+      this.updatedAt,
+      this.user,
+      this.chat});
+
+  GlobalChat.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    chatId = json['chat_id'];
+    userId = json['user_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    user = json['user'] != null ? new Me.fromJson(json['user']) : null;
+    chat = json['chat'] != null ? new MyChat.fromJson(json['chat']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['chat_id'] = this.chatId;
+    data['user_id'] = this.userId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
+    }
+    if (this.chat != null) {
+      data['chat'] = this.chat!.toJson();
+    }
+    return data;
+  }
+}

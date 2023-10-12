@@ -94,6 +94,89 @@ class AdvertismentController extends GetxController {
     return null;
   }
 
+  Future<bool> updateAdvertisment(
+      {required AdvertismentModel advertisment}) async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData.fromMap(advertisment.toJson());
+      String? token = await Utils.readToken();
+      body.fields.add(MapEntry("_method", "PUT"));
+      PlatformFile? image;
+      if (advertisment.image.runtimeType != String) {
+        image = advertisment.image;
+        if (image != null) {
+          body.files.add(MapEntry(
+            "image",
+            await d.MultipartFile.fromFile(
+              image.path!,
+              filename: image.name,
+              contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
+      }
+      logSuccess(advertisment.toJson());
+      await dio.post(
+        EndPoints.updateCompanyAdvertisment(advertisment.id!),
+        data: body,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        ),
+      );
+
+      await getCompanyAdvertisments();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      Get.back();
+      logError(e.response!.data);
+      BuildContext context = Get.context!;
+      List<String> errorText = [];
+      Map errors = e.response!.data["errors"];
+      errors.forEach((key, value) {
+        List l = List.from(value);
+        errorText.add(l.join("\n"));
+      });
+      Get.back();
+      Utils.customDialog(
+          title: "Errors",
+          titleStyle: coloredText(
+            text: errorText.join("\n"),
+            textAlign: TextAlign.left,
+            fontSize: 17.sp,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+          ).style,
+          actions: [
+            primaryButton(
+              onTap: () => Get.back(),
+              text: coloredText(
+                text: "close".tr,
+                color: Colors.white,
+              ),
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ],
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: coloredText(
+                text: errorText.join("\n"),
+                textAlign: TextAlign.left,
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          context: context);
+    }
+    return false;
+  }
+
   bool getCompanyAdvertismentsFlag = false;
   Future getCompanyAdvertisments() async {
     try {
@@ -117,12 +200,12 @@ class AdvertismentController extends GetxController {
       companyAds = tmp;
       pendingCompanyAds = companyAds
           .where((element) =>
-              (element.adminApprove == null || element.adminApprove == 0) &&
+              (element.adminApprove == null) &&
               DateTime.parse(element.startDate!).isAfter(DateTime.now()))
           .toList();
       refusedCompanyAds = companyAds
           .where((element) =>
-              (element.adminApprove == null || element.adminApprove == 0) &&
+              (element.adminApprove == 0) ||
               DateTime.parse(element.startDate!).isBefore(DateTime.now()))
           .toList();
       logSuccess("Company Advertisments get done");
@@ -165,13 +248,8 @@ class AdvertismentController extends GetxController {
               element.adminApprove == null &&
               DateTime.parse(element.startDate!).isAfter(DateTime.now()))
           .toList();
-      adminRefundAds = adminAds
-          .where((element) =>
-              (element.refund == null &&
-                  DateTime.parse(element.startDate!)
-                      .isBefore(DateTime.now())) ||
-              element.refund == 0)
-          .toList();
+      adminRefundAds =
+          adminAds.where((element) => element.refund == 1).toList();
       logSuccess("Company Advertisments get done");
       getAdminAdvertismentsFlag = false;
       update();
@@ -183,12 +261,16 @@ class AdvertismentController extends GetxController {
     }
   }
 
-  Future<bool> approveAdvertismnt(
-      {required int approve, required int advertismentId}) async {
+  Future<bool> approveAdvertismnt({
+    required int approve,
+    String? desc,
+    required int advertismentId,
+  }) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap({
         "admin_approve": approve,
+        if (desc != null) "desc": desc,
         "_method": "PUT",
       });
       String? token = await Utils.readToken();
@@ -214,13 +296,17 @@ class AdvertismentController extends GetxController {
     return false;
   }
 
-  Future<bool> refundAdvertismnt(
-      {required int refund, required int advertismentId}) async {
+  Future<bool> refundAdvertismnt({
+    required int refund,
+    required int advertismentId,
+    String? desc,
+  }) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap({
         "admin_refund": refund,
         "_method": "PUT",
+        if (desc != null) "desc": desc
       });
       String? token = await Utils.readToken();
 

@@ -1,6 +1,5 @@
 // ignore_for_file: unused_field
 
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +7,7 @@ import 'package:khedma/Pages/HomePage/company%20home/ReservationRequestsViewPage
 import 'package:khedma/Pages/HomePage/company%20home/emloyee_details.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/company%20home/request_files.dart';
+import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
@@ -261,6 +261,7 @@ class CleanCompanyBookingWidget extends StatelessWidget {
   });
   final CleaningBooking cleaningBooking;
   final GlobalController _globalController = Get.find();
+  final CompaniesController _companiesController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -340,8 +341,9 @@ class CleanCompanyBookingWidget extends StatelessWidget {
                 children: [
                   primaryBorderedButton(
                     onTap: () async {
-                      await _globalController.approveCleanOrder(
+                      bool b = await _globalController.approveCheckOut(
                           approve: 1, id: cleaningBooking.id!);
+                      if (b) Utils.doneDialog(context: context);
                     },
                     alignment: AlignmentDirectional.centerStart,
                     width: 25.w,
@@ -352,105 +354,112 @@ class CleanCompanyBookingWidget extends StatelessWidget {
                   ),
                   primaryBorderedButton(
                     onTap: () async {
-                      String desc = "";
-                      Utils.showDialogBox(
-                        context: context,
-                        actions: [
-                          primaryButton(
-                            onTap: () async {
-                              Get.back();
-                              bool b =
-                                  await _globalController.approveCleanOrder(
-                                      approve: 0,
-                                      id: cleaningBooking.id!,
-                                      desc: desc);
-                              if (b) {
-                                // ignore: use_build_context_synchronously
-                                Utils.customDialog(
-                                    actions: [
-                                      primaryButton(
-                                        onTap: () {
-                                          Get.back();
-                                          Get.back();
-                                        },
-                                        width: 40.0.w,
-                                        height: 50,
-                                        radius: 10.w,
-                                        color: Colors.black,
-                                        text: coloredText(
-                                          text: "ok".tr,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                    context: context,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          spaceY(20),
-                                          Icon(
-                                            EvaIcons.checkmarkCircle,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            size: 40.sp,
-                                          ),
-                                          spaceY(20),
-                                          coloredText(
-                                              text:
-                                                  "your_note_have_been_sent".tr,
-                                              fontSize: 12.0.sp),
-                                          coloredText(
-                                            text: "successfully".tr,
-                                            fontSize: 14.0.sp,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                          ),
-                                        ],
-                                      ),
-                                    ));
-                              }
-                            },
-                            color: Colors.black,
-                            width: 45.w,
-                            height: 50,
-                            text: coloredText(
-                                text: "submit".tr, color: Colors.white),
-                          ),
-                        ],
-                        content: TextFormField(
-                          onChanged: (value) {
-                            desc = value;
-                          },
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            hintText: "write_your_notes".tr,
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Color(0xffF5F5F5),
-                          ),
-                        ),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            GestureDetector(
-                              onTap: () => Get.back(),
-                              child: const Icon(
-                                EvaIcons.close,
-                              ),
-                            )
-                          ],
-                        ),
+                      bool b = await _globalController.approveCheckOut(
+                        approve: 0,
+                        id: cleaningBooking.id!,
                       );
+                      if (b) {
+                        Utils.doneDialog(context: context);
+                      }
+                      // String desc = "";
+                      // Utils.showDialogBox(
+                      //   context: context,
+                      //   actions: [
+                      //     primaryButton(
+                      //       onTap: () async {
+                      //         Get.back();
+                      //         bool b = await _globalController.approveCheckOut(
+                      //           approve: 0,
+                      //           id: cleaningBooking.id!,
+                      //         );
+                      //         if (b) {
+                      //           Utils.doneDialog(context: context);
+                      //           // ignore: use_build_context_synchronously
+                      //           // Utils.customDialog(
+                      //           //     actions: [
+                      //           //       primaryButton(
+                      //           //         onTap: () {
+                      //           //           Get.back();
+                      //           //           Get.back();
+                      //           //         },
+                      //           //         width: 40.0.w,
+                      //           //         height: 50,
+                      //           //         radius: 10.w,
+                      //           //         color: Colors.black,
+                      //           //         text: coloredText(
+                      //           //           text: "ok".tr,
+                      //           //           color: Colors.white,
+                      //           //         ),
+                      //           //       ),
+                      //           //     ],
+                      //           //     context: context,
+                      //           //     child: Padding(
+                      //           //       padding: const EdgeInsets.all(12.0),
+                      //           //       child: Column(
+                      //           //         crossAxisAlignment:
+                      //           //             CrossAxisAlignment.center,
+                      //           //         children: [
+                      //           //           spaceY(20),
+                      //           //           Icon(
+                      //           //             EvaIcons.checkmarkCircle,
+                      //           //             color: Theme.of(context)
+                      //           //                 .colorScheme
+                      //           //                 .secondary,
+                      //           //             size: 40.sp,
+                      //           //           ),
+                      //           //           spaceY(20),
+                      //           //           coloredText(
+                      //           //               text:
+                      //           //                   "your_note_have_been_sent".tr,
+                      //           //               fontSize: 12.0.sp),
+                      //           //           coloredText(
+                      //           //             text: "successfully".tr,
+                      //           //             fontSize: 14.0.sp,
+                      //           //             color: Theme.of(context)
+                      //           //                 .colorScheme
+                      //           //                 .secondary,
+                      //           //           ),
+                      //           //         ],
+                      //           //       ),
+                      //           //     ));
+                      //         }
+                      //       },
+                      //       color: Colors.black,
+                      //       width: 45.w,
+                      //       height: 50,
+                      //       text: coloredText(
+                      //           text: "submit".tr, color: Colors.white),
+                      //     ),
+                      //   ],
+                      //   content: TextFormField(
+                      //     onChanged: (value) {
+                      //       desc = value;
+                      //     },
+                      //     maxLines: 5,
+                      //     decoration: InputDecoration(
+                      //       hintText: "write_your_notes".tr,
+                      //       border: const OutlineInputBorder(
+                      //         borderSide: BorderSide.none,
+                      //         borderRadius: BorderRadius.all(
+                      //           Radius.circular(10),
+                      //         ),
+                      //       ),
+                      //       filled: true,
+                      //       fillColor: Color(0xffF5F5F5),
+                      //     ),
+                      //   ),
+                      //   title: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.end,
+                      //     children: [
+                      //       GestureDetector(
+                      //         onTap: () => Get.back(),
+                      //         child: const Icon(
+                      //           EvaIcons.close,
+                      //         ),
+                      //       )
+                      //     ],
+                      //   ),
+                      // );
                     },
                     alignment: AlignmentDirectional.centerStart,
                     width: 25.w,

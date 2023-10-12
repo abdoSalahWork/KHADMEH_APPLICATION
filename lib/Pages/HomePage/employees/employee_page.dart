@@ -287,6 +287,8 @@ class _EmployeePageState extends State<EmployeePage> {
                                                   0
                                           ? null
                                           : () async {
+                                              logError(widget.employeeModel
+                                                  .toJson());
                                               Get.to(() => InvoicePage(
                                                     invoiceId: invoiceId,
                                                     companyId: widget
@@ -306,6 +308,8 @@ class _EmployeePageState extends State<EmployeePage> {
                                                     contractAmountAfterDiscount:
                                                         widget.employeeModel
                                                             .amountAfterDiscount!,
+                                                    userName: _globalController
+                                                        .me.fullName!,
                                                   ));
 
                                               // Get.to(() => PayPage(),

@@ -33,11 +33,11 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
-  final GlobalController _globalController = Get.put(GlobalController());
   final EmployeesController _employeesController =
       Get.put(EmployeesController());
   final CompaniesController _companiesController =
       Get.put(CompaniesController());
+  final GlobalController _globalController = Get.put(GlobalController());
 
   AdminController _adminHomeController = Get.put(AdminController());
   LanguagesController _langsController = Get.put(LanguagesController());

@@ -7,6 +7,7 @@ class AdvertismentModel {
   String? externalLink;
   String? amount;
   int? confirm;
+  String? desc;
   int? adminApprove;
   String? startDate;
   String? endDate;
@@ -26,6 +27,7 @@ class AdvertismentModel {
     this.adminApprove,
     this.startDate,
     this.endDate,
+    this.desc,
     this.companyId,
     this.createdAt,
     this.updatedAt,
@@ -34,6 +36,7 @@ class AdvertismentModel {
   AdvertismentModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     amount = json['amount'];
+    desc = json['desc'];
     refund = json['refund'];
     image = "https://khdmah.online/api/images/addvertisment/${json['image']}";
     durationByDay = json['duration_by_day'];
@@ -53,6 +56,7 @@ class AdvertismentModel {
     if (id != null) data['id'] = id;
     if (amount != null) data['amount'] = amount;
     if (refund != null) data['refund'] = refund;
+    if (desc != null) data['desc'] = desc;
     if (durationByDay != null) data['duration_by_day'] = durationByDay;
     if (promotionType != null) data['promotion_type'] = promotionType;
     if (externalLink != null) data['external_link'] = externalLink;

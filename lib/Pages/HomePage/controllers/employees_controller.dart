@@ -238,7 +238,7 @@ class EmployeesController extends GetxController {
       if (indicator) Get.back();
       return EmployeeModel.fromJson(res.data['data']);
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       if (indicator) Get.back();
     }
     return null;
@@ -262,7 +262,7 @@ class EmployeesController extends GetxController {
       Get.back();
       return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
     return false;
@@ -388,7 +388,7 @@ class EmployeesController extends GetxController {
       if (indicator) Get.back();
       return EmployeeModel.fromJson(res.data['data']);
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       if (indicator) Get.back();
     }
     return null;
@@ -413,7 +413,7 @@ class EmployeesController extends GetxController {
       if (indicator) Get.back();
       return EmployeeModel.fromJson(res.data['data']);
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       if (indicator) Get.back();
     }
     return null;

@@ -35,14 +35,17 @@ class UserProfileCard extends StatelessWidget {
               Get.to(() => EmployeePage(employeeModel: em),
                   transition: Transition.rightToLeft);
             } else {
-              logWarning(employeeModel.toJson());
-              Get.to(() => EmployeePage(employeeModel: employeeModel),
-                  transition: Transition.rightToLeft);
+              EmployeeModel? em = await _employeeController.showEmployee(
+                  id: employeeModel.id!, indicator: true);
+              if (em != null) {
+                Get.to(() => EmployeePage(employeeModel: em),
+                    transition: Transition.rightToLeft);
+              }
             }
           },
           child: Container(
-            width: 70.0.sp,
-            height: 70.0.sp,
+            width: 50.0.sp,
+            height: 50.0.sp,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
@@ -62,12 +65,16 @@ class UserProfileCard extends StatelessWidget {
                   Row(
                     children: [
                       coloredText(
-                          text: employeeModel.name ?? 'lorem ipsun',
+                          text: employeeModel.name != null
+                              ? employeeModel.name!.length > 8
+                                  ? employeeModel.name!.substring(0, 8) + "..."
+                                  : employeeModel.name!
+                              : 'lorem ipsun',
                           fontSize: 13.0.sp),
                       spaceX(4),
                       coloredText(
                         text:
-                            '${int.parse(employeeModel.contractAmount!) / int.parse(employeeModel.contractDuration!)} KWD/Y',
+                            '${int.parse(employeeModel.contractAmount!) / int.parse(employeeModel.contractDuration!)} kwd/Y',
                         color: employeeModel.isOffer == 1
                             ? const Color(0xff919191)
                             : Theme.of(context).colorScheme.tertiary,
@@ -81,7 +88,7 @@ class UserProfileCard extends StatelessWidget {
                           ? Container()
                           : coloredText(
                               text:
-                                  '${employeeModel.amountAfterDiscount! / int.parse(employeeModel.contractDuration!)} KWD/Y',
+                                  '${employeeModel.amountAfterDiscount! / int.parse(employeeModel.contractDuration!)} kwd/Y',
                               color: Theme.of(context).colorScheme.tertiary,
                               fontSize: 8.0.sp,
                             ),

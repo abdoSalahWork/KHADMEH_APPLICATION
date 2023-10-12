@@ -19,6 +19,7 @@ import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/bank_model.dart';
 import 'package:khedma/models/certificate_.dart';
+import 'package:khedma/models/checkout_model.dart';
 import 'package:khedma/models/city.dart';
 import 'package:khedma/models/company_request_model.dart';
 import 'package:khedma/models/company_service_model.dart';
@@ -79,6 +80,42 @@ class GlobalController extends GetxController {
       update();
       logError(e.response!.data);
       logError("Banks failed");
+    }
+  }
+
+  List<CheckoutModel> checkouts = [];
+  bool getUserCheckoutsFlag = false;
+
+  Future getUserCheckouts() async {
+    try {
+      getUserCheckoutsFlag = true;
+
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getCheckoutUser,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      List<CheckoutModel> tmp = [];
+      for (var i in res.data['data']) {
+        CheckoutModel t = CheckoutModel.fromJson(i);
+        tmp.add(t);
+      }
+      checkouts = tmp;
+      logSuccess("Checkouts get done");
+      getUserCheckoutsFlag = false;
+
+      update();
+    } on DioException catch (e) {
+      getUserCheckoutsFlag = false;
+
+      update();
+      logError(e.response!.data);
+      logError("Checkouts failed");
     }
   }
 
@@ -702,6 +739,7 @@ class GlobalController extends GetxController {
         ),
       );
       await getMe();
+      update();
       Get.back();
       return true;
     } on DioException catch (error) {
@@ -1091,33 +1129,67 @@ class GlobalController extends GetxController {
     return false;
   }
 
-  Future<bool> approveCleanOrder(
-      {required int approve, required int id, String? desc}) async {
+  Future<bool> approveCheckOut({
+    required int approve,
+    required int id,
+  }) async {
     try {
       Utils.circularIndicator();
-      final body = d.FormData.fromMap({
-        "_method": "PUT",
-        "admin_approve": approve,
-        if (desc != null) "desc": desc,
-      });
-      logSuccess(approve);
       String? token = await Utils.readToken();
+      d.FormData body = d.FormData.fromMap(
+          {"approve": approve, if (approve == 0) "desc": ""});
+      logSuccess(token!);
 
-      await dio.post(EndPoints.updateCleanOrder(id),
-          data: body,
-          options: Options(headers: {
+      logSuccess(EndPoints.approveCheckout(id));
+      var res = await dio.post(
+        EndPoints.approveCheckout(id),
+        data: body,
+        options: Options(
+          headers: {
             "Accept": "application/json",
             "Authorization": "Bearer $token"
-          }));
+          },
+        ),
+      );
 
-      await getCleanCompanyHomePage();
       Get.back();
+      Get.offAll(() => CompanyHomePage());
+      logSuccess(res.data);
       return true;
     } on DioException catch (e) {
       logError(e.response!.data);
       Get.back();
     }
     return false;
+  }
+
+  Future<Map<String, String>?> payCheckOut({
+    required int id,
+  }) async {
+    try {
+      Utils.circularIndicator();
+      String? token = await Utils.readToken();
+
+      var res = await dio.post(
+        EndPoints.payCheckout(id),
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+
+      Get.back();
+
+      update();
+      logSuccess(res.data);
+      return {res.data['InvoiceId'].toString(): res.data['InvoiceURL']};
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      Get.back();
+    }
+    return null;
   }
 
   Future<bool> approveDocs(

@@ -46,6 +46,11 @@ class _MessagesPageState extends State<MessagesPage> {
           child: Column(
             children: [
               SearchTextField(
+                onchanged: (s) {
+                  if (s != null) {
+                    c.handleEmployeesSearch(name: s);
+                  }
+                },
                 hintText: "${"search".tr} ...",
                 prefixIcon: const Icon(
                   EvaIcons.search,
@@ -56,7 +61,7 @@ class _MessagesPageState extends State<MessagesPage> {
               Expanded(
                 child: c.getChatsFlag
                     ? const Center(child: CircularProgressIndicator())
-                    : c.chats.isEmpty
+                    : c.chatsToShow.isEmpty
                         ? const NoItemsWidget()
                         : ListView.separated(
                             padding: EdgeInsets.zero,
@@ -80,16 +85,18 @@ class _MessagesPageState extends State<MessagesPage> {
                               // chatType = ChatType.read;
                               // chatType = ChatType.delivered;
                               // chatType = ChatType.typing;
-                              if (c.chats[index].unreadMessagesCount! > 0 &&
+                              if (c.chatsToShow[index].unreadMessagesCount! >
+                                      0 &&
                                   _globalController.me.id! !=
-                                      c.chats[index].lastMessage!.userId) {
+                                      c.chatsToShow[index].lastMessage!
+                                          .userId) {
                                 chatType = ChatType.recieved;
                               } else {
                                 chatType = ChatType.delivered;
                               }
                               return ChatCard(
                                 chatType: chatType,
-                                chat: c.chats[index],
+                                chat: c.chatsToShow[index],
                               );
                             },
                             separatorBuilder: (context, index) => Column(
@@ -102,7 +109,7 @@ class _MessagesPageState extends State<MessagesPage> {
                                 spaceY(1.0.h),
                               ],
                             ),
-                            itemCount: c.chats.length,
+                            itemCount: c.chatsToShow.length,
                           ),
               )
             ],

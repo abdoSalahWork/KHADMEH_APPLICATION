@@ -16,8 +16,8 @@ import '../../../Utils/utils.dart';
 import '../../../widgets/my_rating_bar.dart';
 
 class CompanyPersonalPage extends StatefulWidget {
-  const CompanyPersonalPage({super.key, required this.employeeType});
-  final EmployeeType employeeType;
+  const CompanyPersonalPage({super.key});
+
   @override
   State<CompanyPersonalPage> createState() => _CompanyPersonalPageState();
 }
@@ -346,8 +346,8 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                                       padding: EdgeInsets.zero,
                                       itemBuilder: (context, index) =>
                                           AdvertismentCard(
-                                              advertismentModel:
-                                                  c.companyAds[index]),
+                                        advertismentModel: c.companyAds[index],
+                                      ),
                                       separatorBuilder: (context, index) =>
                                           Column(
                                         children: [
@@ -372,8 +372,9 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                                       padding: EdgeInsets.zero,
                                       itemBuilder: (context, index) =>
                                           AdvertismentCard(
-                                              advertismentModel:
-                                                  c.pendingCompanyAds[index]),
+                                        advertismentModel:
+                                            c.pendingCompanyAds[index],
+                                      ),
                                       separatorBuilder: (context, index) =>
                                           Column(
                                         children: [
@@ -400,7 +401,7 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                                           AdvertismentCard(
                                         advertismentModel:
                                             c.refusedCompanyAds[index],
-                                        // refused: true,
+                                        refused: true,
                                       ),
                                       separatorBuilder: (context, index) =>
                                           Column(

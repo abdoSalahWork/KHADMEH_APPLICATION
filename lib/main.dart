@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
         translations: LocaleString(),
         locale: Get.deviceLocale,
         fallbackLocale: const Locale('en', 'US'),
-        title: 'Khedma',
+        title: 'Khedmah',
         theme: AppThemes.lightTheme,
         darkTheme: AppThemes.darkTheme,
         themeMode: ThemeMode.light,

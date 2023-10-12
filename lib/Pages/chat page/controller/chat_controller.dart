@@ -10,9 +10,30 @@ import 'package:khedma/Utils/utils.dart';
 class ChatController extends GetxController {
   final Dio dio = Utils().dio;
   List<MyChat> chats = [];
+  List<MyChat> chatsToShow = [];
   bool unreadChatsFlag = false;
   bool getChatsFlag = false;
   GlobalController _globalController = Get.find();
+
+  handleEmployeesSearch({required String name}) {
+    List<MyChat> tmp = [];
+    for (var i in chats) {
+      if (i.participants![0].user!.fullName!.toLowerCase().contains(name) ||
+          i.participants![1].user!.fullName!.toLowerCase().contains(name)) {
+        logSuccess(i.participants![0].user!.fullName!);
+        logSuccess(i.participants![1].user!.fullName!);
+        logSuccess(name);
+        tmp.add(i);
+      }
+      if (name == "") {
+        chatsToShow = chats;
+      } else {
+        chatsToShow = tmp;
+      }
+      update();
+    }
+  }
+
   Future getChats() async {
     try {
       getChatsFlag = true;
@@ -41,6 +62,7 @@ class ChatController extends GetxController {
       }
       if (cc == 0) unreadChatsFlag = false;
       chats = tmp;
+      chatsToShow = tmp;
       chats.sort(_mySortComparison);
       logSuccess("Chats get done");
       getChatsFlag = false;
@@ -107,7 +129,7 @@ class ChatController extends GetxController {
     }
   }
 
-  Future<MyChat?> storeChat({required int id}) async {
+  Future<GlobalChat?> storeChat({required int id}) async {
     try {
       Utils.circularIndicator();
       String? token = await Utils.readToken();
@@ -125,7 +147,8 @@ class ChatController extends GetxController {
           },
         ),
       );
-      MyChat tmp = MyChat.fromJson(res.data['data']);
+      GlobalChat tmp = GlobalChat.fromJson(res.data['data']);
+
       logSuccess("chat store  done");
       logSuccess(tmp.toJson());
       Get.back();

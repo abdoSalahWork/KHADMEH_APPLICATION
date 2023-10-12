@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
+import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
 import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
 import 'package:khedma/Themes/themes.dart';
@@ -32,13 +33,30 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
   AdvertismentController _advertismentController = Get.find();
   AdvertismentModel advertismentToCreate = AdvertismentModel();
   AdminController _adminController = Get.find();
-
+  double price = 0;
   int durationRadio = 0;
   int promotionRadio = 1;
   int durationCounter = 0;
-  String? selectedValue;
+
   String uploadButtontext = "${"upload".tr} ${"photo".tr}";
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController linkController = TextEditingController();
+  @override
+  void initState() {
+    if (widget.advertismentToEdit != null) {
+      _dateController.text = DateFormat('y/MM/dd')
+          .format(DateTime.parse(widget.advertismentToEdit!.startDate!));
+      durationCounter = widget.advertismentToEdit!.durationByDay!;
+      price = double.parse(widget.advertismentToEdit!.amount!);
+      uploadButtontext = widget.advertismentToEdit!.image.toString().substring(
+          widget.advertismentToEdit!.image.toString().lastIndexOf("/") + 1);
+      promotionRadio = widget.advertismentToEdit!.promotionType!;
+      if (promotionRadio == 2) {
+        linkController.text = widget.advertismentToEdit!.externalLink!;
+      }
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +66,11 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: coloredText(text: "add_advertisment".tr, fontSize: 15.0.sp),
+        title: coloredText(
+            text: widget.advertismentToEdit != null
+                ? "edit".tr
+                : "add_advertisment".tr,
+            fontSize: 15.0.sp),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -79,7 +101,11 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                     if (aspectRatio == 1.8) {
                       uploadButtontext = result.files[0].name
                           .substring(0, min(15, result.files[0].name.length));
-                      advertismentToCreate.image = result.files[0];
+                      if (widget.advertismentToEdit != null) {
+                        widget.advertismentToEdit!.image = result.files[0];
+                      } else {
+                        advertismentToCreate.image = result.files[0];
+                      }
                       setState(() {});
                     } else {
                       Utils.customDialog(
@@ -167,8 +193,16 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                         GestureDetector(
                           onTap: () {
                             durationCounter++;
-                            advertismentToCreate.durationByDay =
+                            price = double.parse(_adminController
+                                    .settingAdmin.advertisementPrice!) *
                                 durationCounter;
+                            if (widget.advertismentToEdit != null) {
+                              widget.advertismentToEdit!.durationByDay =
+                                  durationCounter;
+                            } else {
+                              advertismentToCreate.durationByDay =
+                                  durationCounter;
+                            }
                             setState(() {});
                           },
                           child: const Icon(
@@ -181,8 +215,16 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                           onTap: () {
                             if (durationCounter > 0) {
                               durationCounter--;
-                              advertismentToCreate.durationByDay =
+                              price = double.parse(_adminController
+                                      .settingAdmin.advertisementPrice!) *
                                   durationCounter;
+                              if (widget.advertismentToEdit != null) {
+                                widget.advertismentToEdit!.durationByDay =
+                                    durationCounter;
+                              } else {
+                                advertismentToCreate.durationByDay =
+                                    durationCounter;
+                              }
                             }
                             setState(() {});
                           },
@@ -209,8 +251,14 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                   onChanged: (p0) {
                     setState(() {
                       promotionRadio = 1;
-                      advertismentToCreate.promotionType = promotionRadio;
-                      advertismentToCreate.externalLink = null;
+                      if (widget.advertismentToEdit != null) {
+                        widget.advertismentToEdit!.promotionType =
+                            promotionRadio;
+                        widget.advertismentToEdit!.externalLink = null;
+                      } else {
+                        advertismentToCreate.promotionType = promotionRadio;
+                        advertismentToCreate.externalLink = null;
+                      }
 
                       setState(() {});
                     });
@@ -225,7 +273,12 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                   onChanged: (p0) {
                     setState(() {
                       promotionRadio = 2;
-                      advertismentToCreate.promotionType = promotionRadio;
+                      if (widget.advertismentToEdit != null) {
+                        widget.advertismentToEdit!.promotionType =
+                            promotionRadio;
+                      } else {
+                        advertismentToCreate.promotionType = promotionRadio;
+                      }
 
                       setState(() {});
                     });
@@ -240,8 +293,13 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                     borderRadius: 10,
                     fillColor: const Color(0xffF3F2F2),
                     autovalidateMode: AutovalidateMode.always,
+                    controller: linkController,
                     onchanged: (s) {
-                      advertismentToCreate.externalLink = s;
+                      if (widget.advertismentToEdit != null) {
+                        widget.advertismentToEdit!.externalLink = s;
+                      } else {
+                        advertismentToCreate.externalLink = s;
+                      }
                     },
                     validator: (s) {
                       var urlPattern =
@@ -317,12 +375,11 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                 primaryButton(
                   color:
                       Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                  width: 25.0.w,
+                  width: 35.0.w,
                   height: 45,
                   radius: 8,
                   text: coloredText(
-                      text:
-                          "${int.parse(_adminController.settingAdmin.advertisementPrice!) * durationCounter} KWD",
+                      text: "$price KWD",
                       fontSize: 13.0.sp,
                       color: Theme.of(context).colorScheme.secondary),
                 ),
@@ -331,67 +388,90 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
             spaceY(40),
             primaryButton(
                 onTap: () async {
-                  advertismentToCreate.startDate = _dateController.text;
-                  advertismentToCreate.promotionType = promotionRadio;
-                  advertismentToCreate.amount = (int.parse(_adminController
-                              .settingAdmin.advertisementPrice!) *
-                          durationCounter)
-                      .toString();
+                  if (widget.advertismentToEdit != null) {
+                    widget.advertismentToEdit!.startDate = _dateController.text;
+                    widget.advertismentToEdit!.promotionType = promotionRadio;
+                    widget.advertismentToEdit!.amount = (int.parse(
+                                _adminController
+                                    .settingAdmin.advertisementPrice!) *
+                            durationCounter)
+                        .toString();
+                    bool b = await _advertismentController.updateAdvertisment(
+                        advertisment: widget.advertismentToEdit!);
+                    if (b) {
+                      Utils.doneDialog(
+                        context: context,
+                        onTap: () {
+                          Get.to(() => CompanyHomePage());
+                        },
+                      );
+                    }
+                  } else {
+                    advertismentToCreate.startDate = _dateController.text;
+                    advertismentToCreate.promotionType = promotionRadio;
+                    advertismentToCreate.amount = (int.parse(_adminController
+                                .settingAdmin.advertisementPrice!) *
+                            durationCounter)
+                        .toString();
 
-                  String? b = await _advertismentController.createAdvertisment(
-                      advertisment: advertismentToCreate);
-                  if (b != null) {
-                    Utils.customDialog(
-                        actions: [
-                          primaryButton(
-                            onTap: () async {
-                              Get.back();
-                              Uri url = Uri.parse(b);
-                              await launchUrl(url,
-                                  mode: LaunchMode.externalApplication);
+                    String? b = await _advertismentController
+                        .createAdvertisment(advertisment: advertismentToCreate);
+                    if (b != null) {
+                      Utils.customDialog(
+                          actions: [
+                            primaryButton(
+                              onTap: () async {
+                                Get.back();
+                                Uri url = Uri.parse(b);
+                                await launchUrl(url,
+                                    mode: LaunchMode.externalApplication);
 
-                              await Future.delayed(Duration(milliseconds: 100));
-                              while (WidgetsBinding.instance.lifecycleState !=
-                                  AppLifecycleState.resumed) {
                                 await Future.delayed(
                                     Duration(milliseconds: 100));
-                              }
-                              Get.back();
-                            },
-                            width: 40.0.w,
-                            height: 50,
-                            radius: 10.w,
-                            color: Theme.of(context).colorScheme.primary,
-                            text: coloredText(
-                              text: "ok".tr,
-                              color: Colors.white,
+                                while (WidgetsBinding.instance.lifecycleState !=
+                                    AppLifecycleState.resumed) {
+                                  await Future.delayed(
+                                      Duration(milliseconds: 100));
+                                }
+                                Get.back();
+                              },
+                              width: 40.0.w,
+                              height: 50,
+                              radius: 10.w,
+                              color: Theme.of(context).colorScheme.primary,
+                              text: coloredText(
+                                text: "ok".tr,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
-                        context: context,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              spaceY(20),
-                              Icon(
-                                EvaIcons.checkmarkCircle,
-                                color: Theme.of(context).colorScheme.secondary,
-                                size: 40.sp,
-                              ),
-                              spaceY(20),
-                              coloredText(
-                                  text: "your_advertisment_has_added".tr,
-                                  fontSize: 12.0.sp),
-                              coloredText(
-                                text: "successfully".tr,
-                                fontSize: 14.0.sp,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ],
-                          ),
-                        ));
+                          ],
+                          context: context,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                spaceY(20),
+                                Icon(
+                                  EvaIcons.checkmarkCircle,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  size: 40.sp,
+                                ),
+                                spaceY(20),
+                                coloredText(
+                                    text: "your_advertisment_has_added".tr,
+                                    fontSize: 12.0.sp),
+                                coloredText(
+                                  text: "successfully".tr,
+                                  fontSize: 14.0.sp,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                              ],
+                            ),
+                          ));
+                    }
                   }
                 },
                 width: 50.0.w,
@@ -400,7 +480,8 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                   Theme.of(context).colorScheme.secondary,
                 ]),
                 text: coloredText(
-                  text: "add".tr,
+                  text:
+                      widget.advertismentToEdit != null ? "edit".tr : "add".tr,
                   color: Colors.white,
                 )),
             spaceY(20),

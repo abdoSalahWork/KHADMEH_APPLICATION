@@ -26,6 +26,7 @@ import 'package:khedma/Pages/log-reg%20pages/models/user_register_model.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 import '../../../widgets/dropdown_menu_button.dart';
@@ -224,27 +225,28 @@ class _UserHomePageState extends State<UserHomePage> {
                                 spaceX(10),
                                 GestureDetector(
                                   onTap: () {
-                                    Get.to(
-                                        () => const PersonalPage(
-                                            employeeType: EmployeeType.clean),
+                                    Get.to(() => const PersonalPage(),
                                         transition: Transition.downToUp);
                                   },
-                                  child: Container(
-                                    width: 45,
-                                    height: 45,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      // border: Border.all(
-                                      //   width: 1,
-                                      //   color: const Color(0xffD1D1D1),
-                                      // ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(_globalController.me
-                                            .userInformation!.personalPhoto!),
-                                        fit: BoxFit.cover,
+                                  child: GetBuilder<GlobalController>(
+                                      builder: (c) {
+                                    return Container(
+                                      width: 45,
+                                      height: 45,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        // border: Border.all(
+                                        //   width: 1,
+                                        //   color: const Color(0xffD1D1D1),
+                                        // ),
+                                        image: DecorationImage(
+                                          image: NetworkImage(c.me
+                                              .userInformation!.personalPhoto!),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  }),
                                 ),
                               ]);
                             }),
@@ -291,26 +293,63 @@ class _UserHomePageState extends State<UserHomePage> {
                                             .map((i) {
                                           return Builder(
                                             builder: (BuildContext context) {
-                                              return Container(
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
+                                              return GestureDetector(
+                                                onTap: () async {
+                                                  if (i.promotionType == 1) {
+                                                    CompanyModel? x =
+                                                        await _companiesController
+                                                            .showCompany(
+                                                                indicator: true,
+                                                                id: i
+                                                                    .companyId!);
+
+                                                    if (x != null) {
+                                                      if (x.companyInformation !=
+                                                          null) {
+                                                        if (x.companyInformation!
+                                                                .companyType ==
+                                                            "cleaning") {
+                                                          Get.to(
+                                                            () => CleaningCompany(
+                                                                cleaningCompany:
+                                                                    x),
+                                                          );
+                                                        } else {
+                                                          Get.to(
+                                                            () =>
+                                                                RecruitmentCompany(
+                                                                    company: x),
+                                                          );
+                                                        }
+                                                      }
+                                                    }
+                                                  } else {
+                                                    Uri x = Uri.parse(
+                                                        i.externalLink!);
+                                                    await launchUrl(x,
+                                                        mode: LaunchMode
+                                                            .externalApplication);
+                                                  }
+                                                },
+                                                child: Container(
+                                                  width: 100.w,
+                                                  height: 56.w,
+
                                                   // margin: const EdgeInsets.symmetric(horizontal: 5.0),
                                                   decoration: BoxDecoration(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .primary,
+                                                      image: DecorationImage(
+                                                        image: NetworkImage(
+                                                            i.image!),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                      // color: Theme.of(context)
+                                                      //     .colorScheme
+                                                      //     .primary,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               10)),
-                                                  child: Center(
-                                                    child: Text(
-                                                      'text ${i.id}',
-                                                      style: const TextStyle(
-                                                          fontSize: 16.0,
-                                                          color: Colors.white),
-                                                    ),
-                                                  ));
+                                                ),
+                                              );
                                             },
                                           );
                                         }).toList(),
@@ -423,11 +462,11 @@ class _UserHomePageState extends State<UserHomePage> {
                                                         spaceX(5),
                                                         coloredText(
                                                           text: globalController
-                                                              .userHomePage
-                                                              .companiesRecruitment![
-                                                                  index]
-                                                              .reviewCompanySumReviewValue
-                                                              .toString(),
+                                                                  .userHomePage
+                                                                  .companiesRecruitment![
+                                                                      index]
+                                                                  .reviewCompanySumReviewValue ??
+                                                              "0",
                                                           fontSize: 13.0.sp,
                                                           color: Colors.black,
                                                         ),
@@ -573,11 +612,11 @@ class _UserHomePageState extends State<UserHomePage> {
                                                         spaceX(5),
                                                         coloredText(
                                                           text: globalController
-                                                              .userHomePage
-                                                              .companiesCleaning![
-                                                                  index]
-                                                              .reviewCompanySumReviewValue
-                                                              .toString(),
+                                                                  .userHomePage
+                                                                  .companiesCleaning![
+                                                                      index]
+                                                                  .reviewCompanySumReviewValue ??
+                                                              "0",
                                                           fontSize: 13.0.sp,
                                                           color: Colors.black,
                                                         ),
@@ -713,12 +752,22 @@ class _UserHomePageState extends State<UserHomePage> {
                                                           ),
                                                           spaceX(3),
                                                           coloredText(
-                                                            text: globalController
-                                                                .userHomePage
-                                                                .employees![
-                                                                    index]
-                                                                .nationality!
-                                                                .nameEn!,
+                                                            text: Get.locale ==
+                                                                    const Locale(
+                                                                        'en',
+                                                                        'US')
+                                                                ? globalController
+                                                                    .userHomePage
+                                                                    .employees![
+                                                                        index]
+                                                                    .nationality!
+                                                                    .nameEn!
+                                                                : globalController
+                                                                    .userHomePage
+                                                                    .employees![
+                                                                        index]
+                                                                    .nationality!
+                                                                    .nameAr!,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme

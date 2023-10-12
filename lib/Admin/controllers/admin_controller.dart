@@ -427,13 +427,49 @@ class AdminController extends GetxController {
         body.fields.add(const MapEntry("_method", "PUT"));
       }
       logSuccess(body.fields);
+      String? token = await Utils.readToken();
       await dio.post(
-          contactModel == null
-              ? EndPoints.storeContact
-              : EndPoints.updateContact(1),
-          data: body);
+        contactModel == null
+            ? EndPoints.storeContact
+            : EndPoints.updateContact(1),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
 
       await getContacts();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      Get.back();
+    }
+    return false;
+  }
+
+  Future<bool> deleteMedical({required int id}) async {
+    try {
+      Utils.circularIndicator();
+      var body = d.FormData();
+      body.fields.add(MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
+      await dio.post(
+        EndPoints.deleteMedical(id),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+
+      await getMedicals();
+      update();
       Get.back();
       return true;
     } on DioException catch (e) {

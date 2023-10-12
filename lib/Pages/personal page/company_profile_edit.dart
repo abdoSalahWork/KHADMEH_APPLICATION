@@ -1,8 +1,4 @@
-import 'dart:math';
-
-import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/global_controller.dart';
@@ -103,47 +99,47 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           primary: false,
           children: [
-            spaceY(10.0.sp),
-            db.DottedBorder(
-              dashPattern: const [6, 6, 6, 6],
-              padding: const EdgeInsets.all(1),
-              radius: const Radius.circular(10),
-              color: const Color(0xffDBDBDB),
-              borderType: db.BorderType.RRect,
-              child: primaryButton(
-                  color: const Color(0xffF5F5F5),
-                  width: 100.0.w,
-                  height: 55,
-                  radius: 10,
-                  onTap: () async {
-                    final result = await FilePicker.platform.pickFiles(
-                      allowMultiple: false,
-                      type: FileType.image,
-                    );
-                    if (result != null) {
-                      logobuttonText = result.files[0].name
-                          .substring(0, min(15, result.files[0].name.length));
-                      companyInformation.companyLogo = result.files[0];
-                      setState(() {});
-                    }
-                  },
-                  text: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        EvaIcons.upload,
-                        color: const Color(0xff919191),
-                        size: 18.0.sp,
-                      ),
-                      spaceX(10),
-                      coloredText(
-                        text: logobuttonText,
-                        color: const Color(0xff919191),
-                        fontSize: 13.0.sp,
-                      ),
-                    ],
-                  )),
-            ),
+            // spaceY(10.0.sp),
+            // db.DottedBorder(
+            //   dashPattern: const [6, 6, 6, 6],
+            //   padding: const EdgeInsets.all(1),
+            //   radius: const Radius.circular(10),
+            //   color: const Color(0xffDBDBDB),
+            //   borderType: db.BorderType.RRect,
+            //   child: primaryButton(
+            //       color: const Color(0xffF5F5F5),
+            //       width: 100.0.w,
+            //       height: 55,
+            //       radius: 10,
+            //       onTap: () async {
+            //         final result = await FilePicker.platform.pickFiles(
+            //           allowMultiple: false,
+            //           type: FileType.image,
+            //         );
+            //         if (result != null) {
+            //           logobuttonText = result.files[0].name
+            //               .substring(0, min(15, result.files[0].name.length));
+            //           companyInformation.companyLogo = result.files[0];
+            //           setState(() {});
+            //         }
+            //       },
+            //       text: Row(
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           Icon(
+            //             EvaIcons.upload,
+            //             color: const Color(0xff919191),
+            //             size: 18.0.sp,
+            //           ),
+            //           spaceX(10),
+            //           coloredText(
+            //             text: logobuttonText,
+            //             color: const Color(0xff919191),
+            //             fontSize: 13.0.sp,
+            //           ),
+            //         ],
+            //       )),
+            // ),
 
             spaceY(10.0.sp),
             UnderlinedCustomTextField(

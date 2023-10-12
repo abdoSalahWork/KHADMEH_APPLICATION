@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -78,62 +79,115 @@ class _AdminMedicalRequestsState extends State<AdminMedicalRequests> {
                       : c.medicalRequests.isEmpty
                           ? const NoItemsWidget()
                           : ListView.separated(
-                              itemBuilder: (context, index) => Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: const Color(0xffF8F8F8),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        depositLine(
-                                            title: "applicant".tr,
-                                            content: c.medicalRequests[index]
-                                                .user!.fullName!),
-                                        spaceY(10.sp),
-                                        GestureDetector(
-                                          onTap: () async {
-                                            if (Platform.isAndroid) {
-                                              var intent = AndroidIntent(
-                                                action:
-                                                    'android.intent.action.SEND',
-                                                arguments: {
-                                                  'android.intent.extra.SUBJECT':
-                                                      'Medical Examination Request'
-                                                },
-                                                arrayArguments: {
-                                                  'android.intent.extra.EMAIL':
-                                                      [
-                                                    c.medicalRequests[index]
-                                                        .user!.email!
-                                                  ],
-                                                },
-                                                package:
-                                                    'com.google.android.gm',
-                                                type: 'message/rfc822',
-                                              );
-                                              intent.launch();
-                                            }
-                                          },
-                                          child: depositLine(
-                                              title: "email".tr,
-                                              content:
-                                                  "${c.medicalRequests[index].user!.email!.substring(0, 15)}..."),
+                              itemBuilder: (context, index) => Stack(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: const Color(0xffF8F8F8),
                                         ),
-                                        spaceY(10.sp),
-                                        depositLine(
-                                          title: "date".tr,
-                                          content: DateFormat(
-                                                  DateFormat.YEAR_NUM_MONTH_DAY)
-                                              .format(
-                                            DateTime.parse(
-                                              c.medicalRequests[index]
-                                                  .createdAt!,
+                                        child: Column(
+                                          children: [
+                                            depositLine(
+                                                title: "applicant".tr,
+                                                content: c
+                                                    .medicalRequests[index]
+                                                    .user!
+                                                    .fullName!),
+                                            spaceY(10.sp),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                if (Platform.isAndroid) {
+                                                  var intent = AndroidIntent(
+                                                    action:
+                                                        'android.intent.action.SEND',
+                                                    arguments: {
+                                                      'android.intent.extra.SUBJECT':
+                                                          'Medical Examination Request'
+                                                    },
+                                                    arrayArguments: {
+                                                      'android.intent.extra.EMAIL':
+                                                          [
+                                                        c.medicalRequests[index]
+                                                            .user!.email!
+                                                      ],
+                                                    },
+                                                    package:
+                                                        'com.google.android.gm',
+                                                    type: 'message/rfc822',
+                                                  );
+                                                  intent.launch();
+                                                }
+                                              },
+                                              child: depositLine(
+                                                  title: "email".tr,
+                                                  content:
+                                                      "${c.medicalRequests[index].user!.email!.substring(0, 15)}..."),
+                                            ),
+                                            spaceY(10.sp),
+                                            depositLine(
+                                              title: "date".tr,
+                                              content: DateFormat(DateFormat
+                                                      .YEAR_NUM_MONTH_DAY)
+                                                  .format(
+                                                DateTime.parse(
+                                                  c.medicalRequests[index]
+                                                      .createdAt!,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      PositionedDirectional(
+                                        top: 10,
+                                        end: 5,
+                                        child: Theme(
+                                          data: ThemeData(
+                                              primaryColor: Colors.white),
+                                          child: PopupMenuButton(
+                                            constraints: BoxConstraints(
+                                              minWidth: 2.0 * 56.0,
+                                              maxWidth: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                            ),
+                                            itemBuilder: (BuildContext cc) => [
+                                              PopupMenuItem<int>(
+                                                value: 1,
+                                                child: Row(
+                                                  children: [
+                                                    Icon(EvaIcons.trash2Outline,
+                                                        size: 15.sp),
+                                                    spaceX(5.sp),
+                                                    coloredText(
+                                                        text: 'delete'.tr,
+                                                        fontSize: 12.0.sp),
+                                                  ],
+                                                ),
+                                                onTap: () async {
+                                                  bool b = await _adminController
+                                                      .deleteMedical(
+                                                          id: c
+                                                              .medicalRequests[
+                                                                  index]
+                                                              .id!);
+                                                  if (b) {
+                                                    Utils.doneDialog(
+                                                        context: context);
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                            child: const Icon(
+                                              EvaIcons.moreVertical,
                                             ),
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      )
+                                    ],
                                   ),
                               separatorBuilder: (context, index) =>
                                   spaceY(10.sp),

@@ -236,6 +236,7 @@ class CompaniesController extends GetxController {
       List<CompanyModel> tmp = [];
       for (var i in res.data['data']) {
         CompanyModel t = CompanyModel.fromJson(i);
+        logWarning(t.toJson());
         tmp.add(t);
       }
       recruitmentCompanies = tmp;
@@ -398,7 +399,7 @@ class CompaniesController extends GetxController {
     }
   }
 
-  Future<Map<String, String>?> checkOut({
+  Future<bool?> checkOut({
     required int id,
     required String startDate,
     required String endDate,
@@ -417,7 +418,7 @@ class CompaniesController extends GetxController {
       logSuccess(token!);
 
       var res = await dio.post(
-        EndPoints.companyCheckout(id),
+        EndPoints.checkout(id),
         data: body,
         options: Options(
           headers: {
@@ -429,7 +430,7 @@ class CompaniesController extends GetxController {
 
       Get.back();
       logSuccess(res.data);
-      return {res.data['InvoiceId'].toString(): res.data['InvoiceURL']};
+      return true;
     } on DioException catch (e) {
       logError(e.response!.data);
       Get.back();

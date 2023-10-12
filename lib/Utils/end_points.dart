@@ -16,6 +16,8 @@ class EndPoints {
       "$_baseURL/advertisment/show/$id";
   static String updateCompanyAdvertisment(int id) =>
       "$_baseURL/advertisment/update/$id";
+  static String refundCompanyAdvertisment(int id) =>
+      "$_baseURL/advertisment/refund/$id";
   static String get storeReview => "$_baseURL/review/store";
   static String get storeFavourite => "$_baseURL/favourite/store";
   static String deleteFavourite(int id) => "$_baseURL/favourite/delete/$id";
@@ -73,6 +75,7 @@ class EndPoints {
   static String get forgetPassword => "$_baseURL/forget-password";
   static String get changePassword => "$_baseURL/changePassword";
   static String get notifications => "$_baseURL/notifications";
+  static String get notificationsAdmin => "$_adminBaseURL/notifications";
   static String get confirmEmail => "$_baseURL/confirm-code-email";
   static String get resetPassword => "$_baseURL/reset-password";
   static String get getCart => "$_baseURL/carts";
@@ -81,7 +84,11 @@ class EndPoints {
   static String get updateCompanySetting => "$_baseURL/seetingCompany/store";
   static String getCompanySetting(int id) =>
       "$_baseURL/seetingCompany/show/$id";
-  static String companyCheckout(int id) => "$_baseURL/checkout/store/$id";
+  static String checkout(int id) => "$_baseURL/checkout/store/$id";
+  static String get getCheckoutUser => "$_baseURL/user/checkouts";
+  static String get getCheckoutCompany => "$_baseURL/company/checkouts";
+  static String approveCheckout(int id) => "$_baseURL/checkout/approve/$id";
+  static String payCheckout(int id) => "$_baseURL/pay/order/cleaning/$id";
 ///////////////////////////admin///////////////////////////
   static String get getAllCountries => "$_baseURL/countries";
   static String get getBanks => "$_baseURL/banks";
@@ -155,6 +162,7 @@ class EndPoints {
   static String get getAllAdminAdvertisments => "$_adminBaseURL/advertisements";
   static String get getAllAdminUserProfiles => "$_adminBaseURL/users/profile";
   static String get getMedicals => "$_adminBaseURL/medicals";
+  static String deleteMedical(int id) => "$_adminBaseURL/medical/delete/$id";
   static String blockProfile(int id) => "$_adminBaseURL/block/$id";
   static String get getAllAdminCompanyProfiles =>
       "$_adminBaseURL/companies/profile";

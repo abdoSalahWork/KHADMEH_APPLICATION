@@ -26,7 +26,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
   final GlobalController _globalController = Get.find();
   List<DesFile> files = [];
   PlatformFile? file;
-  String uploadText = "Upload Files";
+  String uploadText = "upload_files".tr;
   @override
   void initState() {
     focusNode.addListener(() {
@@ -43,7 +43,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: coloredText(text: "Add Documents".tr, fontSize: 15.0.sp),
+        title: coloredText(text: "add_docs".tr, fontSize: 15.0.sp),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -83,8 +83,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                         ],
                                       ),
                                       coloredText(
-                                          text: "Description of the file*",
-                                          fontSize: 12.0.sp),
+                                          text: "name".tr, fontSize: 12.0.sp),
                                       spaceY(20),
                                       SendMessageTextField(
                                         maxLength: 40,
@@ -168,7 +167,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                                 files.add(tmp);
 
                                                 file = null;
-                                                uploadText = "Upload Files";
+                                                uploadText = "upload_files".tr;
                                                 descriptionController.text = "";
                                                 Get.back();
                                                 s(() {});
@@ -202,7 +201,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                             ),
                             spaceX(10),
                             coloredText(
-                              text: "Upload Files",
+                              text: "upload_files".tr,
                               color: Colors.black,
                             ),
                           ],
@@ -244,8 +243,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                                     ],
                                                   ),
                                                   coloredText(
-                                                      text:
-                                                          "Description of the file*",
+                                                      text: "name".tr,
                                                       fontSize: 12.0.sp),
                                                   spaceY(20),
                                                   SendMessageTextField(
@@ -361,7 +359,8 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
 
                                                             file = null;
                                                             uploadText =
-                                                                "Upload Files";
+                                                                "upload_files"
+                                                                    .tr;
                                                             descriptionController
                                                                 .text = "";
                                                             Get.back();
@@ -402,7 +401,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                         ),
                                         spaceX(20),
                                         coloredText(
-                                          text: "Upload Files",
+                                          text: "upload_files".tr,
                                           fontSize: 14.0.sp,
                                           color: const Color(0xff919191),
                                         ),

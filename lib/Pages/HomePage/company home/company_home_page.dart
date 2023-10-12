@@ -4,6 +4,7 @@ import 'dart:math' as math; // import this
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:badges/badges.dart' as badges;
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
@@ -147,10 +148,9 @@ class _CompanyHomePageState extends State<CompanyHomePage>
       meCompanyType = _globalController.me.companyInformation!.companyType!;
     }
     logError(meCompanyType);
+    _employeesController.getCompanyEmployees();
     meCompanyType == "recruitment"
-        ? _employeesController
-            .getCompanyEmployees()
-            .then((value) => _globalController.getRecruitmentCompanyHomePage())
+        ? _globalController.getRecruitmentCompanyHomePage()
         : _globalController.getCleanCompanyHomePage();
     getAllThings();
     completedRegisterFlag = _globalController.me.companyInformation != null;
@@ -294,19 +294,24 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                           ),
                         ),
                         spaceX(10),
-                        GestureDetector(
-                          child: Icon(
-                            EvaIcons.messageCircle,
-                            color: const Color(0xffD1D1D1),
-                            size: 22.0.sp,
-                          ),
-                          onTap: () => Get.to(() => const MessagesPage()),
-                        ),
+                        GetBuilder<ChatController>(builder: (chatController) {
+                          return badges.Badge(
+                            showBadge: chatController.unreadChatsFlag,
+                            position:
+                                badges.BadgePosition.topEnd(top: 0, end: 0),
+                            child: GestureDetector(
+                              child: Icon(
+                                EvaIcons.messageCircle,
+                                color: const Color(0xffD1D1D1),
+                                size: 22.0.sp,
+                              ),
+                              onTap: () => Get.to(() => const MessagesPage()),
+                            ),
+                          );
+                        }),
                         spaceX(10),
                         GestureDetector(
-                          onTap: () => Get.to(
-                              () => const CompanyPersonalPage(
-                                  employeeType: EmployeeType.clean),
+                          onTap: () => Get.to(() => const CompanyPersonalPage(),
                               transition: Transition.downToUp),
                           child: Container(
                             width: 45,
@@ -320,7 +325,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                               image: DecorationImage(
                                 image: NetworkImage(_globalController
                                     .me.companyInformation!.companyLogo!),
-                                fit: BoxFit.contain,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),

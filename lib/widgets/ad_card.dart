@@ -3,6 +3,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/company%20home/add_advertisement_page.dart';
 import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
 import 'package:khedma/Utils/utils.dart';
@@ -77,9 +78,7 @@ class AdvertismentCard extends StatelessWidget {
                   ),
                   Expanded(
                     child: coloredText(
-                        text:
-                            "Lorem ipsum dolor sit amet consectetur adipiscing elit",
-                        fontSize: 11.sp),
+                        text: advertismentModel.desc ?? "", fontSize: 11.sp),
                   )
                 ],
               )
@@ -89,6 +88,11 @@ class AdvertismentCard extends StatelessWidget {
             ? Row(
                 children: [
                   primaryButton(
+                    onTap: () {
+                      Get.to(() => AddAdvertismentPage(
+                            advertismentToEdit: advertismentModel,
+                          ));
+                    },
                     width: 35.w,
                     height: 30.sp,
                     radius: 20.sp,
@@ -136,6 +140,7 @@ class AdvertismentCard extends StatelessWidget {
                   spaceX(10.sp),
                   primaryButton(
                     onTap: () {
+                      String desc = "";
                       Utils.showDialogBox(
                         context: context,
                         actions: [
@@ -145,7 +150,8 @@ class AdvertismentCard extends StatelessWidget {
                               bool b = await _advertismentController
                                   .approveAdvertismnt(
                                       approve: 0,
-                                      advertismentId: advertismentModel.id!);
+                                      advertismentId: advertismentModel.id!,
+                                      desc: desc);
                               if (b) {
                                 Future(
                                     () => Utils.doneDialog(context: context));
@@ -206,6 +212,9 @@ class AdvertismentCard extends StatelessWidget {
                           ),
                         ],
                         content: TextFormField(
+                          onChanged: (value) {
+                            desc = value;
+                          },
                           maxLines: 5,
                           decoration: InputDecoration(
                             hintText: "write_your_notes".tr,
@@ -242,27 +251,27 @@ class AdvertismentCard extends StatelessWidget {
                 ],
               )
             : Container(),
-        admin && refunds ? spaceY(10.sp) : Container(),
-        admin && refunds
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    EvaIcons.infoOutline,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  coloredText(
-                    text: "${"comment".tr}:  ",
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  Expanded(
-                    child: coloredText(
-                        text: "Lorem ipsum dolor sit amet cour adipiscing elit",
-                        fontSize: 11.sp),
-                  )
-                ],
-              )
-            : Container(),
+        // admin && refunds ? spaceY(10.sp) : Container(),
+        // admin && refunds
+        //     ? Row(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           Icon(
+        //             EvaIcons.infoOutline,
+        //             color: Theme.of(context).colorScheme.secondary,
+        //           ),
+        //           coloredText(
+        //             text: "${"comment".tr}:  ",
+        //             color: Theme.of(context).colorScheme.secondary,
+        //           ),
+        //           Expanded(
+        //             child: coloredText(
+        //                 text: "Lorem ipsum dolor sit amet cour adipiscing elit",
+        //                 fontSize: 11.sp),
+        //           )
+        //         ],
+        //       )
+        //     : Container(),
         admin && refunds ? spaceY(10.sp) : Container(),
         admin && refunds
             ? Row(
@@ -287,6 +296,7 @@ class AdvertismentCard extends StatelessWidget {
                   spaceX(10.sp),
                   primaryButton(
                     onTap: () {
+                      String desc = "";
                       Utils.showDialogBox(
                         context: context,
                         actions: [
@@ -296,7 +306,8 @@ class AdvertismentCard extends StatelessWidget {
                               bool b = await _advertismentController
                                   .refundAdvertismnt(
                                       refund: 0,
-                                      advertismentId: advertismentModel.id!);
+                                      advertismentId: advertismentModel.id!,
+                                      desc: desc);
                               if (b) {
                                 Utils.doneDialog(context: context);
 
@@ -357,6 +368,9 @@ class AdvertismentCard extends StatelessWidget {
                         ],
                         content: TextFormField(
                           maxLines: 5,
+                          onChanged: (value) {
+                            desc = value;
+                          },
                           decoration: InputDecoration(
                             hintText: "write_your_notes".tr,
                             border: const OutlineInputBorder(

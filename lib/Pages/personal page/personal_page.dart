@@ -19,8 +19,9 @@ import '../personal%20page/reservation_extension_request_page.dart';
 import 'personal_settings.dart';
 
 class PersonalPage extends StatefulWidget {
-  const PersonalPage({super.key, required this.employeeType});
-  final EmployeeType employeeType;
+  const PersonalPage({
+    super.key,
+  });
   @override
   State<PersonalPage> createState() => _PersonalPageState();
 }
@@ -51,6 +52,12 @@ class _PersonalPageState extends State<PersonalPage>
 
   PageController pageController = PageController(initialPage: 0);
   GlobalController _globalController = Get.find();
+  @override
+  void dispose() {
+    _globalController.getMe();
+    super.dispose();
+  }
+
   @override
   void initState() {
     logSuccess(_globalController.me.toJson());
@@ -177,6 +184,7 @@ class _PersonalPageState extends State<PersonalPage>
                                               .me.userInformation!,
                                           personaPhoto: result.files[0]);
                                       // );
+
                                       setState(() {});
                                     }
                                   },

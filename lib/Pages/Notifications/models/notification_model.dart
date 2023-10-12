@@ -7,6 +7,7 @@ class NotificationModel {
   int? userId;
   String? createdAt;
   String? updatedAt;
+  String? notificationType;
 
   NotificationModel(
       {this.id,
@@ -16,6 +17,7 @@ class NotificationModel {
       this.api,
       this.userId,
       this.createdAt,
+      this.notificationType,
       this.updatedAt});
 
   NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class NotificationModel {
     userId = json['user_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    notificationType = json['notification_type'];
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +42,7 @@ class NotificationModel {
     data['user_id'] = this.userId;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['notification_type'] = this.notificationType;
     return data;
   }
 }

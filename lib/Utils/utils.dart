@@ -278,6 +278,7 @@ class Utils {
       CustomViewPosition? customViewPosition,
       Color? color,
       required BuildContext context,
+      void Function()? onTap,
       dynamic Function(dynamic)? onClose}) {
     Dialogs.materialDialog(
       onClose: onClose,
@@ -317,11 +318,12 @@ class Utils {
       context: context,
       actions: [
         primaryButton(
-          onTap: () {
-            for (var i = 0; i < backTimes; i++) {
-              Get.back();
-            }
-          },
+          onTap: onTap ??
+              () {
+                for (var i = 0; i < backTimes; i++) {
+                  Get.back();
+                }
+              },
           width: 40.0.w,
           height: 50,
           radius: 10.w,

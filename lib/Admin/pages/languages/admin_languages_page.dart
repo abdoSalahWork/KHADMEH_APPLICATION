@@ -241,6 +241,7 @@ class _AdminLanguagesPageState extends State<AdminLanguagesPage> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) => AdminItemCard(
+                            noIcon: true,
                             name:
                                 "${c.languages[index].nameEn!} - ${c.languages[index].nameAr!}",
                             margin: const EdgeInsets.only(bottom: 10),

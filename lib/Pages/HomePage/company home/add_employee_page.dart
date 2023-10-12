@@ -125,7 +125,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: coloredText(text: "add_employee".tr, fontSize: 15.0.sp),
+        title: coloredText(
+            text: widget.employeeToEdit != null ? "edit".tr : "add_employee".tr,
+            fontSize: 15.0.sp),
       ),
       body: ExpandableNotifier(
         child: ExpandableTheme(
@@ -2029,7 +2031,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         height: 35.sp,
                         radius: 10.w,
                         text: coloredText(
-                            text: "add".tr,
+                            text: widget.employeeToEdit != null
+                                ? "edit".tr
+                                : "add".tr,
                             color: Colors.white,
                             fontSize: 14.sp)),
                     spaceY(10.sp),

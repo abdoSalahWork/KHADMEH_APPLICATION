@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart' as badges;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
+import 'package:khedma/Pages/Notifications/notifications_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:sizer/sizer.dart';
@@ -164,9 +166,13 @@ class _AdminMainPageState extends State<AdminMainPage>
                                   color: Colors.white,
                                 ),
                                 Spacer(),
-                                Badge(
-                                  smallSize: 10,
+                                badges.Badge(
+                                  position: badges.BadgePosition.topEnd(
+                                      top: 0, end: 0),
                                   child: GestureDetector(
+                                    onTap: () {
+                                      Get.to(() => NotificationsPage());
+                                    },
                                     child: Icon(
                                       EvaIcons.bell,
                                       color: Colors.white,

@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Pages/HomePage/company%20home/company_personal_page.dart';
+import 'package:khedma/Pages/HomePage/company%20home/emloyee_details.dart';
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
+import 'package:khedma/Pages/HomePage/employees/employee_page.dart';
 import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
+import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/personal%20page/personal_page.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
@@ -22,6 +30,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
     super.initState();
   }
 
+  EmployeesController _employeesController = Get.find();
+  GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,15 +47,62 @@ class _NotificationsPageState extends State<NotificationsPage> {
           return c.getNotificationsFlag
               ? Center(child: CircularProgressIndicator())
               : c.notifications.isEmpty
-                  ? Center(
-                      child: coloredText(
-                        text: "Nothing to show !!",
-                        color: Colors.grey,
-                        fontSize: 30.sp,
-                      ),
-                    )
+                  ? NoItemsWidget()
                   : ListView.separated(
                       itemBuilder: (context, index) => GestureDetector(
+                            onTap: () async {
+                              switch (c.notifications[index].notificationType) {
+                                case "Employee":
+                                  if (_globalController.me.userType == "user") {
+                                    EmployeeModel? em =
+                                        await _employeesController
+                                            .showMyEmployee(
+                                                id: c.notifications[index]
+                                                    .typeId!,
+                                                indicator: true);
+                                    if (em != null) {
+                                      Get.to(() => EmployeePage(
+                                            employeeModel: em,
+                                          ));
+                                    }
+                                  } else {
+                                    EmployeeModel? em =
+                                        await _employeesController
+                                            .showCompanyEmployee(
+                                                id: c.notifications[index]
+                                                    .typeId!,
+                                                indicator: true);
+                                    if (em != null) {
+                                      Get.to(() => EmployeeDetailsPage(
+                                            employee: em,
+                                          ));
+                                    }
+                                  }
+
+                                  break;
+                                case "reservationExtintion":
+                                  if (_globalController.me.userType == "user") {
+                                    Get.to(() => PersonalPage());
+                                  } else {
+                                    Get.to(() => CompanyPersonalPage());
+
+                                    EmployeeModel? em =
+                                        await _employeesController
+                                            .showCompanyEmployee(
+                                                id: c.notifications[index]
+                                                    .typeId!,
+                                                indicator: true);
+                                    if (em != null) {
+                                      Get.to(() => EmployeeDetailsPage(
+                                            employee: em,
+                                          ));
+                                    }
+                                  }
+
+                                  break;
+                                default:
+                              }
+                            },
                             child: Container(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
@@ -53,23 +110,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    width: 65,
-                                    height: 65,
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: const Color(0xffE2E2E2),
-                                    ),
-                                    // child: Image(
-                                    //   image: AssetImage(getnotificationImage(
-                                    //       _notificationsController
-                                    //           .notifications[index].notificationType!)),
-                                    //   width: 40,
-                                    //   height: 40,
-                                    // ),
-                                  ),
-                                  spaceX(20),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:

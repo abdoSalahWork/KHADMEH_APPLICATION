@@ -13,6 +13,7 @@ import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/widgets/cleaning_company_service_widget.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 
@@ -36,12 +37,14 @@ class _CleaningCompanyState extends State<CleaningCompany> {
   List<String> options = [
     "services".tr,
     // "rate_view".tr,
+    "orders".tr,
   ];
 
   @override
   void initState() {
     _cleaningCompanyController.geCompanyPrice(
         companyId: widget.cleaningCompany.id!);
+    _globalController.getUserCheckouts();
     logSuccess("companyId:" + widget.cleaningCompany.id!.toString());
     super.initState();
   }
@@ -144,49 +147,21 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                   size: 22.0.sp,
                                 ),
                                 onTap: () async {
-                                  MyChat? chat =
+                                  GlobalChat? chat =
                                       await _chatController.storeChat(
                                           id: widget.cleaningCompany.id!);
                                   if (chat != null) {
                                     Get.to(
                                       () => ChatPage(
-                                        chatId: chat.id!,
-                                        receiverId: _globalController.me.id ==
-                                                chat.participants![0].userId
-                                            ? chat.participants![1].chatId!
-                                            : chat.participants![0].chatId!,
-                                        recieverName: _globalController.me.id ==
-                                                chat.participants![0].userId
-                                            ? chat.participants![1].user!
-                                                .fullName!
-                                            : chat.participants![0].user!
-                                                .fullName!,
-                                        recieverImage: _globalController
-                                                    .me.userType ==
-                                                "company"
-                                            ? _globalController.me.id ==
-                                                    chat.participants![0].userId
-                                                ? chat
-                                                    .participants![1]
-                                                    .user!
-                                                    .userInformation!
+                                        chatId: chat.chat!.id!,
+                                        receiverId: chat.chat!.id!,
+                                        recieverName: chat.user!.fullName!,
+                                        recieverImage:
+                                            _globalController.me.userType ==
+                                                    "company"
+                                                ? chat.user!.userInformation!
                                                     .personalPhoto!
-                                                : chat
-                                                    .participants![0]
-                                                    .user!
-                                                    .userInformation!
-                                                    .personalPhoto!
-                                            : _globalController.me.id ==
-                                                    chat.participants![0].userId
-                                                ? chat
-                                                    .participants![1]
-                                                    .user!
-                                                    .companyInformation!
-                                                    .companyLogo!
-                                                : chat
-                                                    .participants![0]
-                                                    .user!
-                                                    .companyInformation!
+                                                : chat.user!.companyInformation!
                                                     .companyLogo!,
                                       ),
                                     );
@@ -290,64 +265,59 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                 ],
                               ),
                               spaceY(3.0.h),
-                              ChipsChoice<String>.multiple(
-                                padding: EdgeInsets.zero,
-                                value: tags,
-                                onChanged: (val) {},
-                                choiceItems: C2Choice.listFrom<String, String>(
-                                  source: options,
-                                  value: (i, v) => v,
-                                  label: (i, v) => v,
-                                ),
-                                // choiceStyle: C2ChipStyle.outlined(),
-                                choiceCheckmark: true,
-
-                                choiceBuilder: (item, i) => GestureDetector(
-                                  onTap: () {
-                                    if (!tags.contains(item.label)) {
-                                      tags = [];
-                                      tags.add(item.label);
-                                    }
-                                    _pageController.jumpToPage(
-                                        options.indexOf(item.label));
-
-                                    setState(() {});
-                                  },
-                                  child: Container(
-                                    // width: 45.0.w,
-                                    height: 40,
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 2.0.w),
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 6.w),
-                                    decoration: BoxDecoration(
-                                        color: !tags.contains(item.label)
-                                            ? const Color(0xffE8E8E8)
-                                                .withOpacity(0)
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                          color: !tags.contains(item.label)
-                                              ? const Color(0xffF1F1F1)
-                                              : Colors.transparent,
-                                        )),
-                                    child: Center(
-                                      child: coloredText(
-                                          text: item.label.tr,
-                                          color: !tags.contains(item.label)
-                                              ? const Color(0xffF1F1F1)
-                                              : Colors.white,
-                                          fontSize: 12.0.sp),
-                                    ),
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
                         )
                       ],
+                    ),
+                    ChipsChoice<String>.multiple(
+                      padding: EdgeInsets.zero,
+                      value: tags,
+                      onChanged: (val) {},
+                      choiceItems: C2Choice.listFrom<String, String>(
+                        source: options,
+                        value: (i, v) => v,
+                        label: (i, v) => v,
+                      ),
+                      // choiceStyle: C2ChipStyle.outlined(),
+                      choiceCheckmark: true,
+
+                      choiceBuilder: (item, i) => GestureDetector(
+                        onTap: () {
+                          if (!tags.contains(item.label)) {
+                            tags = [];
+                            tags.add(item.label);
+                          }
+                          _pageController
+                              .jumpToPage(options.indexOf(item.label));
+
+                          setState(() {});
+                        },
+                        child: Container(
+                          // width: 45.0.w,
+                          height: 40,
+                          margin: EdgeInsets.symmetric(horizontal: 2.0.w),
+                          padding: EdgeInsets.symmetric(horizontal: 6.w),
+                          decoration: BoxDecoration(
+                              color: !tags.contains(item.label)
+                                  ? const Color(0xffE8E8E8).withOpacity(0)
+                                  : Theme.of(context).colorScheme.secondary,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: !tags.contains(item.label)
+                                    ? const Color(0xffF1F1F1)
+                                    : Colors.transparent,
+                              )),
+                          child: Center(
+                            child: coloredText(
+                                text: item.label.tr,
+                                color: !tags.contains(item.label)
+                                    ? const Color(0xffF1F1F1)
+                                    : Colors.white,
+                                fontSize: 12.0.sp),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -428,15 +398,35 @@ class _CleaningCompanyState extends State<CleaningCompany> {
         //         Expanded(
         //           child: Column(
         //             children: [
-        //               const MyRatingBar(label: '5', value: 50),
+        //               MyRatingBar(
+        //                 label: '5',
+        //                 value: 50,
+        //                 maxVal: 100,
+        //               ),
         //               spaceY(3),
-        //               const MyRatingBar(label: '4', value: 20),
+        //               MyRatingBar(
+        //                 label: '4',
+        //                 value: 20,
+        //                 maxVal: 100,
+        //               ),
         //               spaceY(3),
-        //               const MyRatingBar(label: '3', value: 70),
+        //               MyRatingBar(
+        //                 label: '3',
+        //                 value: 70,
+        //                 maxVal: 100,
+        //               ),
         //               spaceY(3),
-        //               const MyRatingBar(label: '2', value: 10),
+        //               MyRatingBar(
+        //                 label: '2',
+        //                 value: 10,
+        //                 maxVal: 100,
+        //               ),
         //               spaceY(3),
-        //               const MyRatingBar(label: '1', value: 90),
+        //               MyRatingBar(
+        //                 label: '1',
+        //                 value: 90,
+        //                 maxVal: 100,
+        //               ),
         //             ],
         //           ),
         //         ),
@@ -471,48 +461,6 @@ class _CleaningCompanyState extends State<CleaningCompany> {
         //                     )
         //                   ],
         //                 ),
-        //                 Align(
-        //                     alignment: AlignmentDirectional.centerStart,
-        //                     child: r.RatingBar.readOnly(
-        //                       isHalfAllowed: true,
-        //                       filledIcon: Icons.star_rounded,
-        //                       halfFilledIcon: Icons.star_half_rounded,
-        //                       emptyIcon: Icons.star_border_rounded,
-        //                       filledColor: Colors.black,
-        //                       halfFilledColor: Colors.black,
-        //                       emptyColor: Colors.black,
-        //                       initialRating: 3.5,
-        //                       maxRating: 5,
-        //                       size: 18.0.sp,
-        //                     )
-        //                     //  RatingBar.builder(
-        //                     //   initialRating: 4.5,
-        //                     //   minRating: 0,
-        //                     //   direction: Axis.horizontal,
-        //                     //   allowHalfRating: true,
-        //                     //   itemCount: 5,
-        //                     //   itemSize: 17.0.sp,unratedColor: Colors.transparent,
-        //                     //   itemPadding:
-        //                     //       EdgeInsets.symmetric(horizontal: 4.0),
-        //                     //   itemBuilder: (context, index) {
-        //                     //     if (index < 4.5) {
-        //                     //       return const Icon(
-        //                     //         Icons.star_rounded,
-        //                     //         color: Colors.black,
-        //                     //       );
-        //                     //     } else {
-        //                     //       return const Icon(
-        //                     //         Icons.star_outline_rounded,
-        //                     //         color: Colors.black,
-        //                     //       );
-        //                     //     }
-        //                     //   },
-        //                     //   onRatingUpdate: (rating) {
-        //                     //     print(rating);
-        //                     //   },
-        //                     // ),
-
-        //                     ),
         //                 spaceY(10),
         //                 coloredText(
         //                     text:
@@ -525,5 +473,135 @@ class _CleaningCompanyState extends State<CleaningCompany> {
         //     spaceY(20),
         //   ],
         // ),
+
+        GetBuilder<GlobalController>(builder: (c) {
+          return c.getUserCheckoutsFlag
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : c.checkouts.isEmpty
+                  ? NoItemsWidget()
+                  : ListView.builder(
+                      itemBuilder: (context, index) => Container(
+                        margin:
+                            EdgeInsets.only(left: 10, right: 10, bottom: 20.sp),
+                        padding: const EdgeInsetsDirectional.only(
+                            top: 20, bottom: 20, start: 20, end: 10),
+                        width: 100.w,
+                        // height: 42.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset: const Offset(
+                                  0, 0), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    width: 15.w,
+                                    child: coloredText(
+                                        text: "${"order".tr}:",
+                                        fontSize: 12.sp)),
+                                spaceX(10.sp),
+                                Expanded(
+                                  child: coloredText(
+                                      text: c.checkouts[index].order!
+                                          .map((e) =>
+                                              "${e.quantity} ${Get.locale == const Locale('en', 'US') ? e.services!.adminService!.nameEn! : e.services!.adminService!.nameAr!}")
+                                          .toList()
+                                          .join(", "),
+                                      fontSize: 12.sp),
+                                ),
+                              ],
+                            ),
+                            spaceY(10.sp),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    width: 15.w,
+                                    child: coloredText(
+                                        text: "${"address".tr}:",
+                                        fontSize: 12.sp)),
+                                spaceX(10.sp),
+                                Expanded(
+                                  child: coloredText(
+                                      text: c.checkouts[index].address!,
+                                      fontSize: 12.sp),
+                                ),
+                              ],
+                            ),
+                            spaceY(10.sp),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    width: 15.w,
+                                    child: coloredText(
+                                        text: "${"price".tr}:",
+                                        fontSize: 12.sp)),
+                                spaceX(10.sp),
+                                Expanded(
+                                  child: coloredText(
+                                      text: c.checkouts[index].amount2 ?? "0",
+                                      fontSize: 12.sp),
+                                ),
+                              ],
+                            ),
+                            spaceY(10.sp),
+                            c.checkouts[index].approve == null ||
+                                    c.checkouts[index].approve == 0 ||
+                                    c.checkouts[index].paid == 1
+                                ? Container()
+                                : primaryBorderedButton(
+                                    onTap: () async {
+                                      Map<String, String>? x =
+                                          await _globalController.payCheckOut(
+                                              id: c.checkouts[index].id!);
+                                      if (x != null) {
+                                        Uri url = Uri.parse(x.values.first);
+
+                                        logSuccess(x);
+                                        await launchUrl(url,
+                                            mode:
+                                                LaunchMode.externalApplication);
+
+                                        await Future.delayed(
+                                            Duration(milliseconds: 100));
+                                        while (WidgetsBinding
+                                                .instance.lifecycleState !=
+                                            AppLifecycleState.resumed) {
+                                          await Future.delayed(
+                                              Duration(milliseconds: 100));
+                                        }
+                                        await _globalController
+                                            .getUserCheckouts();
+                                        setState(() {});
+                                      }
+                                    },
+                                    alignment: AlignmentDirectional.center,
+                                    width: 35.w,
+                                    height: 40.sp,
+                                    radius: 10,
+                                    text: coloredText(
+                                        text: "pay".tr, fontSize: 12.sp),
+                                    color: const Color(0xff919191),
+                                  ),
+                          ],
+                        ),
+                      ),
+                      itemCount: c.checkouts.length,
+                    );
+        })
       ];
 }

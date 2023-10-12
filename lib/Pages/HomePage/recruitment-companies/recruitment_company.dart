@@ -131,48 +131,22 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                             ),
                             onTap: () async {
                               logSuccess(widget.company.id!);
-                              MyChat? chat = await _chatController.storeChat(
-                                  id: widget.company.id!);
+                              GlobalChat? chat = await _chatController
+                                  .storeChat(id: widget.company.id!);
 
                               if (chat != null) {
                                 Get.to(
                                   () => ChatPage(
-                                    chatId: chat.id!,
-                                    receiverId: _globalController.me.id ==
-                                            chat.participants![0].userId
-                                        ? chat.participants![1].chatId!
-                                        : chat.participants![0].chatId!,
-                                    recieverName: _globalController.me.id ==
-                                            chat.participants![0].userId
-                                        ? chat.participants![1].user!.fullName!
-                                        : chat.participants![0].user!.fullName!,
-                                    recieverImage:
-                                        _globalController.me.userType ==
-                                                "company"
-                                            ? _globalController.me.id ==
-                                                    chat.participants![0].userId
-                                                ? chat
-                                                    .participants![1]
-                                                    .user!
-                                                    .userInformation!
-                                                    .personalPhoto!
-                                                : chat
-                                                    .participants![0]
-                                                    .user!
-                                                    .userInformation!
-                                                    .personalPhoto!
-                                            : _globalController.me.id ==
-                                                    chat.participants![0].userId
-                                                ? chat
-                                                    .participants![1]
-                                                    .user!
-                                                    .companyInformation!
-                                                    .companyLogo!
-                                                : chat
-                                                    .participants![0]
-                                                    .user!
-                                                    .companyInformation!
-                                                    .companyLogo!,
+                                    chatId: chat.chat!.id!,
+                                    receiverId: chat.chat!.id!,
+                                    recieverName: chat.user!.fullName!,
+                                    recieverImage: _globalController
+                                                .me.userType ==
+                                            "company"
+                                        ? chat.user!.userInformation!
+                                            .personalPhoto!
+                                        : chat.user!.companyInformation!
+                                            .companyLogo!,
                                   ),
                                 );
                               }

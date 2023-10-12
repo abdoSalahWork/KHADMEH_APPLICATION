@@ -74,86 +74,88 @@ class _AdminAddressesPageState extends State<AdminAboutPage> {
                       topRight: Radius.circular(20),
                     )),
                 width: 100.w,
-                child: Column(
-                  children: [
-                    spaceY(10.sp),
-                    editing || _textEditingController.text == ""
-                        ? Column(
-                            children: [
-                              SizedBox(
-                                height: 30.h,
-                                child: TextFormField(
-                                  maxLines: 10,
-                                  controller: _textEditingController,
-                                  onChanged: (value) {
-                                    aboutModel.about = value;
-                                  },
-                                  decoration: const InputDecoration(
-                                    // hintText: "write_your_notes".tr,
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      spaceY(10.sp),
+                      editing || _textEditingController.text == ""
+                          ? Column(
+                              children: [
+                                SizedBox(
+                                  height: 30.h,
+                                  child: TextFormField(
+                                    maxLines: 10,
+                                    controller: _textEditingController,
+                                    onChanged: (value) {
+                                      aboutModel.about = value;
+                                    },
+                                    decoration: const InputDecoration(
+                                      // hintText: "write_your_notes".tr,
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
+                                        ),
                                       ),
+                                      filled: true,
+                                      fillColor: Color(0xffF8F8F8),
                                     ),
-                                    filled: true,
-                                    fillColor: Color(0xffF8F8F8),
                                   ),
                                 ),
-                              ),
-                              spaceY(30.sp),
-                              primaryButton(
-                                  onTap: () async {
-                                    bool b = await _adminController.updateAbout(
-                                        about: aboutModel);
-                                    if (b) {
-                                      Utils.doneDialog(context: context);
-                                      editing = false;
+                                spaceY(30.sp),
+                                primaryButton(
+                                    onTap: () async {
+                                      bool b = await _adminController
+                                          .updateAbout(about: aboutModel);
+                                      if (b) {
+                                        Utils.doneDialog(context: context);
+                                        editing = false;
+                                        setState(() {});
+                                      } else {}
+                                    },
+                                    text: coloredText(
+                                      text: "submit".tr,
+                                      color: Colors.white,
+                                    ),
+                                    gradient: LinearGradient(colors: [
+                                      Theme.of(context).colorScheme.primary,
+                                      Theme.of(context).colorScheme.secondary,
+                                    ]))
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                Container(
+                                  width: 100.w,
+                                  height: 30.h,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 20, horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: const Color(0xffF8F8F8),
+                                  ),
+                                  child: coloredText(
+                                      text: _textEditingController.text,
+                                      fontSize: 12.sp),
+                                ),
+                                spaceY(30.sp),
+                                primaryButton(
+                                    onTap: () {
+                                      editing = true;
                                       setState(() {});
-                                    } else {}
-                                  },
-                                  text: coloredText(
-                                    text: "submit".tr,
-                                    color: Colors.white,
-                                  ),
-                                  gradient: LinearGradient(colors: [
-                                    Theme.of(context).colorScheme.primary,
-                                    Theme.of(context).colorScheme.secondary,
-                                  ]))
-                            ],
-                          )
-                        : Column(
-                            children: [
-                              Container(
-                                width: 100.w,
-                                height: 30.h,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: const Color(0xffF8F8F8),
-                                ),
-                                child: coloredText(
-                                    text: _textEditingController.text,
-                                    fontSize: 12.sp),
-                              ),
-                              spaceY(30.sp),
-                              primaryButton(
-                                  onTap: () {
-                                    editing = true;
-                                    setState(() {});
-                                  },
-                                  text: coloredText(
-                                    text: "edit".tr,
-                                    color: Colors.white,
-                                  ),
-                                  gradient: LinearGradient(colors: [
-                                    Theme.of(context).colorScheme.primary,
-                                    Theme.of(context).colorScheme.secondary,
-                                  ]))
-                            ],
-                          ),
-                  ],
+                                    },
+                                    text: coloredText(
+                                      text: "edit".tr,
+                                      color: Colors.white,
+                                    ),
+                                    gradient: LinearGradient(colors: [
+                                      Theme.of(context).colorScheme.primary,
+                                      Theme.of(context).colorScheme.secondary,
+                                    ]))
+                              ],
+                            ),
+                    ],
+                  ),
                 ),
               ),
             ),
