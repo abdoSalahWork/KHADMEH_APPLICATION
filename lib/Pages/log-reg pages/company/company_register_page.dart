@@ -1737,7 +1737,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                     ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async => await launchUrl(
-                                          Uri.parse("https://www.google.com"))),
+                                          Uri.parse(
+                                              "http://www.khedmah.site/privacy-terms"))),
                                 const TextSpan(text: ' and '),
                                 TextSpan(
                                     text: 'Terms & Conditions',
@@ -1747,7 +1748,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                     ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async => await launchUrl(
-                                          Uri.parse("https://www.google.com"))),
+                                          Uri.parse(
+                                              "http://www.khedmah.site/terms-of-use"))),
                               ],
                             ),
                           ),
@@ -1768,7 +1770,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                     ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async => await launchUrl(
-                                          Uri.parse("https://www.google.com"))),
+                                          Uri.parse(
+                                              "http://www.khedmah.site/privacy-terms"))),
                                 const TextSpan(text: ' و '),
                                 TextSpan(
                                     text: 'شروط الاستخدام',
@@ -1778,7 +1781,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                     ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () async => await launchUrl(
-                                          Uri.parse("https://www.google.com"))),
+                                          Uri.parse(
+                                              "http://www.khedmah.site/terms-of-use"))),
                               ],
                             ),
                           ),

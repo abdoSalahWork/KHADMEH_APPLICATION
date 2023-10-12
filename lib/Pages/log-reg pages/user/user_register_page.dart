@@ -1073,16 +1073,17 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                                     children: [
                                       const TextSpan(text: 'I agree to the '),
                                       TextSpan(
-                                          text: 'Privacy policy',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () async =>
-                                                await launchUrl(Uri.parse(
-                                                    "https://www.google.com"))),
+                                        text: 'Privacy policy',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () async => await launchUrl(
+                                                Uri.parse(
+                                                    "http://www.khedmah.site/privacy-terms"),
+                                              ),
+                                      ),
                                       const TextSpan(text: ' and '),
                                       TextSpan(
                                           text: 'Terms & Conditions',
@@ -1094,7 +1095,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () async =>
                                                 await launchUrl(Uri.parse(
-                                                    "https://www.google.com"))),
+                                                    "http://www.khedmah.site/terms-of-use"))),
                                     ],
                                   ),
                                 ),
@@ -1117,7 +1118,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () async =>
                                                 await launchUrl(Uri.parse(
-                                                    "https://www.google.com"))),
+                                                    "http://www.khedmah.site/privacy-terms"))),
                                       const TextSpan(text: ' و '),
                                       TextSpan(
                                           text: 'شروط الاستخدام',
@@ -1129,7 +1130,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () async =>
                                                 await launchUrl(Uri.parse(
-                                                    "https://www.google.com"))),
+                                                    "http://www.khedmah.site/terms-of-use"))),
                                     ],
                                   ),
                                 ),

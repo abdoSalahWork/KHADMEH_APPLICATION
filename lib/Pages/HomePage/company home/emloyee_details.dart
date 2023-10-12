@@ -45,7 +45,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                     GestureDetector(
                       onTap: () => Get.back(),
                       child: Icon(
-                        EvaIcons.arrowBack,
+                        Icons.arrow_back,
                         size: 30.sp,
                       ),
                     ),
