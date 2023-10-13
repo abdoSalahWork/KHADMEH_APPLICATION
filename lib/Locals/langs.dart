@@ -342,8 +342,10 @@ class LocaleString extends Translations {
           "receipt_method": "Receipt method",
           "orders": "Orders",
           "upload_files": "Upload files",
+          "add_doc": "Add document",
         },
         'ar_SYR': {
+          "add_doc": "اضف وثيقة",
           "upload_files": "رفع الملفات",
           "orders": "الطلبات",
           "receipt_method": "طريقة الاستلام",

@@ -9,6 +9,7 @@ class CompanyModel {
   Favourite? favouriteCompany;
   CompanyInformation? companyInformation;
   List<CleaningService>? cleaningServices;
+  List<ReviewCompany>? reviewCompany;
   CompanyModel({
     this.id,
     this.fullName,
@@ -17,10 +18,17 @@ class CompanyModel {
     this.reviewCompanySumReviewValue,
     this.companyInformation,
     this.favouriteCompany,
+    this.reviewCompany,
     this.cleaningServices,
   });
 
   CompanyModel.fromJson(Map<String, dynamic> json) {
+    if (json['review_company'] != null) {
+      reviewCompany = <ReviewCompany>[];
+      json['review_company'].forEach((v) {
+        reviewCompany!.add(ReviewCompany.fromJson(v));
+      });
+    }
     if (json['services'] != null) {
       cleaningServices = <CleaningService>[];
       json['services'].forEach((v) {
@@ -46,6 +54,10 @@ class CompanyModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    if (this.reviewCompany != null) {
+      data['review_company'] =
+          this.reviewCompany!.map((v) => v.toJson()).toList();
+    }
     data['id'] = id;
     data['full_name'] = fullName;
     data['favourite_with_company'] = favouriteCompany;

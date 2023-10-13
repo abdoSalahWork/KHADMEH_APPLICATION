@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/firebase_api.dart';
@@ -41,11 +42,12 @@ class AuthController extends GetxController {
     return decodedToken['complite_data'] != null;
   }
 
+  NotificationController _notificationController = Get.find();
   Future handleGoogleSignIn(
       {required bool saveToken, required bool login}) async {
     try {
       GoogleSignInAccount? user = await _googleSignIn.signIn();
-      await FirebaseApi().initNotifications();
+      await FirebaseApi().initNotifications(_notificationController);
 
       GoogleSignInAuthentication auth = await user!.authentication;
       if (auth.accessToken != null) {
@@ -367,7 +369,7 @@ class AuthController extends GetxController {
       Get.dialog(const Center(
         child: CircularProgressIndicator(),
       ));
-      await FirebaseApi().initNotifications();
+      await FirebaseApi().initNotifications(_notificationController);
 
       final body = d.FormData.fromMap({
         "email": userName,

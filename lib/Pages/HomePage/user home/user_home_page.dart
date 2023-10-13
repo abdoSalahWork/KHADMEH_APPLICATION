@@ -19,6 +19,7 @@ import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/HomePage/employees/employee_page.dart';
 import 'package:khedma/Pages/HomePage/models/company_model.dart';
 import 'package:khedma/Pages/HomePage/recruitment-companies/recruitment_company.dart';
+import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
@@ -190,12 +191,12 @@ class _UserHomePageState extends State<UserHomePage> {
                       ]),
                       _globalController.guest
                           ? Container()
-                          : GetBuilder<ChatController>(
-                              builder: (chatController) {
-                              return Row(children: [
-                                badges.Badge(
+                          : Row(children: [
+                              GetBuilder<NotificationController>(builder: (c) {
+                                return badges.Badge(
                                   position: badges.BadgePosition.topEnd(
                                       top: 0, end: 0),
+                                  showBadge: c.newNotifications,
                                   child: GestureDetector(
                                     onTap: () => Get.to(
                                         () => NotificationsPage(),
@@ -206,9 +207,12 @@ class _UserHomePageState extends State<UserHomePage> {
                                       size: 25.0.sp,
                                     ),
                                   ),
-                                ),
-                                spaceX(10),
-                                badges.Badge(
+                                );
+                              }),
+                              spaceX(10),
+                              GetBuilder<ChatController>(
+                                  builder: (chatController) {
+                                return badges.Badge(
                                   showBadge: chatController.unreadChatsFlag,
                                   position: badges.BadgePosition.topEnd(
                                       top: 0, end: 0),
@@ -221,35 +225,35 @@ class _UserHomePageState extends State<UserHomePage> {
                                     onTap: () =>
                                         Get.to(() => const MessagesPage()),
                                   ),
-                                ),
-                                spaceX(10),
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.to(() => const PersonalPage(),
-                                        transition: Transition.downToUp);
-                                  },
-                                  child: GetBuilder<GlobalController>(
-                                      builder: (c) {
-                                    return Container(
-                                      width: 45,
-                                      height: 45,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        // border: Border.all(
-                                        //   width: 1,
-                                        //   color: const Color(0xffD1D1D1),
-                                        // ),
-                                        image: DecorationImage(
-                                          image: NetworkImage(c.me
-                                              .userInformation!.personalPhoto!),
-                                          fit: BoxFit.cover,
-                                        ),
+                                );
+                              }),
+                              spaceX(10),
+                              GestureDetector(
+                                onTap: () {
+                                  Get.to(() => const PersonalPage(),
+                                      transition: Transition.downToUp);
+                                },
+                                child:
+                                    GetBuilder<GlobalController>(builder: (c) {
+                                  return Container(
+                                    width: 45,
+                                    height: 45,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      // border: Border.all(
+                                      //   width: 1,
+                                      //   color: const Color(0xffD1D1D1),
+                                      // ),
+                                      image: DecorationImage(
+                                        image: NetworkImage(c.me
+                                            .userInformation!.personalPhoto!),
+                                        fit: BoxFit.cover,
                                       ),
-                                    );
-                                  }),
-                                ),
-                              ]);
-                            }),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ]),
                     ],
                   ),
                   spaceY(1.5.h),

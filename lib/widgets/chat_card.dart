@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/chat%20page/model/my_message.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:sizer/sizer.dart';
@@ -18,13 +19,16 @@ class ChatCard extends StatelessWidget {
   final ChatType chatType;
   final MyChat chat;
   final GlobalController _globalController = Get.find();
+  final ChatController _chatController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () {
+          onTap: () async {
+            // final response =
+            //     await _chatController.showChat(id: chat.id!, indicator: true);
             Get.to(
                 () => ChatPage(
                       chatId: chat.id!,

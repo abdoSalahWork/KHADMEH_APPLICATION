@@ -7,6 +7,7 @@ import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart'
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/HomePage/employees/employee_page.dart';
 import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
+import 'package:khedma/Pages/chat%20page/messages_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/personal%20page/personal_page.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
@@ -98,6 +99,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                           ));
                                     }
                                   }
+
+                                  break;
+                                case "chatMessage":
+                                  Get.to(() => MessagesPage());
 
                                   break;
                                 default:

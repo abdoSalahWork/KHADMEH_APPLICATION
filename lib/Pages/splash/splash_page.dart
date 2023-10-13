@@ -15,6 +15,7 @@ import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
+import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
@@ -37,7 +38,8 @@ class _SplashPageState extends State<SplashPage>
       Get.put(EmployeesController());
   final CompaniesController _companiesController =
       Get.put(CompaniesController());
-  final GlobalController _globalController = Get.put(GlobalController());
+  final GlobalController _globalController = Get.find();
+  final NotificationController _notificationController = Get.find();
 
   AdminController _adminHomeController = Get.put(AdminController());
   LanguagesController _langsController = Get.put(LanguagesController());
@@ -50,7 +52,7 @@ class _SplashPageState extends State<SplashPage>
   final AdvertismentController _advertismentController =
       Get.put(AdvertismentController());
   final AuthController _authController = Get.put(AuthController());
-  final ChatController _chatController = Get.put(ChatController());
+  final ChatController _chatController = Get.find();
   final PasswordController _passwordController = Get.put(PasswordController());
 
   @override

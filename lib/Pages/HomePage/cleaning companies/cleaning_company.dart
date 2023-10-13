@@ -2,6 +2,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:chips_choice/chips_choice.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/cleaning%20companies/cart_page.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
@@ -11,6 +12,7 @@ import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/chat%20page/model/my_message.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/widgets/cleaning_company_service_widget.dart';
+import 'package:khedma/widgets/my_rating_bar.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,22 +31,36 @@ class _CleaningCompanyState extends State<CleaningCompany> {
   final CompaniesController _cleaningCompanyController = Get.find();
   final GlobalController _globalController = Get.find();
   ChatController _chatController = Get.find();
-
+  List<double> rates = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  double rate = 0;
   List<String> tags = [
     "services".tr,
   ];
 
   List<String> options = [
     "services".tr,
-    // "rate_view".tr,
     "orders".tr,
+    "rate_view".tr,
   ];
 
   @override
   void initState() {
+    if (widget.cleaningCompany.reviewCompany != null) {
+      for (var i in widget.cleaningCompany.reviewCompany!) {
+        rates[i.reviewValue!]++;
+      }
+      for (var i = 0; i < rates.length; i++) {
+        if (rates[i] > 0) {
+          rate += i * rates[i];
+        }
+      }
+    } else {
+      widget.cleaningCompany.reviewCompany = [];
+    }
     _cleaningCompanyController.geCompanyPrice(
         companyId: widget.cleaningCompany.id!);
     _globalController.getUserCheckouts();
+
     logSuccess("companyId:" + widget.cleaningCompany.id!.toString());
     super.initState();
   }
@@ -375,105 +391,6 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                   itemCount: widget.cleaningCompany.cleaningServices!.length,
                 );
         }),
-        // ListView(
-        //   padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-        //   children: [
-        //     coloredText(
-        //       text: "rate_view".tr,
-        //       color: Theme.of(context).colorScheme.primary,
-        //     ),
-        //     const Divider(
-        //       color: Color(0xffDBDBDB),
-        //     ),
-        //     spaceY(10),
-        //     Row(
-        //       children: [
-        //         coloredText(
-        //           text: "4.5",
-        //           fontSize: 35.0.sp,
-        //           color: Theme.of(context).colorScheme.primary,
-        //           // fontWeight: FontWeight.bold,
-        //         ),
-        //         spaceX(30),
-        //         Expanded(
-        //           child: Column(
-        //             children: [
-        //               MyRatingBar(
-        //                 label: '5',
-        //                 value: 50,
-        //                 maxVal: 100,
-        //               ),
-        //               spaceY(3),
-        //               MyRatingBar(
-        //                 label: '4',
-        //                 value: 20,
-        //                 maxVal: 100,
-        //               ),
-        //               spaceY(3),
-        //               MyRatingBar(
-        //                 label: '3',
-        //                 value: 70,
-        //                 maxVal: 100,
-        //               ),
-        //               spaceY(3),
-        //               MyRatingBar(
-        //                 label: '2',
-        //                 value: 10,
-        //                 maxVal: 100,
-        //               ),
-        //               spaceY(3),
-        //               MyRatingBar(
-        //                 label: '1',
-        //                 value: 90,
-        //                 maxVal: 100,
-        //               ),
-        //             ],
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //     spaceY(20),
-        //     ListView.separated(
-        //         shrinkWrap: true,
-        //         primary: false,
-        //         padding: EdgeInsets.zero,
-        //         physics: const NeverScrollableScrollPhysics(),
-        //         itemBuilder: (context, index) => Column(
-        //               children: [
-        //                 Row(
-        //                   children: [
-        //                     Container(
-        //                       width: 12.0.w,
-        //                       height: 12.0.w,
-        //                       decoration: const BoxDecoration(
-        //                         shape: BoxShape.circle,
-        //                         image: DecorationImage(
-        //                             image:
-        //                                 AssetImage("assets/images/image.png"),
-        //                             fit: BoxFit.cover),
-        //                       ),
-        //                     ),
-        //                     spaceX(10),
-        //                     coloredText(
-        //                       text: "Ahmad ALi",
-        //                       color: Colors.black,
-        //                       fontSize: 14.0.sp,
-        //                     )
-        //                   ],
-        //                 ),
-        //                 spaceY(10),
-        //                 coloredText(
-        //                     text:
-        //                         "Lorem ipsum dolor sit amet consectetur adipiscing elit",
-        //                     color: const Color(0xff919191))
-        //               ],
-        //             ),
-        //         separatorBuilder: (context, index) => spaceY(20),
-        //         itemCount: 10),
-        //     spaceY(20),
-        //   ],
-        // ),
-
         GetBuilder<GlobalController>(builder: (c) {
           return c.getUserCheckoutsFlag
               ? Center(
@@ -602,6 +519,189 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                       ),
                       itemCount: c.checkouts.length,
                     );
-        })
+        }),
+        ListView(
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+          children: [
+            coloredText(
+              text: "rate_view".tr,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const Divider(
+              color: Color(0xffDBDBDB),
+            ),
+            spaceY(10),
+            Row(
+              children: [
+                coloredText(
+                  text: "$rate",
+                  fontSize: 35.0.sp,
+                  color: Theme.of(context).colorScheme.primary,
+                  // fontWeight: FontWeight.bold,
+                ),
+                spaceX(30),
+                Expanded(
+                  child: Column(
+                    children: [
+                      MyRatingBar(
+                        label: '5',
+                        value: rates[5],
+                        maxVal: widget.cleaningCompany.reviewCompany!.length
+                            .toDouble(),
+                      ),
+                      spaceY(3),
+                      MyRatingBar(
+                        label: '4',
+                        value: rates[4],
+                        maxVal: widget.cleaningCompany.reviewCompany!.length
+                            .toDouble(),
+                      ),
+                      spaceY(3),
+                      MyRatingBar(
+                        label: '3',
+                        value: rates[3],
+                        maxVal: widget.cleaningCompany.reviewCompany!.length
+                            .toDouble(),
+                      ),
+                      spaceY(3),
+                      MyRatingBar(
+                        label: '2',
+                        value: rates[2],
+                        maxVal: widget.cleaningCompany.reviewCompany!.length
+                            .toDouble(),
+                      ),
+                      spaceY(3),
+                      MyRatingBar(
+                        label: '1',
+                        value: rates[1],
+                        maxVal: widget.cleaningCompany.reviewCompany!.length
+                            .toDouble(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            spaceY(20),
+            ListView.separated(
+                shrinkWrap: true,
+                primary: false,
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 12.0.w,
+                              height: 12.0.w,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(),
+                                image: DecorationImage(
+                                    image: NetworkImage(_globalController
+                                        .me
+                                        .reviewCompany![index]
+                                        .user!
+                                        .userInformation!
+                                        .personalPhoto!),
+                                    fit: BoxFit.cover),
+                              ),
+                            ),
+                            spaceX(10),
+                            coloredText(
+                              text: _globalController
+                                  .me.reviewCompany![index].user!.fullName!,
+                              color: Colors.black,
+                              fontSize: 14.0.sp,
+                            )
+                          ],
+                        ),
+                        spaceY(5.sp),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: RatingBar.builder(
+                            allowHalfRating: false,
+                            initialRating: _globalController
+                                .me.reviewCompany![index].reviewValue!
+                                .toDouble(),
+                            itemSize: 20.sp,
+                            itemCount: 5,
+                            ignoreGestures: true,
+                            itemBuilder: (context, index) {
+                              switch (index) {
+                                case 0:
+                                  return const Icon(
+                                    Icons.star,
+                                    color: Colors.black,
+                                  );
+                                case 1:
+                                  return const Icon(
+                                    Icons.star,
+                                    color: Colors.black,
+                                  );
+                                case 2:
+                                  return const Icon(
+                                    Icons.star,
+                                    color: Colors.black,
+                                  );
+                                case 3:
+                                  return const Icon(
+                                    Icons.star,
+                                    color: Colors.black,
+                                  );
+                                default:
+                                  return const Icon(
+                                    Icons.star,
+                                    color: Colors.black,
+                                  );
+                              }
+                            },
+                            onRatingUpdate: (rating) {},
+
+                            //  RatingBar.builder(
+                            //   initialRating: 4.5,
+                            //   minRating: 0,
+                            //   direction: Axis.horizontal,
+                            //   allowHalfRating: true,
+                            //   itemCount: 5,
+                            //   itemSize: 17.0.sp,unratedColor: Colors.transparent,
+                            //   itemPadding:
+                            //       EdgeInsets.symmetric(horizontal: 4.0),
+                            //   itemBuilder: (context, index) {
+                            //     if (index < 4.5) {
+                            //       return const Icon(
+                            //         Icons.star_rounded,
+                            //         color: Colors.black,
+                            //       );
+                            //     } else {
+                            //       return const Icon(
+                            //         Icons.star_outline_rounded,
+                            //         color: Colors.black,
+                            //       );
+                            //     }
+                            //   },
+                            //   onRatingUpdate: (rating) {
+                            //     print(rating);
+                            //   },
+                            // ),
+                          ),
+                        ),
+                        spaceY(10),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: coloredText(
+                              text: _globalController
+                                  .me.reviewCompany![index].review!,
+                              color: const Color(0xff919191)),
+                        )
+                      ],
+                    ),
+                separatorBuilder: (context, index) => spaceY(20),
+                itemCount: widget.cleaningCompany.reviewCompany!.length),
+            spaceY(20),
+          ],
+        ),
       ];
 }

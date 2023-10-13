@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
+import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/Notifications/notifications_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
@@ -166,20 +167,24 @@ class _AdminMainPageState extends State<AdminMainPage>
                                   color: Colors.white,
                                 ),
                                 Spacer(),
-                                badges.Badge(
-                                  position: badges.BadgePosition.topEnd(
-                                      top: 0, end: 0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Get.to(() => NotificationsPage());
-                                    },
-                                    child: Icon(
-                                      EvaIcons.bell,
-                                      color: Colors.white,
-                                      size: 22.0.sp,
+                                GetBuilder<NotificationController>(
+                                    builder: (c) {
+                                  return badges.Badge(
+                                    position: badges.BadgePosition.topEnd(
+                                        top: 0, end: 0),
+                                    showBadge: c.newNotifications,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.to(() => NotificationsPage());
+                                      },
+                                      child: Icon(
+                                        EvaIcons.bell,
+                                        color: Colors.white,
+                                        size: 22.0.sp,
+                                      ),
                                     ),
-                                  ),
-                                ),
+                                  );
+                                }),
                                 spaceX(12.sp),
                                 Container(
                                   padding: const EdgeInsets.all(5),

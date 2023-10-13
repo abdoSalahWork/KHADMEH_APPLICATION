@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +48,7 @@ class _ChatPageState extends State<ChatPage> {
   ChatController _chatController = Get.find();
 
   FocusNode sendFocus = FocusNode();
+  late Timer _timer;
   @override
   void initState() {
     logWarning(widget.chatId);
@@ -85,7 +88,13 @@ class _ChatPageState extends State<ChatPage> {
         },
       ),
     ];
-    _loadMessages();
+    _loadMessages(true);
+    _timer = Timer.periodic(
+      const Duration(seconds: 10),
+      (timer) {
+        _loadMessages(false);
+      },
+    );
   }
 
   bool isRTL(String text) {
@@ -334,9 +343,10 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _loadMessages() async {
+  void _loadMessages(bool b) async {
     // final response = await rootBundle.loadString('assets/messages.json');
-    final response = await _chatController.showChat(id: widget.chatId);
+    final response =
+        await _chatController.showChat(id: widget.chatId, indicator: b);
     final messages = MyChat.fromJson(response);
 
     setState(() {
@@ -352,7 +362,13 @@ class _ChatPageState extends State<ChatPage> {
           )
           .toList();
     });
-    await _chatController.getChats();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _chatController.getChats();
+    super.dispose();
   }
 
   @override

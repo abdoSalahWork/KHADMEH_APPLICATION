@@ -77,9 +77,9 @@ class ChatController extends GetxController {
   }
 
   bool getChatFlag = false;
-  Future showChat({required int id}) async {
+  Future showChat({required int id, required bool indicator}) async {
     try {
-      getChatFlag = true;
+      if (indicator) getChatFlag = true;
       String? token = await Utils.readToken();
       var res = await dio.get(
         EndPoints.showChat(id),
@@ -93,7 +93,7 @@ class ChatController extends GetxController {
       logError(res.data);
       logSuccess("Chat get done");
       await getChats();
-      getChatFlag = false;
+      if (indicator) getChatFlag = false;
       update();
       return res.data;
     } on DioException {
@@ -165,10 +165,10 @@ class ChatController extends GetxController {
     final propertyA = DateTime.parse(a.createdAt!);
     final propertyB = DateTime.parse(b.createdAt!);
     if (a.unreadMessagesCount! < b.unreadMessagesCount! ||
-        propertyA.isBefore(propertyB)) {
+        propertyA.isAfter(propertyB)) {
       return 1;
     } else if (a.unreadMessagesCount! > b.unreadMessagesCount! ||
-        propertyA.isAfter(propertyB)) {
+        propertyA.isBefore(propertyB)) {
       return -1;
     } else {
       return 0;

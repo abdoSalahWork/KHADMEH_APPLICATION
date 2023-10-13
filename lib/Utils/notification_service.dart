@@ -2,6 +2,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/Notifications/notifications_page.dart';
+import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
+import 'package:khedma/Pages/chat%20page/messages_page.dart';
 import 'package:khedma/Utils/utils.dart';
 // import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 // import 'package:flutter_push_notifications/utils/download_util.dart';
@@ -40,17 +42,26 @@ class NotificationService {
   void onDidReceiveLocalNotification(
       int id, String? title, String? body, String? payload) {
     print('id $id');
+    logSuccess(body!);
   }
 
   void selectNotification(NotificationResponse? notiResponse) async {
     if (notiResponse!.payload != null) {
       logError('notification payload: ${notiResponse.payload}');
-    }
-    if (Get.currentRoute == "/NotificationsPage") {
-      NotificationController _notiController = Get.find();
-      await _notiController.getNotifications();
-    } else {
-      Get.to(() => NotificationsPage());
+      if (notiResponse.payload!.contains("Message From")) {
+        ChatController _chat = Get.find();
+
+        if (Get.currentRoute == "/MessagesPage") {
+          await _chat.getChats();
+        } else {
+          Get.to(() => MessagesPage());
+        }
+      } else if (Get.currentRoute == "/NotificationsPage") {
+        NotificationController _notiController = Get.find();
+        await _notiController.getNotifications();
+      } else {
+        Get.to(() => NotificationsPage());
+      }
     }
   }
 

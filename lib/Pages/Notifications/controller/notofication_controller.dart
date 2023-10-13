@@ -7,6 +7,7 @@ import 'package:khedma/Utils/utils.dart';
 
 class NotificationController extends GetxController {
   final Dio dio = Utils().dio;
+  bool newNotifications = false;
   List<NotificationModel> notifications = [];
   int _mySortComparison(NotificationModel a, NotificationModel b) {
     final propertyA = DateTime.parse(a.createdAt!);
@@ -18,12 +19,17 @@ class NotificationController extends GetxController {
     }
   }
 
+  void updateFlag(bool f) {
+    newNotifications = f;
+    update();
+  }
+
   GlobalController _globalController = Get.find();
   bool getNotificationsFlag = false;
   Future getNotifications() async {
     try {
       getNotificationsFlag = true;
-      update();
+
       String? token = await Utils.readToken();
       var res = await dio.get(
           _globalController.me.userType == "admin"
@@ -39,6 +45,7 @@ class NotificationController extends GetxController {
         }
       }
       tmp.sort(_mySortComparison);
+      updateFlag(false);
       notifications = tmp;
       logSuccess("Notifications get done");
       getNotificationsFlag = false;
