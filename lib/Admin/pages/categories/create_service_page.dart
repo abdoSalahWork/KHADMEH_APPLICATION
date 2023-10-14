@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Admin/pages/categories/controller/categories_controller.dart';
 import 'package:khedma/Admin/pages/categories/models/categories_model.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
@@ -99,17 +99,17 @@ class _AdminCreateServiceState extends State<AdminCreateService> {
               alignment: AlignmentDirectional.centerStart,
               child: GestureDetector(
                 onTap: () async {
-                  final result = await FilePicker.platform.pickFiles(
-                    allowMultiple: false,
-                    type: FileType.image,
-                  );
-                  if (result != null) {
-                    button1Text = result.files[0].name
-                        .substring(0, min(15, result.files[0].name.length));
+                  XFile? image = await Utils().selectImageSheet();
+
+                  if (image != null) {
+                    setState(() {});
+
+                    button1Text =
+                        image.name.substring(0, min(15, image.name.length));
                     if (widget.categoryToEdit != null) {
-                      widget.categoryToEdit!.image = result.files[0];
+                      widget.categoryToEdit!.image = image;
                     } else {
-                      categoryToCreate.image = result.files[0];
+                      categoryToCreate.image = image;
                     }
                     setState(() {});
                   }

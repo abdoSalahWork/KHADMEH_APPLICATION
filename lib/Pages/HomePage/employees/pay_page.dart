@@ -195,7 +195,7 @@ class _PayPageState extends State<PayPage> {
                       // if (widget.employeeType == EmployeeType.clean) {
                       //   Get.to(
                       //     () => InvoicePage(employeeType: widget.employeeType),
-                      //     transition: Transition.rightToLeft,
+                      //     ,
                       //   );
                       // }
                       //  else {

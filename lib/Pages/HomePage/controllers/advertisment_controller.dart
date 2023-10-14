@@ -2,10 +2,10 @@
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
@@ -22,14 +22,14 @@ class AdvertismentController extends GetxController {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(advertisment.toJson());
-      PlatformFile? image = advertisment.image;
+      XFile? image = advertisment.image;
       String? token = await Utils.readToken();
 
       if (image != null) {
         body.files.add(MapEntry(
           "image",
           await d.MultipartFile.fromFile(
-            image.path!,
+            image.path,
             filename: image.name,
             contentType: MediaType('image', '*'),
           ),
@@ -101,14 +101,14 @@ class AdvertismentController extends GetxController {
       final body = d.FormData.fromMap(advertisment.toJson());
       String? token = await Utils.readToken();
       body.fields.add(MapEntry("_method", "PUT"));
-      PlatformFile? image;
+      XFile? image;
       if (advertisment.image.runtimeType != String) {
         image = advertisment.image;
         if (image != null) {
           body.files.add(MapEntry(
             "image",
             await d.MultipartFile.fromFile(
-              image.path!,
+              image.path,
               filename: image.name,
               contentType: MediaType('image', '*'),
             ),
@@ -197,16 +197,23 @@ class AdvertismentController extends GetxController {
         AdvertismentModel t = AdvertismentModel.fromJson(i);
         tmp.add(t);
       }
-      companyAds = tmp;
+      companyAds = tmp.reversed.toList();
+      // companyAds.sort();
       pendingCompanyAds = companyAds
-          .where((element) =>
-              (element.adminApprove == null) &&
-              DateTime.parse(element.startDate!).isAfter(DateTime.now()))
+          .where(
+            (element) =>
+                (element.adminApprove == null &&
+                    DateTime.parse(element.startDate!)
+                        .isAfter(DateTime.now())) ||
+                element.refund == 1,
+          )
           .toList();
       refusedCompanyAds = companyAds
           .where((element) =>
-              (element.adminApprove == 0) ||
-              DateTime.parse(element.startDate!).isBefore(DateTime.now()))
+              (element.adminApprove == 0 ||
+                  DateTime.parse(element.startDate!)
+                      .isBefore(DateTime.now())) &&
+              element.refund == 0)
           .toList();
       logSuccess("Company Advertisments get done");
       getCompanyAdvertismentsFlag = false;
@@ -250,14 +257,14 @@ class AdvertismentController extends GetxController {
           .toList();
       adminRefundAds =
           adminAds.where((element) => element.refund == 1).toList();
-      logSuccess("Company Advertisments get done");
+      logSuccess("Admin Advertisments get done");
       getAdminAdvertismentsFlag = false;
       update();
     } on DioException catch (e) {
       logError(e.response!.data);
       getAdminAdvertismentsFlag = false;
       update();
-      logError("Company Advertisments failed");
+      logError("Admin Advertisments failed");
     }
   }
 
@@ -299,14 +306,12 @@ class AdvertismentController extends GetxController {
   Future<bool> refundAdvertismnt({
     required int refund,
     required int advertismentId,
-    String? desc,
   }) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap({
         "admin_refund": refund,
         "_method": "PUT",
-        if (desc != null) "desc": desc
       });
       String? token = await Utils.readToken();
 
@@ -330,4 +335,45 @@ class AdvertismentController extends GetxController {
     }
     return false;
   }
+
+  Future<bool> requestRefund({
+    required int id,
+  }) async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData.fromMap({
+        "_method": "PUT",
+      });
+      String? token = await Utils.readToken();
+
+      await Dio().post(
+        EndPoints.refundCompanyAdvertisment(id),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+
+      await getCompanyAdvertisments();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      Get.back();
+      logError(e.response!.data);
+    }
+    return false;
+  }
+
+  // int _mySortComparison(AdvertismentModel a, AdvertismentModel b) {
+  //   final propertyA = DateTime.parse(a.createdAt!);
+  //   final propertyB = DateTime.parse(b.createdAt!);
+  //   if (propertyA.isBefore(propertyB)) {
+  //     return -1;
+  //   } else {
+  //     return 1;
+  //   }
+  // }
 }

@@ -5,9 +5,9 @@ import 'dart:math';
 
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
@@ -87,24 +87,24 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
               child: primaryButton(
                 radius: 10,
                 onTap: () async {
-                  final result = await FilePicker.platform.pickFiles(
-                    allowMultiple: false,
-                    type: FileType.image,
-                  );
-                  if (result != null) {
-                    File f = File(result.files[0].path!);
+                  XFile? image = await Utils().selectImageSheet();
+
+                  if (image != null) {
+                    setState(() {});
+
+                    File f = File(image.path);
                     var decodedImage =
                         await decodeImageFromList(f.readAsBytesSync());
                     double aspectRatio =
                         (decodedImage.width / decodedImage.height)
                             .toPrecision(1);
                     if (aspectRatio == 1.8) {
-                      uploadButtontext = result.files[0].name
-                          .substring(0, min(15, result.files[0].name.length));
+                      uploadButtontext =
+                          image.name.substring(0, min(15, image.name.length));
                       if (widget.advertismentToEdit != null) {
-                        widget.advertismentToEdit!.image = result.files[0];
+                        widget.advertismentToEdit!.image = image;
                       } else {
-                        advertismentToCreate.image = result.files[0];
+                        advertismentToCreate.image = image;
                       }
                       setState(() {});
                     } else {

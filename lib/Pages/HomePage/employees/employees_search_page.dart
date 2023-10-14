@@ -64,8 +64,9 @@ class _EmployeesSearchPageState extends State<EmployeesSearchPage> {
                 suffixIcon: GestureDetector(
                   onTap: () {
                     FocusScope.of(context).unfocus();
-                    Get.to(() => const EmployeesFilterPage(),
-                        transition: Transition.rightToLeft);
+                    Get.to(
+                      () => const EmployeesFilterPage(),
+                    );
                   },
                   child: const Image(
                     width: 15,

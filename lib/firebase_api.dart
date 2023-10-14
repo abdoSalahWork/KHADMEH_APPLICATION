@@ -79,14 +79,31 @@ class FirebaseApi {
       //   }
       // }
       // else {
-
-      if (Get.currentRoute == "/ChatPage") {
-      } else if (Get.currentRoute == "/MessagesPage") {
-        ChatController _chat = Get.find();
-        await _chat.getChats();
-      } else {
-        c.updateFlag(true);
-        if (message.notification != null) {
+      if (message.notification != null) {
+        if (message.notification!.body!.contains("Message From")) {
+          if (Get.currentRoute == "/ChatPage") {
+          } else if (Get.currentRoute == "/MessagesPage") {
+            ChatController _chat = Get.find();
+            await _chat.getChats();
+          } else {
+            logSuccess("asdas");
+            logSuccess(message.notification!.body!);
+            logSuccess(message.notification!.title!);
+            try {
+              Utils.notificationService.showLocalNotification(
+                  id: 1,
+                  title: message.notification!.title!,
+                  body: message.notification!.body!,
+                  payload: message.notification!.body!);
+            } catch (e) {
+              logError(e);
+            }
+          }
+        } else {
+          c.updateFlag(true);
+          logSuccess("asdas");
+          logSuccess(message.notification!.title!);
+          logSuccess(message.notification!.body!);
           try {
             Utils.notificationService.showLocalNotification(
                 id: 1,

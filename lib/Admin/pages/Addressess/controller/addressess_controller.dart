@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
-import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
@@ -180,13 +180,13 @@ class AddressessController extends GetxController {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(country.toJson());
-      PlatformFile? flag = country.flag;
+      XFile? flag = country.flag;
 
       if (flag != null) {
         body.files.add(MapEntry(
           "flag",
           await d.MultipartFile.fromFile(
-            flag.path!,
+            flag.path,
             filename: flag.name,
             contentType: MediaType('image', '*'),
           ),
@@ -246,14 +246,14 @@ class AddressessController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(country.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      PlatformFile? flag;
+      XFile? flag;
       if (country.flag.runtimeType != String) flag = country.flag;
       String? token = await Utils.readToken();
       if (flag != null) {
         body.files.add(MapEntry(
           "flag",
           await d.MultipartFile.fromFile(
-            flag.path!,
+            flag.path,
             filename: flag.name,
             contentType: MediaType('image', '*'),
           ),

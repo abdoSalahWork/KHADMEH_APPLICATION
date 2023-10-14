@@ -2,7 +2,9 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Pages/HomePage/company%20home/add_employee_page.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
+import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/zero_app_bar.dart';
@@ -21,6 +23,7 @@ class EmployeeDetailsPage extends StatelessWidget {
       ExpandableController(initialExpanded: false);
 
   final GlobalController _globalController = Get.find();
+  final EmployeesController _employeesController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,33 +52,59 @@ class EmployeeDetailsPage extends StatelessWidget {
                         size: 30.sp,
                       ),
                     ),
-                    Row(
-                      children: [
-                        Container(
-                          width: 30.sp,
-                          height: 30.sp,
-                          decoration: BoxDecoration(
-                              color: const Color(0xff919191).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: const Icon(
-                            EvaIcons.edit,
-                            color: Color(0xff5D5D5D),
-                          ),
-                        ),
-                        spaceX(10),
-                        Container(
-                          width: 30.sp,
-                          height: 30.sp,
-                          decoration: BoxDecoration(
-                              color: const Color(0xff919191).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: const Icon(
-                            EvaIcons.trash2,
-                            color: Color(0xff5D5D5D),
-                          ),
-                        ),
-                      ],
-                    )
+                    employee.status != null
+                        ? Container()
+                        : Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () async {
+                                  EmployeeModel? em = await _employeesController
+                                      .showCompanyEmployee(
+                                          id: employee.id!, indicator: true);
+                                  if (em != null) {
+                                    Get.to(() => AddEmployeePage(
+                                          employeeToEdit: em,
+                                        ));
+                                  }
+                                },
+                                child: Container(
+                                  width: 30.sp,
+                                  height: 30.sp,
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xff919191)
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: const Icon(
+                                    EvaIcons.edit,
+                                    color: Color(0xff5D5D5D),
+                                  ),
+                                ),
+                              ),
+                              spaceX(10),
+                              GestureDetector(
+                                onTap: () async {
+                                  bool x = await _employeesController
+                                      .deleteEmployee(employee: employee);
+                                  if (x) {
+                                    Utils.doneDialog(
+                                        context: context, backTimes: 2);
+                                  }
+                                },
+                                child: Container(
+                                  width: 30.sp,
+                                  height: 30.sp,
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xff919191)
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: const Icon(
+                                    EvaIcons.trash2,
+                                    color: Color(0xff5D5D5D),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
                   ],
                 ),
               ),
@@ -139,7 +168,9 @@ class EmployeeDetailsPage extends StatelessWidget {
                         children: [
                           DetailsItemWidget(
                             title1: "name".tr,
-                            subTitle1: employee.name,
+                            subTitle1: Get.locale == const Locale('en', 'US')
+                                ? employee.nameEn!
+                                : employee.nameAr!,
                             title2: "no_of_children".tr,
                             subTitle2: employee.numOfChildren.toString(),
                           ),
@@ -284,6 +315,24 @@ class EmployeeDetailsPage extends StatelessWidget {
                             title2: "expiry_date".tr,
                             subTitle2: employee.passportExpiryDate,
                           ),
+                          spaceY(12.sp),
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                coloredText(
+                                    text: "passport".tr,
+                                    color: Colors.black,
+                                    fontSize: 13.sp),
+                                spaceY(5.sp),
+                                Image(
+                                  image: NetworkImage(employee.passportImege!),
+                                  width: 50.w,
+                                ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),

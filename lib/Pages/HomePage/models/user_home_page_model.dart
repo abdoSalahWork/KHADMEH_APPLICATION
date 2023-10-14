@@ -1,9 +1,10 @@
+import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
 
 class UserHomePageModel {
   List<UserStatsCompanyHomePageModel>? companiesRecruitment;
   List<UserStatsCompanyHomePageModel>? companiesCleaning;
-  List<Employees>? employees;
+  List<EmployeeModel>? employees;
   List<AdvertismentModel>? ads;
   String? logoUrlCompany;
   String? imageUrlEmployee;
@@ -32,9 +33,9 @@ class UserHomePageModel {
       });
     }
     if (json['employees'] != null) {
-      employees = <Employees>[];
+      employees = <EmployeeModel>[];
       json['employees'].forEach((v) {
-        employees!.add(Employees.fromJson(v));
+        employees!.add(EmployeeModel.fromJson(v));
       });
     }
     if (json['ads'] != null) {
@@ -136,39 +137,6 @@ class CompanyInformation {
     data['id'] = this.id;
     data['company_id'] = this.companyId;
     data['company_logo'] = this.companyLogo;
-    return data;
-  }
-}
-
-class Employees {
-  int? id;
-  String? name;
-  int? nationalityId;
-  String? image;
-  Nationality? nationality;
-
-  Employees(
-      {this.id, this.name, this.nationalityId, this.image, this.nationality});
-
-  Employees.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    nationalityId = json['nationality_id'];
-    image = json['image'];
-    nationality = json['nationality'] != null
-        ? Nationality.fromJson(json['nationality'])
-        : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['nationality_id'] = this.nationalityId;
-    data['image'] = this.image;
-    if (this.nationality != null) {
-      data['nationality'] = this.nationality!.toJson();
-    }
     return data;
   }
 }

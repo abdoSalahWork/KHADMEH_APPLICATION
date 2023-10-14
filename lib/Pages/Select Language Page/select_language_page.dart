@@ -21,8 +21,9 @@ class SelectLanguagePage extends StatelessWidget {
           spaceY(15.0.h),
           GestureDetector(
             onTap: () {
-              Get.to(() => const GettingStartedPage(),
-                  transition: Transition.rightToLeft);
+              Get.to(
+                () => const GettingStartedPage(),
+              );
             },
             child: Container(
               width: 35.0.w,
@@ -49,8 +50,9 @@ class SelectLanguagePage extends StatelessWidget {
             onTap: () async {
               await Utils.saveLanguage(language: "en");
               await _globalController.setLocale();
-              Get.to(() => const LoginPage(),
-                  transition: Transition.rightToLeft);
+              Get.to(
+                () => const LoginPage(),
+              );
             },
             width: 75.0.w,
             height: 55,
@@ -66,8 +68,9 @@ class SelectLanguagePage extends StatelessWidget {
             onTap: () async {
               await Utils.saveLanguage(language: "ar");
               await _globalController.setLocale();
-              Get.to(() => const LoginPage(),
-                  transition: Transition.rightToLeft);
+              Get.to(
+                () => const LoginPage(),
+              );
             },
             width: 75.0.w,
             height: 55,

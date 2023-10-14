@@ -7,13 +7,17 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Utils/notification_service.dart';
+import 'package:khedma/models/send_items_model.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 // import 'dart:io';
 
@@ -28,6 +32,95 @@ import 'package:sizer/sizer.dart';
 
 // /
 class Utils {
+  Future<XFile?> selectImageSheet() async {
+    XFile? image;
+    List<SendMenuItems> menuItems = [
+      SendMenuItems(
+        text: "camera".tr,
+        icons: EvaIcons.camera,
+        color: Colors.red,
+        onTap: () async {
+          bool b = await Utils.checkPermission();
+          if (b) {
+            image = await ImagePicker().pickImage(source: ImageSource.camera);
+          }
+          Get.back();
+        },
+      ),
+      SendMenuItems(
+        text: "gallery".tr,
+        icons: EvaIcons.image,
+        color: Colors.green,
+        onTap: () async {
+          bool b = await Utils.checkPermission();
+          if (b) {
+            image = await ImagePicker().pickImage(source: ImageSource.gallery);
+          }
+          Get.back();
+        },
+      )
+    ];
+
+    await showModalBottomSheet(
+        context: Get.context!,
+        builder: (context) {
+          return Container(
+            height: MediaQuery.of(context).size.height / 4,
+            color: const Color(0xff737373),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    topLeft: Radius.circular(20)),
+              ),
+              child: Column(
+                children: <Widget>[
+                  spaceY(16),
+                  Center(
+                    child: Container(
+                      height: 4,
+                      width: 50,
+                      color: Colors.grey.shade200,
+                    ),
+                  ),
+                  spaceY(10),
+                  ListView.builder(
+                    itemCount: menuItems.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: ListTile(
+                          onTap: menuItems[index].onTap,
+                          leading: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: menuItems[index].color.shade50,
+                            ),
+                            height: 50,
+                            width: 50,
+                            child: Icon(
+                              menuItems[index].icons,
+                              size: 20,
+                              color: menuItems[index].color.shade400,
+                            ),
+                          ),
+                          title: Text(menuItems[index].text),
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+
+    return image;
+  }
+
   static int age(DateTime today, DateTime dob) {
     final year = today.year - dob.year;
 
@@ -126,6 +219,17 @@ class Utils {
     ScaffoldMessenger.of(Get.context!)
       ..hideCurrentSnackBar()
       ..showSnackBar(snackBar);
+  }
+
+  static void showToast({required String message}) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 
 //   static Future<bool> reLoginHelper(DioError e) async {
@@ -235,6 +339,18 @@ class Utils {
     Get.dialog(const Center(
       child: CircularProgressIndicator(),
     ));
+  }
+
+  static Future<bool> checkPermission() async {
+    // FocusScope.of(context).requestFocus(FocusNode());
+
+    PermissionStatus? statusCamera = await Permission.camera.request();
+    PermissionStatus? statusPhotos = await Permission.photos.request();
+    logSuccess(statusCamera.isGranted);
+    logSuccess(statusPhotos.isGranted);
+    bool isGranted = statusCamera == PermissionStatus.granted &&
+        statusPhotos == PermissionStatus.granted;
+    return isGranted;
   }
 
   static void customDialog(

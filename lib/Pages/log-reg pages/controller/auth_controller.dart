@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
@@ -93,14 +93,14 @@ class AuthController extends GetxController {
       userRegisterData.userType = "user";
       logSuccess(userRegisterData.toJson());
       final body = d.FormData.fromMap(userRegisterData.toJson());
-      PlatformFile? idPhotoNationality = userRegisterData.idPhotoNationality;
-      PlatformFile? personaPhoto = userRegisterData.personalPhoto;
+      XFile? idPhotoNationality = userRegisterData.idPhotoNationality;
+      XFile? personaPhoto = userRegisterData.personalPhoto;
 
       if (idPhotoNationality != null) {
         body.files.add(MapEntry(
           "id_photo_nationality",
           await d.MultipartFile.fromFile(
-            idPhotoNationality.path!,
+            idPhotoNationality.path,
             filename: idPhotoNationality.name,
             contentType: MediaType('image', '*'),
           ),
@@ -110,7 +110,7 @@ class AuthController extends GetxController {
         body.files.add(MapEntry(
           "personal_photo",
           await d.MultipartFile.fromFile(
-            personaPhoto.path!,
+            personaPhoto.path,
             filename: personaPhoto.name,
             contentType: MediaType('image', '*'),
           ),
@@ -143,14 +143,14 @@ class AuthController extends GetxController {
       userCompleteData.userType = "user";
       logSuccess(userCompleteData.toJson());
       final body = d.FormData.fromMap(userCompleteData.toJson());
-      PlatformFile? idPhotoNationality = userCompleteData.idPhotoNationality;
-      PlatformFile? personaPhoto = userCompleteData.personalPhoto;
+      XFile? idPhotoNationality = userCompleteData.idPhotoNationality;
+      XFile? personaPhoto = userCompleteData.personalPhoto;
 
       if (idPhotoNationality != null) {
         body.files.add(MapEntry(
           "id_photo_nationality",
           await d.MultipartFile.fromFile(
-            idPhotoNationality.path!,
+            idPhotoNationality.path,
             filename: idPhotoNationality.name,
             contentType: MediaType('image', '*'),
           ),
@@ -160,7 +160,7 @@ class AuthController extends GetxController {
         body.files.add(MapEntry(
           "personal_photo",
           await d.MultipartFile.fromFile(
-            personaPhoto.path!,
+            personaPhoto.path,
             filename: personaPhoto.name,
             contentType: MediaType('image', '*'),
           ),
@@ -195,16 +195,16 @@ class AuthController extends GetxController {
       companyCompleteData.userType = "company";
       logSuccess(companyCompleteData.toJson());
       final body = d.FormData.fromMap(companyCompleteData.toJson());
-      PlatformFile? companyLogo = companyCompleteData.companyLogo;
-      PlatformFile? passportImage = companyCompleteData.passportImage;
-      PlatformFile? frontSideIdImage = companyCompleteData.frontSideIdImage;
-      PlatformFile? backSideIdImage = companyCompleteData.backSideIdImage;
+      XFile? companyLogo = companyCompleteData.companyLogo;
+      XFile? passportImage = companyCompleteData.passportImage;
+      XFile? frontSideIdImage = companyCompleteData.frontSideIdImage;
+      XFile? backSideIdImage = companyCompleteData.backSideIdImage;
 
       if (companyLogo != null) {
         body.files.add(MapEntry(
           "company_logo",
           await d.MultipartFile.fromFile(
-            companyLogo.path!,
+            companyLogo.path,
             filename: companyLogo.name,
             contentType: MediaType('image', '*'),
           ),
@@ -214,7 +214,7 @@ class AuthController extends GetxController {
         body.files.add(MapEntry(
           "passport_image",
           await d.MultipartFile.fromFile(
-            passportImage.path!,
+            passportImage.path,
             filename: passportImage.name,
             contentType: MediaType('image', '*'),
           ),
@@ -224,7 +224,7 @@ class AuthController extends GetxController {
         body.files.add(MapEntry(
           "front_side_id_image",
           await d.MultipartFile.fromFile(
-            frontSideIdImage.path!,
+            frontSideIdImage.path,
             filename: frontSideIdImage.name,
             contentType: MediaType('image', '*'),
           ),
@@ -234,7 +234,7 @@ class AuthController extends GetxController {
         body.files.add(MapEntry(
           "back_side_id_image",
           await d.MultipartFile.fromFile(
-            backSideIdImage.path!,
+            backSideIdImage.path,
             filename: backSideIdImage.name,
             contentType: MediaType('image', '*'),
           ),
@@ -270,16 +270,16 @@ class AuthController extends GetxController {
       companyRegisterData.userType = "company";
       logSuccess(companyRegisterData.toJson());
       final body = d.FormData.fromMap(companyRegisterData.toJson());
-      PlatformFile? companyLogo = companyRegisterData.companyLogo;
-      PlatformFile? passportImage = companyRegisterData.passportImage;
-      PlatformFile? frontSideIdImage = companyRegisterData.frontSideIdImage;
-      PlatformFile? backSideIdImage = companyRegisterData.backSideIdImage;
+      XFile? companyLogo = companyRegisterData.companyLogo;
+      XFile? passportImage = companyRegisterData.passportImage;
+      XFile? frontSideIdImage = companyRegisterData.frontSideIdImage;
+      XFile? backSideIdImage = companyRegisterData.backSideIdImage;
 
       if (companyLogo != null) {
         body.files.add(MapEntry(
           "company_logo",
           await d.MultipartFile.fromFile(
-            companyLogo.path!,
+            companyLogo.path,
             filename: companyLogo.name,
             contentType: MediaType('image', '*'),
           ),
@@ -289,7 +289,7 @@ class AuthController extends GetxController {
         body.files.add(MapEntry(
           "passport_image",
           await d.MultipartFile.fromFile(
-            passportImage.path!,
+            passportImage.path,
             filename: passportImage.name,
             contentType: MediaType('image', '*'),
           ),
@@ -299,7 +299,7 @@ class AuthController extends GetxController {
         body.files.add(MapEntry(
           "front_side_id_image",
           await d.MultipartFile.fromFile(
-            frontSideIdImage.path!,
+            frontSideIdImage.path,
             filename: frontSideIdImage.name,
             contentType: MediaType('image', '*'),
           ),
@@ -309,7 +309,7 @@ class AuthController extends GetxController {
         body.files.add(MapEntry(
           "back_side_id_image",
           await d.MultipartFile.fromFile(
-            backSideIdImage.path!,
+            backSideIdImage.path,
             filename: backSideIdImage.name,
             contentType: MediaType('image', '*'),
           ),

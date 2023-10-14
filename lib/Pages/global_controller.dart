@@ -2,10 +2,10 @@
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Admin/pages/categories/models/categories_model.dart';
 import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
 import 'package:khedma/Admin/pages/languages/models/language_model.dart';
@@ -258,6 +258,9 @@ class GlobalController extends GetxController {
       userHomePage = UserHomePageModel.fromJson(res.data);
       logSuccess("UserHomePage get done");
       getUserHomePageFlag = false;
+      userHomePage.employees!.forEach((element) {
+        logSuccess("image" + element.image);
+      });
       update();
     } on DioException catch (e) {
       getUserHomePageFlag = false;
@@ -695,7 +698,7 @@ class GlobalController extends GetxController {
   }
 
   Future updateUserProfile(
-      {required UserInformation userInfo, PlatformFile? personaPhoto}) async {
+      {required UserInformation userInfo, XFile? personaPhoto}) async {
     try {
       Get.dialog(const Center(
         child: CircularProgressIndicator(),
@@ -703,13 +706,13 @@ class GlobalController extends GetxController {
 
       final body = d.FormData.fromMap(userInfo.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      // PlatformFile? idPhotoNationality = userInfo.idPhotoNationality;
+      // XFile? idPhotoNationality = userInfo.idPhotoNationality;
 
       // if (idPhotoNationality != null) {
       //   body.files.add(MapEntry(
       //     "id_photo_nationality",
       //     await d.MultipartFile.fromFile(
-      //       idPhotoNationality.path!,
+      //       idPhotoNationality.path,
       //       filename: idPhotoNationality.name,
       //       contentType: MediaType('image', '*'),
       //     ),
@@ -719,7 +722,7 @@ class GlobalController extends GetxController {
         body.files.add(MapEntry(
           "personal_photo",
           await d.MultipartFile.fromFile(
-            personaPhoto.path!,
+            personaPhoto.path,
             filename: personaPhoto.name,
             contentType: MediaType('image', '*'),
           ),
@@ -752,8 +755,7 @@ class GlobalController extends GetxController {
   }
 
   Future updateCompanyProfile(
-      {required m.CompanyInformation companyInformation,
-      PlatformFile? logo}) async {
+      {required m.CompanyInformation companyInformation, XFile? logo}) async {
     try {
       Get.dialog(const Center(
         child: CircularProgressIndicator(),
@@ -762,13 +764,13 @@ class GlobalController extends GetxController {
       final body = d.FormData.fromMap(companyInformation.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
 
-      // PlatformFile? personaPhoto = userInfo.personalPhoto;
+      // XFile? personaPhoto = userInfo.personalPhoto;
 
       if (logo != null) {
         body.files.add(MapEntry(
           "company_logo",
           await d.MultipartFile.fromFile(
-            logo.path!,
+            logo.path,
             filename: logo.name,
             contentType: MediaType('image', '*'),
           ),
@@ -779,7 +781,7 @@ class GlobalController extends GetxController {
       //   body.files.add(MapEntry(
       //     "personal_photo",
       //     await d.MultipartFile.fromFile(
-      //       personaPhoto.path!,
+      //       personaPhoto.path,
       //       filename: personaPhoto.name,
       //       contentType: MediaType('image', '*'),
       //     ),
@@ -973,14 +975,14 @@ class GlobalController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(reservationExtintionModel.toJson());
       logSuccess(reservationExtintionModel.toJson());
-      PlatformFile? tmp;
+      XFile? tmp;
       if (reservationExtintionModel.file.runtimeType != String) {
         tmp = reservationExtintionModel.file;
         if (tmp != null) {
           body.files.add(MapEntry(
             "file",
             await d.MultipartFile.fromFile(
-              tmp.path!,
+              tmp.path,
               filename: tmp.name,
               contentType: MediaType('image', '*'),
             ),
@@ -1012,12 +1014,12 @@ class GlobalController extends GetxController {
       final body = d.FormData();
       for (var i = 0; i < files.length; i++) {
         body.fields.add(MapEntry("documents[$i][name]", files[i].description));
-        PlatformFile? tmp = files[i].file;
+        XFile? tmp = files[i].file;
 
         body.files.add(MapEntry(
           "documents[$i][file]",
           await d.MultipartFile.fromFile(
-            tmp.path!,
+            tmp.path,
             filename: tmp.name,
             contentType: MediaType('image', '*'),
           ),

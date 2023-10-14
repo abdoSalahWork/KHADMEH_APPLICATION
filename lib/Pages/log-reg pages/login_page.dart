@@ -191,8 +191,9 @@ class _LoginPageState extends State<LoginPage> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    Get.to(() => ForgetPasswordPage(),
-                                        transition: Transition.downToUp);
+                                    Get.to(
+                                      () => ForgetPasswordPage(),
+                                    );
                                   },
                                   child: Text(
                                     "forget_pass".tr,
@@ -291,23 +292,24 @@ class _LoginPageState extends State<LoginPage> {
                                   if (state == LoginStates.login) {
                                     if (_globalController.me.userType ==
                                         "user") {
-                                      Get.offAll(() => const UserHomePage(),
-                                          transition: Transition.downToUp);
+                                      Get.offAll(
+                                        () => const UserHomePage(),
+                                      );
                                     } else if (_globalController.me.userType ==
                                         "company") {
-                                      Get.offAll(() => const CompanyHomePage(),
-                                          transition: Transition.downToUp);
+                                      Get.offAll(
+                                        () => const CompanyHomePage(),
+                                      );
                                     } else {
                                       Get.to(() => const AdminHomePage());
                                     }
                                   } else if (state == LoginStates.needsVerify) {
                                     Get.to(
-                                        () => OTPPage(
-                                              email: _emailController.text,
-                                              password:
-                                                  _passwordController.text,
-                                            ),
-                                        transition: Transition.downToUp);
+                                      () => OTPPage(
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                      ),
+                                    );
                                   } else if (state ==
                                       LoginStates.accountNotFound) {
                                     Utils.showSnackBar(
@@ -429,10 +431,9 @@ class _LoginPageState extends State<LoginPage> {
 
                                                     if (token != null) {
                                                       Get.off(
-                                                          () =>
-                                                              const UserHomePage(),
-                                                          transition: Transition
-                                                              .downToUp);
+                                                        () =>
+                                                            const UserHomePage(),
+                                                      );
                                                     }
                                                   },
                                                   text: coloredText(
@@ -457,10 +458,9 @@ class _LoginPageState extends State<LoginPage> {
 
                                                     if (token != null) {
                                                       Get.off(
-                                                          () =>
-                                                              const CompanyHomePage(),
-                                                          transition: Transition
-                                                              .downToUp);
+                                                        () =>
+                                                            const CompanyHomePage(),
+                                                      );
                                                     }
                                                   },
                                                   text: coloredText(
@@ -495,10 +495,10 @@ class _LoginPageState extends State<LoginPage> {
                                     // if (token != null) {
                                     //   if (userType == "user") {
                                     //     Get.off(() => const UserHomePage(),
-                                    //         transition: Transition.downToUp);
+                                    //         );
                                     //   } else {
                                     //     Get.off(() => const CompanyHomePage(),
-                                    //         transition: Transition.downToUp);
+                                    //         );
                                     //   }
                                     // }
                                   },
@@ -524,6 +524,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 GestureDetector(
                                   onTap: () async {
+                                    Utils.showToast(message: "Facebook soon");
+
 //                                     final LoginResult result = await FacebookAuth
 //                                         .instance
 //                                         .login(); // by default we request the email and the public profile
@@ -570,21 +572,27 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-                                Container(
-                                  width: 40.0.sp,
-                                  height: 40.0.sp,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.grey.withOpacity(0.2)),
-                                      shape: BoxShape.circle,
-                                      color: Colors.grey.withOpacity(0.1)),
-                                  child: Center(
-                                    child: Image(
-                                      width: 20.0.sp,
-                                      height: 20.0.sp,
-                                      image: const AssetImage(
-                                          "assets/images/apple.png"),
-                                      fit: BoxFit.contain,
+                                GestureDetector(
+                                  onTap: () {
+                                    Utils.showToast(message: "Apple soon");
+                                  },
+                                  child: Container(
+                                    width: 40.0.sp,
+                                    height: 40.0.sp,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color:
+                                                Colors.grey.withOpacity(0.2)),
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey.withOpacity(0.1)),
+                                    child: Center(
+                                      child: Image(
+                                        width: 20.0.sp,
+                                        height: 20.0.sp,
+                                        image: const AssetImage(
+                                            "assets/images/apple.png"),
+                                        fit: BoxFit.contain,
+                                      ),
                                     ),
                                   ),
                                 ),

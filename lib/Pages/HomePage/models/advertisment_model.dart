@@ -1,6 +1,7 @@
 class AdvertismentModel {
   int? id;
   int? refund;
+  int? adminRefund;
   var image;
   int? durationByDay = 0;
   int? promotionType;
@@ -18,6 +19,7 @@ class AdvertismentModel {
   AdvertismentModel({
     this.id,
     this.refund,
+    this.adminRefund,
     this.amount,
     this.image,
     this.durationByDay = 0,
@@ -37,8 +39,9 @@ class AdvertismentModel {
     id = json['id'];
     amount = json['amount'];
     desc = json['desc'];
-    refund = json['refund'];
     image = "https://khdmah.online/api/images/addvertisment/${json['image']}";
+    refund = json['refund'];
+    adminRefund = json['admin_refund'];
     durationByDay = json['duration_by_day'];
     promotionType = json['promotion_type'];
     externalLink = json['external_link'];
@@ -56,6 +59,7 @@ class AdvertismentModel {
     if (id != null) data['id'] = id;
     if (amount != null) data['amount'] = amount;
     if (refund != null) data['refund'] = refund;
+    if (adminRefund != null) data['admin_refund'] = adminRefund;
     if (desc != null) data['desc'] = desc;
     if (durationByDay != null) data['duration_by_day'] = durationByDay;
     if (promotionType != null) data['promotion_type'] = promotionType;

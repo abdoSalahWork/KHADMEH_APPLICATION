@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
-import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/end_points.dart';
@@ -17,13 +17,13 @@ class JobsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(job.toJson());
 
-      PlatformFile? icon = job.icon;
+      XFile? icon = job.icon;
 
       if (icon != null) {
         body.files.add(MapEntry(
           "icon",
           await d.MultipartFile.fromFile(
-            icon.path!,
+            icon.path,
             filename: icon.name,
             contentType: MediaType('image', '*'),
           ),
@@ -83,14 +83,14 @@ class JobsController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(job.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      PlatformFile? icon;
+      XFile? icon;
       if (job.icon.runtimeType != String) icon = job.icon;
 
       if (icon != null) {
         body.files.add(MapEntry(
           "icon",
           await d.MultipartFile.fromFile(
-            icon.path!,
+            icon.path,
             filename: icon.name,
             contentType: MediaType('image', '*'),
           ),

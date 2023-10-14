@@ -2,12 +2,12 @@ import 'dart:math';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/user_register_model.dart';
@@ -868,15 +868,12 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       alignment: AlignmentDirectional.centerStart,
                       child: GestureDetector(
                         onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            allowMultiple: false,
-                            type: FileType.image,
-                          );
-                          if (result != null) {
-                            button1Text = result.files[0].name.substring(
-                                0, min(15, result.files[0].name.length));
-                            userRegisterData.idPhotoNationality =
-                                result.files[0];
+                          XFile? image = await Utils().selectImageSheet();
+
+                          if (image != null) {
+                            button1Text = image.name
+                                .substring(0, min(15, image.name.length));
+                            userRegisterData.idPhotoNationality = image;
                             setState(() {});
                           }
                         },
@@ -914,14 +911,12 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       alignment: AlignmentDirectional.centerStart,
                       child: GestureDetector(
                         onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            allowMultiple: false,
-                            type: FileType.image,
-                          );
-                          if (result != null) {
-                            button2Text = result.files[0].name.substring(
-                                0, min(25, result.files[0].name.length));
-                            userRegisterData.personalPhoto = result.files[0];
+                          XFile? image = await Utils().selectImageSheet();
+
+                          if (image != null) {
+                            button2Text = image.name
+                                .substring(0, min(25, image.name.length));
+                            userRegisterData.personalPhoto = image;
                             setState(() {});
                           }
                         },

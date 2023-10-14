@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/chat%20page/model/my_message.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:sizer/sizer.dart';
@@ -19,7 +18,6 @@ class ChatCard extends StatelessWidget {
   final ChatType chatType;
   final MyChat chat;
   final GlobalController _globalController = Get.find();
-  final ChatController _chatController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -30,31 +28,29 @@ class ChatCard extends StatelessWidget {
             // final response =
             //     await _chatController.showChat(id: chat.id!, indicator: true);
             Get.to(
-                () => ChatPage(
-                      chatId: chat.id!,
-                      receiverId: _globalController.me.id ==
-                              chat.participants![0].userId
-                          ? chat.participants![1].chatId!
-                          : chat.participants![0].chatId!,
-                      recieverName: _globalController.me.id ==
-                              chat.participants![0].userId
-                          ? chat.participants![1].user!.fullName!
-                          : chat.participants![0].user!.fullName!,
-                      recieverImage: _globalController.me.userType == "company"
-                          ? _globalController.me.id ==
-                                  chat.participants![0].userId
-                              ? chat.participants![1].user!.userInformation!
-                                  .personalPhoto!
-                              : chat.participants![0].user!.userInformation!
-                                  .personalPhoto!
-                          : _globalController.me.id ==
-                                  chat.participants![0].userId
-                              ? chat.participants![1].user!.companyInformation!
-                                  .companyLogo!
-                              : chat.participants![0].user!.companyInformation!
-                                  .companyLogo,
-                    ),
-                transition: Transition.downToUp);
+              () => ChatPage(
+                chatId: chat.id!,
+                receiverId:
+                    _globalController.me.id == chat.participants![0].userId
+                        ? chat.participants![1].chatId!
+                        : chat.participants![0].chatId!,
+                recieverName:
+                    _globalController.me.id == chat.participants![0].userId
+                        ? chat.participants![1].user!.fullName!
+                        : chat.participants![0].user!.fullName!,
+                recieverImage: _globalController.me.userType == "company"
+                    ? _globalController.me.id == chat.participants![0].userId
+                        ? chat.participants![1].user!.userInformation!
+                            .personalPhoto!
+                        : chat.participants![0].user!.userInformation!
+                            .personalPhoto!
+                    : _globalController.me.id == chat.participants![0].userId
+                        ? chat.participants![1].user!.companyInformation!
+                            .companyLogo!
+                        : chat.participants![0].user!.companyInformation!
+                            .companyLogo,
+              ),
+            );
           },
           child: Container(
             width: 70.0.sp,

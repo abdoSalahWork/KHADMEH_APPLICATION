@@ -88,8 +88,11 @@ class _ReservationRequestFilesPageState
                                     element.id ==
                                     widget
                                         .reservationExtintionModel.employee!.id)
-                                .first
-                                .name,
+                                .map((e) =>
+                                    Get.locale == const Locale('en', 'US')
+                                        ? e.nameEn
+                                        : e.nameAr)
+                                .first,
                             style: coloredText(
                                     text: "Sara Fady",
                                     fontSize: 13.sp,

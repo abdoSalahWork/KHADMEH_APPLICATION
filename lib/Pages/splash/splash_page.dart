@@ -69,30 +69,34 @@ class _SplashPageState extends State<SplashPage>
         String? rem = await Utils.readRemmemberMe();
         String? lang = await Utils.readLanguage();
         if (lang == null) {
-          Get.offAll(() => SelectLanguagePage(),
-              transition: Transition.downToUp);
+          Get.offAll(
+            () => SelectLanguagePage(),
+          );
         } else {
           await _globalController.setLocale();
           bool x = await _globalController.getMe();
           if (x) {
             if (rem == "yes") {
               if (_globalController.me.userType == "user") {
-                Get.offAll(() => const UserHomePage(),
-                    transition: Transition.downToUp);
+                Get.offAll(
+                  () => const UserHomePage(),
+                );
               } else if (_globalController.me.userType == "company") {
-                Get.offAll(() => const CompanyHomePage(),
-                    transition: Transition.downToUp);
+                Get.offAll(
+                  () => const CompanyHomePage(),
+                );
               } else if (_globalController.me.userType == "admin") {
-                Get.offAll(() => AdminHomePage(),
-                    transition: Transition.downToUp);
+                Get.offAll(
+                  () => AdminHomePage(),
+                );
               } else {
-                Get.off(() => LoginPage(), transition: Transition.downToUp);
+                Get.off(() => LoginPage());
               }
             } else {
-              Get.off(() => LoginPage(), transition: Transition.downToUp);
+              Get.off(() => LoginPage());
             }
           } else {
-            Get.off(() => LoginPage(), transition: Transition.downToUp);
+            Get.off(() => LoginPage());
           }
         }
       },

@@ -6,11 +6,11 @@ import 'package:badges/badges.dart' as badges;
 import 'package:carousel_slider/carousel_slider.dart'; // ignore_for_file: must_be_immutable
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Pages/HomePage/cleaning%20companies/cleaning_company.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
@@ -23,6 +23,7 @@ import 'package:khedma/Pages/Notifications/controller/notofication_controller.da
 import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
+import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/user_register_model.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:restart_app/restart_app.dart';
@@ -190,7 +191,16 @@ class _UserHomePageState extends State<UserHomePage> {
                         ),
                       ]),
                       _globalController.guest
-                          ? Container()
+                          ? GestureDetector(
+                              onTap: () {
+                                Get.offAll(() => LoginPage());
+                              },
+                              child: coloredText(
+                                text: "login".tr,
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.underline,
+                              ),
+                            )
                           : Row(children: [
                               GetBuilder<NotificationController>(builder: (c) {
                                 return badges.Badge(
@@ -199,8 +209,8 @@ class _UserHomePageState extends State<UserHomePage> {
                                   showBadge: c.newNotifications,
                                   child: GestureDetector(
                                     onTap: () => Get.to(
-                                        () => NotificationsPage(),
-                                        transition: Transition.downToUp),
+                                      () => NotificationsPage(),
+                                    ),
                                     child: Icon(
                                       EvaIcons.bell,
                                       color: const Color(0xffD1D1D1),
@@ -230,8 +240,9 @@ class _UserHomePageState extends State<UserHomePage> {
                               spaceX(10),
                               GestureDetector(
                                 onTap: () {
-                                  Get.to(() => const PersonalPage(),
-                                      transition: Transition.downToUp);
+                                  Get.to(
+                                    () => const PersonalPage(),
+                                  );
                                 },
                                 child:
                                     GetBuilder<GlobalController>(builder: (c) {
@@ -370,9 +381,9 @@ class _UserHomePageState extends State<UserHomePage> {
                                     ),
                                     GestureDetector(
                                       onTap: () => Get.to(
-                                          () =>
-                                              const RecruitmentCompaniesSearchPage(),
-                                          transition: Transition.downToUp),
+                                        () =>
+                                            const RecruitmentCompaniesSearchPage(),
+                                      ),
                                       child: coloredText(
                                         text: "all".tr,
                                         fontSize: 13.0.sp,
@@ -412,10 +423,9 @@ class _UserHomePageState extends State<UserHomePage> {
 
                                                 if (x != null) {
                                                   Get.to(
-                                                      () => RecruitmentCompany(
-                                                          company: x),
-                                                      transition: Transition
-                                                          .rightToLeftWithFade);
+                                                    () => RecruitmentCompany(
+                                                        company: x),
+                                                  );
                                                 }
                                               },
                                               child: Container(
@@ -504,9 +514,9 @@ class _UserHomePageState extends State<UserHomePage> {
                                     GestureDetector(
                                       onTap: () {
                                         Get.to(
-                                            () =>
-                                                const CleaningCompaniesSearchPage(),
-                                            transition: Transition.downToUp);
+                                          () =>
+                                              const CleaningCompaniesSearchPage(),
+                                        );
                                       },
                                       child: coloredText(
                                         text: "all".tr,
@@ -653,8 +663,8 @@ class _UserHomePageState extends State<UserHomePage> {
                                     ),
                                     GestureDetector(
                                       onTap: () => Get.to(
-                                          () => const EmployeesSearchPage(),
-                                          transition: Transition.downToUp),
+                                        () => const EmployeesSearchPage(),
+                                      ),
                                       child: coloredText(
                                         text: "all".tr,
                                         fontSize: 13.0.sp,
@@ -693,10 +703,9 @@ class _UserHomePageState extends State<UserHomePage> {
                                                             indicator: true);
                                                 if (em != null) {
                                                   Get.to(
-                                                      () => EmployeePage(
-                                                          employeeModel: em),
-                                                      transition: Transition
-                                                          .rightToLeft);
+                                                    () => EmployeePage(
+                                                        employeeModel: em),
+                                                  );
                                                 }
                                               },
                                               child: Column(
@@ -710,7 +719,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                                       shape: BoxShape.circle,
                                                       image: DecorationImage(
                                                           image: NetworkImage(
-                                                              "${globalController.userHomePage.imageUrlEmployee!}/${globalController.userHomePage.employees![index].image}/"),
+                                                              "${globalController.userHomePage.employees![index].image}/"),
                                                           fit: BoxFit.cover),
                                                     ),
                                                   ),
@@ -724,21 +733,34 @@ class _UserHomePageState extends State<UserHomePage> {
                                                         padding:
                                                             const EdgeInsetsDirectional
                                                                 .only(start: 2),
-                                                        child: coloredText(
-                                                            text: globalController
+                                                        child: Get.locale ==
+                                                                const Locale(
+                                                                    'en', 'us')
+                                                            ? coloredText(
+                                                                text: globalController.userHomePage.employees![index].nameEn!.length > 12
+                                                                    ? "${globalController.userHomePage.employees![index].nameEn!.substring(0, 12)}.."
+                                                                    : globalController
                                                                         .userHomePage
                                                                         .employees![
                                                                             index]
-                                                                        .name!
-                                                                        .length >
-                                                                    12
-                                                                ? "${globalController.userHomePage.employees![index].name!.substring(0, 12)}.."
-                                                                : globalController
-                                                                    .userHomePage
-                                                                    .employees![
-                                                                        index]
-                                                                    .name!,
-                                                            fontSize: 13.0.sp),
+                                                                        .nameEn!,
+                                                                fontSize:
+                                                                    13.0.sp)
+                                                            : coloredText(
+                                                                text: globalController
+                                                                            .userHomePage
+                                                                            .employees![
+                                                                                index]
+                                                                            .nameAr!
+                                                                            .length >
+                                                                        12
+                                                                    ? "${globalController.userHomePage.employees![index].nameAr!.substring(0, 12)}.."
+                                                                    : globalController
+                                                                        .userHomePage
+                                                                        .employees![
+                                                                            index]
+                                                                        .nameAr!,
+                                                                fontSize: 13.0.sp),
                                                       ),
                                                       spaceY(2),
                                                       Row(
@@ -1353,14 +1375,12 @@ class _UserHomePageState extends State<UserHomePage> {
               alignment: AlignmentDirectional.centerStart,
               child: GestureDetector(
                 onTap: () async {
-                  final result = await FilePicker.platform.pickFiles(
-                    allowMultiple: false,
-                    type: FileType.image,
-                  );
-                  if (result != null) {
-                    button1Text = result.files[0].name
-                        .substring(0, min(15, result.files[0].name.length));
-                    userCompleteData.idPhotoNationality = result.files[0];
+                  XFile? image = await Utils().selectImageSheet();
+
+                  if (image != null) {
+                    button1Text =
+                        image.name.substring(0, min(15, image.name.length));
+                    userCompleteData.idPhotoNationality = image;
                     setState(() {});
                   }
                 },
@@ -1397,14 +1417,12 @@ class _UserHomePageState extends State<UserHomePage> {
               alignment: AlignmentDirectional.centerStart,
               child: GestureDetector(
                 onTap: () async {
-                  final result = await FilePicker.platform.pickFiles(
-                    allowMultiple: false,
-                    type: FileType.image,
-                  );
-                  if (result != null) {
-                    button2Text = result.files[0].name
-                        .substring(0, min(25, result.files[0].name.length));
-                    userCompleteData.personalPhoto = result.files[0];
+                  XFile? image = await Utils().selectImageSheet();
+
+                  if (image != null) {
+                    button2Text =
+                        image.name.substring(0, min(25, image.name.length));
+                    userCompleteData.personalPhoto = image;
                     setState(() {});
                   }
                 },

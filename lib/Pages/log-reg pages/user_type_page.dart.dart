@@ -57,8 +57,9 @@ class UserTypePage extends StatelessWidget {
                       ),
                       spaceY(5.0.h),
                       primaryBorderedButton(
-                        onTap: () => Get.to(() => const CompanyRegisterPage(),
-                            transition: Transition.rightToLeft),
+                        onTap: () => Get.to(
+                          () => const CompanyRegisterPage(),
+                        ),
                         width: 75.0.w,
                         height: 60,
                         text: coloredText(
@@ -75,8 +76,9 @@ class UserTypePage extends StatelessWidget {
                           color: Theme.of(context).colorScheme.tertiary,
                         ),
                         color: Theme.of(context).colorScheme.tertiary,
-                        onTap: () => Get.to(() => const UserRegisterPage(),
-                            transition: Transition.rightToLeft),
+                        onTap: () => Get.to(
+                          () => const UserRegisterPage(),
+                        ),
                       )
                     ],
                   ),

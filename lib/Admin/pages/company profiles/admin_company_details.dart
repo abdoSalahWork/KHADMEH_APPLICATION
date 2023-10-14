@@ -527,7 +527,7 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
                                           fontSize: 13.sp),
                                       spaceY(5.sp),
                                       Image(
-                                        image: AssetImage(widget
+                                        image: NetworkImage(widget
                                             .companyProfile
                                             .companyInformation!
                                             .passportImage!),

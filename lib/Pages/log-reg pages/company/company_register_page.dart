@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -11,6 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:iban/iban.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
@@ -105,7 +105,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   String logobuttonText = "upload_company_logo".tr;
   String frontIdButton = "upload_front_side_of_id".tr;
   String backIdButton = "upload_back_side_of_id".tr;
-  String passportButton = "Upload_your_passport".tr;
+  String passportButton = "upload_your_passport".tr;
 
   @override
   void initState() {
@@ -201,7 +201,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   //                   ? setState(() => _currentStep += 1)
                   //                   : Get.to(
                   //                       () => const OTPPage(),
-                  //                       transition: Transition.rightToLeft,
+                  //                       ,
                   //                     );
                   //             },
                   //             text: coloredText(
@@ -518,7 +518,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       .first
                       .id
                       .toString();
-                  ;
                 },
 
                 prefixIcon: Icon(
@@ -688,14 +687,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     height: 55,
                     radius: 10,
                     onTap: () async {
-                      final result = await FilePicker.platform.pickFiles(
-                        allowMultiple: false,
-                        type: FileType.image,
-                      );
-                      if (result != null) {
-                        logobuttonText = result.files[0].name
-                            .substring(0, min(15, result.files[0].name.length));
-                        companyRegisterData.companyLogo = result.files[0];
+                      XFile? image = await Utils().selectImageSheet();
+
+                      if (image != null) {
+                        setState(() {});
+
+                        logobuttonText =
+                            image.name.substring(0, min(15, image.name.length));
+                        companyRegisterData.companyLogo = image;
                         setState(() {});
                       }
                     },
@@ -1248,8 +1247,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                         setState(() {
                           companyRegisterData.identityConfirmation = "id";
 
-                          passportButton = "Upload_your_passport".tr;
-                          ;
+                          passportButton = "upload_your_passport".tr;
+
                           idPassRadio = 0;
                           companyRegisterData.passportImage = null;
                           setState(() {});
@@ -1281,14 +1280,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     ? Container()
                     : primaryButton(
                         onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            allowMultiple: false,
-                            type: FileType.image,
-                          );
-                          if (result != null) {
-                            passportButton = result.files[0].name.substring(
-                                0, min(15, result.files[0].name.length));
-                            companyRegisterData.passportImage = result.files[0];
+                          XFile? image = await Utils().selectImageSheet();
+
+                          if (image != null) {
+                            setState(() {});
+
+                            passportButton = image.name
+                                .substring(0, min(15, image.name.length));
+                            companyRegisterData.passportImage = image;
                             setState(() {});
                           }
                         },
@@ -1334,15 +1333,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     ? Container()
                     : primaryButton(
                         onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            allowMultiple: false,
-                            type: FileType.image,
-                          );
-                          if (result != null) {
-                            frontIdButton = result.files[0].name.substring(
-                                0, min(15, result.files[0].name.length));
-                            companyRegisterData.frontSideIdImage =
-                                result.files[0];
+                          XFile? image = await Utils().selectImageSheet();
+
+                          if (image != null) {
+                            setState(() {});
+
+                            frontIdButton = image.name
+                                .substring(0, min(15, image.name.length));
+                            companyRegisterData.frontSideIdImage = image;
                             setState(() {});
                           }
                         },
@@ -1389,15 +1387,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     ? Container()
                     : primaryButton(
                         onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            allowMultiple: false,
-                            type: FileType.image,
-                          );
-                          if (result != null) {
-                            backIdButton = result.files[0].name.substring(
-                                0, min(15, result.files[0].name.length));
-                            companyRegisterData.backSideIdImage =
-                                result.files[0];
+                          XFile? image = await Utils().selectImageSheet();
+
+                          if (image != null) {
+                            setState(() {});
+
+                            backIdButton = image.name
+                                .substring(0, min(15, image.name.length));
+                            companyRegisterData.backSideIdImage = image;
                             setState(() {});
                           }
                         },
@@ -1810,7 +1807,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                         email: _emailController.text,
                                         password: _passwordController.text,
                                       ),
-                                      transition: Transition.rightToLeft,
                                     );
                                   },
                                   width: 40.0.w,

@@ -1,9 +1,9 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/recruitment-companies/recruitment_companies_search_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
@@ -133,8 +133,8 @@ class _PersonalPageState extends State<PersonalPage>
                         GestureDetector(
                           onTap: () {
                             Get.to(
-                                () => const PersonalSettings(userType: "user"),
-                                transition: Transition.downToUp);
+                              () => const PersonalSettings(userType: "user"),
+                            );
                           },
                           child: Icon(
                             FontAwesomeIcons.gear,
@@ -173,16 +173,14 @@ class _PersonalPageState extends State<PersonalPage>
                                 end: 0,
                                 child: GestureDetector(
                                   onTap: () async {
-                                    final result =
-                                        await FilePicker.platform.pickFiles(
-                                      allowMultiple: false,
-                                      type: FileType.image,
-                                    );
-                                    if (result != null) {
+                                    XFile? image =
+                                        await Utils().selectImageSheet();
+
+                                    if (image != null) {
                                       await _globalController.updateUserProfile(
                                           userInfo: _globalController
                                               .me.userInformation!,
-                                          personaPhoto: result.files[0]);
+                                          personaPhoto: image);
                                       // );
 
                                       setState(() {});

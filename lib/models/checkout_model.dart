@@ -8,8 +8,8 @@ class CheckoutModel {
   String? endDate;
   String? address;
   int? receiptMethod;
+  String? amountPaid;
   String? amount;
-  String? amount2;
   String? invoiceId;
   int? approve;
   int? paid;
@@ -25,8 +25,8 @@ class CheckoutModel {
       this.endDate,
       this.address,
       this.receiptMethod,
+      this.amountPaid,
       this.amount,
-      this.amount2,
       this.order,
       this.invoiceId,
       this.approve,
@@ -48,8 +48,8 @@ class CheckoutModel {
     endDate = json['end_date'];
     address = json['address'];
     receiptMethod = json['receipt_method'];
+    amountPaid = json['amount_paid'];
     amount = json['amount'];
-    amount2 = json['amount2`'];
     invoiceId = json['invoice_id'];
     approve = json['approve'];
     paid = json['paid'];
@@ -66,8 +66,8 @@ class CheckoutModel {
     data['end_date'] = this.endDate;
     data['address'] = this.address;
     data['receipt_method'] = this.receiptMethod;
+    data['amount_paid'] = this.amountPaid;
     data['amount'] = this.amount;
-    data['amount2'] = this.amount2;
     data['invoice_id'] = this.invoiceId;
     data['approve'] = this.approve;
     data['paid'] = this.paid;

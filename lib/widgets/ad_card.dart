@@ -106,6 +106,11 @@ class AdvertismentCard extends StatelessWidget {
                   ),
                   spaceX(10.sp),
                   primaryButton(
+                    onTap: () async {
+                      bool b = await _advertismentController.requestRefund(
+                          id: advertismentModel.id!);
+                      if (b) Utils.doneDialog(context: context);
+                    },
                     width: 35.w,
                     height: 30.sp,
                     radius: 20.sp,
@@ -274,137 +279,63 @@ class AdvertismentCard extends StatelessWidget {
         //     : Container(),
         admin && refunds ? spaceY(10.sp) : Container(),
         admin && refunds
-            ? Row(
-                children: [
-                  primaryButton(
-                    onTap: () async {
-                      bool b = await _advertismentController.refundAdvertismnt(
-                          refund: 1, advertismentId: advertismentModel.id!);
-                      if (b) Utils.doneDialog(context: context);
-                    },
-                    width: 35.w,
-                    height: 30.sp,
-                    radius: 20.sp,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .secondary
-                        .withOpacity(0.1),
-                    text: coloredText(
-                        text: "accept".tr,
-                        color: Theme.of(context).colorScheme.secondary),
-                  ),
-                  spaceX(10.sp),
-                  primaryButton(
-                    onTap: () {
-                      String desc = "";
-                      Utils.showDialogBox(
-                        context: context,
-                        actions: [
-                          primaryButton(
-                            onTap: () async {
-                              Get.back();
-                              bool b = await _advertismentController
-                                  .refundAdvertismnt(
-                                      refund: 0,
-                                      advertismentId: advertismentModel.id!,
-                                      desc: desc);
-                              if (b) {
-                                Utils.doneDialog(context: context);
-
-                                Utils.customDialog(
-                                    actions: [
-                                      primaryButton(
-                                        onTap: () {
-                                          Get.back();
-                                        },
-                                        width: 40.0.w,
-                                        height: 50,
-                                        radius: 10.w,
-                                        color: Colors.black,
-                                        text: coloredText(
-                                          text: "ok".tr,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                    context: context,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          spaceY(20),
-                                          Icon(
-                                            EvaIcons.checkmarkCircle,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            size: 40.sp,
-                                          ),
-                                          spaceY(20),
-                                          coloredText(
-                                              text:
-                                                  "your_note_have_been_sent".tr,
-                                              fontSize: 12.0.sp),
-                                          coloredText(
-                                            text: "successfully".tr,
-                                            fontSize: 14.0.sp,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                          ),
-                                        ],
-                                      ),
-                                    ));
-                              }
-                            },
-                            color: Colors.black,
-                            width: 45.w,
-                            height: 50,
-                            text: coloredText(
-                                text: "submit".tr, color: Colors.white),
-                          ),
-                        ],
-                        content: TextFormField(
-                          maxLines: 5,
-                          onChanged: (value) {
-                            desc = value;
-                          },
-                          decoration: InputDecoration(
-                            hintText: "write_your_notes".tr,
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xffF5F5F5),
-                          ),
-                        ),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            GestureDetector(
-                              onTap: () => Get.back(),
-                              child: const Icon(
-                                EvaIcons.close,
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                    width: 35.w,
-                    height: 30.sp,
-                    radius: 20.sp,
-                    color: const Color(0xffC13535).withOpacity(0.1),
-                    text: coloredText(
-                        text: "refuse".tr, color: const Color(0xffC13535)),
+            ? advertismentModel.adminRefund == null
+                ? Row(
+                    children: [
+                      primaryButton(
+                        onTap: () async {
+                          bool b =
+                              await _advertismentController.refundAdvertismnt(
+                                  refund: 1,
+                                  advertismentId: advertismentModel.id!);
+                          if (b) Utils.doneDialog(context: context);
+                        },
+                        width: 35.w,
+                        height: 30.sp,
+                        radius: 20.sp,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withOpacity(0.1),
+                        text: coloredText(
+                            text: "accept".tr,
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      spaceX(10.sp),
+                      primaryButton(
+                        onTap: () async {
+                          bool b =
+                              await _advertismentController.refundAdvertismnt(
+                            refund: 0,
+                            advertismentId: advertismentModel.id!,
+                          );
+                          if (b) Utils.doneDialog(context: context);
+                        },
+                        width: 35.w,
+                        height: 30.sp,
+                        radius: 20.sp,
+                        color: const Color(0xffC13535).withOpacity(0.1),
+                        text: coloredText(
+                            text: "refuse".tr, color: const Color(0xffC13535)),
+                      )
+                    ],
                   )
-                ],
-              )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      coloredText(
+                        text: "${"status".tr}:  ",
+                      ),
+                      coloredText(
+                        text: advertismentModel.adminRefund == 0
+                            ? "refused".tr
+                            : "accepted".tr,
+                        color: advertismentModel.adminRefund == 0
+                            ? Colors.red
+                            : Theme.of(context).colorScheme.secondary,
+                      ),
+                    ],
+                  )
             : Container(),
         admin && status ? spaceY(10.sp) : Container(),
         admin && status
@@ -415,14 +346,20 @@ class AdvertismentCard extends StatelessWidget {
                     text: "${"status".tr}:  ",
                   ),
                   coloredText(
-                    text: advertismentModel.adminApprove == null ||
-                            advertismentModel.adminApprove == 0
-                        ? "refused".tr
-                        : "accepted".tr,
+                    text: advertismentModel.refund == 1
+                        ? "refund".tr
+                        : advertismentModel.adminApprove == null ||
+                                advertismentModel.refund != 0
+                            ? "pending".tr
+                            : advertismentModel.adminApprove == 0
+                                ? "refused".tr
+                                : "accepted".tr,
                     color: advertismentModel.adminApprove == null ||
-                            advertismentModel.adminApprove == 0
-                        ? Colors.red
-                        : Theme.of(context).colorScheme.secondary,
+                            advertismentModel.refund != 0
+                        ? Colors.blue
+                        : advertismentModel.adminApprove == 0
+                            ? Colors.red
+                            : Theme.of(context).colorScheme.secondary,
                   ),
                 ],
               )

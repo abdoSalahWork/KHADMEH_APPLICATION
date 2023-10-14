@@ -138,7 +138,12 @@ class _CompanyEmployeesSearchPageState
                                       onTap: c.companyEmployeeToShow[index]
                                                   .status !=
                                               null
-                                          ? null
+                                          ? () {
+                                              Utils.showToast(
+                                                  message:
+                                                      "can't_delete_employee"
+                                                          .tr);
+                                            }
                                           : () async {
                                               EmployeeModel? em =
                                                   await _employeesController
@@ -157,12 +162,14 @@ class _CompanyEmployeesSearchPageState
                                     ),
                                     PopupMenuItem<int>(
                                       value: 2,
-                                      child: coloredText(
-                                          text: 'delete'.tr, fontSize: 12.0.sp),
                                       onTap: c.companyEmployeeToShow[index]
                                                   .status !=
                                               null
-                                          ? null
+                                          ? () {
+                                              Utils.showToast(
+                                                  message:
+                                                      "can't_edit_employee".tr);
+                                            }
                                           : () async {
                                               bool x = await _employeesController
                                                   .deleteEmployee(
@@ -170,10 +177,13 @@ class _CompanyEmployeesSearchPageState
                                                           c.companyEmployeeToShow[
                                                               index]);
                                               if (x) {
+                                                // ignore: use_build_context_synchronously
                                                 Utils.doneDialog(
                                                     context: context);
                                               }
                                             },
+                                      child: coloredText(
+                                          text: 'delete'.tr, fontSize: 12.0.sp),
                                     ),
                                   ],
                                   child: const Icon(

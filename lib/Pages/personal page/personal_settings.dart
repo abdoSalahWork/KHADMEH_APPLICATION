@@ -42,11 +42,13 @@ class _PersonalSettingsState extends State<PersonalSettings> {
             primaryBorderedButton(
               onTap: () {
                 if (widget.userType == "company") {
-                  Get.to(() => const CompanyProfileEditPage(),
-                      transition: Transition.rightToLeft);
+                  Get.to(
+                    () => const CompanyProfileEditPage(),
+                  );
                 } else {
-                  Get.to(() => ProfileEditPage(userType: widget.userType),
-                      transition: Transition.rightToLeft);
+                  Get.to(
+                    () => ProfileEditPage(userType: widget.userType),
+                  );
                 }
               },
               width: 100.w,
@@ -70,8 +72,9 @@ class _PersonalSettingsState extends State<PersonalSettings> {
             spaceY(20),
             primaryBorderedButton(
               onTap: () {
-                Get.to(() => LanguagesPage(),
-                    transition: Transition.rightToLeft);
+                Get.to(
+                  () => LanguagesPage(),
+                );
               },
               width: 100.w,
               text: Row(
@@ -94,8 +97,9 @@ class _PersonalSettingsState extends State<PersonalSettings> {
             spaceY(20),
             primaryBorderedButton(
               onTap: () {
-                Get.to(() => const PasswordChangePage(),
-                    transition: Transition.rightToLeft);
+                Get.to(
+                  () => const PasswordChangePage(),
+                );
               },
               width: 100.w,
               text: Row(

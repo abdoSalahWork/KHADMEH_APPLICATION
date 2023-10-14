@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expandable/expandable.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
 import 'package:khedma/Admin/pages/languages/models/language_model.dart';
@@ -15,6 +15,7 @@ import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Themes/themes.dart';
 import 'package:khedma/widgets/radio_button.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:sizer/sizer.dart';
 
@@ -31,6 +32,7 @@ class AddEmployeePage extends StatefulWidget {
 }
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
+  String passportButton = "upload_your_passport".tr;
   var errors = {};
   String? imageToEdit;
   String nationality = "";
@@ -51,10 +53,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final EmployeesController _employeesController = Get.find();
   int offerRadio = 0;
   String appLanguage = "en";
-  final List<FocusNode> _focusNodes = List.generate(23, (index) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(24, (index) => FocusNode());
 
   final GlobalController _globalController = Get.find();
   String imagePath = "";
+  String passportPath = "";
   Widget? imageWidget = Icon(
     EvaIcons.person,
     size: 35.w,
@@ -94,7 +97,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       ExpandableController(initialExpanded: false);
   final ExpandableController _expandable4Controller =
       ExpandableController(initialExpanded: false);
-  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _fullNameArController = TextEditingController();
+  final TextEditingController _fullNameEnController = TextEditingController();
   final TextEditingController _employmentDurationController =
       TextEditingController();
   final TextEditingController _amountAfterDiscountController =
@@ -147,19 +151,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                     GestureDetector(
                       key: imageDataKey,
                       onTap: () async {
-                        final result = await FilePicker.platform.pickFiles(
-                          allowMultiple: false,
-                          type: FileType.image,
-                        );
-                        if (result != null) {
+                        XFile? image = await Utils().selectImageSheet();
+
+                        if (image != null) {
                           imageWidget = null;
                           imageToEdit = null;
-                          imagePath = result.files[0].path!;
+                          imagePath = image.path;
                           if (widget.employeeToEdit != null) {
-                            widget.employeeToEdit!.image = result.files[0];
+                            widget.employeeToEdit!.image = image;
                           } else {
-                            employeeToCreate.image = result.files[0];
+                            employeeToCreate.image = image;
                           }
+
                           setState(() {});
                         }
                       },
@@ -256,24 +259,49 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   spaceY(10),
-                                  coloredText(text: "name".tr),
+                                  coloredText(text: "name_ar".tr),
                                   spaceY(5.sp),
                                   SendMessageTextField(
                                     borderRadius: 10,
                                     focusNode: _focusNodes[0],
                                     fillColor: const Color(0xffF8F8F8),
-                                    controller: _fullNameController,
+                                    controller: _fullNameArController,
                                     onchanged: (s) {
                                       if (widget.employeeToEdit != null) {
-                                        widget.employeeToEdit!.name = s;
+                                        widget.employeeToEdit!.nameAr = s;
                                       } else {
-                                        employeeToCreate.name = s;
+                                        employeeToCreate.nameAr = s;
                                       }
                                     },
                                     validator: (s) {
-                                      if (errors['name'] != null) {
+                                      if (errors['name_ar'] != null) {
                                         String tmp = "";
-                                        tmp = errors['name'].join("\n");
+                                        tmp = errors['name_ar'].join("\n");
+
+                                        return tmp;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  spaceY(10.sp),
+                                  coloredText(text: "name_en".tr),
+                                  spaceY(5.sp),
+                                  SendMessageTextField(
+                                    borderRadius: 10,
+                                    focusNode: _focusNodes[23],
+                                    fillColor: const Color(0xffF8F8F8),
+                                    controller: _fullNameEnController,
+                                    onchanged: (s) {
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.nameEn = s;
+                                      } else {
+                                        employeeToCreate.nameEn = s;
+                                      }
+                                    },
+                                    validator: (s) {
+                                      if (errors['name_en'] != null) {
+                                        String tmp = "";
+                                        tmp = errors['name_en'].join("\n");
 
                                         return tmp;
                                       }
@@ -418,25 +446,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   SendMessageTextField(
                                     onTap: () async {
                                       DateTime? x = await showDatePicker(
-                                          builder: (context, child) => Theme(
-                                                data: ThemeData(
-                                                  colorScheme:
-                                                      ColorScheme.fromSeed(
-                                                    seedColor:
-                                                        AppThemes.colorCustom,
-                                                  ),
-                                                ),
-                                                child: child!,
-                                              ),
-                                          context: context,
-                                          initialDate: DateTime.now().subtract(
-                                            const Duration(days: 365 * 20),
+                                        builder: (context, child) => Theme(
+                                          data: ThemeData(
+                                            colorScheme: ColorScheme.fromSeed(
+                                              seedColor: AppThemes.colorCustom,
+                                            ),
                                           ),
-                                          firstDate: DateTime.now().subtract(
-                                            const Duration(days: 365 * 50),
-                                          ),
-                                          lastDate: DateTime.now().subtract(
-                                              const Duration(days: 365 * 15)));
+                                          child: child!,
+                                        ),
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime.now().subtract(
+                                            const Duration(days: 365 * 100)),
+                                        lastDate: DateTime.now().add(
+                                            const Duration(days: 365 * 100)),
+                                      );
                                       if (x != null) {
                                         _dateController.text =
                                             DateFormat('y/MM/dd').format(x);
@@ -932,7 +956,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     borderRadius: 10,
                                     focusNode: _focusNodes[11],
                                     fillColor: const Color(0xffF8F8F8),
-                                    keyBoardType: TextInputType.number,
                                     controller: _passportNoController,
                                     validator: (s) {
                                       if (errors['passport_num'] != null) {
@@ -960,25 +983,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   SendMessageTextField(
                                     onTap: () async {
                                       DateTime? x = await showDatePicker(
-                                          builder: (context, child) => Theme(
-                                                data: ThemeData(
-                                                  colorScheme:
-                                                      ColorScheme.fromSeed(
-                                                    seedColor:
-                                                        AppThemes.colorCustom,
-                                                  ),
-                                                ),
-                                                child: child!,
-                                              ),
-                                          context: context,
-                                          initialDate: DateTime.now().subtract(
-                                            const Duration(days: 365 * 20),
+                                        builder: (context, child) => Theme(
+                                          data: ThemeData(
+                                            colorScheme: ColorScheme.fromSeed(
+                                              seedColor: AppThemes.colorCustom,
+                                            ),
                                           ),
-                                          firstDate: DateTime.now().subtract(
-                                            const Duration(days: 365 * 50),
-                                          ),
-                                          lastDate: DateTime.now().subtract(
-                                              const Duration(days: 365 * 15)));
+                                          child: child!,
+                                        ),
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime.now().subtract(
+                                            const Duration(days: 365 * 100)),
+                                        lastDate: DateTime.now().add(
+                                            const Duration(days: 365 * 100)),
+                                      );
                                       if (x != null) {
                                         _issuedateController.text =
                                             DateFormat('y/MM/dd').format(x);
@@ -1076,25 +1095,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   SendMessageTextField(
                                     onTap: () async {
                                       DateTime? x = await showDatePicker(
-                                          builder: (context, child) => Theme(
-                                                data: ThemeData(
-                                                  colorScheme:
-                                                      ColorScheme.fromSeed(
-                                                    seedColor:
-                                                        AppThemes.colorCustom,
-                                                  ),
-                                                ),
-                                                child: child!,
-                                              ),
-                                          context: context,
-                                          initialDate: DateTime.now().subtract(
-                                            const Duration(days: 365 * 20),
+                                        builder: (context, child) => Theme(
+                                          data: ThemeData(
+                                            colorScheme: ColorScheme.fromSeed(
+                                              seedColor: AppThemes.colorCustom,
+                                            ),
                                           ),
-                                          firstDate: DateTime.now().subtract(
-                                            const Duration(days: 365 * 50),
-                                          ),
-                                          lastDate: DateTime.now().subtract(
-                                              const Duration(days: 365 * 15)));
+                                          child: child!,
+                                        ),
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime.now().subtract(
+                                            const Duration(days: 365 * 100)),
+                                        lastDate: DateTime.now().add(
+                                            const Duration(days: 365 * 100)),
+                                      );
                                       if (x != null) {
                                         _expirydateController.text =
                                             DateFormat('y/MM/dd').format(x);
@@ -1118,6 +1133,68 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       return null;
                                     },
                                   ),
+                                  spaceY(20.sp),
+                                  primaryButton(
+                                      onTap: () async {
+                                        XFile? image =
+                                            await Utils().selectImageSheet();
+
+                                        if (image != null) {
+                                          passportButton = image.name;
+                                          passportPath = image.path;
+                                          if (widget.employeeToEdit != null) {
+                                            widget.employeeToEdit!
+                                                .passportImege = image;
+                                          } else {
+                                            employeeToCreate.passportImege =
+                                                image;
+                                          }
+
+                                          setState(() {});
+                                        }
+                                      },
+                                      color: const Color(0xffF5F5F5),
+                                      width: 100.0.w,
+                                      height: 55,
+                                      radius: 10,
+                                      text: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              spaceX(10),
+                                              Icon(
+                                                LineIcons.passport,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 18.0.sp,
+                                              ),
+                                              spaceX(10),
+                                              coloredText(
+                                                text: passportButton,
+                                                color: const Color(0xff919191),
+                                                fontSize: 13.0.sp,
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_forward,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 20.0.sp,
+                                              ),
+                                              spaceX(10),
+                                            ],
+                                          ),
+                                        ],
+                                      )),
                                 ],
                               )
                             ],
@@ -1319,6 +1396,108 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                               itemCount: selectedJobs.length),
                                         ),
                                   spaceY(10.sp),
+
+                                  // coloredText(text: "monthly_salery".tr),
+                                  // spaceY(5.sp),
+                                  // SendMessageTextField(
+                                  //   focusNode: _focusNodes[15],
+                                  //   validator: (s) {
+                                  //     if (errors['salary_month'] != null) {
+                                  //       String tmp = "";
+                                  //       tmp = errors['salary_month'].join("\n");
+
+                                  //       return tmp;
+                                  //     }
+                                  //     return null;
+                                  //   },
+                                  //   hintText: "0 KD",
+                                  //   controller: _monthlySaleryController,
+                                  //   keyBoardType: TextInputType.number,
+                                  //   fillColor: const Color(0xffF8F8F8),
+                                  //   width: 100.w,
+                                  //   onchanged: (s) {
+                                  //     if (s != "") {
+                                  //       employeeToCreate.salaryMonth = s;
+                                  //     }
+                                  //   },
+                                  //   // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                                  //   borderRadius: 8,
+                                  //   // padding:
+                                  //   //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                                  // ),
+
+                                  // spaceY(10.sp),
+                                  coloredText(text: "contract_duration".tr),
+                                  spaceY(5.sp),
+                                  SendMessageTextField(
+                                    focusNode: _focusNodes[16],
+                                    validator: (s) {
+                                      if (errors['contract_duration'] != null) {
+                                        String tmp = "";
+                                        tmp = errors['contract_duration']
+                                            .join("\n");
+
+                                        return tmp;
+                                      }
+                                      return null;
+                                    },
+                                    hintText: "0 ${'years'.tr}",
+                                    controller: _contractDurationController,
+                                    keyBoardType: TextInputType.number,
+                                    fillColor: const Color(0xffF8F8F8),
+                                    width: 100.w,
+                                    onchanged: (s) {
+                                      if (s != "") {
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!
+                                              .contractDuration = s;
+                                        } else {
+                                          employeeToCreate.contractDuration = s;
+                                        }
+                                      }
+                                    },
+                                    // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                                    borderRadius: 8,
+                                    // padding:
+                                    //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                                  ),
+                                  spaceY(10.sp),
+
+                                  coloredText(text: "contract_amount".tr),
+                                  SendMessageTextField(
+                                    focusNode: _focusNodes[22],
+                                    validator: (s) {
+                                      if (errors['contract_amount'] != null) {
+                                        String tmp = "";
+                                        tmp = errors['contract_amount']
+                                            .join("\n");
+
+                                        return tmp;
+                                      }
+                                      return null;
+                                    },
+                                    hintText: "0 kwd",
+                                    controller: _contractAmountController,
+                                    keyBoardType: TextInputType.number,
+                                    fillColor: const Color(0xffF8F8F8),
+
+                                    width: 100.w,
+                                    onchanged: (s) {
+                                      if (s != "") {
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!
+                                              .contractAmount = s;
+                                        } else {
+                                          employeeToCreate.contractAmount = s;
+                                        }
+                                      }
+                                    },
+                                    // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                                    borderRadius: 8,
+                                    // padding:
+                                    //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                                  ),
+                                  spaceY(10.sp),
                                   coloredText(text: "is_offer".tr),
                                   Row(
                                     children: [
@@ -1396,110 +1575,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                               }
                                             }
                                           },
-                                          // padding:
-                                          //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
                                         ),
-                                  spaceY(10.sp),
-                                  // coloredText(text: "monthly_salery".tr),
-                                  // spaceY(5.sp),
-                                  // SendMessageTextField(
-                                  //   focusNode: _focusNodes[15],
-                                  //   validator: (s) {
-                                  //     if (errors['salary_month'] != null) {
-                                  //       String tmp = "";
-                                  //       tmp = errors['salary_month'].join("\n");
-
-                                  //       return tmp;
-                                  //     }
-                                  //     return null;
-                                  //   },
-                                  //   hintText: "0 KD",
-                                  //   controller: _monthlySaleryController,
-                                  //   keyBoardType: TextInputType.number,
-                                  //   fillColor: const Color(0xffF8F8F8),
-                                  //   width: 100.w,
-                                  //   onchanged: (s) {
-                                  //     if (s != "") {
-                                  //       employeeToCreate.salaryMonth = s;
-                                  //     }
-                                  //   },
-                                  //   // borderc: Border.all(color: const Color(0xffE3E3E3)),
-                                  //   borderRadius: 8,
-                                  //   // padding:
-                                  //   //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                                  // ),
-
-                                  // spaceY(10.sp),
-                                  coloredText(text: "contract_duration".tr),
-                                  spaceY(5.sp),
-                                  SendMessageTextField(
-                                    focusNode: _focusNodes[16],
-                                    validator: (s) {
-                                      if (errors['contract_duration'] != null) {
-                                        String tmp = "";
-                                        tmp = errors['contract_duration']
-                                            .join("\n");
-
-                                        return tmp;
-                                      }
-                                      return null;
-                                    },
-                                    hintText: "0 ",
-                                    controller: _contractDurationController,
-                                    keyBoardType: TextInputType.number,
-                                    fillColor: const Color(0xffF8F8F8),
-                                    width: 100.w,
-                                    onchanged: (s) {
-                                      if (s != "") {
-                                        if (widget.employeeToEdit != null) {
-                                          widget.employeeToEdit!
-                                              .contractDuration = s;
-                                        } else {
-                                          employeeToCreate.contractDuration = s;
-                                        }
-                                      }
-                                    },
-                                    // borderc: Border.all(color: const Color(0xffE3E3E3)),
-                                    borderRadius: 8,
-                                    // padding:
-                                    //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                                  ),
-                                  spaceY(10.sp),
-
-                                  coloredText(text: "contract_amount".tr),
-                                  SendMessageTextField(
-                                    focusNode: _focusNodes[22],
-                                    validator: (s) {
-                                      if (errors['contract_amount'] != null) {
-                                        String tmp = "";
-                                        tmp = errors['contract_amount']
-                                            .join("\n");
-
-                                        return tmp;
-                                      }
-                                      return null;
-                                    },
-                                    hintText: "0 ",
-                                    controller: _contractAmountController,
-                                    keyBoardType: TextInputType.number,
-                                    fillColor: const Color(0xffF8F8F8),
-
-                                    width: 100.w,
-                                    onchanged: (s) {
-                                      if (s != "") {
-                                        if (widget.employeeToEdit != null) {
-                                          widget.employeeToEdit!
-                                              .contractAmount = s;
-                                        } else {
-                                          employeeToCreate.contractAmount = s;
-                                        }
-                                      }
-                                    },
-                                    // borderc: Border.all(color: const Color(0xffE3E3E3)),
-                                    borderRadius: 8,
-                                    // padding:
-                                    //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                                  ),
                                   spaceY(10.sp),
                                   coloredText(text: "previous_work_abroad".tr),
                                   spaceY(5.sp),
@@ -1926,6 +2002,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     onTap: () {
                                       Get.back();
                                       Get.back();
+                                      Get.back();
                                     },
                                     width: 40.0.w,
                                     height: 50,
@@ -1973,7 +2050,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                               "The given data was invalid.") {
                             errors = x['errors'];
                             setState(() {});
-                            if (errors['name'] != null ||
+                            if (errors['name_en'] != null ||
+                                errors['name_ar'] != null ||
                                 errors['date_of_birth'] != null ||
                                 errors['hight'] != null ||
                                 errors['weight'] != null ||
@@ -2023,6 +2101,15 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   fontSize: 12.0.sp);
                               Scrollable.ensureVisible(
                                   imageDataKey.currentContext!);
+                            } else if (errors['passport_image'] != null) {
+                              Utils.showSnackBar(
+                                  message: errors['passport_image'].join("\n"),
+                                  fontSize: 12.0.sp);
+                              if (!_expandable2Controller.expanded) {
+                                _expandable2Controller.toggle();
+                              }
+                              Scrollable.ensureVisible(
+                                  dataKey2.currentContext!);
                             }
                           }
                         },
@@ -2057,7 +2144,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           .format(DateTime.parse(widget.employeeToEdit!.passportIssueDate!));
       _expirydateController.text = DateFormat('y/MM/dd')
           .format(DateTime.parse(widget.employeeToEdit!.passportExpiryDate!));
-      _fullNameController.text = widget.employeeToEdit!.name!;
+      _fullNameArController.text = widget.employeeToEdit!.nameAr!;
+      _fullNameEnController.text = widget.employeeToEdit!.nameEn!;
+
+      passportButton = "passport.png";
       imageToEdit = widget.employeeToEdit!.image!;
       imageWidget = null;
       _passportNoController.text = widget.employeeToEdit!.passportNum!;

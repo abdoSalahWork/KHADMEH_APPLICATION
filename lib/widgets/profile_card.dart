@@ -35,14 +35,16 @@ class ProfileCard extends StatelessWidget {
             EmployeeModel? em = await _employeeController.showMyEmployee(
                 id: employee.id!, indicator: true);
             if (em != null) {
-              Get.to(() => EmployeePage(employeeModel: em),
-                  transition: Transition.rightToLeft);
+              Get.to(
+                () => EmployeePage(employeeModel: em),
+              );
             } else {
               EmployeeModel? em = await _employeeController.showEmployee(
                   id: employee.id!, indicator: true);
               if (em != null) {
-                Get.to(() => EmployeePage(employeeModel: em),
-                    transition: Transition.rightToLeft);
+                Get.to(
+                  () => EmployeePage(employeeModel: em),
+                );
               }
             }
           },
@@ -67,7 +69,11 @@ class ProfileCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      coloredText(text: employee.name!, fontSize: 13.0.sp),
+                      coloredText(
+                          text: Get.locale == const Locale('en', 'US')
+                              ? employee.nameEn!
+                              : employee.nameAr!,
+                          fontSize: 13.0.sp),
                       spaceX(4.sp),
                       coloredText(
                         text:

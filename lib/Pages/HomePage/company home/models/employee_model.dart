@@ -7,7 +7,8 @@ import 'package:khedma/models/me.dart';
 
 class EmployeeModel {
   int? id;
-  String? name;
+  String? nameEn;
+  String? nameAr;
   String? dateOfBirth;
   String? timeWorkPerDay;
   String? hourSalary;
@@ -23,6 +24,7 @@ class EmployeeModel {
   String? residenceContract;
 
   var image;
+  var passportImege;
   String? passportNum;
   RecruuitmentBooking? status;
   String? passportIssueDate;
@@ -55,7 +57,8 @@ class EmployeeModel {
     this.id,
     this.nationality,
     this.residenceContract,
-    this.name,
+    this.nameEn,
+    this.nameAr,
     this.dateOfBirth,
     this.timeWorkPerDay,
     this.hourSalary,
@@ -71,6 +74,7 @@ class EmployeeModel {
     this.previousWorkAbroad,
     this.durationOfEmployment,
     this.image,
+    this.passportImege,
     this.passportNum,
     this.status,
     this.passportIssueDate,
@@ -102,12 +106,14 @@ class EmployeeModel {
 
   EmployeeModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    if (json['status'] != null)
+    if (json['status'] != null) {
       status = RecruuitmentBooking.fromJson(json['status']);
+    }
     if (json['document'] != null) {
       document = DocumentModel.fromJson(json['document']);
     }
-    name = json['name'];
+    nameEn = json['name_en'];
+    nameAr = json['name_ar'];
     residenceContract = json['residence_contract'];
     dateOfBirth = json['date_of_birth'];
     timeWorkPerDay = json['time_work_per_day'];
@@ -121,7 +127,9 @@ class EmployeeModel {
     contractDuration = json['contract_duration'];
     previousWorkAbroad = json['previous_work_abroad'];
     durationOfEmployment = json['duration_of_employment'];
-    image = "https://khdmah.online/api/images/employee/${json['image']}/";
+    image = "https://khdmah.online/api/images/employee/${json['image']}";
+    passportImege =
+        "https://khdmah.online/api/images/employee/passport/${json['passport_image']}";
     passportNum = json['passport_num'];
     passportIssueDate = json['passport_issue_date'];
     passportExpiryDate = json['passport_expiry_date'];
@@ -170,10 +178,12 @@ class EmployeeModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
 
     if (id != null) data['id'] = id;
-    if (residenceContract != null)
+    if (residenceContract != null) {
       data['residence_contract'] = residenceContract;
+    }
     if (status != null) data['status'] = status!.toJson();
-    if (name != null) data['name'] = name;
+    if (nameAr != null) data['name_ar'] = nameAr;
+    if (nameEn != null) data['name_en'] = nameEn;
     if (dateOfBirth != null) data['date_of_birth'] = dateOfBirth;
     if (timeWorkPerDay != null) data['time_work_per_day'] = timeWorkPerDay;
     if (hourSalary != null) data['hour_salary'] = hourSalary;
@@ -226,19 +236,23 @@ class EmployeeModel {
     }
     if (favourite != null) data['favourite'] = favourite!.toJson();
     if (document != null) data['document'] = document!.toJson();
-
-    for (var i = 0; i < languages!.length; i++) {
-      data["languages[$i]"] = languages![i].id;
+    if (languages != null) {
+      for (var i = 0; i < languages!.length; i++) {
+        data["languages[$i]"] = languages![i].id;
+      }
     }
-    for (var i = 0; i < jobs!.length; i++) {
-      data["jobs[$i]"] = jobs![i].id;
-    }
-    for (var i = 0; i < languages!.length; i++) {
-      data["languagesName[$i]"] = languages![i].name;
-    }
-    for (var i = 0; i < jobs!.length; i++) {
-      data["jobsName[$i]"] = jobs![i].nameEn;
-    }
+    if (jobs != null)
+      for (var i = 0; i < jobs!.length; i++) {
+        data["jobs[$i]"] = jobs![i].id;
+      }
+    if (languages != null)
+      for (var i = 0; i < languages!.length; i++) {
+        data["languagesName[$i]"] = languages![i].name;
+      }
+    if (jobs != null)
+      for (var i = 0; i < jobs!.length; i++) {
+        data["jobsName[$i]"] = jobs![i].nameEn;
+      }
     // data['languages'] = languages!.map((e) => e.id).toList();
     // data['jobs'] = jobs!.map((e) => e.id).toList();
     return data;

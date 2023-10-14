@@ -44,7 +44,11 @@ class CompanyEmployeeCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        coloredText(text: employee.name!, fontSize: 13.0.sp),
+                        coloredText(
+                            text: Get.locale == const Locale('en', 'US')
+                                ? employee.nameEn!
+                                : employee.nameAr!,
+                            fontSize: 13.0.sp),
                         spaceX(4),
                         coloredText(
                           text:
@@ -139,7 +143,7 @@ class CompanyEmployeeCard extends StatelessWidget {
                       coloredText(
                           text: employee.status == null
                               ? "not_booked".tr
-                              : employee.status!.status!,
+                              : employee.status!.status!.tr,
                           color: Colors.white),
                       employee.status == null ||
                               (employee.status != null &&

@@ -83,8 +83,10 @@ class CompanyRequestWidget extends StatelessWidget {
                     TextSpan(
                       text: _employeesController.companyEmployees
                           .where((element) => element.id == employeeId)
-                          .first
-                          .name,
+                          .map((e) => Get.locale == const Locale('en', 'US')
+                              ? e.nameEn!
+                              : e.nameAr!)
+                          .first,
                       style: coloredText(
                               text: "Sara Fady",
                               fontSize: 13.sp,
@@ -195,8 +197,12 @@ class ReservationRequestWidget extends StatelessWidget {
                   text: _employeesController.companyEmployees
                       .where((element) =>
                           element.id == reservationExtintionModel.employee!.id)
-                      .first
-                      .name,
+                      .map(
+                        (e) => Get.locale == const Locale('en', 'US')
+                            ? e.nameEn!
+                            : e.nameAr!,
+                      )
+                      .first,
                   style: coloredText(
                           text: "Sara Fady",
                           fontSize: 13.sp,

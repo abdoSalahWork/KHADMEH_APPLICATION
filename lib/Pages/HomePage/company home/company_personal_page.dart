@@ -1,10 +1,10 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/personal%20page/personal_settings.dart';
@@ -111,8 +111,8 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                       GestureDetector(
                         onTap: () {
                           Get.to(
-                              () => const PersonalSettings(userType: "company"),
-                              transition: Transition.downToUp);
+                            () => const PersonalSettings(userType: "company"),
+                          );
                         },
                         child: Icon(
                           FontAwesomeIcons.gear,
@@ -151,18 +151,16 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                               end: 0,
                               child: GestureDetector(
                                 onTap: () async {
-                                  final result =
-                                      await FilePicker.platform.pickFiles(
-                                    allowMultiple: false,
-                                    type: FileType.image,
-                                  );
-                                  if (result != null) {
+                                  XFile? image =
+                                      await Utils().selectImageSheet();
+
+                                  if (image != null) {
                                     await _globalController
                                         .updateCompanyProfile(
                                             companyInformation:
                                                 _globalController
                                                     .me.companyInformation!,
-                                            logo: result.files[0]);
+                                            logo: image);
                                     setState(() {});
                                   }
                                 },
@@ -347,6 +345,8 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                                       itemBuilder: (context, index) =>
                                           AdvertismentCard(
                                         advertismentModel: c.companyAds[index],
+                                        status: true,
+                                        admin: true,
                                       ),
                                       separatorBuilder: (context, index) =>
                                           Column(
@@ -374,6 +374,8 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                                           AdvertismentCard(
                                         advertismentModel:
                                             c.pendingCompanyAds[index],
+                                        admin: true,
+                                        status: true,
                                       ),
                                       separatorBuilder: (context, index) =>
                                           Column(

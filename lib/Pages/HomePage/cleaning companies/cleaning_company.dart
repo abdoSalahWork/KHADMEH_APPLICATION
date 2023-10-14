@@ -470,7 +470,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                 spaceX(10.sp),
                                 Expanded(
                                   child: coloredText(
-                                      text: c.checkouts[index].amount2 ?? "0",
+                                      text: c.checkouts[index].amount ?? "0",
                                       fontSize: 12.sp),
                                 ),
                               ],

@@ -32,14 +32,16 @@ class UserProfileCard extends StatelessWidget {
             EmployeeModel? em = await _employeeController.showEmployee(
                 id: employeeModel.id!, indicator: true);
             if (em != null) {
-              Get.to(() => EmployeePage(employeeModel: em),
-                  transition: Transition.rightToLeft);
+              Get.to(
+                () => EmployeePage(employeeModel: em),
+              );
             } else {
               EmployeeModel? em = await _employeeController.showEmployee(
                   id: employeeModel.id!, indicator: true);
               if (em != null) {
-                Get.to(() => EmployeePage(employeeModel: em),
-                    transition: Transition.rightToLeft);
+                Get.to(
+                  () => EmployeePage(employeeModel: em),
+                );
               }
             }
           },
@@ -64,13 +66,21 @@ class UserProfileCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      coloredText(
-                          text: employeeModel.name != null
-                              ? employeeModel.name!.length > 8
-                                  ? employeeModel.name!.substring(0, 8) + "..."
-                                  : employeeModel.name!
-                              : 'lorem ipsun',
-                          fontSize: 13.0.sp),
+                      Get.locale == const Locale('en', 'US')
+                          ? coloredText(
+                              text: employeeModel.nameEn != null
+                                  ? employeeModel.nameEn!.length > 8
+                                      ? "${employeeModel.nameEn!.substring(0, 8)}..."
+                                      : employeeModel.nameEn!
+                                  : 'lorem ipsun',
+                              fontSize: 13.0.sp)
+                          : coloredText(
+                              text: employeeModel.nameAr != null
+                                  ? employeeModel.nameAr!.length > 8
+                                      ? "${employeeModel.nameAr!.substring(0, 8)}..."
+                                      : employeeModel.nameAr!
+                                  : 'lorem ipsun',
+                              fontSize: 13.0.sp),
                       spaceX(4),
                       coloredText(
                         text:

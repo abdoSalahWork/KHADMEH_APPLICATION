@@ -8,19 +8,20 @@ import 'package:badges/badges.dart' as badges;
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:iban/iban.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/pages/jobs/controller/jobs_controller.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_personal_page.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_services.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
+import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
@@ -64,7 +65,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
   String logobuttonText = "upload_company_logo".tr;
   String frontIdButton = "upload_front_side_of_id".tr;
   String backIdButton = "upload_back_side_of_id".tr;
-  String passportButton = "Upload_your_passport".tr;
+  String passportButton = "upload_your_passport".tr;
   String city = "";
   String region = "";
   int idPassRadio = 0;
@@ -221,8 +222,9 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                   ),
                   child: FloatingActionButton(
                     onPressed: () {
-                      Get.to(() => const AddEmployeePage(),
-                          transition: Transition.downToUp);
+                      Get.to(
+                        () => const AddEmployeePage(),
+                      );
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -281,18 +283,23 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                 ),
                               ),
                         spaceX(10),
-                        Badge(
-                          smallSize: 10,
-                          child: GestureDetector(
-                            onTap: () => Get.to(() => NotificationsPage(),
-                                transition: Transition.downToUp),
-                            child: Icon(
-                              EvaIcons.bell,
-                              color: const Color(0xffD1D1D1),
-                              size: 25.0.sp,
+                        GetBuilder<NotificationController>(builder: (c) {
+                          return badges.Badge(
+                            showBadge: c.newNotifications,
+                            position:
+                                badges.BadgePosition.topEnd(top: 0, end: 0),
+                            child: GestureDetector(
+                              onTap: () => Get.to(
+                                () => NotificationsPage(),
+                              ),
+                              child: Icon(
+                                EvaIcons.bell,
+                                color: const Color(0xffD1D1D1),
+                                size: 25.0.sp,
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        }),
                         spaceX(10),
                         GetBuilder<ChatController>(builder: (chatController) {
                           return badges.Badge(
@@ -311,8 +318,9 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                         }),
                         spaceX(10),
                         GestureDetector(
-                          onTap: () => Get.to(() => const CompanyPersonalPage(),
-                              transition: Transition.downToUp),
+                          onTap: () => Get.to(
+                            () => const CompanyPersonalPage(),
+                          ),
                           child: Container(
                             width: 45,
                             height: 45,
@@ -990,14 +998,14 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                     height: 42.sp,
                     radius: 10,
                     onTap: () async {
-                      final result = await FilePicker.platform.pickFiles(
-                        allowMultiple: false,
-                        type: FileType.image,
-                      );
-                      if (result != null) {
-                        logobuttonText = result.files[0].name
-                            .substring(0, min(15, result.files[0].name.length));
-                        companyCompleteData.companyLogo = result.files[0];
+                      XFile? image = await Utils().selectImageSheet();
+
+                      if (image != null) {
+                        setState(() {});
+
+                        logobuttonText =
+                            image.name.substring(0, min(15, image.name.length));
+                        companyCompleteData.companyLogo = image;
                         setState(() {});
                       }
                     },
@@ -1566,14 +1574,14 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                     ? Container()
                     : primaryButton(
                         onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            allowMultiple: false,
-                            type: FileType.image,
-                          );
-                          if (result != null) {
-                            passportButton = result.files[0].name.substring(
-                                0, min(15, result.files[0].name.length));
-                            companyCompleteData.passportImage = result.files[0];
+                          XFile? image = await Utils().selectImageSheet();
+
+                          if (image != null) {
+                            setState(() {});
+
+                            passportButton = image.name
+                                .substring(0, min(15, image.name.length));
+                            companyCompleteData.passportImage = image;
                             setState(() {});
                           }
                         },
@@ -1619,15 +1627,14 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                     ? Container()
                     : primaryButton(
                         onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            allowMultiple: false,
-                            type: FileType.image,
-                          );
-                          if (result != null) {
-                            frontIdButton = result.files[0].name.substring(
-                                0, min(15, result.files[0].name.length));
-                            companyCompleteData.frontSideIdImage =
-                                result.files[0];
+                          XFile? image = await Utils().selectImageSheet();
+
+                          if (image != null) {
+                            setState(() {});
+
+                            frontIdButton = image.name
+                                .substring(0, min(15, image.name.length));
+                            companyCompleteData.frontSideIdImage = image;
                             setState(() {});
                           }
                         },
@@ -1674,15 +1681,14 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                     ? Container()
                     : primaryButton(
                         onTap: () async {
-                          final result = await FilePicker.platform.pickFiles(
-                            allowMultiple: false,
-                            type: FileType.image,
-                          );
-                          if (result != null) {
-                            backIdButton = result.files[0].name.substring(
-                                0, min(15, result.files[0].name.length));
-                            companyCompleteData.backSideIdImage =
-                                result.files[0];
+                          XFile? image = await Utils().selectImageSheet();
+
+                          if (image != null) {
+                            setState(() {});
+
+                            backIdButton = image.name
+                                .substring(0, min(15, image.name.length));
+                            companyCompleteData.backSideIdImage = image;
                             setState(() {});
                           }
                         },

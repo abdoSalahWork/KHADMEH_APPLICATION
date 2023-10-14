@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
-import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Admin/pages/categories/models/categories_model.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/end_points.dart';
@@ -18,13 +18,13 @@ class CategoriesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(category.toJson());
 
-      PlatformFile? icon = category.image;
+      XFile? icon = category.image;
 
       if (icon != null) {
         body.files.add(MapEntry(
           "image",
           await d.MultipartFile.fromFile(
-            icon.path!,
+            icon.path,
             filename: icon.name,
             contentType: MediaType('image', '*'),
           ),
@@ -84,13 +84,13 @@ class CategoriesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(category.toJson());
 
-      PlatformFile? icon = category.image;
+      XFile? icon = category.image;
 
       if (icon != null) {
         body.files.add(MapEntry(
           "image",
           await d.MultipartFile.fromFile(
-            icon.path!,
+            icon.path,
             filename: icon.name,
             contentType: MediaType('image', '*'),
           ),

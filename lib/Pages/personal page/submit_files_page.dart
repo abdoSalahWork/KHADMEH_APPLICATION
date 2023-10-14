@@ -2,9 +2,9 @@
 
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
@@ -25,7 +25,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
   TextEditingController descriptionController = TextEditingController();
   final GlobalController _globalController = Get.find();
   List<DesFile> files = [];
-  PlatformFile? file;
+  XFile? file;
   String uploadText = "upload_files".tr;
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: coloredText(text: "add_docs".tr, fontSize: 15.0.sp),
+        title: coloredText(text: "docs".tr, fontSize: 15.0.sp),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -109,21 +109,15 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                         child: primaryButton(
                                           radius: 10,
                                           onTap: () async {
-                                            FilePickerResult? result =
-                                                await FilePicker.platform
-                                                    .pickFiles(
-                                              allowMultiple: false,
-                                              type: FileType.image,
-                                            );
+                                            XFile? image = await Utils()
+                                                .selectImageSheet();
 
-                                            if (result != null) {
-                                              file = result.files[0];
-                                              uploadText = file!.name;
+                                            if (image != null) {
+                                              file = image;
+                                              uploadText = image.name;
 
                                               s(() {});
                                               setState(() {});
-                                            } else {
-                                              // User canceled the picker
                                             }
                                           },
                                           width: 100.0.w,
@@ -284,25 +278,16 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                                     child: primaryButton(
                                                       radius: 10,
                                                       onTap: () async {
-                                                        FilePickerResult?
-                                                            result =
-                                                            await FilePicker
-                                                                .platform
-                                                                .pickFiles(
-                                                          allowMultiple: false,
-                                                          type: FileType.image,
-                                                        );
+                                                        XFile? image = await Utils()
+                                                            .selectImageSheet();
 
-                                                        if (result != null) {
-                                                          file =
-                                                              result.files[0];
+                                                        if (image != null) {
+                                                          file = image;
                                                           uploadText =
-                                                              file!.name;
+                                                              image.name;
 
                                                           s(() {});
                                                           setState(() {});
-                                                        } else {
-                                                          // User canceled the picker
                                                         }
                                                       },
                                                       width: 100.0.w,
@@ -537,7 +522,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
 
 class DesFile {
   final String description;
-  final PlatformFile file;
+  final XFile file;
   String? fileName;
   DesFile(
     this.description,

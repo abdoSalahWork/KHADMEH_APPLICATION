@@ -1,8 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
+import 'package:android_path_provider/android_path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
@@ -10,6 +14,7 @@ import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart'
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/invooice/invoice_page.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:sizer/sizer.dart';
@@ -120,7 +125,9 @@ class _EmployeePageState extends State<EmployeePage> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               coloredText(
-                                  text: widget.employeeModel.name!,
+                                  text: Get.locale == const Locale('en', 'US')
+                                      ? widget.employeeModel.nameEn!
+                                      : widget.employeeModel.nameAr!,
                                   color: Colors.white,
                                   fontSize: 15.0.sp),
                               spaceX(5),
@@ -295,8 +302,13 @@ class _EmployeePageState extends State<EmployeePage> {
                                                         .employeeModel
                                                         .company!
                                                         .id!,
-                                                    employeeName: widget
-                                                        .employeeModel.name!,
+                                                    employeeName: Get.locale ==
+                                                            const Locale(
+                                                                'en', 'US')
+                                                        ? widget.employeeModel
+                                                            .nameEn!
+                                                        : widget.employeeModel
+                                                            .nameAr!,
                                                     contractDuration: widget
                                                         .employeeModel
                                                         .contractDuration!,
@@ -307,17 +319,22 @@ class _EmployeePageState extends State<EmployeePage> {
                                                         .employeeModel.isOffer!,
                                                     contractAmountAfterDiscount:
                                                         widget.employeeModel
-                                                            .amountAfterDiscount!,
+                                                                    .isOffer ==
+                                                                1
+                                                            ? widget
+                                                                .employeeModel
+                                                                .amountAfterDiscount!
+                                                            : -1,
                                                     userName: _globalController
                                                         .me.fullName!,
                                                   ));
 
                                               // Get.to(() => PayPage(),
-                                              //     transition: Transition.downToUp);
+                                              //     );
 
                                               // else {
                                               //   Get.to(() => const FillingDataPage(),
-                                              //       transition: Transition.downToUp);
+                                              //       );
                                               // }
                                             },
                                       text: coloredText(
@@ -397,7 +414,7 @@ class _EmployeePageState extends State<EmployeePage> {
                                               }
 
                                               // Get.to(() => PayPage(),
-                                              //     transition: Transition.downToUp);
+                                              //     );
 
                                               // else {
                                               //   Get.to(() => const FillingDataPage(),
@@ -477,14 +494,6 @@ class _EmployeePageState extends State<EmployeePage> {
                                                     .employeeModel.companyId!);
                                           }
                                         }
-
-                                        // Get.to(() => PayPage(),
-                                        //     transition: Transition.downToUp);
-
-                                        // else {
-                                        //   Get.to(() => const FillingDataPage(),
-                                        //       transition: Transition.downToUp);
-                                        // }
                                       },
                                       text: coloredText(
                                           text: "book".tr,
@@ -499,49 +508,6 @@ class _EmployeePageState extends State<EmployeePage> {
                                       alignment:
                                           AlignmentDirectional.centerStart,
                                     ),
-
-                          !contractFlag ? Container() : spaceY(10.sp),
-                          !contractFlag
-                              ? Container()
-                              : primaryButton(
-                                  onTap: () async {
-                                    String? token = await Utils.readToken();
-                                    logSuccess(widget
-                                        .employeeModel.residenceContract!);
-                                    logSuccess(token!);
-                                    Utils.circularIndicator();
-                                    var res = await Dio().get(
-                                      widget.employeeModel.residenceContract!,
-                                      options: Options(
-                                        headers: {
-                                          "Accept": "application/json",
-                                          "Authorization": "Bearer $token"
-                                        },
-                                      ),
-                                    );
-                                    Get.back();
-                                    await Printing.layoutPdf(
-                                        format: PdfPageFormat.a3,
-                                        name:
-                                            "${widget.employeeModel.name!} contract",
-                                        onLayout:
-                                            (PdfPageFormat format) async =>
-                                                await Printing.convertHtml(
-                                                  format: format,
-                                                  html: res.data,
-                                                ));
-                                  },
-                                  text: coloredText(
-                                      text: "contract".tr,
-                                      color: Colors.white,
-                                      fontSize: 12.0.sp),
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  width: 40.0.w,
-                                  height: 30.0.sp,
-                                  radius: 20,
-                                  alignment: AlignmentDirectional.centerStart,
-                                ),
                           // Container(
                           //   width: 40.0.w,
                           //   height: 40,
@@ -564,6 +530,77 @@ class _EmployeePageState extends State<EmployeePage> {
                     )
                   ],
                 ),
+                !contractFlag ? Container() : spaceY(10.sp),
+                !contractFlag
+                    ? Container()
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          primaryButton(
+                            onTap: () async {
+                              await _prepareSaveDir();
+
+                              await FlutterDownloader.enqueue(
+                                url: widget.employeeModel.passportImege,
+                                fileName:
+                                    "${widget.employeeModel.nameEn!} passport",
+                                savedDir: _localPath,
+                                saveInPublicStorage: true,
+                                showNotification:
+                                    true, // show download progress in status bar (for Android)
+                                openFileFromNotification:
+                                    true, // click on notification to open downloaded file (for Android)
+                              );
+                            },
+                            text: coloredText(
+                                text: "passport".tr,
+                                color: Colors.white,
+                                fontSize: 12.0.sp),
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: 40.0.w,
+                            height: 30.0.sp,
+                            radius: 20,
+                            alignment: AlignmentDirectional.centerStart,
+                          ),
+                          primaryButton(
+                            onTap: () async {
+                              String? token = await Utils.readToken();
+                              logSuccess(
+                                  widget.employeeModel.residenceContract!);
+                              logSuccess(token!);
+                              Utils.circularIndicator();
+                              var res = await Dio().get(
+                                widget.employeeModel.residenceContract!,
+                                options: Options(
+                                  headers: {
+                                    "Accept": "application/json",
+                                    "Authorization": "Bearer $token"
+                                  },
+                                ),
+                              );
+                              Get.back();
+                              await Printing.layoutPdf(
+                                  format: PdfPageFormat.a3,
+                                  name:
+                                      "${widget.employeeModel.nameEn!} contract",
+                                  onLayout: (PdfPageFormat format) async =>
+                                      await Printing.convertHtml(
+                                        format: format,
+                                        html: res.data,
+                                      ));
+                            },
+                            text: coloredText(
+                                text: "contract".tr,
+                                color: Colors.white,
+                                fontSize: 12.0.sp),
+                            color: Theme.of(context).colorScheme.secondary,
+                            width: 40.0.w,
+                            height: 30.0.sp,
+                            radius: 20,
+                            alignment: AlignmentDirectional.centerStart,
+                          ),
+                        ],
+                      ),
               ],
             ),
           ),
@@ -575,7 +612,9 @@ class _EmployeePageState extends State<EmployeePage> {
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             children: [
               coloredText(
-                text: "${widget.employeeModel.name!}'s CV".tr,
+                text:
+                    "${Get.locale == const Locale('en', 'US') ? widget.employeeModel.nameEn! : widget.employeeModel.nameAr!}'s CV"
+                        .tr,
                 fontWeight: FontWeight.bold,
               ),
               const Divider(
@@ -612,5 +651,59 @@ class _EmployeePageState extends State<EmployeePage> {
         )
       ],
     ));
+  }
+
+  late String _localPath;
+
+  Future<void> _prepareSaveDir() async {
+    _localPath = (await _getSavedDir())!;
+    final savedDir = Directory(_localPath);
+    if (!savedDir.existsSync()) {
+      await savedDir.create();
+    }
+  }
+
+  Future<String?> _getSavedDir() async {
+    String? externalStorageDirPath;
+
+    if (Platform.isAndroid) {
+      try {
+        externalStorageDirPath = await AndroidPathProvider.downloadsPath;
+      } catch (err, st) {
+        print('failed to get downloads path: $err, $st');
+
+        final directory = await getExternalStorageDirectory();
+        externalStorageDirPath = directory?.path;
+      }
+    } else if (Platform.isIOS) {
+      // var dir = (await _dirsOnIOS)[0]; // temporary
+      // var dir = (await _dirsOnIOS)[1]; // applicationSupport
+      // var dir = (await _dirsOnIOS)[2]; // library
+      var dir = (await _dirsOnIOS)[3]; // applicationDocuments
+      // var dir = (await _dirsOnIOS)[4]; // downloads
+
+      dir ??= await getApplicationDocumentsDirectory();
+      externalStorageDirPath = dir.absolute.path;
+    }
+
+    return externalStorageDirPath;
+  }
+
+  Future<List<Directory?>> get _dirsOnIOS async {
+    final temporary = await getTemporaryDirectory();
+    final applicationSupport = await getApplicationSupportDirectory();
+    final library = await getLibraryDirectory();
+    final applicationDocuments = await getApplicationDocumentsDirectory();
+    final downloads = await getDownloadsDirectory();
+
+    final dirs = [
+      temporary,
+      applicationSupport,
+      library,
+      applicationDocuments,
+      downloads
+    ];
+
+    return dirs;
   }
 }

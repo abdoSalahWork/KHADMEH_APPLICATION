@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/models/reservation_model.dart';
 import 'package:sizer/sizer.dart';
@@ -170,14 +170,14 @@ class _ReservationExtensionRequestPageState
                 alignment: AlignmentDirectional.centerStart,
                 child: GestureDetector(
                   onTap: () async {
-                    final result = await FilePicker.platform.pickFiles(
-                      allowMultiple: false,
-                      type: FileType.image,
-                    );
-                    if (result != null) {
-                      button1Text = result.files[0].name
-                          .substring(0, min(15, result.files[0].name.length));
-                      reservationExtintionModel.file = result.files[0];
+                    XFile? image = await Utils().selectImageSheet();
+
+                    if (image != null) {
+                      setState(() {});
+
+                      button1Text =
+                          image.name.substring(0, min(15, image.name.length));
+                      reservationExtintionModel.file = image;
                       setState(() {});
                     }
                   },

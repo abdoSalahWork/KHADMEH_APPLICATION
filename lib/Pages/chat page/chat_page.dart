@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -12,7 +11,6 @@ import 'package:intl/intl.dart' as intl;
 import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/chat%20page/model/my_message.dart';
 import 'package:khedma/Pages/global_controller.dart';
-import 'package:mime/mime.dart';
 import 'package:sizer/sizer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -67,12 +65,12 @@ class _ChatPageState extends State<ChatPage> {
         color: Colors.amber,
         onTap: _handleImageSelection,
       ),
-      SendMenuItems(
-        text: "Document",
-        icons: Icons.insert_drive_file,
-        color: Colors.blue,
-        onTap: _handleFileSelection,
-      ),
+      // SendMenuItems(
+      //   text: "Document",
+      //   icons: Icons.insert_drive_file,
+      //   color: Colors.blue,
+      //   onTap: _handleFileSelection,
+      // ),
       SendMenuItems(
         text: "Audio",
         icons: Icons.music_note,
@@ -208,26 +206,27 @@ class _ChatPageState extends State<ChatPage> {
     // );
   }
 
-  void _handleFileSelection() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-    );
+  // void _handleFileSelection() async {
+  //   XFile? image = await Utils().selectImageSheet();
 
-    if (result != null && result.files.single.path != null) {
-      final message = types.FileMessage(
-        author: _user,
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        id: const Uuid().v4(),
-        mimeType: lookupMimeType(result.files.single.path!),
-        name: result.files.single.name,
-        size: result.files.single.size,
-        uri: result.files.single.path!,
-      );
-      Get.back();
+  //   if (image != null) {
+  //     setState(() {});
 
-      _addMessage(message);
-    }
-  }
+  //     // final message = types.FileMessage(
+  //     //   author: _user,
+  //     //   createdAt: DateTime.now().millisecondsSinceEpoch,
+  //     //   id: const Uuid().v4(),
+  //     //   mimeType: lookupMimeType(image.path!),
+  //     //   name: image.name,
+  //     //   size: image.size,
+  //     //   uri: image.path!,
+  //     // );
+
+  //     Get.back();
+
+  //     _addMessage(message);
+  //   }
+  // }
 
   void _handleImageSelection() async {
     final result = await ImagePicker().pickImage(

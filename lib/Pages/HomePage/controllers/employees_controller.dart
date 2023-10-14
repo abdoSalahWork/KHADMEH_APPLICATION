@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
-import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/employees/models/employees_filter.dart';
 import 'package:khedma/Utils/end_points.dart';
@@ -40,8 +40,8 @@ class EmployeesController extends GetxController {
   handleEmployeesSearch({required String name}) {
     List<EmployeeModel> tmp = [];
     for (var i in employees) {
-      if (i.name!.contains(name)) {
-        logSuccess(i.name!);
+      if (i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
+          i.nameAr!.toLowerCase().contains(name.toLowerCase())) {
         logSuccess(name);
         tmp.add(i);
       }
@@ -57,9 +57,8 @@ class EmployeesController extends GetxController {
   handleCompanyEmployeesSearch({required String name}) {
     List<EmployeeModel> tmp = [];
     for (var i in companyEmployees) {
-      if (i.name!.contains(name)) {
-        logSuccess(i.name!);
-        logSuccess(name);
+      if (i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
+          i.nameAr!.toLowerCase().contains(name.toLowerCase())) {
         tmp.add(i);
       }
       if (name == "") {
@@ -184,14 +183,25 @@ class EmployeesController extends GetxController {
       employee.salaryMonth = "0";
       Utils.circularIndicator();
       final body = d.FormData.fromMap(employee.toJson());
-      PlatformFile? image = employee.image;
+      XFile? image = employee.image;
+      XFile? passportImage = employee.passportImege;
 
       if (image != null) {
         body.files.add(MapEntry(
           "image",
           await d.MultipartFile.fromFile(
-            image.path!,
+            image.path,
             filename: image.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (passportImage != null) {
+        body.files.add(MapEntry(
+          "passport_image",
+          await d.MultipartFile.fromFile(
+            passportImage.path,
+            filename: passportImage.name,
             contentType: MediaType('image', '*'),
           ),
         ));
@@ -209,7 +219,7 @@ class EmployeesController extends GetxController {
         ),
       );
 
-      await getEmployees();
+      await getCompanyEmployees();
       Get.back();
       return true;
     } on DioException catch (e) {
@@ -273,7 +283,7 @@ class EmployeesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(employee.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
-      PlatformFile? image;
+      XFile? image;
       if (employee.image.runtimeType != String) {
         image = employee.image;
 
@@ -281,8 +291,23 @@ class EmployeesController extends GetxController {
           body.files.add(MapEntry(
             "image",
             await d.MultipartFile.fromFile(
-              image.path!,
+              image.path,
               filename: image.name,
+              contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
+      }
+      XFile? passportImage;
+      if (employee.passportImege.runtimeType != String) {
+        passportImage = employee.image;
+
+        if (passportImage != null) {
+          body.files.add(MapEntry(
+            "passport_image",
+            await d.MultipartFile.fromFile(
+              passportImage.path,
+              filename: passportImage.name,
               contentType: MediaType('image', '*'),
             ),
           ));

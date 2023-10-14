@@ -174,9 +174,9 @@ class UserInformation {
     automatedAddressNumber = json['automated_address_number'];
     idNumberNationality = json['id_number_nationality'];
     idPhotoNationality =
-        "https://khdmah.online/api/images/user/${json['id_photo_nationality']}/";
+        "https://khdmah.online/api/images/user/${json['id_photo_nationality']}";
     personalPhoto =
-        "https://khdmah.online/api/images/user/${json['personal_photo']}/";
+        "https://khdmah.online/api/images/user/${json['personal_photo']}";
     referenceNumber = json['reference_number'];
     phoneVerifiedAt = json['phone_verified_at'];
     createdAt = json['created_at'];
@@ -305,13 +305,13 @@ class CompanyInformation {
     taxNumber = json['tax_number'];
     licenseNumber = json['license_number'];
     companyLogo =
-        "https://khdmah.online/api/images/company/${json['company_logo']}/";
+        "https://khdmah.online/api/images/company/${json['company_logo']}";
 
     identityConfirmation = json['identity_confirmation'];
     frontSideIdImage =
-        "https://khdmah.online/api/images/company/${json['front_side_id_image']}/";
+        "https://khdmah.online/api/images/company/${json['front_side_id_image']}";
     backSideIdImage =
-        "https://khdmah.online/api/images/company/${json['back_side_id_image']}/";
+        "https://khdmah.online/api/images/company/${json['back_side_id_image']}";
     passportImage =
         "https://khdmah.online/api/images/company/${json['passport_image']}/";
     nationalityId = json['nationality_id'];
