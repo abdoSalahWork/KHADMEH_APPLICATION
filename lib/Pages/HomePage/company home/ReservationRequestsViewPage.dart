@@ -61,7 +61,7 @@ class _ReservationRequestFilesPageState
                         image:
                             NetworkImage(widget.reservationExtintionModel.file),
                         width: 150.sp,
-                        // height: 150.sp,
+                        height: 150.sp,
                         fit: BoxFit.contain,
                       ),
                     ),

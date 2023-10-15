@@ -16,14 +16,13 @@ import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
+import 'package:khedma/Pages/Select%20Language%20Page/select_language_page.dart';
 import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/forget%20password/controller/password_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Utils/utils.dart';
-
-import '../Select%20Language%20Page/select_language_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -117,6 +116,7 @@ class _SplashPageState extends State<SplashPage>
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: Container(
         width: w,
         height: h,
@@ -127,7 +127,7 @@ class _SplashPageState extends State<SplashPage>
         ),
         child: Align(
           child: Container(
-            width: w / 3.5,
+            width: w,
             height: h / 2,
             decoration: const BoxDecoration(
               image: DecorationImage(

@@ -74,7 +74,8 @@ class _EmployeePageState extends State<EmployeePage> {
               ],
             )),
             width: 100.0.w,
-            height: contractFlag ? 48.0.h : 35.0.h,
+            // height: contractFlag ? 48.0.h : 40.0.h,
+            height: 40.0.h,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -92,7 +93,9 @@ class _EmployeePageState extends State<EmployeePage> {
                       ),
                     ),
                     widget.employeeModel.status != null &&
-                            widget.employeeModel.status!.status == "booked"
+                            (widget.employeeModel.status!.status == "booked" ||
+                                widget.employeeModel.status!.status ==
+                                    "pending")
                         ? Theme(
                             data: ThemeData(primaryColor: Colors.white),
                             child: PopupMenuButton(
@@ -164,7 +167,8 @@ class _EmployeePageState extends State<EmployeePage> {
 
                                     Utils.circularIndicator();
                                     var res = await Dio().get(
-                                      widget.employeeModel.residenceContract!,
+                                      widget.employeeModel.finalContract ??
+                                          'https://www.google.com',
                                       options: Options(
                                         headers: {
                                           "Accept": "application/json",
@@ -593,75 +597,75 @@ class _EmployeePageState extends State<EmployeePage> {
                     )
                   ],
                 ),
-                !contractFlag ? Container() : spaceY(10.sp),
-                !contractFlag
-                    ? Container()
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          primaryButton(
-                            onTap: () async {
-                              await _prepareSaveDir();
+                // !contractFlag ? Container() : spaceY(10.sp),
+                // !contractFlag
+                //     ? Container()
+                //     : Row(
+                //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //         children: [
+                //           primaryButton(
+                //             onTap: () async {
+                //               await _prepareSaveDir();
 
-                              await FlutterDownloader.enqueue(
-                                url: widget.employeeModel.passportImege,
-                                fileName:
-                                    "${widget.employeeModel.nameEn!} passport",
-                                savedDir: _localPath,
-                                saveInPublicStorage: true,
-                                showNotification:
-                                    true, // show download progress in status bar (for Android)
-                                openFileFromNotification:
-                                    true, // click on notification to open downloaded file (for Android)
-                              );
-                            },
-                            text: coloredText(
-                                text: "passport".tr,
-                                color: Colors.white,
-                                fontSize: 12.0.sp),
-                            color: Theme.of(context).colorScheme.secondary,
-                            width: 40.0.w,
-                            height: 30.0.sp,
-                            radius: 20,
-                            alignment: AlignmentDirectional.centerStart,
-                          ),
-                          primaryButton(
-                            onTap: () async {
-                              String? token = await Utils.readToken();
+                //               await FlutterDownloader.enqueue(
+                //                 url: widget.employeeModel.passportImege,
+                //                 fileName:
+                //                     "${widget.employeeModel.nameEn!} passport",
+                //                 savedDir: _localPath,
+                //                 saveInPublicStorage: true,
+                //                 showNotification:
+                //                     true, // show download progress in status bar (for Android)
+                //                 openFileFromNotification:
+                //                     true, // click on notification to open downloaded file (for Android)
+                //               );
+                //             },
+                //             text: coloredText(
+                //                 text: "passport".tr,
+                //                 color: Colors.white,
+                //                 fontSize: 12.0.sp),
+                //             color: Theme.of(context).colorScheme.secondary,
+                //             width: 40.0.w,
+                //             height: 30.0.sp,
+                //             radius: 20,
+                //             alignment: AlignmentDirectional.centerStart,
+                //           ),
+                //           primaryButton(
+                //             onTap: () async {
+                //               String? token = await Utils.readToken();
 
-                              Utils.circularIndicator();
-                              var res = await Dio().get(
-                                widget.employeeModel.residenceContract!,
-                                options: Options(
-                                  headers: {
-                                    "Accept": "application/json",
-                                    "Authorization": "Bearer $token"
-                                  },
-                                ),
-                              );
-                              Get.back();
-                              await Printing.layoutPdf(
-                                  format: PdfPageFormat.a3,
-                                  name:
-                                      "${widget.employeeModel.nameEn!} contract",
-                                  onLayout: (PdfPageFormat format) async =>
-                                      await Printing.convertHtml(
-                                        format: format,
-                                        html: res.data,
-                                      ));
-                            },
-                            text: coloredText(
-                                text: "contract".tr,
-                                color: Colors.white,
-                                fontSize: 12.0.sp),
-                            color: Theme.of(context).colorScheme.secondary,
-                            width: 40.0.w,
-                            height: 30.0.sp,
-                            radius: 20,
-                            alignment: AlignmentDirectional.centerStart,
-                          ),
-                        ],
-                      ),
+                //               Utils.circularIndicator();
+                //               var res = await Dio().get(
+                //                 widget.employeeModel.residenceContract!,
+                //                 options: Options(
+                //                   headers: {
+                //                     "Accept": "application/json",
+                //                     "Authorization": "Bearer $token"
+                //                   },
+                //                 ),
+                //               );
+                //               Get.back();
+                //               await Printing.layoutPdf(
+                //                   format: PdfPageFormat.a3,
+                //                   name:
+                //                       "${widget.employeeModel.nameEn!} contract",
+                //                   onLayout: (PdfPageFormat format) async =>
+                //                       await Printing.convertHtml(
+                //                         format: format,
+                //                         html: res.data,
+                //                       ));
+                //             },
+                //             text: coloredText(
+                //                 text: "contract".tr,
+                //                 color: Colors.white,
+                //                 fontSize: 12.0.sp),
+                //             color: Theme.of(context).colorScheme.secondary,
+                //             width: 40.0.w,
+                //             height: 30.0.sp,
+                //             radius: 20,
+                //             alignment: AlignmentDirectional.centerStart,
+                //           ),
+                //         ],
+                //       ),
               ],
             ),
           ),

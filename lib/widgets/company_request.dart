@@ -175,84 +175,93 @@ class ReservationRequestWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          coloredText(
-              text: reservationExtintionModel.user!.fullName!, fontSize: 14.sp),
-          // spaceY(.sp),
-          RichText(
-            text: TextSpan(
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextSpan(
-                  text: "${reservationExtintionModel.reason}\n",
-                  style: coloredText(
-                          text: "finished_procedure_of".tr,
-                          fontSize: 12.sp,
-                          color: const Color(0xff919191))
-                      .style,
+                coloredText(
+                    text: reservationExtintionModel.user!.fullName!,
+                    fontSize: 14.sp),
+                // spaceY(.sp),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            "${"reason".tr}: ${reservationExtintionModel.reason}\n",
+                        style: coloredText(
+                                text: "finished_procedure_of".tr,
+                                fontSize: 12.sp,
+                                color: const Color(0xff919191))
+                            .style,
+                      ),
+                      TextSpan(
+                        text: _employeesController.companyEmployees
+                            .where((element) =>
+                                element.id ==
+                                reservationExtintionModel.employee!.id)
+                            .map(
+                              (e) => Get.locale == const Locale('en', 'US')
+                                  ? e.nameEn!
+                                  : e.nameAr!,
+                            )
+                            .first,
+                        style: coloredText(
+                                text: "Sara Fady",
+                                fontSize: 13.sp,
+                                color: Theme.of(context).colorScheme.primary,
+                                decoration: TextDecoration.underline)
+                            .style,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            EmployeeModel? em =
+                                await _employeesController.showCompanyEmployee(
+                                    id: reservationExtintionModel.employee!.id!,
+                                    indicator: true);
+                            if (em != null) {
+                              Get.to(() => EmployeeDetailsPage(
+                                    employee: em,
+                                  ));
+                            }
+                          },
+                      ),
+                    ],
+                  ),
                 ),
-                TextSpan(
-                  text: _employeesController.companyEmployees
-                      .where((element) =>
-                          element.id == reservationExtintionModel.employee!.id)
-                      .map(
-                        (e) => Get.locale == const Locale('en', 'US')
-                            ? e.nameEn!
-                            : e.nameAr!,
-                      )
-                      .first,
-                  style: coloredText(
-                          text: "Sara Fady",
-                          fontSize: 13.sp,
-                          color: Theme.of(context).colorScheme.primary,
-                          decoration: TextDecoration.underline)
-                      .style,
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () async {
-                      EmployeeModel? em =
-                          await _employeesController.showCompanyEmployee(
-                              id: reservationExtintionModel.employee!.id!,
-                              indicator: true);
-                      if (em != null) {
-                        Get.to(() => EmployeeDetailsPage(
-                              employee: em,
-                            ));
-                      }
-                    },
+                // Column(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     coloredText(
+                //         text: "Finished the procedure of",
+                //         fontSize: 13.sp,
+                //         color: const Color(0xff919191)),
+                //     coloredText(
+                //         text: "Sara Fady",
+                //         fontSize: 13.sp,
+                //         color: Theme.of(context).colorScheme.primary,
+                //         decoration: TextDecoration.underline),
+                //   ],
+                // ),
+
+                spaceY(7.sp),
+                primaryBorderedButton(
+                  onTap: () async {
+                    Get.to(() => ReservationRequestFilesPage(
+                          reservationExtintionModel: reservationExtintionModel,
+                        ));
+                  },
+                  alignment: AlignmentDirectional.centerStart,
+                  width: 25.w,
+                  height: 25.sp,
+                  radius: 20,
+                  text: coloredText(text: "view".tr, fontSize: 12.sp),
+                  color: const Color(0xff919191),
                 ),
               ],
             ),
-          ),
-          // Column(
-          //   crossAxisAlignment: CrossAxisAlignment.start,
-          //   children: [
-          //     coloredText(
-          //         text: "Finished the procedure of",
-          //         fontSize: 13.sp,
-          //         color: const Color(0xff919191)),
-          //     coloredText(
-          //         text: "Sara Fady",
-          //         fontSize: 13.sp,
-          //         color: Theme.of(context).colorScheme.primary,
-          //         decoration: TextDecoration.underline),
-          //   ],
-          // ),
-
-          spaceY(7.sp),
-          primaryBorderedButton(
-            onTap: () async {
-              Get.to(() => ReservationRequestFilesPage(
-                    reservationExtintionModel: reservationExtintionModel,
-                  ));
-            },
-            alignment: AlignmentDirectional.centerStart,
-            width: 25.w,
-            height: 25.sp,
-            radius: 20,
-            text: coloredText(text: "view".tr, fontSize: 12.sp),
-            color: const Color(0xff919191),
           ),
         ],
       ),
