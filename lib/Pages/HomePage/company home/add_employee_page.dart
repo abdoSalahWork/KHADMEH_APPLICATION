@@ -455,11 +455,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                           child: child!,
                                         ),
                                         context: context,
-                                        initialDate: DateTime.now(),
+                                        initialDate: DateTime.now().subtract(
+                                            const Duration(days: 365 * 19)),
                                         firstDate: DateTime.now().subtract(
                                             const Duration(days: 365 * 100)),
-                                        lastDate: DateTime.now().add(
-                                            const Duration(days: 365 * 100)),
+                                        lastDate: DateTime.now().subtract(
+                                            const Duration(days: 365 * 18)),
                                       );
                                       if (x != null) {
                                         _dateController.text =
@@ -741,6 +742,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                             SizedBox(
                                               width: 40.w,
                                               child: SendMessageTextField(
+                                                suffixIcon:
+                                                    Utils.kwdSuffix("kg"),
+
                                                 focusNode: _focusNodes[8],
                                                 controller: _weightController,
                                                 keyBoardType:
@@ -788,6 +792,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                             SizedBox(
                                               width: 40.w,
                                               child: SendMessageTextField(
+                                                suffixIcon:
+                                                    Utils.kwdSuffix("cm"),
                                                 focusNode: _focusNodes[9],
                                                 controller: _heightController,
                                                 keyBoardType:
@@ -995,8 +1001,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                         initialDate: DateTime.now(),
                                         firstDate: DateTime.now().subtract(
                                             const Duration(days: 365 * 100)),
-                                        lastDate: DateTime.now().add(
-                                            const Duration(days: 365 * 100)),
+                                        lastDate: DateTime.now(),
                                       );
                                       if (x != null) {
                                         _issuedateController.text =
@@ -1430,6 +1435,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   coloredText(text: "contract_duration".tr),
                                   spaceY(5.sp),
                                   SendMessageTextField(
+                                    suffixIcon: Utils.kwdSuffix("years".tr),
+
                                     focusNode: _focusNodes[16],
                                     validator: (s) {
                                       if (errors['contract_duration'] != null) {
@@ -1441,7 +1448,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       }
                                       return null;
                                     },
-                                    hintText: "0 ${'years'.tr}",
+                                    hintText: "0",
                                     controller: _contractDurationController,
                                     keyBoardType: TextInputType.number,
                                     fillColor: const Color(0xffF8F8F8),
@@ -1476,7 +1483,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       }
                                       return null;
                                     },
-                                    hintText: "0 kwd",
+                                    hintText: "0",
+                                    suffixIcon: Utils.kwdSuffix("KWD"),
+
                                     controller: _contractAmountController,
                                     keyBoardType: TextInputType.number,
                                     fillColor: const Color(0xffF8F8F8),
@@ -1637,6 +1646,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   employeeToCreate.previousWorkAbroad == 0
                                       ? Container()
                                       : SendMessageTextField(
+                                          suffixIcon:
+                                              Utils.kwdSuffix("years".tr),
+
                                           focusNode: _focusNodes[18],
                                           validator: (s) {
                                             if (errors[

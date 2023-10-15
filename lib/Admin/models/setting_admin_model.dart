@@ -6,6 +6,7 @@ class SettingAdmin {
   String? commssionCleaning;
   String? advertisementPrice;
   int? endDatePendingEmployee;
+  String? medicalExaminationPrice;
   String? khedmaPrice;
   String? createdAt;
   String? updatedAt;
@@ -16,6 +17,7 @@ class SettingAdmin {
       this.typeCommssionCleaning,
       this.commssionRecruitment,
       this.commssionCleaning,
+      this.medicalExaminationPrice,
       this.advertisementPrice,
       this.endDatePendingEmployee,
       this.khedmaPrice,
@@ -31,6 +33,7 @@ class SettingAdmin {
     commssionCleaning = json['commssion_cleaning'];
     advertisementPrice = json['advertisement_price'];
     endDatePendingEmployee = json['end_date_pending_employee'];
+    medicalExaminationPrice = json['medical_examination_price'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -44,6 +47,7 @@ class SettingAdmin {
     data['representative_from_khedmah_price'] = khedmaPrice;
     data['commssion_cleaning'] = commssionCleaning;
     data['advertisement_price'] = advertisementPrice;
+    data['medical_examination_price'] = medicalExaminationPrice;
     data['end_date_pending_employee'] = endDatePendingEmployee;
     // data['created_at'] = this.createdAt;
     // data['updated_at'] = this.updatedAt;

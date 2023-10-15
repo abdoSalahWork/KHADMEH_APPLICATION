@@ -52,6 +52,7 @@ class GlobalController extends GetxController {
   UserHomePageModel userHomePage = UserHomePageModel();
   CompanyHomePageModel companyHomePage = CompanyHomePageModel();
   List<CleaningBooking> cleaningBookings = [];
+  List<CleaningBooking> cleaningBookingsHistory = [];
   bool getUserHomePageFlag = false;
   List<OverView> overView = [];
   List<BankModel> banks = [];
@@ -85,6 +86,14 @@ class GlobalController extends GetxController {
 
   List<CheckoutModel> checkouts = [];
   bool getUserCheckoutsFlag = false;
+  int _mySortComparison(CheckoutModel a, CheckoutModel b) {
+    if ((a.paid! < b.paid!) ||
+        (a.approve != null && b.approve != null && a.approve! < b.approve!)) {
+      return -1;
+    } else {
+      return 1;
+    }
+  }
 
   Future getUserCheckouts() async {
     try {
@@ -106,6 +115,10 @@ class GlobalController extends GetxController {
         tmp.add(t);
       }
       checkouts = tmp;
+      checkouts.forEach((element) {
+        logSuccess(element.toJson());
+      });
+      checkouts.sort(_mySortComparison);
       logSuccess("Checkouts get done");
       getUserCheckoutsFlag = false;
 
@@ -151,6 +164,22 @@ class GlobalController extends GetxController {
   }
 
   List<CompanyServiceModel> companyServices = [];
+
+  List<CategoryModel> get cleanDropdownServices {
+    List<int?> adminList = List.from(categories.map((e) => e.id));
+    List<int?> companyList =
+        List.from(companyServices.map((e) => e.adminService!.id));
+    List<CategoryModel> res = [];
+    for (var i in adminList) {
+      if (companyList.contains(i)) {
+        continue;
+      } else {
+        res.add(categories.where((element) => element.id == i).first);
+      }
+    }
+    return res;
+  }
+
   bool getCompanyServicesFlag = false;
   Future getCompanyServices() async {
     try {
@@ -326,6 +355,14 @@ class GlobalController extends GetxController {
         tmp.add(t);
       }
       cleaningBookings = tmp;
+
+      List<CleaningBooking> tmp2 = [];
+      for (var i in res.data['history']) {
+        CleaningBooking t = CleaningBooking.fromJson(i);
+        tmp2.add(t);
+      }
+      cleaningBookingsHistory = tmp2;
+
       getCompanyHomePageFlag = false;
       update();
     } on DioException catch (e) {
@@ -1155,7 +1192,7 @@ class GlobalController extends GetxController {
       );
 
       Get.back();
-      Get.offAll(() => CompanyHomePage());
+      await getCleanCompanyHomePage();
       logSuccess(res.data);
       return true;
     } on DioException catch (e) {

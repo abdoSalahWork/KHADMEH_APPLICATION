@@ -7,9 +7,8 @@ import 'package:dio/dio.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
+import 'package:khedma/Pages/HomePage/company%20home/emloyee_details.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
@@ -34,14 +33,14 @@ class EmployeePage extends StatefulWidget {
 }
 
 class _EmployeePageState extends State<EmployeePage> {
-  List<JobModel?> jobs = [];
+  // List<JobModel?> jobs = [];
   GlobalController _globalController = Get.find();
   EmployeesController _employeesController = Get.find();
   String invoiceId = "12314";
   bool contractFlag = false;
   @override
   void initState() {
-    jobs = widget.employeeModel.jobs!;
+    // jobs = widget.employeeModel.jobs!;
 
     if (widget.employeeModel.status != null &&
         widget.employeeModel.status!.status == "pending") contractFlag = true;
@@ -75,19 +74,156 @@ class _EmployeePageState extends State<EmployeePage> {
               ],
             )),
             width: 100.0.w,
-            height: contractFlag ? 52.0.h : 48.0.h,
+            height: contractFlag ? 48.0.h : 35.0.h,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 22.0.sp,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                        size: 22.0.sp,
+                      ),
+                    ),
+                    widget.employeeModel.status != null &&
+                            widget.employeeModel.status!.status == "booked"
+                        ? Theme(
+                            data: ThemeData(primaryColor: Colors.white),
+                            child: PopupMenuButton(
+                              constraints: BoxConstraints(
+                                minWidth: 2.0 * 56.0,
+                                maxWidth: MediaQuery.of(context).size.width,
+                              ),
+                              itemBuilder: (BuildContext context) => [
+                                PopupMenuItem<int>(
+                                  value: 1,
+                                  child: coloredText(
+                                      text: 'invoice'.tr, fontSize: 11.0.sp),
+                                  onTap: () {
+                                    Future(
+                                      () => Get.to(
+                                        () => InvoicePage(
+                                          invoiceId: invoiceId,
+                                          companyId:
+                                              widget.employeeModel.company!.id!,
+                                          employeeName: Get.locale ==
+                                                  const Locale('en', 'US')
+                                              ? widget.employeeModel.nameEn!
+                                              : widget.employeeModel.nameAr!,
+                                          contractDuration: widget
+                                              .employeeModel.contractDuration!,
+                                          contractAmount: widget
+                                              .employeeModel.contractAmount!,
+                                          isOffer:
+                                              widget.employeeModel.isOffer!,
+                                          contractAmountAfterDiscount:
+                                              widget.employeeModel.isOffer == 1
+                                                  ? widget.employeeModel
+                                                      .amountAfterDiscount!
+                                                  : -1,
+                                          userName:
+                                              _globalController.me.fullName!,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                PopupMenuItem<int>(
+                                  value: 1,
+                                  child: coloredText(
+                                      text: 'passport'.tr, fontSize: 11.0.sp),
+                                  onTap: () async {
+                                    await _prepareSaveDir();
+
+                                    await FlutterDownloader.enqueue(
+                                      url: widget.employeeModel.passportImege,
+                                      fileName:
+                                          "${widget.employeeModel.nameEn!} passport",
+                                      savedDir: _localPath,
+                                      saveInPublicStorage: true,
+                                      showNotification:
+                                          true, // show download progress in status bar (for Android)
+                                      openFileFromNotification:
+                                          true, // click on notification to open downloaded file (for Android)
+                                    );
+                                  },
+                                ),
+                                PopupMenuItem<int>(
+                                  value: 3,
+                                  child: coloredText(
+                                      text: 'final_contract'.tr,
+                                      fontSize: 12.0.sp),
+                                  onTap: () async {
+                                    String? token = await Utils.readToken();
+
+                                    Utils.circularIndicator();
+                                    var res = await Dio().get(
+                                      widget.employeeModel.residenceContract!,
+                                      options: Options(
+                                        headers: {
+                                          "Accept": "application/json",
+                                          "Authorization": "Bearer $token"
+                                        },
+                                      ),
+                                    );
+                                    Get.back();
+                                    await Printing.layoutPdf(
+                                        format: PdfPageFormat.a3,
+                                        name:
+                                            "${widget.employeeModel.nameEn!} final contract",
+                                        onLayout:
+                                            (PdfPageFormat format) async =>
+                                                await Printing.convertHtml(
+                                                  format: format,
+                                                  html: res.data,
+                                                ));
+                                  },
+                                ),
+                                PopupMenuItem<int>(
+                                  value: 4,
+                                  child: coloredText(
+                                      text: 'contract'.tr, fontSize: 12.0.sp),
+                                  onTap: () async {
+                                    String? token = await Utils.readToken();
+
+                                    Utils.circularIndicator();
+                                    var res = await Dio().get(
+                                      widget.employeeModel.residenceContract!,
+                                      options: Options(
+                                        headers: {
+                                          "Accept": "application/json",
+                                          "Authorization": "Bearer $token"
+                                        },
+                                      ),
+                                    );
+                                    Get.back();
+                                    await Printing.layoutPdf(
+                                        format: PdfPageFormat.a3,
+                                        name:
+                                            "${widget.employeeModel.nameEn!} contract",
+                                        onLayout:
+                                            (PdfPageFormat format) async =>
+                                                await Printing.convertHtml(
+                                                  format: format,
+                                                  html: res.data,
+                                                ));
+                                  },
+                                ),
+                              ],
+                              child: const Icon(
+                                EvaIcons.moreVertical,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        : Container(),
+                  ],
                 ),
                 spaceY(1.0.h),
                 Row(
@@ -121,64 +257,57 @@ class _EmployeePageState extends State<EmployeePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              coloredText(
-                                  text: Get.locale == const Locale('en', 'US')
-                                      ? widget.employeeModel.nameEn!
-                                      : widget.employeeModel.nameAr!,
-                                  color: Colors.white,
-                                  fontSize: 15.0.sp),
-                              spaceX(5),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 3),
-                                decoration: BoxDecoration(
-                                    color: const Color(0xff020404)
-                                        .withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: coloredText(
-                                    text: widget.employeeModel.isOffer != 1
-                                        ? "${int.parse(widget.employeeModel.contractAmount!) / int.parse(widget.employeeModel.contractDuration!)} KWD/y"
-                                        : "${widget.employeeModel.amountAfterDiscount! / int.parse(widget.employeeModel.contractDuration!)} KWD/y",
-                                    color: Colors.white,
-                                    fontSize: 9.0.sp),
-                              )
-                            ],
+                          coloredText(
+                              text: Get.locale == const Locale('en', 'US')
+                                  ? widget.employeeModel.nameEn!
+                                  : widget.employeeModel.nameAr!,
+                              color: Colors.white,
+                              fontSize: 15.0.sp),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 3),
+                            decoration: BoxDecoration(
+                                color: const Color(0xff020404).withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(20)),
+                            child: coloredText(
+                                text: widget.employeeModel.isOffer != 1
+                                    ? "${widget.employeeModel.contractAmount!} KWD/${widget.employeeModel.contractDuration! + " years".tr}"
+                                    : "${widget.employeeModel.amountAfterDiscount!} KWD/${widget.employeeModel.contractDuration! + " years".tr}",
+                                color: Colors.white,
+                                fontSize: 9.0.sp),
                           ),
                           spaceY(10),
-                          SizedBox(
-                            height: 25,
-                            child: ListView.separated(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (BuildContext context, int index) =>
-                                  Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 2, horizontal: 20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  // color: const Color(0xffF8F8F8),
-                                  border: Border.all(
-                                    color: const Color(0xffE8E8E8),
-                                  ),
-                                ),
-                                child: coloredText(
-                                  text: Get.locale == const Locale('en', 'US')
-                                      ? jobs[index]!.nameEn!
-                                      : jobs[index]!.nameAr!,
-                                  color: const Color(0xffE8E8E8),
-                                  fontSize: 11.0.sp,
-                                ),
-                              ),
-                              itemCount: jobs.length,
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      spaceX(5),
-                            ),
-                          ),
-                          spaceY(10),
+                          // SizedBox(
+                          //   height: 25,
+                          //   child: ListView.separated(
+                          //     shrinkWrap: true,
+                          //     scrollDirection: Axis.horizontal,
+                          //     itemBuilder: (BuildContext context, int index) =>
+                          //         Container(
+                          //       padding: const EdgeInsets.symmetric(
+                          //           vertical: 2, horizontal: 20),
+                          //       decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(15),
+                          //         // color: const Color(0xffF8F8F8),
+                          //         border: Border.all(
+                          //           color: const Color(0xffE8E8E8),
+                          //         ),
+                          //       ),
+                          //       child: coloredText(
+                          //         text: Get.locale == const Locale('en', 'US')
+                          //             ? jobs[index]!.nameEn!
+                          //             : jobs[index]!.nameAr!,
+                          //         color: const Color(0xffE8E8E8),
+                          //         fontSize: 11.0.sp,
+                          //       ),
+                          //     ),
+                          //     itemCount: jobs.length,
+                          //     separatorBuilder:
+                          //         (BuildContext context, int index) =>
+                          //             spaceX(5),
+                          //   ),
+                          // ),
+                          // spaceY(10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -237,29 +366,29 @@ class _EmployeePageState extends State<EmployeePage> {
                             ],
                           ),
                           spaceY(10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.g_translate_rounded,
-                                color: const Color(0xffD4D4D4),
-                                size: 13.0.sp,
-                              ),
-                              spaceX(5),
-                              coloredText(
-                                text: widget.employeeModel.languages!
-                                    .map((e) =>
-                                        Get.locale == const Locale('en', 'US')
-                                            ? e.nameEn!
-                                            : e.nameAr!)
-                                    .toList()
-                                    .join(", "),
-                                fontSize: 12.0.sp,
-                                color: const Color(0xffD4D4D4),
-                              ),
-                            ],
-                          ),
-                          spaceY(10),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.start,
+                          //   children: [
+                          //     Icon(
+                          //       Icons.g_translate_rounded,
+                          //       color: const Color(0xffD4D4D4),
+                          //       size: 13.0.sp,
+                          //     ),
+                          //     spaceX(5),
+                          //     coloredText(
+                          //       text: widget.employeeModel.languages!
+                          //           .map((e) =>
+                          //               Get.locale == const Locale('en', 'US')
+                          //                   ? e.nameEn!
+                          //                   : e.nameAr!)
+                          //           .toList()
+                          //           .join(", "),
+                          //       fontSize: 12.0.sp,
+                          //       color: const Color(0xffD4D4D4),
+                          //     ),
+                          //   ],
+                          // ),
+                          // spaceY(10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -281,84 +410,7 @@ class _EmployeePageState extends State<EmployeePage> {
                           widget.employeeModel.status != null &&
                                   widget.employeeModel.status!.status ==
                                       "booked"
-                              ? _globalController.guest
-                                  ? Container()
-                                  : primaryButton(
-                                      onTap: widget.employeeModel.document ==
-                                                  null ||
-                                              widget.employeeModel.document!
-                                                      .approve ==
-                                                  null ||
-                                              widget.employeeModel.document!
-                                                      .approve ==
-                                                  0
-                                          ? null
-                                          : () async {
-                                              logError(widget.employeeModel
-                                                  .toJson());
-                                              Get.to(() => InvoicePage(
-                                                    invoiceId: invoiceId,
-                                                    companyId: widget
-                                                        .employeeModel
-                                                        .company!
-                                                        .id!,
-                                                    employeeName: Get.locale ==
-                                                            const Locale(
-                                                                'en', 'US')
-                                                        ? widget.employeeModel
-                                                            .nameEn!
-                                                        : widget.employeeModel
-                                                            .nameAr!,
-                                                    contractDuration: widget
-                                                        .employeeModel
-                                                        .contractDuration!,
-                                                    contractAmount: widget
-                                                        .employeeModel
-                                                        .contractAmount!,
-                                                    isOffer: widget
-                                                        .employeeModel.isOffer!,
-                                                    contractAmountAfterDiscount:
-                                                        widget.employeeModel
-                                                                    .isOffer ==
-                                                                1
-                                                            ? widget
-                                                                .employeeModel
-                                                                .amountAfterDiscount!
-                                                            : -1,
-                                                    userName: _globalController
-                                                        .me.fullName!,
-                                                  ));
-
-                                              // Get.to(() => PayPage(),
-                                              //     );
-
-                                              // else {
-                                              //   Get.to(() => const FillingDataPage(),
-                                              //       );
-                                              // }
-                                            },
-                                      text: coloredText(
-                                          text: "invoice".tr,
-                                          color: Colors.white,
-                                          fontSize: 12.0.sp),
-                                      color: widget.employeeModel.document ==
-                                                  null ||
-                                              widget.employeeModel.document!
-                                                      .approve ==
-                                                  null ||
-                                              widget.employeeModel.document!
-                                                      .approve ==
-                                                  0
-                                          ? Colors.grey
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                      width: 40.0.w,
-                                      height: 30.0.sp,
-                                      radius: 20,
-                                      alignment:
-                                          AlignmentDirectional.centerStart,
-                                    )
+                              ? Container()
                               : widget.employeeModel.status != null &&
                                       widget.employeeModel.status!.status ==
                                           "pending"
@@ -405,11 +457,21 @@ class _EmployeePageState extends State<EmployeePage> {
                                                                 .id!,
                                                             indicator: false);
                                                 if (b != null) {
-                                                  Utils.doneDialog(
-                                                      context: context);
                                                   widget.employeeModel = b;
+                                                  if (widget.employeeModel
+                                                              .status !=
+                                                          null &&
+                                                      widget.employeeModel
+                                                              .status!.status ==
+                                                          "pending") {
+                                                    contractFlag = true;
+                                                  } else {
+                                                    contractFlag = false;
+                                                  }
                                                   setState(() {});
                                                 }
+                                                Utils.doneDialog(
+                                                    context: context);
                                                 await _globalController.getMe();
                                               }
 
@@ -474,8 +536,6 @@ class _EmployeePageState extends State<EmployeePage> {
                                                             .employeeModel.id!,
                                                         indicator: false);
                                             if (b != null) {
-                                              Utils.doneDialog(
-                                                  context: context);
                                               widget.employeeModel = b;
                                               if (widget.employeeModel.status !=
                                                       null &&
@@ -483,9 +543,12 @@ class _EmployeePageState extends State<EmployeePage> {
                                                           .status ==
                                                       "pending") {
                                                 contractFlag = true;
+                                              } else {
+                                                contractFlag = false;
                                               }
                                               setState(() {});
                                             }
+                                            Utils.doneDialog(context: context);
                                             _globalController.getMe();
                                             _globalController.getUserHomePage();
                                             Utils().rateDialoge(
@@ -565,9 +628,7 @@ class _EmployeePageState extends State<EmployeePage> {
                           primaryButton(
                             onTap: () async {
                               String? token = await Utils.readToken();
-                              logSuccess(
-                                  widget.employeeModel.residenceContract!);
-                              logSuccess(token!);
+
                               Utils.circularIndicator();
                               var res = await Dio().get(
                                 widget.employeeModel.residenceContract!,
@@ -620,32 +681,217 @@ class _EmployeePageState extends State<EmployeePage> {
               const Divider(
                 color: Color(0xffDBDBDB),
               ),
-              spaceY(10.sp),
-              Row(
-                children: [
-                  const Icon(EvaIcons.briefcaseOutline, color: Colors.grey),
-                  spaceX(5.sp),
-                  coloredText(
-                      text: widget.employeeModel.previousWorkAbroad == 0
-                          ? "did_not_work_abroad".tr
-                          : "${"previous_work_abroad".tr} ${widget.employeeModel.durationOfEmployment} ${"years".tr}",
-                      color: Colors.grey,
-                      fontSize: 12.sp)
-                ],
+              coloredText(
+                text: "passport_data".tr,
+                color: Colors.black,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
+                fontSize: 13.sp,
               ),
               spaceY(10.sp),
-              Row(
-                children: [
-                  Icon(FontAwesomeIcons.graduationCap,
-                      size: 15.sp, color: Colors.grey),
-                  spaceX(5.sp),
-                  coloredText(
-                      text:
-                          "${"educational_certificates".tr}: ${Get.locale == const Locale('en', 'US') ? _globalController.certificates.where((element) => element.id == widget.employeeModel.educationCertification!).first.nameEn! : _globalController.certificates.where((element) => element.id == widget.employeeModel.educationCertification!).first.nameAr!}",
-                      color: Colors.grey,
-                      fontSize: 12.sp)
-                ],
-              )
+              DetailsItemWidget(
+                title1: "passport_number".tr,
+                subTitle1: widget.employeeModel.passportNum,
+                title2: "issue_date".tr,
+                subTitle2: widget.employeeModel.passportIssueDate,
+              ),
+              spaceY(12.sp),
+              DetailsItemWidget(
+                title1: "issue_place".tr,
+                subTitle1: _globalController.countries
+                    .where((element) =>
+                        element.id == widget.employeeModel.passportPlaceOfIssue)
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .first,
+                title2: "expiry_date".tr,
+                subTitle2: widget.employeeModel.passportExpiryDate,
+              ),
+              spaceY(10.sp),
+              Divider(),
+              coloredText(
+                text: "personal_info".tr,
+                color: Colors.black,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
+                fontSize: 13.sp,
+              ),
+              spaceY(10.sp),
+              DetailsItemWidget(
+                title1: "living_town".tr,
+                subTitle1: _globalController.cities
+                    .where((element) =>
+                        element.id == widget.employeeModel.livingTown)
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .first,
+                title2: "no_of_children".tr,
+                subTitle2: widget.employeeModel.numOfChildren.toString(),
+              ),
+              spaceY(12.sp),
+              DetailsItemWidget(
+                title1: "nationality".tr,
+                subTitle1: _globalController.countries
+                    .where((element) =>
+                        element.id == widget.employeeModel.nationalityId)
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .first,
+                title2: "religion".tr,
+                subTitle2: _globalController.relegions
+                    .where((element) =>
+                        element.id == widget.employeeModel.religionId)
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .first,
+              ),
+              spaceY(12.sp),
+              DetailsItemWidget(
+                title1: "date_of_birth".tr,
+                subTitle1: widget.employeeModel.dateOfBirth,
+                title2: "birth_place".tr,
+                subTitle2: _globalController.countries
+                    .where((element) =>
+                        element.id == widget.employeeModel.birthPlace)
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .first,
+              ),
+              spaceY(12.sp),
+              DetailsItemWidget(
+                title1: "weight".tr,
+                subTitle1: "${widget.employeeModel.weight} kg",
+                title2: "height".tr,
+                subTitle2: "${widget.employeeModel.hight} cm",
+              ),
+              spaceY(12.sp),
+              DetailsItemWidget(
+                title1: "complexion".tr,
+                subTitle1: _globalController.complexionList
+                    .where((element) =>
+                        element.id == widget.employeeModel.complexionId)
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .first,
+              ),
+              spaceY(10.sp),
+              Divider(),
+              coloredText(
+                text: "work_info".tr,
+                color: Colors.black,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
+                fontSize: 13.sp,
+              ),
+              spaceY(10.sp),
+              DetailsItemWidget(
+                width1: 80.w,
+                title1: "job".tr,
+                subTitle1: widget.employeeModel.jobs!
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .toList()
+                    .join(", "),
+              ),
+              spaceY(12.sp),
+              DetailsItemWidget(
+                title1: "contract_duration".tr,
+                subTitle1:
+                    "${widget.employeeModel.contractDuration} ${"years".tr}",
+              ),
+              spaceY(12.sp),
+              DetailsItemWidget(
+                width1: 80.w,
+                title1: "previous_work_abroad".tr,
+                subTitle1: widget.employeeModel.previousWorkAbroad == 1
+                    ? "yes".tr
+                    : "no".tr,
+              ),
+              widget.employeeModel.previousWorkAbroad == 0
+                  ? Container()
+                  : spaceY(12.sp),
+              widget.employeeModel.previousWorkAbroad == 0
+                  ? Container()
+                  : DetailsItemWidget(
+                      width1: 80.w,
+                      title1: "duration_of_employment".tr,
+                      subTitle1:
+                          "${widget.employeeModel.durationOfEmployment} ${"years".tr}",
+                    ),
+              spaceY(12.sp),
+              Divider(),
+
+              coloredText(
+                text: "other_data".tr,
+                color: Colors.black,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
+                fontSize: 13.sp,
+              ),
+              spaceY(10.sp),
+              DetailsItemWidget(
+                width1: 80.w,
+                title1: "educational_certificates".tr,
+                subTitle1: _globalController.certificates
+                    .where((element) =>
+                        element.id ==
+                        widget.employeeModel.educationCertification)
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .first,
+              ),
+              spaceY(12.sp),
+              DetailsItemWidget(
+                width1: 80.w,
+                title1: "knowledge_of_languages".tr,
+                subTitle1: widget.employeeModel.languages!
+                    .map((e) => Get.locale == const Locale('en', 'US')
+                        ? e.nameEn!
+                        : e.nameAr!)
+                    .toList()
+                    .join(", "),
+              ),
+
+              spaceY(10.sp),
+              // Row(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     const Icon(EvaIcons.briefcaseOutline, color: Colors.grey),
+              //     spaceX(10.sp),
+              //     Expanded(
+              //       child: coloredText(
+              //           text: widget.employeeModel.previousWorkAbroad == 0
+              //               ? "did_not_work_abroad".tr
+              //               : "${"previous_work_abroad".tr} ${widget.employeeModel.durationOfEmployment} ${"years".tr}",
+              //           color: Colors.grey,
+              //           fontSize: 12.sp),
+              //     )
+              //   ],
+              // ),
+              // spaceY(10.sp),
+              // Row(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     Icon(FontAwesomeIcons.graduationCap,
+              //         size: 15.sp, color: Colors.grey),
+              //     spaceX(10.sp),
+              //     Expanded(
+              //       child: coloredText(
+              //           text:
+              //               "${"educational_certificates".tr}: ${Get.locale == const Locale('en', 'US') ? _globalController.certificates.where((element) => element.id == widget.employeeModel.educationCertification!).first.nameEn! : _globalController.certificates.where((element) => element.id == widget.employeeModel.educationCertification!).first.nameAr!}",
+              //           color: Colors.grey,
+              //           fontSize: 12.sp),
+              //     )
+              //   ],
+              // ),
             ],
           ),
         )

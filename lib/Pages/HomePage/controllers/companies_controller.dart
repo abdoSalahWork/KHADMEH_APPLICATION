@@ -335,19 +335,19 @@ class CompaniesController extends GetxController {
   List<MyService> servicesBooked = [];
   List<CompanyModel> cleanCompanies = [];
   List<CompanyModel> cleanCompaniesToShow = [];
-  // filterCleanCompaniesByCity({required String city}) {
-  //   List<CompanyModel> tmp = [];
-  //   for (var i in recruitmentCompanies) {
-  //     if (i.companyInformation!.city!.nameAr == city ||
-  //         i.companyInformation!.city!.nameEn == city) {
-  //       tmp.add(i);
-  //     }
+  filterCleanCompaniesByCity({required String city}) {
+    List<CompanyModel> tmp = [];
+    for (var i in cleanCompanies) {
+      if (i.companyInformation!.city!.nameAr == city ||
+          i.companyInformation!.city!.nameEn == city) {
+        tmp.add(i);
+      }
 
-  //     recruitmentCompaniesToShow = tmp;
+      cleanCompaniesToShow = tmp;
 
-  //     update();
-  //   }
-  // }
+      update();
+    }
+  }
 
   handleCleanCompaniesSearch({required String name}) {
     List<CompanyModel> tmp = [];

@@ -96,7 +96,7 @@ class _RecruitmentCompaniesPageSSearchtate
                         )
                         .toList(),
                     onChanged: (p0) {
-                      _companiesController.filterRecruitmentCompaniesByCity(
+                      _companiesController.filterCleanCompaniesByCity(
                           city: p0!);
                     },
                     hint: "city".tr,

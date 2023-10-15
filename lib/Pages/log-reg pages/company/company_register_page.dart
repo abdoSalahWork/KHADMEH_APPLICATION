@@ -1365,7 +1365,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                 coloredText(
                                   text: frontIdButton,
                                   color: const Color(0xff919191),
-                                  fontSize: 13.0.sp,
+                                  fontSize: 11.0.sp,
                                 ),
                               ],
                             ),
@@ -1419,7 +1419,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                 coloredText(
                                   text: backIdButton,
                                   color: const Color(0xff919191),
-                                  fontSize: 13.0.sp,
+                                  fontSize: 11.0.sp,
                                 ),
                               ],
                             ),

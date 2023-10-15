@@ -212,8 +212,8 @@ class CompanyCard extends StatelessWidget {
             }
           },
           child: Container(
-            width: 75.0.sp,
-            height: 75.0.sp,
+            width: 50.0.sp,
+            height: 50.0.sp,
             decoration: BoxDecoration(
               border: Border.all(color: const Color(0xffEEEEEE)),
               shape: BoxShape.circle,
@@ -306,7 +306,7 @@ class CompanyCard extends StatelessWidget {
                   const Icon(EvaIcons.star, color: Colors.yellow),
                   spaceX(5),
                   coloredText(
-                    text: company.reviewCompanyCount.toString(),
+                    text: (company.reviewCompanySumReviewValue ?? 0).toString(),
                     fontSize: 13.0.sp,
                     color: Colors.black,
                   ),

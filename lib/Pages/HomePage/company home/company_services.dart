@@ -102,7 +102,7 @@ class _CompanyServicesPageState extends State<CompanyServicesPage> {
                                 fillColor: const Color(0xffF8F8F8),
                                 filled: true,
                                 width: 100.w,
-                                items: _globalController.categories
+                                items: _globalController.cleanDropdownServices
                                     .map(
                                       (e) => DropdownMenuItem<String>(
                                         value: Get.locale ==
@@ -132,6 +132,7 @@ class _CompanyServicesPageState extends State<CompanyServicesPage> {
                               coloredText(text: "price".tr),
                               spaceY(5.sp),
                               SendMessageTextField(
+                                suffixIcon: Utils.kwdSuffix("KWD"),
                                 borderRadius: 5,
                                 keyBoardType: TextInputType.number,
                                 focusNode: FocusNode(),

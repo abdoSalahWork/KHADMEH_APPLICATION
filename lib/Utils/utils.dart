@@ -32,6 +32,17 @@ import 'package:sizer/sizer.dart';
 
 // /
 class Utils {
+  static Widget kwdSuffix(String text) => SizedBox(
+        width: 60.sp,
+        // height: 40.sp,
+        child: Center(
+          child: coloredText(
+              text: text,
+              fontWeight: FontWeight.bold,
+              color:
+                  Theme.of(Get.context!).colorScheme.primary.withOpacity(0.6)),
+        ),
+      );
   Future<XFile?> selectImageSheet() async {
     XFile? image;
     List<SendMenuItems> menuItems = [
@@ -40,7 +51,7 @@ class Utils {
         icons: EvaIcons.camera,
         color: Colors.red,
         onTap: () async {
-          bool b = await Utils.checkPermission();
+          bool b = await Utils.checkPermissionCamera();
           if (b) {
             image = await ImagePicker().pickImage(source: ImageSource.camera);
           }
@@ -52,7 +63,7 @@ class Utils {
         icons: EvaIcons.image,
         color: Colors.green,
         onTap: () async {
-          bool b = await Utils.checkPermission();
+          bool b = await Utils.checkPermissionGallery();
           if (b) {
             image = await ImagePicker().pickImage(source: ImageSource.gallery);
           }
@@ -341,15 +352,21 @@ class Utils {
     ));
   }
 
-  static Future<bool> checkPermission() async {
+  static Future<bool> checkPermissionCamera() async {
     // FocusScope.of(context).requestFocus(FocusNode());
 
     PermissionStatus? statusCamera = await Permission.camera.request();
+
+    bool isGranted = statusCamera == PermissionStatus.granted;
+    return isGranted;
+  }
+
+  static Future<bool> checkPermissionGallery() async {
+    // FocusScope.of(context).requestFocus(FocusNode());
+
     PermissionStatus? statusPhotos = await Permission.photos.request();
-    logSuccess(statusCamera.isGranted);
-    logSuccess(statusPhotos.isGranted);
-    bool isGranted = statusCamera == PermissionStatus.granted &&
-        statusPhotos == PermissionStatus.granted;
+
+    bool isGranted = statusPhotos == PermissionStatus.granted;
     return isGranted;
   }
 
@@ -823,20 +840,30 @@ Text coloredText(
     double? fontSize,
     TextAlign? textAlign,
     TextDirection? textDirection,
+    TextOverflow? overflow,
     TextStyle? textstyle}) {
   return Text(
     text,
     textAlign: textAlign,
     softWrap: true,
     textDirection: textDirection,
+    overflow: overflow,
     style: textstyle ??
-        GoogleFonts.poppins(
-          color: color ?? Colors.black,
-          fontSize: fontSize ?? 13.0.sp,
-          fontWeight: fontWeight,
-          decoration: decoration,
-          decorationColor: color,
-        ),
+        (Get.locale == const Locale('en', 'US')
+            ? GoogleFonts.poppins(
+                color: color ?? Colors.black,
+                fontSize: fontSize ?? 13.0.sp,
+                fontWeight: fontWeight,
+                decoration: decoration,
+                decorationColor: color,
+              )
+            : GoogleFonts.cairo(
+                color: color ?? Colors.black,
+                fontSize: fontSize ?? 13.0.sp,
+                fontWeight: fontWeight,
+                decoration: decoration,
+                decorationColor: color,
+              )),
   );
 }
 

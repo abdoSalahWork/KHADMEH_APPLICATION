@@ -25,6 +25,7 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
     with SingleTickerProviderStateMixin {
   ChatController _chatController = Get.find();
   GlobalController _globalController = Get.find();
+  // CompaniesController _companiesController = Get.find();
   List<EmployeeModel> employeesToShow = [];
   List<EmployeeModel> employees = [];
   List<EmployeeModel> employeesOfficeWarrantly = [];
@@ -233,7 +234,9 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                               ),
                               spaceX(5),
                               coloredText(
-                                text: widget.company.reviewCompanyCount!
+                                text: (widget.company
+                                            .reviewCompanySumReviewValue ??
+                                        0)
                                     .toString(),
                                 fontSize: 13.0.sp,
                                 color: Colors.white,
@@ -393,56 +396,66 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                                     .isNotEmpty,
                                 child: ProfileCard(
                                   employee: employeesToShow[index],
-                                  trailing: _globalController.guest
-                                      ? Container()
-                                      : GestureDetector(
-                                          onTap: () async {
-                                            if (employeesToShow[index]
-                                                        .favourite !=
-                                                    null &&
-                                                employeesToShow[index]
-                                                        .favourite!
-                                                        .userId ==
-                                                    _globalController.me.id &&
-                                                employeesToShow[index]
-                                                        .favourite!
-                                                        .type ==
-                                                    0) {
-                                              await _globalController
-                                                  .deleteFavourite(
-                                                detect: 0,
-                                                id: employeesToShow[index]
-                                                    .favourite!
-                                                    .id!,
-                                              );
-                                            } else {
-                                              await _globalController
-                                                  .storeFavourite(
-                                                      typeId:
-                                                          employeesToShow[index]
-                                                              .id!,
-                                                      type: 0);
-                                            }
-                                          },
-                                          child: Icon(
-                                            EvaIcons.heart,
-                                            color: employeesToShow[index]
-                                                            .favourite !=
-                                                        null &&
-                                                    employeesToShow[index]
-                                                            .favourite!
-                                                            .userId ==
-                                                        _globalController
-                                                            .me.id &&
-                                                    employeesToShow[index]
-                                                            .favourite!
-                                                            .type ==
-                                                        0
-                                                ? Colors.red
-                                                : const Color(0xffD4D4D4),
-                                            size: 13.0.sp,
-                                          ),
-                                        ),
+                                  // trailing: _globalController.guest
+                                  //     ? Container()
+                                  //     : GestureDetector(
+                                  //         onTap: () async {
+                                  //           if (employeesToShow[index]
+                                  //                       .favourite !=
+                                  //                   null &&
+                                  //               employeesToShow[index]
+                                  //                       .favourite!
+                                  //                       .userId ==
+                                  //                   _globalController.me.id &&
+                                  //               employeesToShow[index]
+                                  //                       .favourite!
+                                  //                       .type ==
+                                  //                   0) {
+                                  //             await _globalController
+                                  //                 .deleteFavourite(
+                                  //               detect: 0,
+                                  //               id: employeesToShow[index]
+                                  //                   .favourite!
+                                  //                   .id!,
+                                  //             );
+                                  //           } else {
+                                  //             await _globalController
+                                  //                 .storeFavourite(
+                                  //                     typeId:
+                                  //                         employeesToShow[index]
+                                  //                             .id!,
+                                  //                     type: 0);
+                                  //           }
+                                  //           CompanyModel? m =
+                                  //               await _companiesController
+                                  //                   .showCompany(
+                                  //                       id: widget.company.id!,
+                                  //                       indicator: false);
+                                  //           if (m != null) {
+                                  //             Get.off(() => RecruitmentCompany(
+                                  //                 company: m));
+                                  //           }
+                                  //         },
+                                  //         child: Icon(
+                                  //           EvaIcons.heart,
+                                  //           color: employeesToShow[index]
+                                  //                           .favourite !=
+                                  //                       null &&
+                                  //                   employeesToShow[index]
+                                  //                           .favourite!
+                                  //                           .userId ==
+                                  //                       _globalController
+                                  //                           .me.id &&
+                                  //                   employeesToShow[index]
+                                  //                           .favourite!
+                                  //                           .type ==
+                                  //                       0
+                                  //               ? Colors.red
+                                  //               : const Color(0xffD4D4D4),
+                                  //           size: 13.0.sp,
+                                  //         ),
+                                  //       ),
+
                                   isOffer: offerFlag,
                                 ),
                               ),

@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, must_be_immutable
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -264,10 +264,12 @@ class CleanCompanyBookingWidget extends StatelessWidget {
   CleanCompanyBookingWidget({
     super.key,
     required this.cleaningBooking,
+    this.approve = false,
   });
   final CleaningBooking cleaningBooking;
   final GlobalController _globalController = Get.find();
   final CompaniesController _companiesController = Get.find();
+  bool approve = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -342,140 +344,144 @@ class CleanCompanyBookingWidget extends StatelessWidget {
                 ],
               ),
               spaceY(5.sp),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  primaryBorderedButton(
-                    onTap: () async {
-                      bool b = await _globalController.approveCheckOut(
-                          approve: 1, id: cleaningBooking.id!);
-                      if (b) Utils.doneDialog(context: context);
-                    },
-                    alignment: AlignmentDirectional.centerStart,
-                    width: 25.w,
-                    height: 25.sp,
-                    radius: 20,
-                    text: coloredText(text: "accept".tr, fontSize: 12.sp),
-                    color: const Color(0xff919191),
-                  ),
-                  primaryBorderedButton(
-                    onTap: () async {
-                      bool b = await _globalController.approveCheckOut(
-                        approve: 0,
-                        id: cleaningBooking.id!,
-                      );
-                      if (b) {
-                        Utils.doneDialog(context: context);
-                      }
-                      // String desc = "";
-                      // Utils.showDialogBox(
-                      //   context: context,
-                      //   actions: [
-                      //     primaryButton(
-                      //       onTap: () async {
-                      //         Get.back();
-                      //         bool b = await _globalController.approveCheckOut(
-                      //           approve: 0,
-                      //           id: cleaningBooking.id!,
-                      //         );
-                      //         if (b) {
-                      //           Utils.doneDialog(context: context);
-                      //           // ignore: use_build_context_synchronously
-                      //           // Utils.customDialog(
-                      //           //     actions: [
-                      //           //       primaryButton(
-                      //           //         onTap: () {
-                      //           //           Get.back();
-                      //           //           Get.back();
-                      //           //         },
-                      //           //         width: 40.0.w,
-                      //           //         height: 50,
-                      //           //         radius: 10.w,
-                      //           //         color: Colors.black,
-                      //           //         text: coloredText(
-                      //           //           text: "ok".tr,
-                      //           //           color: Colors.white,
-                      //           //         ),
-                      //           //       ),
-                      //           //     ],
-                      //           //     context: context,
-                      //           //     child: Padding(
-                      //           //       padding: const EdgeInsets.all(12.0),
-                      //           //       child: Column(
-                      //           //         crossAxisAlignment:
-                      //           //             CrossAxisAlignment.center,
-                      //           //         children: [
-                      //           //           spaceY(20),
-                      //           //           Icon(
-                      //           //             EvaIcons.checkmarkCircle,
-                      //           //             color: Theme.of(context)
-                      //           //                 .colorScheme
-                      //           //                 .secondary,
-                      //           //             size: 40.sp,
-                      //           //           ),
-                      //           //           spaceY(20),
-                      //           //           coloredText(
-                      //           //               text:
-                      //           //                   "your_note_have_been_sent".tr,
-                      //           //               fontSize: 12.0.sp),
-                      //           //           coloredText(
-                      //           //             text: "successfully".tr,
-                      //           //             fontSize: 14.0.sp,
-                      //           //             color: Theme.of(context)
-                      //           //                 .colorScheme
-                      //           //                 .secondary,
-                      //           //           ),
-                      //           //         ],
-                      //           //       ),
-                      //           //     ));
-                      //         }
-                      //       },
-                      //       color: Colors.black,
-                      //       width: 45.w,
-                      //       height: 50,
-                      //       text: coloredText(
-                      //           text: "submit".tr, color: Colors.white),
-                      //     ),
-                      //   ],
-                      //   content: TextFormField(
-                      //     onChanged: (value) {
-                      //       desc = value;
-                      //     },
-                      //     maxLines: 5,
-                      //     decoration: InputDecoration(
-                      //       hintText: "write_your_notes".tr,
-                      //       border: const OutlineInputBorder(
-                      //         borderSide: BorderSide.none,
-                      //         borderRadius: BorderRadius.all(
-                      //           Radius.circular(10),
-                      //         ),
-                      //       ),
-                      //       filled: true,
-                      //       fillColor: Color(0xffF5F5F5),
-                      //     ),
-                      //   ),
-                      //   title: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.end,
-                      //     children: [
-                      //       GestureDetector(
-                      //         onTap: () => Get.back(),
-                      //         child: const Icon(
-                      //           EvaIcons.close,
-                      //         ),
-                      //       )
-                      //     ],
-                      //   ),
-                      // );
-                    },
-                    alignment: AlignmentDirectional.centerStart,
-                    width: 25.w,
-                    height: 25.sp,
-                    radius: 20,
-                    text: coloredText(text: "refuse".tr, fontSize: 12.sp),
-                    color: const Color(0xff919191),
-                  ),
-                ],
-              ),
+              approve
+                  ? Center(
+                      child: coloredText(text: "approved", color: Colors.green),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        primaryBorderedButton(
+                          onTap: () async {
+                            bool b = await _globalController.approveCheckOut(
+                                approve: 1, id: cleaningBooking.id!);
+                            if (b) Utils.doneDialog(context: context);
+                          },
+                          alignment: AlignmentDirectional.centerStart,
+                          width: 25.w,
+                          height: 25.sp,
+                          radius: 20,
+                          text: coloredText(text: "accept".tr, fontSize: 12.sp),
+                          color: const Color(0xff919191),
+                        ),
+                        primaryBorderedButton(
+                          onTap: () async {
+                            bool b = await _globalController.approveCheckOut(
+                              approve: 0,
+                              id: cleaningBooking.id!,
+                            );
+                            if (b) {
+                              Utils.doneDialog(context: context);
+                            }
+                            // String desc = "";
+                            // Utils.showDialogBox(
+                            //   context: context,
+                            //   actions: [
+                            //     primaryButton(
+                            //       onTap: () async {
+                            //         Get.back();
+                            //         bool b = await _globalController.approveCheckOut(
+                            //           approve: 0,
+                            //           id: cleaningBooking.id!,
+                            //         );
+                            //         if (b) {
+                            //           Utils.doneDialog(context: context);
+                            //           // ignore: use_build_context_synchronously
+                            //           // Utils.customDialog(
+                            //           //     actions: [
+                            //           //       primaryButton(
+                            //           //         onTap: () {
+                            //           //           Get.back();
+                            //           //           Get.back();
+                            //           //         },
+                            //           //         width: 40.0.w,
+                            //           //         height: 50,
+                            //           //         radius: 10.w,
+                            //           //         color: Colors.black,
+                            //           //         text: coloredText(
+                            //           //           text: "ok".tr,
+                            //           //           color: Colors.white,
+                            //           //         ),
+                            //           //       ),
+                            //           //     ],
+                            //           //     context: context,
+                            //           //     child: Padding(
+                            //           //       padding: const EdgeInsets.all(12.0),
+                            //           //       child: Column(
+                            //           //         crossAxisAlignment:
+                            //           //             CrossAxisAlignment.center,
+                            //           //         children: [
+                            //           //           spaceY(20),
+                            //           //           Icon(
+                            //           //             EvaIcons.checkmarkCircle,
+                            //           //             color: Theme.of(context)
+                            //           //                 .colorScheme
+                            //           //                 .secondary,
+                            //           //             size: 40.sp,
+                            //           //           ),
+                            //           //           spaceY(20),
+                            //           //           coloredText(
+                            //           //               text:
+                            //           //                   "your_note_have_been_sent".tr,
+                            //           //               fontSize: 12.0.sp),
+                            //           //           coloredText(
+                            //           //             text: "successfully".tr,
+                            //           //             fontSize: 14.0.sp,
+                            //           //             color: Theme.of(context)
+                            //           //                 .colorScheme
+                            //           //                 .secondary,
+                            //           //           ),
+                            //           //         ],
+                            //           //       ),
+                            //           //     ));
+                            //         }
+                            //       },
+                            //       color: Colors.black,
+                            //       width: 45.w,
+                            //       height: 50,
+                            //       text: coloredText(
+                            //           text: "submit".tr, color: Colors.white),
+                            //     ),
+                            //   ],
+                            //   content: TextFormField(
+                            //     onChanged: (value) {
+                            //       desc = value;
+                            //     },
+                            //     maxLines: 5,
+                            //     decoration: InputDecoration(
+                            //       hintText: "write_your_notes".tr,
+                            //       border: const OutlineInputBorder(
+                            //         borderSide: BorderSide.none,
+                            //         borderRadius: BorderRadius.all(
+                            //           Radius.circular(10),
+                            //         ),
+                            //       ),
+                            //       filled: true,
+                            //       fillColor: Color(0xffF5F5F5),
+                            //     ),
+                            //   ),
+                            //   title: Row(
+                            //     mainAxisAlignment: MainAxisAlignment.end,
+                            //     children: [
+                            //       GestureDetector(
+                            //         onTap: () => Get.back(),
+                            //         child: const Icon(
+                            //           EvaIcons.close,
+                            //         ),
+                            //       )
+                            //     ],
+                            //   ),
+                            // );
+                          },
+                          alignment: AlignmentDirectional.centerStart,
+                          width: 25.w,
+                          height: 25.sp,
+                          radius: 20,
+                          text: coloredText(text: "refuse".tr, fontSize: 12.sp),
+                          color: const Color(0xff919191),
+                        ),
+                      ],
+                    ),
             ],
           ))
         ],

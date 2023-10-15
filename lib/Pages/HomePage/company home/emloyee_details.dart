@@ -391,12 +391,6 @@ class EmployeeDetailsPage extends StatelessWidget {
                                 .join(", "),
                           ),
                           spaceY(12.sp),
-                          // DetailsItemWidget(
-                          //   width1: 80.w,
-                          //   title1: "Monthly salary",
-                          //   subTitle1: "0 KD",
-                          // ),
-                          // spaceY(12.sp),
                           DetailsItemWidget(
                             width1: 80.w,
                             title1: "contract_duration".tr,

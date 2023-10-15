@@ -338,7 +338,8 @@ class _LoginPageState extends State<LoginPage> {
                                 coloredText(
                                     text: "or_login_with".tr,
                                     color: Colors.grey,
-                                    fontWeight: FontWeight.w500),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12.sp),
                                 Container(
                                   width: 20.0.w,
                                   height: 1,

@@ -116,6 +116,8 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                           fontSize: 14.0.sp, text: "commssion_recruitment".tr),
                       spaceY(5.sp),
                       SendMessageTextField(
+                        suffixIcon: Utils.kwdSuffix(
+                            recruitmentCommissionGroup == 0 ? "KWD" : "%"),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,
@@ -160,6 +162,8 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                           fontSize: 14.0.sp, text: "commssion_clean".tr),
                       spaceY(5.sp),
                       SendMessageTextField(
+                        suffixIcon: Utils.kwdSuffix(
+                            cleanCommissionGroup == 0 ? "KWD" : "%"),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,
@@ -173,6 +177,7 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                           fontSize: 14.0.sp, text: "advertisment_price".tr),
                       spaceY(5.sp),
                       SendMessageTextField(
+                        suffixIcon: Utils.kwdSuffix("KWD"),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,
@@ -187,6 +192,7 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                           text: "end_date_pending_employee".tr),
                       spaceY(5.sp),
                       SendMessageTextField(
+                        suffixIcon: Utils.kwdSuffix("day".tr),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,
@@ -200,9 +206,27 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                       ),
                       spaceY(10.sp),
                       coloredText(
+                          fontSize: 14.0.sp, text: "medical_exam_price".tr),
+                      spaceY(5.sp),
+                      SendMessageTextField(
+                        suffixIcon: Utils.kwdSuffix("KWD"),
+                        borderRadius: 10,
+                        focusNode: FocusNode(),
+                        keyBoardType: TextInputType.number,
+                        initialValue:
+                            _settingAdmin.medicalExaminationPrice.toString(),
+                        onchanged: (s) {
+                          if (s != null && s != "") {
+                            _settingAdmin.medicalExaminationPrice = s;
+                          }
+                        },
+                      ),
+                      spaceY(10.sp),
+                      coloredText(
                           fontSize: 14.0.sp, text: "khedma_cleaning_price".tr),
                       spaceY(5.sp),
                       SendMessageTextField(
+                        suffixIcon: Utils.kwdSuffix("KWD"),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,

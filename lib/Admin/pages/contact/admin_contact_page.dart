@@ -5,6 +5,7 @@ import 'package:khedma/Admin/models/contact_model.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class AdminContactUsPage extends StatefulWidget {
   const AdminContactUsPage({super.key});
@@ -266,9 +267,20 @@ class AdminMessageCard extends StatelessWidget {
         children: [
           _messageLine(title: "name".tr, content: name),
           spaceY(10.sp),
-          _messageLine(title: "phone".tr, content: phone),
+          GestureDetector(
+              onTap: () {
+                launchUrlString("tel://+965$phone");
+              },
+              child: _messageLine(title: "phone".tr, content: phone)),
           spaceY(10.sp),
-          _messageLine(title: "email".tr, content: email),
+          GestureDetector(
+              onTap: () {
+                launchUrlString("mailto:$email?subject=Khedmah%20Feedback");
+              },
+              child: _messageLine(
+                  title: "email".tr,
+                  content: email,
+                  overflow: TextOverflow.ellipsis)),
           spaceY(10.sp),
           _messageLine(title: "message".tr, content: message),
         ],
@@ -276,18 +288,20 @@ class AdminMessageCard extends StatelessWidget {
     );
   }
 
-  Row _messageLine({
-    required String title,
-    required String content,
-  }) {
+  Row _messageLine(
+      {required String title,
+      required String content,
+      TextOverflow? overflow}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 30.w,
+          width: 33.w,
           child: coloredText(text: "$title: ", color: Colors.grey),
         ),
-        Expanded(child: coloredText(text: content, fontSize: 12.sp))
+        Expanded(
+            child:
+                coloredText(text: content, fontSize: 12.sp, overflow: overflow))
       ],
     );
   }

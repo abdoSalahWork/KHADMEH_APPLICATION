@@ -22,6 +22,7 @@ class EmployeeModel {
   int? previousWorkAbroad;
   int? durationOfEmployment;
   String? residenceContract;
+  String? finalContract;
 
   var image;
   var passportImege;
@@ -57,6 +58,7 @@ class EmployeeModel {
     this.id,
     this.nationality,
     this.residenceContract,
+    this.finalContract,
     this.nameEn,
     this.nameAr,
     this.dateOfBirth,
@@ -115,6 +117,7 @@ class EmployeeModel {
     nameEn = json['name_en'];
     nameAr = json['name_ar'];
     residenceContract = json['residence_contract'];
+    finalContract = json['final_contract'];
     dateOfBirth = json['date_of_birth'];
     timeWorkPerDay = json['time_work_per_day'];
     hourSalary = json['hour_salary'];
@@ -180,6 +183,9 @@ class EmployeeModel {
     if (id != null) data['id'] = id;
     if (residenceContract != null) {
       data['residence_contract'] = residenceContract;
+    }
+    if (finalContract != null) {
+      data['final_contract'] = finalContract;
     }
     if (status != null) data['status'] = status!.toJson();
     if (nameAr != null) data['name_ar'] = nameAr;

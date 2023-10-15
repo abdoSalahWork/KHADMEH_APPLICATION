@@ -46,8 +46,8 @@ class UserProfileCard extends StatelessWidget {
             }
           },
           child: Container(
-            width: 50.0.sp,
-            height: 50.0.sp,
+            width: 60.0.sp,
+            height: 60.0.sp,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
@@ -64,7 +64,8 @@ class UserProfileCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Get.locale == const Locale('en', 'US')
                           ? coloredText(
@@ -81,27 +82,33 @@ class UserProfileCard extends StatelessWidget {
                                       : employeeModel.nameAr!
                                   : 'lorem ipsun',
                               fontSize: 13.0.sp),
-                      spaceX(4),
-                      coloredText(
-                        text:
-                            '${int.parse(employeeModel.contractAmount!) / int.parse(employeeModel.contractDuration!)} kwd/Y',
-                        color: employeeModel.isOffer == 1
-                            ? const Color(0xff919191)
-                            : Theme.of(context).colorScheme.tertiary,
-                        fontSize: 8.0.sp,
-                        decoration: employeeModel.isOffer == 1
-                            ? TextDecoration.lineThrough
-                            : null,
-                      ),
-                      employeeModel.isOffer != 1 ? Container() : spaceX(8),
-                      employeeModel.isOffer != 1
-                          ? Container()
-                          : coloredText(
-                              text:
-                                  '${employeeModel.amountAfterDiscount! / int.parse(employeeModel.contractDuration!)} kwd/Y',
-                              color: Theme.of(context).colorScheme.tertiary,
-                              fontSize: 8.0.sp,
-                            ),
+                      spaceY(5.sp),
+                      Row(
+                        children: [
+                          coloredText(
+                            text:
+                                "${employeeModel.contractAmount!} KWD/${employeeModel.contractDuration! + " years".tr}",
+                            color: employeeModel.isOffer == 1
+                                ? const Color(0xff919191)
+                                : Theme.of(context).colorScheme.tertiary,
+                            fontSize: 9.0.sp,
+                            decoration: employeeModel.isOffer == 1
+                                ? TextDecoration.lineThrough
+                                : null,
+                          ),
+                          employeeModel.isOffer != 1
+                              ? Container()
+                              : spaceX(4.sp),
+                          employeeModel.isOffer != 1
+                              ? Container()
+                              : coloredText(
+                                  text:
+                                      "${employeeModel.amountAfterDiscount!} KWD/${employeeModel.contractDuration! + " years".tr}",
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  fontSize: 9.0.sp,
+                                ),
+                        ],
+                      )
                     ],
                   ),
                   trailing ?? Container(),

@@ -31,6 +31,8 @@ class EndPoints {
   static String get storeChat => "$_baseURL/chat/store";
   static String showChat(int id) => "$_baseURL/chat/show/$id";
   static String get storeMessage => "$_baseURL/chatMessage/store";
+  static String get storeContactMessage => "$_baseURL/message/store";
+
   static String get getAllUserEmployees => "$_baseURL/employees";
   static String get getAllCompanyEmployees => "$_baseURL/company/employees";
   static String requestMedicalExamination(int id) =>
@@ -87,6 +89,7 @@ class EndPoints {
   static String checkout(int id) => "$_baseURL/checkout/store/$id";
   static String get getCheckoutUser => "$_baseURL/user/checkouts";
   static String get getCheckoutCompany => "$_baseURL/company/checkouts";
+  static String get getCheckoutCompanyHistory => "$_baseURL/company/checkouts";
   static String approveCheckout(int id) => "$_baseURL/checkout/approve/$id";
   static String payCheckout(int id) => "$_baseURL/pay/order/cleaning/$id";
 ///////////////////////////admin///////////////////////////

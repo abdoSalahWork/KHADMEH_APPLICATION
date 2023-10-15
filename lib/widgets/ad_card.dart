@@ -32,16 +32,30 @@ class AdvertismentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: 100.w,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+        Stack(children: [
+          Container(
+            width: 100.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Image(
+              image: NetworkImage(advertismentModel.image),
+              // image: AssetImage("assets/images/adv_background.png"),
+            ),
           ),
-          child: Image(
-            image: NetworkImage(advertismentModel.image),
-            // image: AssetImage("assets/images/adv_background.png"),
-          ),
-        ),
+          DateTime.parse(advertismentModel.endDate!).isBefore(DateTime.now())
+              ? Container(
+                  width: 100.w,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Image(
+                    image: AssetImage('assets/images/finished.png'),
+                  ),
+                )
+              : Container(),
+        ]),
         spaceY(10.sp),
         adText(
             blackText: "duration".tr,
@@ -364,6 +378,8 @@ class AdvertismentCard extends StatelessWidget {
                 ],
               )
             : Container(),
+        spaceY(10.sp),
+        Divider(),
       ],
     );
   }

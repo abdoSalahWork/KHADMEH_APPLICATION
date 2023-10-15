@@ -84,17 +84,19 @@ class CategoriesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(category.toJson());
 
-      XFile? icon = category.image;
-
-      if (icon != null) {
-        body.files.add(MapEntry(
-          "image",
-          await d.MultipartFile.fromFile(
-            icon.path,
-            filename: icon.name,
-            contentType: MediaType('image', '*'),
-          ),
-        ));
+      XFile? icon;
+      if (category.image.runtimeType != String) {
+        icon = category.image;
+        if (icon != null) {
+          body.files.add(MapEntry(
+            "image",
+            await d.MultipartFile.fromFile(
+              icon.path,
+              filename: icon.name,
+              contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
       }
 
       body.fields.add(const MapEntry("_method", "PUT"));

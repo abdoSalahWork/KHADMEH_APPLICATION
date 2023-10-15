@@ -92,13 +92,15 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                   if (image != null) {
                     setState(() {});
 
+                    // double aspectRatio =
+                    //     (decodedImage.width / decodedImage.height)
+                    //         .toPrecision(1);
+                    // if (aspectRatio == 1.8) {
                     File f = File(image.path);
                     var decodedImage =
                         await decodeImageFromList(f.readAsBytesSync());
-                    double aspectRatio =
-                        (decodedImage.width / decodedImage.height)
-                            .toPrecision(1);
-                    if (aspectRatio == 1.8) {
+                    if (decodedImage.width == 1920 &&
+                        decodedImage.height == 1080) {
                       uploadButtontext =
                           image.name.substring(0, min(15, image.name.length));
                       if (widget.advertismentToEdit != null) {
@@ -369,8 +371,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
             spaceY(20),
             Row(
               children: [
-                coloredText(
-                    text: "${"advertisment_price".tr} :", fontSize: 15.sp),
+                coloredText(text: "${"price".tr} :", fontSize: 15.sp),
                 spaceX(50),
                 primaryButton(
                   color:

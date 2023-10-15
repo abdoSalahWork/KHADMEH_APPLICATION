@@ -49,11 +49,14 @@ class _CleaningCompanyState extends State<CleaningCompany> {
       for (var i in widget.cleaningCompany.reviewCompany!) {
         rates[i.reviewValue!]++;
       }
+      int c = 0;
       for (var i = 0; i < rates.length; i++) {
         if (rates[i] > 0) {
           rate += i * rates[i];
+          c = c + 1;
         }
       }
+      rate = rate / c;
     } else {
       widget.cleaningCompany.reviewCompany = [];
     }
@@ -272,9 +275,18 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                   ),
                                   spaceX(5),
                                   coloredText(
-                                    text: widget
-                                        .cleaningCompany.reviewCompanyCount!
-                                        .toString(),
+                                    text: (widget.cleaningCompany
+                                                        .reviewCompanySumReviewValue !=
+                                                    null &&
+                                                widget.cleaningCompany
+                                                        .reviewCompanyCount !=
+                                                    null
+                                            ? int.parse(widget.cleaningCompany
+                                                    .reviewCompanySumReviewValue!) /
+                                                widget.cleaningCompany
+                                                    .reviewCompanyCount!
+                                            : 0)
+                                        .toStringAsFixed(1),
                                     fontSize: 13.0.sp,
                                     color: Colors.white,
                                   ),
@@ -393,9 +405,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
         }),
         GetBuilder<GlobalController>(builder: (c) {
           return c.getUserCheckoutsFlag
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? const Center(child: CircularProgressIndicator())
               : c.checkouts.isEmpty
                   ? NoItemsWidget()
                   : ListView.builder(
@@ -425,7 +435,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                    width: 15.w,
+                                    width: 18.w,
                                     child: coloredText(
                                         text: "${"order".tr}:",
                                         fontSize: 12.sp)),
@@ -446,7 +456,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                    width: 15.w,
+                                    width: 18.w,
                                     child: coloredText(
                                         text: "${"address".tr}:",
                                         fontSize: 12.sp)),
@@ -463,18 +473,55 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                    width: 15.w,
+                                    width: 18.w,
                                     child: coloredText(
                                         text: "${"price".tr}:",
                                         fontSize: 12.sp)),
                                 spaceX(10.sp),
                                 Expanded(
                                   child: coloredText(
-                                      text: c.checkouts[index].amount ?? "0",
+                                      text:
+                                          "${c.checkouts[index].amount ?? "0"} kwd",
                                       fontSize: 12.sp),
                                 ),
                               ],
                             ),
+                            spaceY(10.sp),
+                            c.checkouts[index].approve == null ||
+                                    c.checkouts[index].approve == 0 ||
+                                    c.checkouts[index].paid == 1
+                                ? Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                          width: 18.w,
+                                          child: coloredText(
+                                              text: "${"status".tr}:",
+                                              fontSize: 12.sp)),
+                                      spaceX(10.sp),
+                                      Expanded(
+                                        child: c.checkouts[index].approve ==
+                                                null
+                                            ? coloredText(
+                                                text: "pending".tr,
+                                                color: Colors.blue,
+                                                fontSize: 12.sp)
+                                            : c.checkouts[index].approve == 0
+                                                ? coloredText(
+                                                    text: "refused".tr,
+                                                    color: Colors.red,
+                                                    fontSize: 12.sp)
+                                                : c.checkouts[index].paid == 1
+                                                    ? coloredText(
+                                                        text: "paid".tr,
+                                                        color: Colors.green,
+                                                        fontSize: 12.sp)
+                                                    : Container(),
+                                      )
+                                    ],
+                                  )
+                                : Container(),
                             spaceY(10.sp),
                             c.checkouts[index].approve == null ||
                                     c.checkouts[index].approve == 0 ||
@@ -503,6 +550,11 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                         }
                                         await _globalController
                                             .getUserCheckouts();
+                                        // ignore: use_build_context_synchronously
+                                        Utils().rateDialoge(
+                                            context: context,
+                                            companyId:
+                                                widget.cleaningCompany.id!);
                                         setState(() {});
                                       }
                                     },
@@ -534,7 +586,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
             Row(
               children: [
                 coloredText(
-                  text: "$rate",
+                  text: rate.toStringAsFixed(1),
                   fontSize: 35.0.sp,
                   color: Theme.of(context).colorScheme.primary,
                   // fontWeight: FontWeight.bold,
@@ -600,8 +652,8 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                 shape: BoxShape.circle,
                                 border: Border.all(),
                                 image: DecorationImage(
-                                    image: NetworkImage(_globalController
-                                        .me
+                                    image: NetworkImage(widget
+                                        .cleaningCompany
                                         .reviewCompany![index]
                                         .user!
                                         .userInformation!
@@ -611,8 +663,8 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                             ),
                             spaceX(10),
                             coloredText(
-                              text: _globalController
-                                  .me.reviewCompany![index].user!.fullName!,
+                              text: widget.cleaningCompany.reviewCompany![index]
+                                  .user!.fullName!,
                               color: Colors.black,
                               fontSize: 14.0.sp,
                             )
@@ -623,8 +675,8 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                           alignment: AlignmentDirectional.centerStart,
                           child: RatingBar.builder(
                             allowHalfRating: false,
-                            initialRating: _globalController
-                                .me.reviewCompany![index].reviewValue!
+                            initialRating: widget.cleaningCompany
+                                .reviewCompany![index].reviewValue!
                                 .toDouble(),
                             itemSize: 20.sp,
                             itemCount: 5,
@@ -692,8 +744,8 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                         Align(
                           alignment: AlignmentDirectional.centerStart,
                           child: coloredText(
-                              text: _globalController
-                                  .me.reviewCompany![index].review!,
+                              text: widget.cleaningCompany.reviewCompany![index]
+                                  .review!,
                               color: const Color(0xff919191)),
                         )
                       ],

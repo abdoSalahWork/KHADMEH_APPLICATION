@@ -70,35 +70,41 @@ class _AdminMainPageState extends State<AdminMainPage>
     _adminHomeController.getAdminHomePage().then((value) {
       statsBoxList = [
         StatisticBoxMdel(
-            "booking_no".tr,
-            _adminHomeController.adminHomePageModel.bookings!
+            title: "booking_no".tr,
+            subTitle: _adminHomeController.adminHomePageModel.bookings!
                 .round()
                 .toString(),
-            EvaIcons.calendarOutline),
+            icon: EvaIcons.calendarOutline),
         StatisticBoxMdel(
-            "payments".tr,
-            "${_adminHomeController.adminHomePageModel.paymentBookingAmount!} KWD",
-            Icons.monetization_on_outlined),
+            title: "payments".tr,
+            subTitle:
+                "${_adminHomeController.adminHomePageModel.paymentBookingAmount!}",
+            currency: "KWD",
+            icon: Icons.monetization_on_outlined),
         StatisticBoxMdel(
-            "ads_payment".tr,
-            "${_adminHomeController.adminHomePageModel.adsAmount!} KWD",
-            Icons.monetization_on_outlined),
+            title: "ads_payment".tr,
+            subTitle: "${_adminHomeController.adminHomePageModel.adsAmount!}",
+            currency: "KWD",
+            icon: Icons.monetization_on_outlined),
         StatisticBoxMdel(
-            "users_no".tr,
-            _adminHomeController.adminHomePageModel.users!.round().toString(),
-            EvaIcons.peopleOutline),
-        StatisticBoxMdel(
-            "rec_com_no".tr,
-            _adminHomeController.adminHomePageModel.compnaiesRecruitment!
+            title: "users_no".tr,
+            subTitle: _adminHomeController.adminHomePageModel.users!
                 .round()
                 .toString(),
-            Iconsax.buildings),
+            icon: EvaIcons.peopleOutline),
         StatisticBoxMdel(
-            "clean_com_no".tr,
-            _adminHomeController.adminHomePageModel.compnaiesCleaning!
+            title: "rec_com_no".tr,
+            subTitle: _adminHomeController
+                .adminHomePageModel.compnaiesRecruitment!
                 .round()
                 .toString(),
-            Iconsax.buildings),
+            icon: Iconsax.buildings),
+        StatisticBoxMdel(
+            title: "clean_com_no".tr,
+            subTitle: _adminHomeController.adminHomePageModel.compnaiesCleaning!
+                .round()
+                .toString(),
+            icon: Iconsax.buildings),
       ];
     });
     getAllThings();
@@ -231,7 +237,7 @@ class _AdminMainPageState extends State<AdminMainPage>
                                   )
                                 : coloredText(
                                     text:
-                                        " KWD ${_adminHomeController.adminHomePageModel.totalBalance!.toStringAsFixed(2)}",
+                                        "${_adminHomeController.adminHomePageModel.totalBalance!.toStringAsFixed(2)} KWD",
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20.sp,
@@ -249,9 +255,9 @@ class _AdminMainPageState extends State<AdminMainPage>
                     ),
                   ),
                   Positioned(
-                    bottom: 2.h,
+                    bottom: 0.h,
                     child: SizedBox(
-                      height: 110.sp,
+                      height: 130.sp,
                       width: 100.w,
                       child: ListView.separated(
                         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -466,7 +472,7 @@ class _AdminMainPageState extends State<AdminMainPage>
                                             bottomTitles: AxisTitles(
                                               sideTitles: SideTitles(
                                                 showTitles: true,
-                                                interval: 1,
+                                                interval: 5,
                                                 getTitlesWidget: (value, meta) {
                                                   return Text(
                                                       _adminHomeController
@@ -477,26 +483,32 @@ class _AdminMainPageState extends State<AdminMainPage>
                                               ),
                                             ),
                                             leftTitles: AxisTitles(
-                                              // axisNameSize: 50,
-
                                               sideTitles: SideTitles(
-                                                reservedSize: 40,
+                                                reservedSize: 60,
                                                 showTitles: true,
-                                                interval: 20,
+                                                // interval: 20,
                                                 getTitlesWidget: (value, meta) {
-                                                  return Text(
-                                                      "${value.toInt()} k");
+                                                  return Text((value.toInt() >=
+                                                          1000
+                                                      ? "${(value.toInt() / 1000).toStringAsFixed(1)}k"
+                                                      : value
+                                                          .toInt()
+                                                          .toStringAsFixed(1)));
                                                 },
                                               ),
                                             ),
                                             rightTitles: AxisTitles(
                                               sideTitles: SideTitles(
-                                                reservedSize: 40,
+                                                reservedSize: 60,
                                                 showTitles: true,
-                                                interval: 20,
+                                                // interval: 20,
                                                 getTitlesWidget: (value, meta) {
-                                                  return Text(
-                                                      "${value.toInt()} k");
+                                                  return Text((value.toInt() >=
+                                                          1000
+                                                      ? "${(value.toInt() / 1000).toStringAsFixed(1)}k"
+                                                      : value
+                                                          .toInt()
+                                                          .toStringAsFixed(1)));
                                                 },
                                               ),
                                             ),
@@ -508,7 +520,7 @@ class _AdminMainPageState extends State<AdminMainPage>
                                           ), // alignment: BarChartAlignment.center,
 
                                           minY: 0,
-                                          maxY: 100,
+                                          maxY: c.maxChart,
                                           groupsSpace: 12,
                                           // baselineY: 20,
 
@@ -524,9 +536,9 @@ class _AdminMainPageState extends State<AdminMainPage>
                                                       rod,
                                                       rodIndex) =>
                                                   BarTooltipItem(
-                                                (rod.toY * 100) > 1000
-                                                    ? "${(rod.toY / 10).toStringAsFixed(1)} K"
-                                                    : (rod.toY * 100)
+                                                (rod.toY) > 1000
+                                                    ? "${(rod.toY / 1000).toStringAsFixed(1)} K"
+                                                    : (rod.toY)
                                                         .toStringAsFixed(1),
                                                 TextStyle(),
                                               ),
@@ -612,8 +624,12 @@ class StatisticBoxMdel {
   final String title;
   final String subTitle;
   final IconData icon;
-
-  StatisticBoxMdel(this.title, this.subTitle, this.icon);
+  final String? currency;
+  StatisticBoxMdel(
+      {required this.title,
+      required this.subTitle,
+      required this.icon,
+      this.currency});
 }
 
 class StatisticBoxWidget extends StatelessWidget {
@@ -626,8 +642,8 @@ class StatisticBoxWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(5),
-      width: 110.sp,
-      height: 110.sp,
+      width: 140.sp,
+      height: 140.sp,
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -655,11 +671,25 @@ class StatisticBoxWidget extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
             size: 20.sp,
           ),
-          coloredText(
-              text: statisticBoxMdel.subTitle,
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
-              fontSize: 15.sp),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              coloredText(
+                  text: statisticBoxMdel.subTitle,
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.sp),
+              statisticBoxMdel.currency == null ? Container() : spaceX(5.sp),
+              statisticBoxMdel.currency == null
+                  ? Container()
+                  : coloredText(
+                      text: statisticBoxMdel.currency!,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 11.sp),
+            ],
+          ),
         ],
       ),
     );

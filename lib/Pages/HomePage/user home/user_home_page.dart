@@ -178,15 +178,15 @@ class _UserHomePageState extends State<UserHomePage> {
                       Row(children: [
                         coloredText(
                           text: "hello".tr,
-                          fontSize: 16.0.sp,
+                          fontSize: 14.0.sp,
                           fontWeight: FontWeight.bold,
                         ),
-                        spaceX(10),
+                        spaceX(3),
                         coloredText(
                           text: _globalController.guest
                               ? "Guest"
                               : _globalController.me.fullName ?? "",
-                          fontSize: 16.0.sp,
+                          fontSize: 14.0.sp,
                           fontWeight: FontWeight.w500,
                         ),
                       ]),
@@ -441,12 +441,18 @@ class _UserHomePageState extends State<UserHomePage> {
                                                       MainAxisAlignment
                                                           .spaceEvenly,
                                                   children: [
-                                                    Image(
+                                                    Container(
                                                       width: 60.0.sp,
                                                       height: 60.0.sp,
-                                                      image: NetworkImage(
-                                                          "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesRecruitment![index].companyInformation!.companyLogo!}/"),
-                                                      fit: BoxFit.contain,
+                                                      decoration: BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          image:
+                                                              DecorationImage(
+                                                            fit: BoxFit.cover,
+                                                            image: NetworkImage(
+                                                                "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesRecruitment![index].companyInformation!.companyLogo!}/"),
+                                                          )),
                                                     ),
                                                     coloredText(
                                                       text: globalController
@@ -475,12 +481,31 @@ class _UserHomePageState extends State<UserHomePage> {
                                                                 Colors.yellow),
                                                         spaceX(5),
                                                         coloredText(
-                                                          text: globalController
-                                                                  .userHomePage
-                                                                  .companiesRecruitment![
-                                                                      index]
-                                                                  .reviewCompanySumReviewValue ??
-                                                              "0",
+                                                          text: (globalController
+                                                                              .userHomePage
+                                                                              .companiesRecruitment![
+                                                                                  index]
+                                                                              .reviewCompanySumReviewValue !=
+                                                                          null &&
+                                                                      globalController
+                                                                              .userHomePage
+                                                                              .companiesRecruitment![
+                                                                                  index]
+                                                                              .reviewCompanyCount !=
+                                                                          null
+                                                                  ? int.parse(globalController
+                                                                          .userHomePage
+                                                                          .companiesRecruitment![
+                                                                              index]
+                                                                          .reviewCompanySumReviewValue!) /
+                                                                      globalController
+                                                                          .userHomePage
+                                                                          .companiesRecruitment![
+                                                                              index]
+                                                                          .reviewCompanyCount!
+                                                                  : 0)
+                                                              .toStringAsFixed(
+                                                                  1),
                                                           fontSize: 13.0.sp,
                                                           color: Colors.black,
                                                         ),
@@ -591,12 +616,18 @@ class _UserHomePageState extends State<UserHomePage> {
                                                       MainAxisAlignment
                                                           .spaceEvenly,
                                                   children: [
-                                                    Image(
+                                                    Container(
                                                       width: 60.0.sp,
                                                       height: 60.0.sp,
-                                                      image: NetworkImage(
-                                                          "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesCleaning![index].companyInformation!.companyLogo!}/"),
-                                                      fit: BoxFit.contain,
+                                                      decoration: BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          image:
+                                                              DecorationImage(
+                                                            image: NetworkImage(
+                                                                "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesCleaning![index].companyInformation!.companyLogo!}/"),
+                                                            fit: BoxFit.cover,
+                                                          )),
                                                     ),
                                                     coloredText(
                                                       text: globalController
@@ -625,12 +656,31 @@ class _UserHomePageState extends State<UserHomePage> {
                                                                 Colors.yellow),
                                                         spaceX(5),
                                                         coloredText(
-                                                          text: globalController
-                                                                  .userHomePage
-                                                                  .companiesCleaning![
-                                                                      index]
-                                                                  .reviewCompanySumReviewValue ??
-                                                              "0",
+                                                          text: (globalController
+                                                                              .userHomePage
+                                                                              .companiesCleaning![
+                                                                                  index]
+                                                                              .reviewCompanySumReviewValue !=
+                                                                          null &&
+                                                                      globalController
+                                                                              .userHomePage
+                                                                              .companiesCleaning![
+                                                                                  index]
+                                                                              .reviewCompanyCount !=
+                                                                          null
+                                                                  ? int.parse(globalController
+                                                                          .userHomePage
+                                                                          .companiesCleaning![
+                                                                              index]
+                                                                          .reviewCompanySumReviewValue!) /
+                                                                      globalController
+                                                                          .userHomePage
+                                                                          .companiesCleaning![
+                                                                              index]
+                                                                          .reviewCompanyCount!
+                                                                  : 0)
+                                                              .toStringAsFixed(
+                                                                  1),
                                                           fontSize: 13.0.sp,
                                                           color: Colors.black,
                                                         ),

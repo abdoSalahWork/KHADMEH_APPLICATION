@@ -120,9 +120,13 @@ class _CompanyHomePageState extends State<CompanyHomePage>
   EmployeesController _employeesController = Get.find();
   String meCompanyType = "recruitment";
   // AddressessController _adressControllerController = Get.find();
-  List<String> tabs = [
+  List<String> tabsRecruitment = [
     "employees_requests",
     "reservation_requests",
+  ];
+  List<String> tabsCleaning = [
+    "bookings",
+    "history",
   ];
   late TabController tabController;
   int selectedTabIndex = 0;
@@ -214,39 +218,118 @@ class _CompanyHomePageState extends State<CompanyHomePage>
     return Scaffold(
       floatingActionButton: !completedRegisterFlag
           ? null
-          : meCompanyType != "recruitment"
-              ? Container()
-              : Theme(
-                  data: ThemeData(
-                    useMaterial3: false,
-                  ),
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      Get.to(
-                        () => const AddEmployeePage(),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: AlignmentDirectional.bottomStart,
-                          end: AlignmentDirectional.topEnd,
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.secondary
-                          ],
-                        ),
-                      ),
-                      width: 60,
-                      height: 60,
-                      child: const Icon(
-                        EvaIcons.plus,
-                        color: Colors.white,
-                      ),
+          : Theme(
+              data: ThemeData(
+                useMaterial3: false,
+              ),
+              child: FloatingActionButton(
+                onPressed: meCompanyType != "recruitment"
+                    ? () {
+                        int price = 0;
+                        int serviceId = 0;
+                        Utils.showDialogBox(
+                            context: context,
+                            actions: [
+                              primaryButton(
+                                onTap: () async {
+                                  FocusScope.of(context).unfocus();
+                                  bool b = await _globalController
+                                      .createCompanyService(
+                                          id: serviceId, price: price);
+                                  if (b)
+                                    Utils.doneDialog(
+                                        context: context, backTimes: 2);
+                                },
+                                width: 40.0.w,
+                                height: 50,
+                                radius: 10.w,
+                                color: Colors.black,
+                                text: coloredText(
+                                  text: "submit".tr,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                            content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                coloredText(text: "choose_service".tr),
+                                spaceY(5.sp),
+                                CustomDropDownMenuButtonV2(
+                                  hintPadding: 0,
+                                  focusNode: FocusNode(),
+                                  fillColor: const Color(0xffF8F8F8),
+                                  filled: true,
+                                  width: 100.w,
+                                  items: _globalController.categories
+                                      .map(
+                                        (e) => DropdownMenuItem<String>(
+                                          value: Get.locale ==
+                                                  const Locale('en', 'US')
+                                              ? e.nameEn!
+                                              : e.nameAr!,
+                                          child: coloredText(
+                                              text: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr!,
+                                              color: Colors.black),
+                                        ),
+                                      )
+                                      .toList(),
+                                  border: null,
+                                  onChanged: (p0) {
+                                    serviceId = _globalController.categories
+                                        .where((element) =>
+                                            element.nameAr == p0 ||
+                                            element.nameEn == p0)
+                                        .first
+                                        .id!;
+                                  },
+                                  borderRadius: 10,
+                                ),
+                                coloredText(text: "price".tr),
+                                spaceY(5.sp),
+                                SendMessageTextField(
+                                  suffixIcon: Utils.kwdSuffix("KWD"),
+                                  borderRadius: 5,
+                                  keyBoardType: TextInputType.number,
+                                  focusNode: FocusNode(),
+                                  onchanged: (s) {
+                                    if (s != null && s != "")
+                                      price = int.parse(s);
+                                  },
+                                )
+                              ],
+                            ));
+                      }
+                    : () {
+                        Get.to(
+                          () => const AddEmployeePage(),
+                        );
+                      },
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: AlignmentDirectional.bottomStart,
+                      end: AlignmentDirectional.topEnd,
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.secondary
+                      ],
                     ),
                   ),
+                  width: 60,
+                  height: 60,
+                  child: const Icon(
+                    EvaIcons.plus,
+                    color: Colors.white,
+                  ),
                 ),
+              ),
+            ),
       body: Stack(
         children: [
           Visibility(
@@ -464,7 +547,40 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                 //       text: "requests".tr, fontSize: 15.sp),
                                 // ),
                                 meCompanyType != "recruitment"
-                                    ? Container()
+                                    ? TabBar(
+                                        dividerColor: Colors.grey,
+                                        // indicatorColor: Colors.black,
+                                        indicator: UnderlineTabIndicator(
+                                            borderSide: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        )),
+                                        indicatorSize: TabBarIndicatorSize.tab,
+                                        labelPadding: EdgeInsets.zero,
+                                        // isScrollable: true,
+                                        controller: tabController,
+                                        onTap: (value) {
+                                          selectedTabIndex = value;
+                                          setState(() {});
+                                        },
+                                        tabs: List<Widget>.generate(
+                                          tabController.length,
+                                          (index) => Tab(
+                                            child: Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5),
+                                              child: coloredText(
+                                                  fontSize: 10.sp,
+                                                  text: tabsCleaning[index].tr,
+                                                  color:
+                                                      selectedTabIndex == index
+                                                          ? Colors.black
+                                                          : Colors.grey),
+                                            ),
+                                          ),
+                                        ))
                                     : TabBar(
                                         dividerColor: Colors.grey,
                                         // indicatorColor: Colors.black,
@@ -491,7 +607,8 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                                       horizontal: 5),
                                               child: coloredText(
                                                   fontSize: 10.sp,
-                                                  text: tabs[index].tr,
+                                                  text:
+                                                      tabsRecruitment[index].tr,
                                                   color:
                                                       selectedTabIndex == index
                                                           ? Colors.black
@@ -499,46 +616,18 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                             ),
                                           ),
                                         )),
-                                meCompanyType != "recruitment"
-                                    ? spaceY(10.sp)
-                                    : Container(),
-                                meCompanyType != "recruitment"
-                                    ? Align(
-                                        alignment:
-                                            AlignmentDirectional.centerStart,
-                                        child: coloredText(
-                                            text: "bookings".tr,
-                                            fontSize: 15.sp),
-                                      )
-                                    : Container(),
+                                // meCompanyType != "recruitment"
+                                //     ? spaceY(10.sp)
+                                //     : Container(),
 
                                 Expanded(
                                     child: meCompanyType != "recruitment"
-                                        ? GetBuilder<GlobalController>(
-                                            builder: (c) {
-                                            return c.cleaningBookings.isEmpty
-                                                ? const Center(
-                                                    child: NoItemsWidget())
-                                                : ListView.separated(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 10),
-                                                    itemBuilder: (ctx, index) =>
-                                                        CleanCompanyBookingWidget(
-                                                            cleaningBooking:
-                                                                c.cleaningBookings[
-                                                                    index]),
-                                                    separatorBuilder:
-                                                        (ctx, index) =>
-                                                            spaceY(10.sp),
-                                                    itemCount: _globalController
-                                                        .cleaningBookings
-                                                        .length,
-                                                  );
-                                          })
+                                        ? TabBarView(
+                                            controller: tabController,
+                                            children: tapCleaningList)
                                         : TabBarView(
                                             controller: tabController,
-                                            children: tapList)),
+                                            children: tapRecruitmentList)),
                                 // Expanded(
                                 //   child:         )
                               ],
@@ -613,7 +702,6 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                             child: Form(
                               child: PageView(
                                 controller: pageController,
-                                physics: const NeverScrollableScrollPhysics(),
                                 children: pageList,
                               ),
                             ),
@@ -2148,7 +2236,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
         ),
       ];
 
-  List<Widget> get tapList => [
+  List<Widget> get tapRecruitmentList => [
         GetBuilder<GlobalController>(builder: (c) {
           return c.companyHomePage.requests!.isEmpty
               ? const Center(child: NoItemsWidget())
@@ -2182,6 +2270,32 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                       separatorBuilder: (ctx, index) => spaceY(10.sp),
                       itemCount: c.reservationRequests.length);
         }),
+      ];
+  List<Widget> get tapCleaningList => [
+        GetBuilder<GlobalController>(builder: (c) {
+          return c.cleaningBookings.isEmpty
+              ? const Center(child: NoItemsWidget())
+              : ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  itemBuilder: (ctx, index) => CleanCompanyBookingWidget(
+                      cleaningBooking: c.cleaningBookings[index]),
+                  separatorBuilder: (ctx, index) => spaceY(10.sp),
+                  itemCount: _globalController.cleaningBookings.length,
+                );
+        }),
+        GetBuilder<GlobalController>(builder: (c) {
+          return c.cleaningBookingsHistory.isEmpty
+              ? const Center(child: NoItemsWidget())
+              : ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  itemBuilder: (ctx, index) => CleanCompanyBookingWidget(
+                    cleaningBooking: c.cleaningBookingsHistory[index],
+                    approve: true,
+                  ),
+                  separatorBuilder: (ctx, index) => spaceY(10.sp),
+                  itemCount: _globalController.cleaningBookingsHistory.length,
+                );
+        })
       ];
 }
 

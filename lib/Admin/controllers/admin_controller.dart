@@ -27,6 +27,7 @@ class AdminController extends GetxController {
   bool getUserProfilesFlag = false;
   bool getmedicalsRequestsFlag = false;
   bool getCompanyProfilesFlag = false;
+  double? maxChart;
   Future<bool> getMedicals() async {
     try {
       getmedicalsRequestsFlag = true;
@@ -185,7 +186,7 @@ class AdminController extends GetxController {
         tmp.add(t);
       }
       accountStatments = tmp;
-
+      accountStatments.sort(_mySortComparison);
       logSuccess("account statments get done");
 
       accountStatmentFlag = false;
@@ -311,51 +312,76 @@ class AdminController extends GetxController {
 
   void getBookingPaymentsGraph() {
     data = [];
+    double max = 0;
     for (int i = 0; i < adminHomePageModel.bookingPaymentsGraph!.length; i++) {
+      logSuccess(adminHomePageModel.bookingPaymentsGraph![i].toJson());
       data.add(
         MyChartData(
           id: i,
           name: adminHomePageModel.bookingPaymentsGraph![i].month!,
           y: adminHomePageModel.bookingPaymentsGraph![i].bookingAmount!
-                  .toDouble() /
-              100,
+              .toDouble(),
           color: Colors.red,
         ),
       );
+      if (max <
+          adminHomePageModel.bookingPaymentsGraph![i].bookingAmount!
+              .toDouble()) {
+        max = adminHomePageModel.bookingPaymentsGraph![i].bookingAmount!
+            .toDouble();
+      }
     }
+    if (Get.locale == const Locale('en', 'US')) data = data.reversed.toList();
+    maxChart = max;
+    logError(maxChart!);
     update();
   }
 
   void getBookingsCountGraph() {
     data = [];
+    double max = 0;
     for (int i = 0; i < adminHomePageModel.bookingsCountGraph!.length; i++) {
+      logSuccess(adminHomePageModel.bookingsCountGraph![i].toJson());
+
       data.add(
         MyChartData(
           id: i,
           name: adminHomePageModel.bookingsCountGraph![i].month!,
-          y: adminHomePageModel.bookingsCountGraph![i].bookingCount!
-                  .toDouble() /
-              100,
+          y: adminHomePageModel.bookingsCountGraph![i].bookingCount!,
           color: Colors.red,
         ),
       );
+      if (max < adminHomePageModel.bookingsCountGraph![i].bookingCount!) {
+        max = adminHomePageModel.bookingsCountGraph![i].bookingCount!;
+      }
     }
+    maxChart = max;
+    logError(maxChart!);
+    if (Get.locale == const Locale('en', 'US')) data = data.reversed.toList();
     update();
   }
 
   void getAdsPaymentsGraph() {
     data = [];
+    double max = 0;
     for (int i = 0; i < adminHomePageModel.adsPaymentsGraph!.length; i++) {
+      logSuccess(adminHomePageModel.adsPaymentsGraph![i].toJson());
+
       data.add(
         MyChartData(
           id: i,
           name: adminHomePageModel.adsPaymentsGraph![i].month!,
-          y: adminHomePageModel.adsPaymentsGraph![i].adsAmount!.toDouble() /
-              100,
+          y: adminHomePageModel.adsPaymentsGraph![i].adsAmount!,
           color: Colors.red,
         ),
       );
+      if (max < adminHomePageModel.adsPaymentsGraph![i].adsAmount!.toDouble()) {
+        max = adminHomePageModel.adsPaymentsGraph![i].adsAmount!.toDouble();
+      }
     }
+    maxChart = max;
+    logError(maxChart!);
+    if (Get.locale == const Locale('en', 'US')) data = data.reversed.toList();
     update();
   }
 
@@ -399,7 +425,17 @@ class AdminController extends GetxController {
   Future getMessages() async {
     try {
       getMessagesFlag = true;
-      var res = await dio.get(EndPoints.getMessages);
+      String? token = await Utils.readToken();
+
+      var res = await dio.get(
+        EndPoints.getMessages,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<ContactMessageModel> tmp = [];
       for (var i in res.data['data']) {
         ContactMessageModel t = ContactMessageModel.fromJson(i);
@@ -580,6 +616,7 @@ class AdminController extends GetxController {
         ),
       );
       settingAdmin = SettingAdmin.fromJson(res.data['data']);
+
       logSuccess("SettingAdmin get done");
     } on DioException catch (e) {
       logError(e.response!.data);
@@ -623,7 +660,7 @@ class AdminController extends GetxController {
       String? token = await Utils.readToken();
 
       await dio.post(
-        EndPoints.storeMessage,
+        EndPoints.storeContactMessage,
         data: body,
         options: Options(
           headers: {
@@ -637,9 +674,19 @@ class AdminController extends GetxController {
       Get.back();
       return true;
     } on DioException catch (e) {
-      logError(e.message!);
+      logError(e.response!.data);
       Get.back();
     }
     return false;
+  }
+
+  int _mySortComparison(AccountStatmentModel a, AccountStatmentModel b) {
+    final propertyA = DateTime.parse(a.createdAt!);
+    final propertyB = DateTime.parse(b.createdAt!);
+    if (propertyA.isBefore(propertyB)) {
+      return 1;
+    } else {
+      return -1;
+    }
   }
 }

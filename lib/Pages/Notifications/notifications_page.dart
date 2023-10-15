@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Admin/pages/advertisments/admin_advertisment_page.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_personal_page.dart';
 import 'package:khedma/Pages/HomePage/company%20home/emloyee_details.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
@@ -46,9 +47,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
         body: GetBuilder<NotificationController>(builder: (c) {
           return c.getNotificationsFlag
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : c.notifications.isEmpty
-                  ? NoItemsWidget()
+                  ? const NoItemsWidget()
                   : ListView.separated(
                       itemBuilder: (context, index) => GestureDetector(
                             onTap: () async {
@@ -83,9 +84,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   break;
                                 case "reservationExtintion":
                                   if (_globalController.me.userType == "user") {
-                                    Get.to(() => PersonalPage());
+                                    Get.to(() => const PersonalPage());
                                   } else {
-                                    Get.to(() => CompanyPersonalPage());
+                                    Get.to(() => const CompanyPersonalPage());
 
                                     EmployeeModel? em =
                                         await _employeesController
@@ -102,7 +103,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
                                   break;
                                 case "chatMessage":
-                                  Get.to(() => MessagesPage());
+                                  Get.to(() => const MessagesPage());
+
+                                  break;
+                                case "advertisement":
+                                  if (_globalController.me.userType ==
+                                      "admin") {
+                                    Get.to(
+                                        () => const AdminAdvertismentsPage());
+                                  } else {
+                                    Get.to(() => const CompanyPersonalPage());
+                                  }
 
                                   break;
                                 default:
