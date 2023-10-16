@@ -32,6 +32,12 @@ import 'package:sizer/sizer.dart';
 
 // /
 class Utils {
+  static bool getDeviceType() {
+    // final data = MediaQueryData.fromView(View.of(Get.context! ));
+    // return data.size.shortestSide < 600 ? 'phone' : 'tablet';
+    return SizerUtil.deviceType == DeviceType.tablet;
+  }
+
   static Widget kwdSuffix(String text) => SizedBox(
         width: 60.sp,
         // height: 40.sp,

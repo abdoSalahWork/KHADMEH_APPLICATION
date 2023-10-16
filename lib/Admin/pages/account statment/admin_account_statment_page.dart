@@ -163,7 +163,7 @@ class AccountStatmentCard extends StatelessWidget {
               ),
               Expanded(
                 child: coloredText(
-                  text: "${accountStatmentModel.amount} KWD",
+                  text: "${accountStatmentModel.amount} ${"kwd".tr}",
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w600,
                 ),
@@ -184,10 +184,12 @@ class AccountStatmentCard extends StatelessWidget {
   }
 }
 
-Row depositLine(
-    {required String title,
-    required String content,
-    TextDirection? textDirection}) {
+Row depositLine({
+  required String title,
+  required String content,
+  TextDirection? textDirection,
+  TextOverflow? overflow,
+}) {
   return Row(
     children: [
       SizedBox(
@@ -195,8 +197,13 @@ Row depositLine(
         child: coloredText(text: "$title: ", color: Colors.grey),
       ),
       Expanded(
-          child: coloredText(
-              text: content, fontSize: 12.sp, textDirection: textDirection))
+        child: coloredText(
+          overflow: overflow,
+          text: content,
+          fontSize: 12.sp,
+          textDirection: textDirection,
+        ),
+      )
     ],
   );
 }

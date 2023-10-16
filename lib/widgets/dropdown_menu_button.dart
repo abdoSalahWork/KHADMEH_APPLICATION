@@ -64,6 +64,7 @@ class CustomDropDownMenuButton extends StatelessWidget {
       width: width ?? 80,
       height: height,
       child: DropdownButtonFormField<String>(
+        // itemHeight: kMinInteractiveDimension * 3,
         validator: validator,
         autovalidateMode: autovalidateMode,
         padding: EdgeInsetsDirectional.only(start: contentPadding),

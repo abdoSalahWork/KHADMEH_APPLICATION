@@ -231,7 +231,7 @@ class _InvoicePageState extends State<InvoicePage> {
                   spaceX(10),
                   coloredText(
                       text:
-                          "${widget.isOffer == 1 ? widget.contractAmountAfterDiscount : widget.contractAmount} KWD",
+                          "${widget.isOffer == 1 ? widget.contractAmountAfterDiscount : widget.contractAmount} ${'kwd'.tr}",
                       fontSize: 13.0.sp,
                       color: Theme.of(context).colorScheme.secondary),
                 ],

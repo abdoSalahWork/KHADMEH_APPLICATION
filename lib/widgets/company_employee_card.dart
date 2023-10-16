@@ -65,7 +65,7 @@ class CompanyEmployeeCard extends StatelessWidget {
                           children: [
                             coloredText(
                               text:
-                                  "${employee.contractAmount!} KWD/${employee.contractDuration! + " years".tr}",
+                                  "${employee.contractAmount!} ${'kwd'.tr} / ${employee.contractDuration! + "year".tr}",
                               color: employee.isOffer == 1
                                   ? const Color(0xff919191)
                                   : Theme.of(context).colorScheme.tertiary,
@@ -79,7 +79,7 @@ class CompanyEmployeeCard extends StatelessWidget {
                                 ? Container()
                                 : coloredText(
                                     text:
-                                        "${employee.amountAfterDiscount!} KWD/${employee.contractDuration! + " years".tr}",
+                                        "${employee.amountAfterDiscount!} ${'kwd'.tr} / ${employee.contractDuration! + "year".tr}",
                                     color:
                                         Theme.of(context).colorScheme.tertiary,
                                     fontSize: 9.0.sp,

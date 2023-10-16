@@ -61,7 +61,7 @@ class UserTypePage extends StatelessWidget {
                           () => const CompanyRegisterPage(),
                         ),
                         width: 75.0.w,
-                        height: 60,
+                        height: 40.sp,
                         text: coloredText(
                             text: "company".tr,
                             color: Theme.of(context).colorScheme.tertiary),
@@ -70,7 +70,7 @@ class UserTypePage extends StatelessWidget {
                       spaceY(2.0.h),
                       primaryBorderedButton(
                         width: 75.0.w,
-                        height: 60,
+                        height: 40.sp,
                         text: coloredText(
                           text: "user".tr,
                           color: Theme.of(context).colorScheme.tertiary,

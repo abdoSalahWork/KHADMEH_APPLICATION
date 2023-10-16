@@ -247,8 +247,8 @@ class _UserHomePageState extends State<UserHomePage> {
                                 child:
                                     GetBuilder<GlobalController>(builder: (c) {
                                   return Container(
-                                    width: 45,
-                                    height: 45,
+                                    width: 25.sp,
+                                    height: 25.sp,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       // border: Border.all(
@@ -395,7 +395,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                 ),
                                 spaceY(1.5.h),
                                 SizedBox(
-                                  height: 18.0.h,
+                                  height: 100.sp,
                                   child: globalController.userHomePage
                                                   .companiesRecruitment ==
                                               null ||
@@ -554,7 +554,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                 ),
                                 spaceY(1.5.h),
                                 SizedBox(
-                                  height: 18.0.h,
+                                  height: 100.sp,
                                   child: globalController.userHomePage
                                                   .companiesCleaning ==
                                               null ||
@@ -726,7 +726,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                 ),
                                 spaceY(2.0.h),
                                 SizedBox(
-                                  height: 25.0.h,
+                                  height: 120.sp,
                                   child: globalController
                                                   .userHomePage.employees ==
                                               null ||

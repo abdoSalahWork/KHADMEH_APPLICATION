@@ -50,7 +50,7 @@ class _BookedCleaningServiceWidgetState
               children: [
                 coloredText(text: widget.service.name),
                 coloredText(
-                    text: "${widget.service.price} KWD",
+                    text: "${widget.service.price} ${'kwd'.tr}",
                     color: Theme.of(context).colorScheme.secondary),
                 Row(
                   children: [

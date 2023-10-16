@@ -76,7 +76,7 @@ class AdvertismentCard extends StatelessWidget {
         spaceY(10.sp),
         adText(
             blackText: "price".tr,
-            greyText: "${advertismentModel.amount!} KWD"),
+            greyText: "${advertismentModel.amount!} ${'kwd'.tr}"),
         !admin && refused ? spaceY(10.sp) : Container(),
         !admin && refused
             ? Row(

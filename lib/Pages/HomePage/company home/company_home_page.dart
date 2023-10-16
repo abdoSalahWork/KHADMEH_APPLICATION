@@ -262,7 +262,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                   fillColor: const Color(0xffF8F8F8),
                                   filled: true,
                                   width: 100.w,
-                                  items: _globalController.categories
+                                  items: _globalController.cleanDropdownServices
                                       .map(
                                         (e) => DropdownMenuItem<String>(
                                           value: Get.locale ==
@@ -292,7 +292,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                 coloredText(text: "price".tr),
                                 spaceY(5.sp),
                                 SendMessageTextField(
-                                  suffixIcon: Utils.kwdSuffix("KWD"),
+                                  suffixIcon: Utils.kwdSuffix("kwd".tr),
                                   borderRadius: 5,
                                   keyBoardType: TextInputType.number,
                                   focusNode: FocusNode(),

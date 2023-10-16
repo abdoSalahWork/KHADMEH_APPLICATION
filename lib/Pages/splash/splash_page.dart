@@ -127,7 +127,7 @@ class _SplashPageState extends State<SplashPage>
         ),
         child: Align(
           child: Container(
-            width: w,
+            width: w / 1.5,
             height: h / 2,
             decoration: const BoxDecoration(
               image: DecorationImage(

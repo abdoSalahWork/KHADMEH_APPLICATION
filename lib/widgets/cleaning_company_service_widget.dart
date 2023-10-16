@@ -61,7 +61,7 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
               coloredText(text: widget.name),
               spaceY(3.sp),
               coloredText(
-                  text: "${widget.price} KWD",
+                  text: "${widget.price} ${'kwd'.tr}",
                   color: Theme.of(context).colorScheme.secondary),
               spaceY(3.sp),
               Row(

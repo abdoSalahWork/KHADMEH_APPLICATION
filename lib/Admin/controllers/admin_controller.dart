@@ -331,7 +331,7 @@ class AdminController extends GetxController {
             .toDouble();
       }
     }
-    if (Get.locale == const Locale('en', 'US')) data = data.reversed.toList();
+    if (Get.locale != const Locale('en', 'US')) data = data.reversed.toList();
     maxChart = max;
     logError(maxChart!);
     update();
@@ -357,7 +357,7 @@ class AdminController extends GetxController {
     }
     maxChart = max;
     logError(maxChart!);
-    if (Get.locale == const Locale('en', 'US')) data = data.reversed.toList();
+    if (Get.locale != const Locale('en', 'US')) data = data.reversed.toList();
     update();
   }
 
@@ -381,7 +381,7 @@ class AdminController extends GetxController {
     }
     maxChart = max;
     logError(maxChart!);
-    if (Get.locale == const Locale('en', 'US')) data = data.reversed.toList();
+    if (Get.locale != const Locale('en', 'US')) data = data.reversed.toList();
     update();
   }
 

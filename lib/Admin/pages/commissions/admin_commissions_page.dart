@@ -117,7 +117,7 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                       spaceY(5.sp),
                       SendMessageTextField(
                         suffixIcon: Utils.kwdSuffix(
-                            recruitmentCommissionGroup == 0 ? "KWD" : "%"),
+                            recruitmentCommissionGroup == 0 ? "kwd".tr : "%"),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,
@@ -163,7 +163,7 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                       spaceY(5.sp),
                       SendMessageTextField(
                         suffixIcon: Utils.kwdSuffix(
-                            cleanCommissionGroup == 0 ? "KWD" : "%"),
+                            cleanCommissionGroup == 0 ? "kwd".tr : "%"),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,
@@ -177,7 +177,7 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                           fontSize: 14.0.sp, text: "advertisment_price".tr),
                       spaceY(5.sp),
                       SendMessageTextField(
-                        suffixIcon: Utils.kwdSuffix("KWD"),
+                        suffixIcon: Utils.kwdSuffix("kwd".tr),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,
@@ -209,7 +209,7 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                           fontSize: 14.0.sp, text: "medical_exam_price".tr),
                       spaceY(5.sp),
                       SendMessageTextField(
-                        suffixIcon: Utils.kwdSuffix("KWD"),
+                        suffixIcon: Utils.kwdSuffix("kwd".tr),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,
@@ -226,7 +226,7 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                           fontSize: 14.0.sp, text: "khedma_cleaning_price".tr),
                       spaceY(5.sp),
                       SendMessageTextField(
-                        suffixIcon: Utils.kwdSuffix("KWD"),
+                        suffixIcon: Utils.kwdSuffix("kwd".tr),
                         borderRadius: 10,
                         focusNode: FocusNode(),
                         keyBoardType: TextInputType.number,

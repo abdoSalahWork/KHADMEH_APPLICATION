@@ -289,7 +289,7 @@ class _FillingDataPageState extends State<FillingDataPage> {
                     coloredText(text: "${"total".tr}:"),
                     coloredText(
                         text:
-                            "${_companiesController.getCartTotal() + diffPrice} KWD",
+                            "${_companiesController.getCartTotal() + diffPrice} ${'kwd'.tr}",
                         color: Theme.of(context).colorScheme.secondary),
                   ],
                 ),

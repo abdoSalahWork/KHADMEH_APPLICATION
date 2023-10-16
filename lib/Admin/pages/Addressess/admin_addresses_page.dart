@@ -22,8 +22,8 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
   // GlobalController _globalController = Get.find();
   // AddressessController _adressControllerController = Get.find();
   List<String> tabs = [
-    "cities",
     "countries",
+    "cities",
     "regions",
   ];
   late TabController tabController;
@@ -118,8 +118,8 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
                         child: TabBarView(
                       controller: tabController,
                       children: [
-                        tab1(),
                         tab2(),
+                        tab1(),
                         tab3(),
                       ],
                     )),

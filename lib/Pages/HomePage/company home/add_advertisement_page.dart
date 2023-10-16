@@ -380,7 +380,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                   height: 45,
                   radius: 8,
                   text: coloredText(
-                      text: "$price KWD",
+                      text: "$price ${'kwd'.tr}",
                       fontSize: 13.0.sp,
                       color: Theme.of(context).colorScheme.secondary),
                 ),

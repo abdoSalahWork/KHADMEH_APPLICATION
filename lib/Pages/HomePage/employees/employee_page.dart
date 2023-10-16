@@ -75,7 +75,7 @@ class _EmployeePageState extends State<EmployeePage> {
             )),
             width: 100.0.w,
             // height: contractFlag ? 48.0.h : 40.0.h,
-            height: 40.0.h,
+            height: 240.sp,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -180,7 +180,7 @@ class _EmployeePageState extends State<EmployeePage> {
                                     await Printing.layoutPdf(
                                         format: PdfPageFormat.a3,
                                         name:
-                                            "${widget.employeeModel.nameEn!} final contract",
+                                            "${widget.employeeModel.nameEn!} Triple recruitment contract",
                                         onLayout:
                                             (PdfPageFormat format) async =>
                                                 await Printing.convertHtml(
@@ -210,7 +210,7 @@ class _EmployeePageState extends State<EmployeePage> {
                                     await Printing.layoutPdf(
                                         format: PdfPageFormat.a3,
                                         name:
-                                            "${widget.employeeModel.nameEn!} contract",
+                                            "${widget.employeeModel.nameEn!} Ministry of Interior contract",
                                         onLayout:
                                             (PdfPageFormat format) async =>
                                                 await Printing.convertHtml(
@@ -275,8 +275,8 @@ class _EmployeePageState extends State<EmployeePage> {
                                 borderRadius: BorderRadius.circular(20)),
                             child: coloredText(
                                 text: widget.employeeModel.isOffer != 1
-                                    ? "${widget.employeeModel.contractAmount!} KWD/${widget.employeeModel.contractDuration! + " years".tr}"
-                                    : "${widget.employeeModel.amountAfterDiscount!} KWD/${widget.employeeModel.contractDuration! + " years".tr}",
+                                    ? "${widget.employeeModel.contractAmount!} ${"kwd".tr} /${"${widget.employeeModel.contractDuration!} ${"year".tr}"}"
+                                    : "${widget.employeeModel.amountAfterDiscount!} ${"kwd".tr} /${"${widget.employeeModel.contractDuration!} ${"year".tr}"}",
                                 color: Colors.white,
                                 fontSize: 9.0.sp),
                           ),
@@ -404,7 +404,7 @@ class _EmployeePageState extends State<EmployeePage> {
                               spaceX(5),
                               coloredText(
                                 text:
-                                    "${Utils.age(DateTime.now(), DateTime.parse(widget.employeeModel.dateOfBirth!))} Years",
+                                    "${Utils.age(DateTime.now(), DateTime.parse(widget.employeeModel.dateOfBirth!))} ${"years".tr}",
                                 fontSize: 12.0.sp,
                                 color: const Color(0xffD4D4D4),
                               ),
@@ -677,9 +677,10 @@ class _EmployeePageState extends State<EmployeePage> {
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             children: [
               coloredText(
-                text:
-                    "${Get.locale == const Locale('en', 'US') ? widget.employeeModel.nameEn! : widget.employeeModel.nameAr!}'s CV"
-                        .tr,
+                text: (Get.locale == const Locale('en', 'US')
+                        ? "${widget.employeeModel.nameEn!} ${"data".tr}"
+                        : "${"data".tr} ${widget.employeeModel.nameAr!}")
+                    .tr,
                 fontWeight: FontWeight.bold,
               ),
               const Divider(

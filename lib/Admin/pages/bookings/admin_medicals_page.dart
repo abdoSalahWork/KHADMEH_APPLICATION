@@ -123,8 +123,12 @@ class _AdminMedicalRequestsState extends State<AdminMedicalRequests> {
                                               },
                                               child: depositLine(
                                                   title: "email".tr,
-                                                  content:
-                                                      "${c.medicalRequests[index].user!.email!.substring(0, 15)}..."),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  content: c
+                                                      .medicalRequests[index]
+                                                      .user!
+                                                      .email!),
                                             ),
                                             spaceY(10.sp),
                                             depositLine(

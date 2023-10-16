@@ -1484,7 +1484,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       return null;
                                     },
                                     hintText: "0",
-                                    suffixIcon: Utils.kwdSuffix("KWD"),
+                                    suffixIcon: Utils.kwdSuffix("kwd".tr),
 
                                     controller: _contractAmountController,
                                     keyBoardType: TextInputType.number,
@@ -1548,6 +1548,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       ? Container()
                                       : SendMessageTextField(
                                           focusNode: _focusNodes[21],
+                                          suffixIcon: Utils.kwdSuffix("kwd".tr),
+
                                           validator: (s) {
                                             if (errors[
                                                     'amount_after_discount'] !=

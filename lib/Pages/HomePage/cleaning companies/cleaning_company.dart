@@ -56,6 +56,8 @@ class _CleaningCompanyState extends State<CleaningCompany> {
           c = c + 1;
         }
       }
+      if (c == 0) c += 1;
+
       rate = rate / c;
     } else {
       widget.cleaningCompany.reviewCompany = [];

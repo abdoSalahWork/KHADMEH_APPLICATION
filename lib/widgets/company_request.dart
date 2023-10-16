@@ -176,7 +176,20 @@ class ReservationRequestWidget extends StatelessWidget {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: 40.0.sp,
+            height: 40.0.sp,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                  image: NetworkImage(reservationExtintionModel
+                      .user!.userInformation!.personalPhoto!),
+                  fit: BoxFit.cover),
+            ),
+          ),
+          spaceX(10.sp),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,

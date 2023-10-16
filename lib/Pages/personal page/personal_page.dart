@@ -110,7 +110,7 @@ class _PersonalPageState extends State<PersonalPage>
                 ],
               )),
               width: 100.0.w,
-              height: 40.0.h,
+              height: 230.sp,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -296,7 +296,7 @@ class _PersonalPageState extends State<PersonalPage>
                       },
                       child: Container(
                         width: 40.0.w,
-                        height: 40,
+                        height: 25.sp,
                         margin: EdgeInsets.symmetric(horizontal: 1.0.w),
                         decoration: BoxDecoration(
                             color: !tags.contains(item.label)

@@ -132,7 +132,7 @@ class _CompanyServicesPageState extends State<CompanyServicesPage> {
                               coloredText(text: "price".tr),
                               spaceY(5.sp),
                               SendMessageTextField(
-                                suffixIcon: Utils.kwdSuffix("KWD"),
+                                suffixIcon: Utils.kwdSuffix("kwd".tr),
                                 borderRadius: 5,
                                 keyBoardType: TextInputType.number,
                                 focusNode: FocusNode(),
@@ -197,6 +197,7 @@ class _CompanyServicesPageState extends State<CompanyServicesPage> {
                                 borderRadius: 5,
                                 initialValue: _companiesController.companyPrice,
                                 keyBoardType: TextInputType.number,
+                                suffixIcon: Utils.kwdSuffix("kwd".tr),
                                 focusNode: FocusNode(),
                                 onchanged: (s) {
                                   if (s != null && s != "")
@@ -288,7 +289,7 @@ class _CompanyServicesWidget2State extends State<CompanyServicesWidget2> {
                       : widget.service.adminService!.nameAr!),
               spaceY(5.sp),
               coloredText(
-                  text: "${"price".tr}: ${widget.price} KWD",
+                  text: "${"price".tr}: ${widget.price} ${'kwd'.tr}",
                   color: Colors.grey),
               spaceY(5.sp),
               primaryButton(

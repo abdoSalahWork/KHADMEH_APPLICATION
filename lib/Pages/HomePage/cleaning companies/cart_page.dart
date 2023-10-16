@@ -43,7 +43,7 @@ class CartPage extends StatelessWidget {
                   children: [
                     coloredText(text: "${"total".tr}:"),
                     coloredText(
-                        text: "${c.getCartTotal()} KWD",
+                        text: "${c.getCartTotal()} ${'kwd'.tr}",
                         color: Theme.of(context).colorScheme.secondary),
                   ],
                 ),

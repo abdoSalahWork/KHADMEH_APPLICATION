@@ -137,7 +137,9 @@ class MyAdminMenuItems {
   static const logOut = DrawerMenuItem(
       titleEn: "Log out", icon: EvaIcons.logOut, titleAr: "تسجيل الخروج");
   static const dropDowns = DrawerMenuItem(
-      titleEn: "Dropdowns", icon: EvaIcons.arrowDownward, titleAr: "الخيارات");
+      titleEn: "Personal status",
+      icon: EvaIcons.arrowDownward,
+      titleAr: "الحالة الشخصية");
 
   static const all = <DrawerMenuItem>[
     userProfiles,

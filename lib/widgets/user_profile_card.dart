@@ -70,16 +70,12 @@ class UserProfileCard extends StatelessWidget {
                       Get.locale == const Locale('en', 'US')
                           ? coloredText(
                               text: employeeModel.nameEn != null
-                                  ? employeeModel.nameEn!.length > 8
-                                      ? "${employeeModel.nameEn!.substring(0, 8)}..."
-                                      : employeeModel.nameEn!
+                                  ? employeeModel.nameEn!
                                   : 'lorem ipsun',
                               fontSize: 13.0.sp)
                           : coloredText(
                               text: employeeModel.nameAr != null
-                                  ? employeeModel.nameAr!.length > 8
-                                      ? "${employeeModel.nameAr!.substring(0, 8)}..."
-                                      : employeeModel.nameAr!
+                                  ? employeeModel.nameAr!
                                   : 'lorem ipsun',
                               fontSize: 13.0.sp),
                       spaceY(5.sp),
@@ -87,7 +83,7 @@ class UserProfileCard extends StatelessWidget {
                         children: [
                           coloredText(
                             text:
-                                "${employeeModel.contractAmount!} KWD/${employeeModel.contractDuration! + " years".tr}",
+                                "${employeeModel.contractAmount!} ${'kwd'.tr} / ${employeeModel.contractDuration! + "year".tr}",
                             color: employeeModel.isOffer == 1
                                 ? const Color(0xff919191)
                                 : Theme.of(context).colorScheme.tertiary,
@@ -103,7 +99,7 @@ class UserProfileCard extends StatelessWidget {
                               ? Container()
                               : coloredText(
                                   text:
-                                      "${employeeModel.amountAfterDiscount!} KWD/${employeeModel.contractDuration! + " years".tr}",
+                                      "${employeeModel.amountAfterDiscount!} ${'kwd'.tr} / ${employeeModel.contractDuration! + "year".tr}",
                                   color: Theme.of(context).colorScheme.tertiary,
                                   fontSize: 9.0.sp,
                                 ),
@@ -120,7 +116,7 @@ class UserProfileCard extends StatelessWidget {
               employeeModel.jobs == null || employeeModel.jobs!.isEmpty
                   ? Container()
                   : SizedBox(
-                      height: 30,
+                      height: 24.sp,
                       child: ListView.separated(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,

@@ -79,12 +79,12 @@ class _AdminMainPageState extends State<AdminMainPage>
             title: "payments".tr,
             subTitle:
                 "${_adminHomeController.adminHomePageModel.paymentBookingAmount!}",
-            currency: "KWD",
+            currency: "kwd".tr,
             icon: Icons.monetization_on_outlined),
         StatisticBoxMdel(
             title: "ads_payment".tr,
             subTitle: "${_adminHomeController.adminHomePageModel.adsAmount!}",
-            currency: "KWD",
+            currency: "kwd".tr,
             icon: Icons.monetization_on_outlined),
         StatisticBoxMdel(
             title: "users_no".tr,
@@ -237,7 +237,7 @@ class _AdminMainPageState extends State<AdminMainPage>
                                   )
                                 : coloredText(
                                     text:
-                                        "${_adminHomeController.adminHomePageModel.totalBalance!.toStringAsFixed(2)} KWD",
+                                        "${_adminHomeController.adminHomePageModel.totalBalance!.toStringAsFixed(2)} ${"kwd".tr}",
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20.sp,

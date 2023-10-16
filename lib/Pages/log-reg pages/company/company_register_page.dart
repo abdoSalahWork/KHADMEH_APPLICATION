@@ -193,7 +193,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   //         // physics: const NeverScrollableScrollPhysics(),
                   //         controlsBuilder: (context, details) {
                   //           return primaryButton(
-                  //             height: 50,
+                  //             height: 35.sp,
                   //             width: 45.0.w,
                   //             radius: 30,
                   //             onTap: () {
@@ -474,6 +474,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               spaceY(10.0.sp),
               CustomDropDownMenuButton(
                 hintPadding: 0, focusNode: _focusNodes[3],
+                // height: 100,
                 hint: "nationality".tr,
                 autovalidateMode: AutovalidateMode.always,
                 validator: (String? value) {
@@ -661,7 +662,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   color: Colors.white,
                   fontSize: 16.0.sp,
                 ),
-                height: 50,
+                height: 35.sp,
                 width: 45.0.w,
                 radius: 30,
                 color: Theme.of(context).colorScheme.primary,
@@ -684,8 +685,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 child: primaryButton(
                     color: const Color(0xffF5F5F5),
                     width: 100.0.w,
-                    height: 55,
-                    radius: 10,
+                    height: 40.sp,
+                    radius: 10.sp,
                     onTap: () async {
                       XFile? image = await Utils().selectImageSheet();
 
@@ -896,13 +897,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     // hintPadding: 5,
                     width: 42.0.w,
                     height: 38.sp,
+
                     borderRadius: BorderRadius.circular(10),
                     value: companyType == "" ? null : companyType,
                     items: ["recruitment", "cleaning"]
                         .map(
                           (e) => DropdownMenuItem<String>(
                             value: e,
-                            child: coloredText(text: e.tr),
+                            child: coloredText(text: e.tr, fontSize: 10.sp),
                           ),
                         )
                         .toList(),
@@ -1217,7 +1219,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   color: Colors.white,
                   fontSize: 16.0.sp,
                 ),
-                height: 50,
+                height: 35.sp,
                 width: 45.0.w,
                 radius: 30,
                 color: Theme.of(context).colorScheme.primary,
@@ -1452,7 +1454,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     color: Colors.white,
                     fontSize: 16.0.sp,
                   ),
-                  height: 50,
+                  height: 35.sp,
                   width: 45.0.w,
                   radius: 30,
                   color: Theme.of(context).colorScheme.primary,
@@ -1594,7 +1596,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   color: Colors.white,
                   fontSize: 16.0.sp,
                 ),
-                height: 50,
+                height: 35.sp,
                 width: 45.0.w,
                 radius: 30,
                 color: Theme.of(context).colorScheme.primary,
@@ -1810,7 +1812,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                     );
                                   },
                                   width: 40.0.w,
-                                  height: 50,
+                                  height: 35.sp,
                                   radius: 10.w,
                                   color: Theme.of(context).colorScheme.primary,
                                   text: coloredText(
@@ -1941,7 +1943,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   color: Colors.white,
                   fontSize: 16.0.sp,
                 ),
-                height: 50,
+                height: 35.sp,
                 width: 45.0.w,
                 radius: 30,
                 color: privacyFlag

@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       // ),
                     ),
                     width: 100.0.w,
-                    height: 30.0.h,
+                    height: 170.sp,
                     child: Column(
                       children: [
                         Row(
@@ -152,7 +152,10 @@ class _LoginPageState extends State<LoginPage> {
                                 focusNode: _focusNodes[0],
                                 controller: _emailController,
                                 keyBoardType: TextInputType.emailAddress,
-                                prefixIcon: const Icon(Icons.email_outlined),
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  size: Utils.getDeviceType() ? 10.sp : null,
+                                ),
                                 hintText: "email".tr,
                                 validator: (String? value) =>
                                     EmailValidator.validate(value!)
@@ -163,10 +166,14 @@ class _LoginPageState extends State<LoginPage> {
                               focusNode: _focusNodes[1],
                               controller: _passwordController,
                               keyBoardType: TextInputType.visiblePassword,
-                              prefixIcon: const Icon(Icons.lock_outline),
+                              prefixIcon: Icon(
+                                Icons.lock_outline,
+                                size: Utils.getDeviceType() ? 10.sp : null,
+                              ),
                               suffixIcon: IconButton(
                                   icon: Icon(
                                     Icons.remove_red_eye,
+                                    size: Utils.getDeviceType() ? 10.sp : null,
                                     color: _focusNodes[1].hasFocus
                                         ? Theme.of(context)
                                             .colorScheme
@@ -210,49 +217,52 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             spaceY(10.0.sp),
                             SizedBox(
-                              height: 30,
+                              height: 20.sp,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  SizedBox(
-                                    width: 20,
-                                    height: 25,
-                                    child: Checkbox(
-                                      checkColor: Colors.white,
-                                      fillColor: MaterialStateProperty
-                                          .resolveWith<Color>(
-                                              (Set<MaterialState> states) {
-                                        if (states
-                                            .contains(MaterialState.selected)) {
-                                          return Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                              .withOpacity(0.5);
-                                        }
-                                        return Colors.white;
-                                      }),
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(5.0),
-                                        ),
-                                      ), // Rounded Checkbox
-                                      onChanged: (value) {
-                                        _rememberMeFlag = value!;
-                                        FocusManager.instance.primaryFocus
-                                            ?.unfocus();
+                                  Transform.scale(
+                                    scale: Utils.getDeviceType() ? 3 : 1,
+                                    child: SizedBox(
+                                      width: 20.sp,
+                                      height: 20.sp,
+                                      child: Checkbox(
+                                        checkColor: Colors.white,
+                                        fillColor: MaterialStateProperty
+                                            .resolveWith<Color>(
+                                                (Set<MaterialState> states) {
+                                          if (states.contains(
+                                              MaterialState.selected)) {
+                                            return Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                                .withOpacity(0.5);
+                                          }
+                                          return Colors.white;
+                                        }),
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(5.0),
+                                          ),
+                                        ), // Rounded Checkbox
+                                        onChanged: (value) {
+                                          _rememberMeFlag = value!;
+                                          FocusManager.instance.primaryFocus
+                                              ?.unfocus();
 
-                                        if (value) {
-                                          // MyDialogs.showWarningDialoge3(
-                                          //     onProceed: () {
-                                          //       Get.back();
-                                          //     },
-                                          //     message: "check_dialoge".tr,
-                                          //     yesBTN: 'close'.tr);
-                                        }
-                                        setState(() {});
-                                      },
-                                      value: _rememberMeFlag,
+                                          if (value) {
+                                            // MyDialogs.showWarningDialoge3(
+                                            //     onProceed: () {
+                                            //       Get.back();
+                                            //     },
+                                            //     message: "check_dialoge".tr,
+                                            //     yesBTN: 'close'.tr);
+                                          }
+                                          setState(() {});
+                                        },
+                                        value: _rememberMeFlag,
+                                      ),
                                     ),
                                   ),
                                   spaceX(10),
@@ -523,83 +533,83 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    Utils.showToast(message: "Facebook soon");
+//                                 GestureDetector(
+//                                   onTap: () async {
+//                                     Utils.showToast(message: "Facebook soon");
 
-//                                     final LoginResult result = await FacebookAuth
-//                                         .instance
-//                                         .login(); // by default we request the email and the public profile
-// // or FacebookAuth.i.login()
-//                                     if (result.status == LoginStatus.success) {
-//                                       // you are logged
-//                                       final AccessToken accessToken =
-//                                           result.accessToken!;
-//                                       logSuccess(accessToken.token);
-//                                     } else {
-//                                       logError(result.status);
-//                                       logError(result.message!);
-//                                     }
-                                    // var res = await Dio()
-                                    //     .get("https://khdmah.online");
+// //                                     final LoginResult result = await FacebookAuth
+// //                                         .instance
+// //                                         .login(); // by default we request the email and the public profile
+// // // or FacebookAuth.i.login()
+// //                                     if (result.status == LoginStatus.success) {
+// //                                       // you are logged
+// //                                       final AccessToken accessToken =
+// //                                           result.accessToken!;
+// //                                       logSuccess(accessToken.token);
+// //                                     } else {
+// //                                       logError(result.status);
+// //                                       logError(result.message!);
+// //                                     }
+//                                     // var res = await Dio()
+//                                     //     .get("https://khdmah.online");
 
-                                    // await Printing.layoutPdf(
-                                    //     format: PdfPageFormat.a3,
-                                    //     name: "contract",
-                                    //     onLayout:
-                                    //         (PdfPageFormat format) async =>
-                                    //             await Printing.convertHtml(
-                                    //               format: format,
-                                    //               html: res.data,
-                                    //             ));
-                                  },
-                                  child: Container(
-                                    width: 40.0.sp,
-                                    height: 40.0.sp,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color:
-                                                Colors.grey.withOpacity(0.2)),
-                                        shape: BoxShape.circle,
-                                        color: Colors.grey.withOpacity(0.1)),
-                                    child: Center(
-                                      child: Image(
-                                        width: 20.0.sp,
-                                        height: 20.0.sp,
-                                        image: const AssetImage(
-                                            "assets/images/facebook.png"),
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Utils.showToast(message: "Apple soon");
-                                  },
-                                  child: Container(
-                                    width: 40.0.sp,
-                                    height: 40.0.sp,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color:
-                                                Colors.grey.withOpacity(0.2)),
-                                        shape: BoxShape.circle,
-                                        color: Colors.grey.withOpacity(0.1)),
-                                    child: Center(
-                                      child: Image(
-                                        width: 20.0.sp,
-                                        height: 20.0.sp,
-                                        image: const AssetImage(
-                                            "assets/images/apple.png"),
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+//                                     // await Printing.layoutPdf(
+//                                     //     format: PdfPageFormat.a3,
+//                                     //     name: "contract",
+//                                     //     onLayout:
+//                                     //         (PdfPageFormat format) async =>
+//                                     //             await Printing.convertHtml(
+//                                     //               format: format,
+//                                     //               html: res.data,
+//                                     //             ));
+//                                   },
+//                                   child: Container(
+//                                     width: 40.0.sp,
+//                                     height: 40.0.sp,
+//                                     decoration: BoxDecoration(
+//                                         border: Border.all(
+//                                             color:
+//                                                 Colors.grey.withOpacity(0.2)),
+//                                         shape: BoxShape.circle,
+//                                         color: Colors.grey.withOpacity(0.1)),
+//                                     child: Center(
+//                                       child: Image(
+//                                         width: 20.0.sp,
+//                                         height: 20.0.sp,
+//                                         image: const AssetImage(
+//                                             "assets/images/facebook.png"),
+//                                         fit: BoxFit.contain,
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                                 GestureDetector(
+//                                   onTap: () {
+//                                     Utils.showToast(message: "Apple soon");
+//                                   },
+//                                   child: Container(
+//                                     width: 40.0.sp,
+//                                     height: 40.0.sp,
+//                                     decoration: BoxDecoration(
+//                                         border: Border.all(
+//                                             color:
+//                                                 Colors.grey.withOpacity(0.2)),
+//                                         shape: BoxShape.circle,
+//                                         color: Colors.grey.withOpacity(0.1)),
+//                                     child: Center(
+//                                       child: Image(
+//                                         width: 20.0.sp,
+//                                         height: 20.0.sp,
+//                                         image: const AssetImage(
+//                                             "assets/images/apple.png"),
+//                                         fit: BoxFit.contain,
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
                               ],
                             ),
-                            spaceY(20.0.sp),
+                            spaceY(10.0.sp),
                             coloredText(
                               text: "dont_have_an_account".tr,
                               fontSize: 12.0.sp,

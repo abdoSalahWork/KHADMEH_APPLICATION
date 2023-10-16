@@ -140,7 +140,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       // physics: const NeverScrollableScrollPhysics(),
                       controlsBuilder: (context, details) {
                         return primaryButton(
-                          height: 50,
+                          height: 35.sp,
                           width: 45.0.w,
                           radius: 30,
                           onTap: _currentStep == 3 && !privacyFlag
