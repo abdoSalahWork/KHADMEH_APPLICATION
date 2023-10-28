@@ -26,10 +26,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -58,5 +55,16 @@ class DefaultFirebaseOptions {
     messagingSenderId: '705392766739',
     projectId: 'khedma-92ce7',
     storageBucket: 'khedma-92ce7.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCjbTyCfIMqcD9rgXHpoPRXQjMTtKo9XwY',
+    appId: '1:705392766739:ios:46c25209c30ef195ed74e6',
+    messagingSenderId: '705392766739',
+    projectId: 'khedma-92ce7',
+    storageBucket: 'khedma-92ce7.appspot.com',
+    androidClientId: '705392766739-kaluo3fn755vdgrq4e37khk0e9hrqs7b.apps.googleusercontent.com',
+    iosClientId: '705392766739-pm24lqml7o30s948lnv49euioq5kit4v.apps.googleusercontent.com',
+    iosBundleId: 'com.dropidea.khedma',
   );
 }

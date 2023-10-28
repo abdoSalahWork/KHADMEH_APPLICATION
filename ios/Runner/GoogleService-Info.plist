@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>705392766739-pm24lqml7o30s948lnv49euioq5kit4v.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.705392766739-pm24lqml7o30s948lnv49euioq5kit4v</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>705392766739-kaluo3fn755vdgrq4e37khk0e9hrqs7b.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCjbTyCfIMqcD9rgXHpoPRXQjMTtKo9XwY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>705392766739</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.dropidea.khedma</string>
+	<key>PROJECT_ID</key>
+	<string>khedma-92ce7</string>
+	<key>STORAGE_BUCKET</key>
+	<string>khedma-92ce7.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:705392766739:ios:46c25209c30ef195ed74e6</string>
+</dict>
+</plist>
