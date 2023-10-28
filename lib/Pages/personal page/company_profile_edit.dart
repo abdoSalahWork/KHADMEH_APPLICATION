@@ -99,7 +99,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           primary: false,
           children: [
-            spaceY(10.0.sp),
+            spaceY(10.0.sp), coloredText(text: "phone_number".tr),
             UnderlinedCustomTextField(
               focusNode: _focusNodes[0],
               controller: _companyPhoneNumberController,
@@ -174,91 +174,103 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 //todo:langs needs to be fixed
-                CustomDropDownMenuButton(
-                  hint: "city".tr,
-                  value: city == "" ? null : city,
-                  hintPadding: 0,
-                  border: const UnderlineInputBorder(),
-                  width: 40.0.w,
-                  items: _globalController.cities
-                      .map((e) => DropdownMenuItem<String>(
-                            value: Get.locale == const Locale('en', 'US')
-                                ? e.nameEn!
-                                : e.nameAr,
-                            child: coloredText(
-                              text: Get.locale == const Locale('en', 'US')
-                                  ? e.nameEn!
-                                  : e.nameAr!,
-                              fontSize: 17,
-                            ),
-                          ))
-                      .toList(),
-                  autovalidateMode: AutovalidateMode.always,
-                  validator: (String? value) {
-                    if (errors['city_id'] != null) {
-                      String tmp = "";
-                      tmp = errors['city_id'].join("\n");
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    coloredText(text: "city".tr),
+                    CustomDropDownMenuButton(
+                      hint: "city".tr,
+                      value: city == "" ? null : city,
+                      hintPadding: 0,
+                      border: const UnderlineInputBorder(),
+                      width: 40.0.w,
+                      items: _globalController.cities
+                          .map((e) => DropdownMenuItem<String>(
+                                value: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr,
+                                child: coloredText(
+                                  text: Get.locale == const Locale('en', 'US')
+                                      ? e.nameEn!
+                                      : e.nameAr!,
+                                  fontSize: 17,
+                                ),
+                              ))
+                          .toList(),
+                      autovalidateMode: AutovalidateMode.always,
+                      validator: (String? value) {
+                        if (errors['city_id'] != null) {
+                          String tmp = "";
+                          tmp = errors['city_id'].join("\n");
 
-                      return tmp;
-                    }
-                    return null;
-                  },
-                  onChanged: (p0) {
-                    city = p0!;
-                    errors["city_id"] = null;
-                    setState(() {});
-                    companyInformation.cityId = _globalController.cities
-                        .where((element) =>
-                            element.nameEn == p0 || element.nameAr == p0)
-                        .first
-                        .id!;
-                  },
+                          return tmp;
+                        }
+                        return null;
+                      },
+                      onChanged: (p0) {
+                        city = p0!;
+                        errors["city_id"] = null;
+                        setState(() {});
+                        companyInformation.cityId = _globalController.cities
+                            .where((element) =>
+                                element.nameEn == p0 || element.nameAr == p0)
+                            .first
+                            .id!;
+                      },
+                    ),
+                  ],
                 ),
                 //todo:langs need to be fixed
-                CustomDropDownMenuButton(
-                  hint: "region".tr,
-                  border: const UnderlineInputBorder(),
-                  width: 40.0.w,
-                  hintPadding: 0,
-                  value: region == "" ? null : region,
-                  items: _globalController.regions
-                      .map((e) => DropdownMenuItem<String>(
-                            value: Get.locale == const Locale('en', 'US')
-                                ? e.nameEn!
-                                : e.nameAr,
-                            child: coloredText(
-                              text: Get.locale == const Locale('en', 'US')
-                                  ? e.nameEn!
-                                  : e.nameAr!,
-                              fontSize: 17,
-                            ),
-                          ))
-                      .toList(),
-                  autovalidateMode: AutovalidateMode.always,
-                  validator: (String? value) {
-                    if (errors['region_id'] != null) {
-                      String tmp = "";
-                      tmp = errors['region_id'].join("\n");
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    coloredText(text: "region".tr),
+                    CustomDropDownMenuButton(
+                      hint: "region".tr,
+                      border: const UnderlineInputBorder(),
+                      width: 40.0.w,
+                      hintPadding: 0,
+                      value: region == "" ? null : region,
+                      items: _globalController.regions
+                          .map((e) => DropdownMenuItem<String>(
+                                value: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr,
+                                child: coloredText(
+                                  text: Get.locale == const Locale('en', 'US')
+                                      ? e.nameEn!
+                                      : e.nameAr!,
+                                  fontSize: 17,
+                                ),
+                              ))
+                          .toList(),
+                      autovalidateMode: AutovalidateMode.always,
+                      validator: (String? value) {
+                        if (errors['region_id'] != null) {
+                          String tmp = "";
+                          tmp = errors['region_id'].join("\n");
 
-                      return tmp;
-                    }
-                    return null;
-                  },
-                  onChanged: (p0) {
-                    region = p0!;
-                    errors["region_id"] = null;
-                    setState(() {});
-                    companyInformation.regionId = _globalController.regions
-                        .where((element) =>
-                            element.nameEn == p0 || element.nameAr == p0)
-                        .first
-                        .id!;
-                    ;
-                  },
+                          return tmp;
+                        }
+                        return null;
+                      },
+                      onChanged: (p0) {
+                        region = p0!;
+                        errors["region_id"] = null;
+                        setState(() {});
+                        companyInformation.regionId = _globalController.regions
+                            .where((element) =>
+                                element.nameEn == p0 || element.nameAr == p0)
+                            .first
+                            .id!;
+                        ;
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
-            spaceY(15.0.sp),
+            spaceY(15.0.sp), coloredText(text: "piece_num".tr),
             UnderlinedCustomTextField(
               focusNode: _focusNodes[3],
               controller: _pieceNumberController,
@@ -279,7 +291,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                 companyInformation.pieceNumber = s;
               },
             ),
-            spaceY(15.0.sp),
+            spaceY(15.0.sp), coloredText(text: "street".tr),
             UnderlinedCustomTextField(
               focusNode: _focusNodes[4],
               controller: _streetController,
@@ -300,7 +312,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                 companyInformation.street = s;
               },
             ),
-            spaceY(15.0.sp),
+            spaceY(15.0.sp), coloredText(text: "building".tr),
             UnderlinedCustomTextField(
               focusNode: _focusNodes[5],
               controller: _buildingController,
@@ -321,7 +333,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                 companyInformation.building = s;
               },
             ),
-            spaceY(15.0.sp),
+            spaceY(15.0.sp), coloredText(text: "adn".tr),
             UnderlinedCustomTextField(
               focusNode: _focusNodes[6],
               controller: _adnController,

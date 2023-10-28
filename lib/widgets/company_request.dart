@@ -359,9 +359,7 @@ class CleanCompanyBookingWidget extends StatelessWidget {
                   spaceX(5.sp),
                   Expanded(
                     child: coloredText(
-                        text:
-                            "${cleaningBooking.startDate} : ${cleaningBooking.endDate}",
-                        fontSize: 11.sp),
+                        text: "${cleaningBooking.startDate} ", fontSize: 11.sp),
                   ),
                 ],
               ),

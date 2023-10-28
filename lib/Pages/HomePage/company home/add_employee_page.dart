@@ -109,11 +109,14 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   final TextEditingController _contractDurationController =
       TextEditingController();
   final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _monthlySaleryController =
+      TextEditingController();
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _expirydateController = TextEditingController();
   final TextEditingController _issuedateController = TextEditingController();
   final TextEditingController _passportNoController = TextEditingController();
+  final TextEditingController _descEditingController = TextEditingController();
   // final TextEditingController _monthlySaleryController =
   //     TextEditingController();
   // final TextEditingController _hourlySaleryController = TextEditingController();
@@ -1401,37 +1404,36 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                               itemCount: selectedJobs.length),
                                         ),
                                   spaceY(10.sp),
+                                  coloredText(text: "monthly_salery".tr),
+                                  spaceY(5.sp),
+                                  SendMessageTextField(
+                                    focusNode: _focusNodes[15],
+                                    validator: (s) {
+                                      if (errors['salary_month'] != null) {
+                                        String tmp = "";
+                                        tmp = errors['salary_month'].join("\n");
 
-                                  // coloredText(text: "monthly_salery".tr),
-                                  // spaceY(5.sp),
-                                  // SendMessageTextField(
-                                  //   focusNode: _focusNodes[15],
-                                  //   validator: (s) {
-                                  //     if (errors['salary_month'] != null) {
-                                  //       String tmp = "";
-                                  //       tmp = errors['salary_month'].join("\n");
-
-                                  //       return tmp;
-                                  //     }
-                                  //     return null;
-                                  //   },
-                                  //   hintText: "0 KD",
-                                  //   controller: _monthlySaleryController,
-                                  //   keyBoardType: TextInputType.number,
-                                  //   fillColor: const Color(0xffF8F8F8),
-                                  //   width: 100.w,
-                                  //   onchanged: (s) {
-                                  //     if (s != "") {
-                                  //       employeeToCreate.salaryMonth = s;
-                                  //     }
-                                  //   },
-                                  //   // borderc: Border.all(color: const Color(0xffE3E3E3)),
-                                  //   borderRadius: 8,
-                                  //   // padding:
-                                  //   //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                                  // ),
-
-                                  // spaceY(10.sp),
+                                        return tmp;
+                                      }
+                                      return null;
+                                    },
+                                    hintText: "0",
+                                    suffixIcon: Utils.kwdSuffix("kwd".tr),
+                                    controller: _monthlySaleryController,
+                                    keyBoardType: TextInputType.number,
+                                    fillColor: const Color(0xffF8F8F8),
+                                    width: 100.w,
+                                    onchanged: (s) {
+                                      if (s != "") {
+                                        employeeToCreate.salaryMonth = s;
+                                      }
+                                    },
+                                    // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                                    borderRadius: 8,
+                                    // padding:
+                                    //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                                  ),
+                                  spaceY(10.sp),
                                   coloredText(text: "contract_duration".tr),
                                   spaceY(5.sp),
                                   SendMessageTextField(
@@ -1469,7 +1471,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
                                   ),
                                   spaceY(10.sp),
-
                                   coloredText(text: "contract_amount".tr),
                                   SendMessageTextField(
                                     focusNode: _focusNodes[22],
@@ -1969,6 +1970,34 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                       spaceX(10.sp),
                                               itemCount: selectedLangs.length),
                                         ),
+                                  spaceY(10.sp),
+                                  coloredText(text: "more_details".tr),
+                                  spaceY(5.sp),
+                                  SizedBox(
+                                    height: 20.h,
+                                    child: TextFormField(
+                                      maxLines: 6,
+                                      controller: _descEditingController,
+                                      onChanged: (value) {
+                                        if (widget.employeeToEdit != null) {
+                                          widget.employeeToEdit!.desc = value;
+                                        } else {
+                                          employeeToCreate.desc = value;
+                                        }
+                                      },
+                                      decoration: const InputDecoration(
+                                        // hintText: "write_your_notes".tr,
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
+                                        ),
+                                        filled: true,
+                                        fillColor: Color(0xffF8F8F8),
+                                      ),
+                                    ),
+                                  ),
                                   spaceY(10.sp),
                                 ],
                               )

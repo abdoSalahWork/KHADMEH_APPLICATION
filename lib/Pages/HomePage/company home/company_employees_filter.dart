@@ -204,6 +204,7 @@ class _CompanyEmployeesFilterPageState
               items: [
                 "booked".tr,
                 "not_booked".tr,
+                "pending".tr,
               ]
                   .map(
                     (e) => DropdownMenuItem<String>(

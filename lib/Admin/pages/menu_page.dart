@@ -133,6 +133,8 @@ class MyAdminMenuItems {
       titleEn: "Commissions", icon: Icons.monetization_on, titleAr: "العمولات");
   static const about = DrawerMenuItem(
       titleEn: "About Khedma", icon: EvaIcons.info, titleAr: "حول خدمة");
+  static const signiture = DrawerMenuItem(
+      titleEn: "My Signiture", icon: Icons.fingerprint, titleAr: "توقيعي");
 
   static const logOut = DrawerMenuItem(
       titleEn: "Log out", icon: EvaIcons.logOut, titleAr: "تسجيل الخروج");
@@ -155,6 +157,7 @@ class MyAdminMenuItems {
     dropDowns,
     contactUs,
     about,
+    signiture,
     logOut,
   ];
 }

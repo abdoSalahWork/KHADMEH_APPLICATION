@@ -82,8 +82,9 @@ class UserProfileCard extends StatelessWidget {
                       Row(
                         children: [
                           coloredText(
+                            textDirection: TextDirection.ltr,
                             text:
-                                "${employeeModel.contractAmount!} ${'kwd'.tr} / ${employeeModel.contractDuration! + "year".tr}",
+                                "${(double.parse(employeeModel.contractAmount!) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} / ${"${employeeModel.contractDuration!} years"}",
                             color: employeeModel.isOffer == 1
                                 ? const Color(0xff919191)
                                 : Theme.of(context).colorScheme.tertiary,
@@ -98,8 +99,9 @@ class UserProfileCard extends StatelessWidget {
                           employeeModel.isOffer != 1
                               ? Container()
                               : coloredText(
+                                  textDirection: TextDirection.ltr,
                                   text:
-                                      "${employeeModel.amountAfterDiscount!} ${'kwd'.tr} / ${employeeModel.contractDuration! + "year".tr}",
+                                      "${(employeeModel.amountAfterDiscount! * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} / ${"${employeeModel.contractDuration!} years"}",
                                   color: Theme.of(context).colorScheme.tertiary,
                                   fontSize: 9.0.sp,
                                 ),

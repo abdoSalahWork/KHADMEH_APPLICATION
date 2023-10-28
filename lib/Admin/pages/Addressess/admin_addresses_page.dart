@@ -236,7 +236,7 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
                     ],
                   ),
                   color: Colors.black),
-              // spaceY(30.sp),
+              spaceY(10.sp),
               Expanded(
                 child: globalController.getCitiesFlag
                     ? const Center(
@@ -516,7 +516,7 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
                     ],
                   ),
                   color: Colors.black),
-              // spaceY(30.sp),
+              spaceY(10.sp),
               Expanded(
                 child: globalController.getCitiesFlag
                     ? const Center(
@@ -802,7 +802,7 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
                     ],
                   ),
                   color: Colors.black),
-              // spaceY(30.sp),
+              spaceY(10.sp),
               Expanded(
                 child: globalController.getCitiesFlag
                     ? const Center(

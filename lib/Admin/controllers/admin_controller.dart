@@ -9,6 +9,7 @@ import 'package:khedma/Admin/models/contact_message_model.dart';
 import 'package:khedma/Admin/models/contact_model.dart';
 import 'package:khedma/Admin/models/my_chart_data.dart';
 import 'package:khedma/Admin/models/setting_admin_model.dart';
+import 'package:khedma/Admin/pages/account%20statment/model/ac_filter.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/me.dart';
@@ -24,6 +25,7 @@ class AdminController extends GetxController {
   List<Me> companyProfilesToShow = [];
   List<MedicalsModel> medicalRequests = [];
   List<AccountStatmentModel> accountStatments = [];
+  List<AccountStatmentModel> accountStatmentsToShow = [];
   bool getUserProfilesFlag = false;
   bool getmedicalsRequestsFlag = false;
   bool getCompanyProfilesFlag = false;
@@ -165,6 +167,56 @@ class AdminController extends GetxController {
     }
   }
 
+  AccountStatmentFilter accountStatmentFilter = AccountStatmentFilter();
+
+  applyFilter() {
+    List<AccountStatmentModel> tmp1 = [];
+    List<AccountStatmentModel> tmp2 = [];
+    accountStatmentsToShow = accountStatments;
+
+    if (accountStatmentFilter.status != null) {
+      for (var i in accountStatmentsToShow) {
+        if (i.depositType == accountStatmentFilter.status) {
+          tmp1.add(i);
+        }
+      }
+    } else {
+      tmp1.addAll(accountStatmentsToShow);
+    }
+    if (accountStatmentFilter.minPrice != null &&
+        accountStatmentFilter.maxPrice != null) {
+      for (var i in tmp1) {
+        if (int.parse(i.amount!) <= accountStatmentFilter.maxPrice! &&
+            int.parse(i.amount!) >= accountStatmentFilter.minPrice!) {
+          tmp2.add(i);
+        }
+      }
+    } else {
+      tmp2.addAll(tmp1);
+    }
+    tmp1 = [];
+    if (accountStatmentFilter.minDate != null &&
+        accountStatmentFilter.maxDate != null) {
+      for (var i in tmp2) {
+        if (DateTime.parse(i.createdAt!)
+                .isBefore(DateTime.parse(accountStatmentFilter.maxDate!)) &&
+            DateTime.parse(i.createdAt!)
+                .isAfter(DateTime.parse(accountStatmentFilter.minDate!))) {
+          tmp1.add(i);
+        }
+      }
+    } else {
+      tmp1.addAll(tmp2);
+    }
+    tmp2 = [];
+
+    accountStatmentsToShow = tmp1;
+
+    accountStatmentFilter.filterActive = true;
+
+    update();
+  }
+
   bool accountStatmentFlag = true;
   Future<bool> getAccountStatments() async {
     try {
@@ -183,10 +235,12 @@ class AdminController extends GetxController {
       List<AccountStatmentModel> tmp = [];
       for (var i in res.data['data']) {
         AccountStatmentModel t = AccountStatmentModel.fromJson(i);
+        logWarning(t.depositType!);
         tmp.add(t);
       }
       accountStatments = tmp;
       accountStatments.sort(_mySortComparison);
+      accountStatmentsToShow = accountStatments;
       logSuccess("account statments get done");
 
       accountStatmentFlag = false;
@@ -198,6 +252,23 @@ class AdminController extends GetxController {
       update();
       logError("account statments failed");
       return false;
+    }
+  }
+
+  handleAccountStatmentSearch({required String name}) {
+    List<AccountStatmentModel> tmp = [];
+    for (var i in accountStatments) {
+      if (i.depositor!.toLowerCase().contains(name.toLowerCase()) ||
+          i.beneficiary!.toLowerCase().contains(name.toLowerCase())) {
+        logSuccess(name);
+        tmp.add(i);
+      }
+      if (name == "") {
+        accountStatmentsToShow = accountStatments;
+      } else {
+        accountStatmentsToShow = tmp;
+      }
+      update();
     }
   }
 

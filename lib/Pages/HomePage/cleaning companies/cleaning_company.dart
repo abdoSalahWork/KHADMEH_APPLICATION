@@ -11,11 +11,11 @@ import 'package:khedma/Pages/chat%20page/chat_page.dart';
 import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
 import 'package:khedma/Pages/chat%20page/model/my_message.dart';
 import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/web_view_container.dart';
 import 'package:khedma/widgets/cleaning_company_service_widget.dart';
 import 'package:khedma/widgets/my_rating_bar.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:sizer/sizer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 
@@ -481,10 +481,14 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                         fontSize: 12.sp)),
                                 spaceX(10.sp),
                                 Expanded(
-                                  child: coloredText(
-                                      text:
-                                          "${c.checkouts[index].amount ?? "0"} kwd",
-                                      fontSize: 12.sp),
+                                  child: Align(
+                                    alignment: AlignmentDirectional.centerStart,
+                                    child: coloredText(
+                                        textDirection: TextDirection.ltr,
+                                        text:
+                                            "${c.checkouts[index].amount != null ? (double.parse(c.checkouts[index].amount!) * _globalController.currencyRate).toStringAsFixed(1) : 0} ${_globalController.currencySymbol.key}",
+                                        fontSize: 12.sp),
+                                  ),
                                 ),
                               ],
                             ),
@@ -535,29 +539,34 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                                           await _globalController.payCheckOut(
                                               id: c.checkouts[index].id!);
                                       if (x != null) {
-                                        Uri url = Uri.parse(x.values.first);
+                                        Get.to(() => WebViewContainer(
+                                                  url: x.values.first,
+                                                ))!
+                                            .then((value) async {
+                                          await _globalController
+                                              .getUserCheckouts();
+                                          // ignore: use_build_context_synchronously
+                                          Utils().rateDialoge(
+                                              context: context,
+                                              companyId:
+                                                  widget.cleaningCompany.id!);
+                                          setState(() {});
+                                        });
+                                        // Uri url = Uri.parse(x.values.first);
 
-                                        logSuccess(x);
-                                        await launchUrl(url,
-                                            mode:
-                                                LaunchMode.externalApplication);
+                                        // logSuccess(x);
+                                        // await launchUrl(url,
+                                        //     mode:
+                                        //         LaunchMode.externalApplication);
 
-                                        await Future.delayed(
-                                            Duration(milliseconds: 100));
-                                        while (WidgetsBinding
-                                                .instance.lifecycleState !=
-                                            AppLifecycleState.resumed) {
-                                          await Future.delayed(
-                                              Duration(milliseconds: 100));
-                                        }
-                                        await _globalController
-                                            .getUserCheckouts();
-                                        // ignore: use_build_context_synchronously
-                                        Utils().rateDialoge(
-                                            context: context,
-                                            companyId:
-                                                widget.cleaningCompany.id!);
-                                        setState(() {});
+                                        // await Future.delayed(
+                                        //     Duration(milliseconds: 100));
+                                        // while (WidgetsBinding
+                                        //         .instance.lifecycleState !=
+                                        //     AppLifecycleState.resumed) {
+                                        //   await Future.delayed(
+                                        //       Duration(milliseconds: 100));
+                                        // }
                                       }
                                     },
                                     alignment: AlignmentDirectional.center,

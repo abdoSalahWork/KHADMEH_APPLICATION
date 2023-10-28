@@ -8,10 +8,12 @@ import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart'
 import 'package:khedma/Pages/HomePage/recruitment-companies/recruitment_companies_search_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/personal%20page/submit_files_page.dart';
+import 'package:khedma/Themes/themes.dart';
+import 'package:khedma/web_view_container.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:khedma/widgets/user_profile_card.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 import '../../widgets/profile_card.dart';
@@ -590,30 +592,83 @@ class _PersonalPageState extends State<PersonalPage>
                               minWidth: 2.0 * 56.0,
                               maxWidth: MediaQuery.of(context).size.width,
                             ),
-                            itemBuilder: (BuildContext context) => [
+                            itemBuilder: (BuildContext ctx) => [
                               PopupMenuItem<int>(
                                 value: 0,
                                 child: coloredText(
                                     text: 'medical_exam'.tr, fontSize: 11.0.sp),
                                 onTap: () async {
-                                  Map<String, String>? x =
-                                      await _globalController
-                                          .requestMedicalExamination(
-                                              id: bookedEmployees[index].id!);
-                                  if (x != null) {
-                                    //String invoiceId = x.keys.first;
-                                    Uri url = Uri.parse(x.values.first);
+                                  DateTime? dateTime =
+                                      await showOmniDateTimePicker(
+                                          theme: ThemeData(
+                                            colorScheme: ColorScheme.fromSeed(
+                                              seedColor: AppThemes.colorCustom,
+                                            ),
+                                          ),
+                                          is24HourMode: false,
+                                          isShowSeconds: false,
+                                          minutesInterval: 1,
+                                          secondsInterval: 1,
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(16)),
+                                          constraints: const BoxConstraints(
+                                            maxWidth: 350,
+                                            maxHeight: 650,
+                                          ),
+                                          transitionBuilder:
+                                              (context, anim1, anim2, child) {
+                                            return FadeTransition(
+                                              opacity: anim1.drive(
+                                                Tween(
+                                                  begin: 0,
+                                                  end: 1,
+                                                ),
+                                              ),
+                                              child: child,
+                                            );
+                                          },
+                                          transitionDuration:
+                                              const Duration(milliseconds: 200),
+                                          barrierDismissible: true,
+                                          selectableDayPredicate: (dateTime) {
+                                            // Disable 25th Feb 2023
+                                            if (dateTime ==
+                                                DateTime(2023, 2, 25)) {
+                                              return false;
+                                            } else {
+                                              return true;
+                                            }
+                                          },
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.now(),
+                                          lastDate: DateTime.now()
+                                              .add(const Duration(days: 30)));
+                                  if (dateTime != null) {
+                                    Map<String, String>? x =
+                                        await _globalController
+                                            .requestMedicalExamination(
+                                                id: bookedEmployees[index].id!);
+                                    if (x != null) {
+                                      //   //String invoiceId = x.keys.first;
+                                      //   Uri url = Uri.parse(x.values.first);
+                                      Get.to(() => WebViewContainer(
+                                                url: x.values.first,
+                                              ))!
+                                          .then((value) {
+                                        Utils.doneDialog(context: context);
+                                      });
+                                      //   await launchUrl(url,
+                                      //       mode: LaunchMode.externalApplication);
 
-                                    await launchUrl(url,
-                                        mode: LaunchMode.externalApplication);
-
-                                    await Future.delayed(
-                                        const Duration(milliseconds: 100));
-                                    while (WidgetsBinding
-                                            .instance.lifecycleState !=
-                                        AppLifecycleState.resumed) {
-                                      await Future.delayed(
-                                          const Duration(milliseconds: 100));
+                                      //   await Future.delayed(
+                                      //       const Duration(milliseconds: 100));
+                                      //   while (WidgetsBinding
+                                      //           .instance.lifecycleState !=
+                                      //       AppLifecycleState.resumed) {
+                                      //     await Future.delayed(
+                                      //         const Duration(milliseconds: 100));
+                                      //   }
                                     }
                                   }
                                 },

@@ -489,6 +489,13 @@ class EmployeeDetailsPage extends StatelessWidget {
                                 .toList()
                                 .join(", "),
                           ),
+                          employee.desc == null ? Container() : spaceY(10.sp),
+                          employee.desc == null
+                              ? Container()
+                              : DetailsItemWidget(
+                                  width1: 80.w,
+                                  title1: "more_details".tr,
+                                  subTitle1: employee.desc),
                           spaceY(12.sp),
                         ],
                       ),

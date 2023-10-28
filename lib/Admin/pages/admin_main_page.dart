@@ -7,10 +7,14 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
+import 'package:khedma/Admin/pages/account%20statment/admin_account_statment_page.dart';
+import 'package:khedma/Admin/pages/company%20profiles/admin_company_profiles_page.dart';
+import 'package:khedma/Admin/pages/user%20profiles/admin_user_profiles_page.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
 import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/Notifications/notifications_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
+import 'package:khedma/Pages/personal%20page/personal_settings.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -76,21 +80,25 @@ class _AdminMainPageState extends State<AdminMainPage>
                 .toString(),
             icon: EvaIcons.calendarOutline),
         StatisticBoxMdel(
-            title: "payments".tr,
-            subTitle:
-                "${_adminHomeController.adminHomePageModel.paymentBookingAmount!}",
-            currency: "kwd".tr,
-            icon: Icons.monetization_on_outlined),
+          title: "payments".tr,
+          subTitle:
+              "${_adminHomeController.adminHomePageModel.paymentBookingAmount!}",
+          currency: "kwd".tr,
+          icon: Icons.monetization_on_outlined,
+          onTap: () => Get.to(() => const AdminAccountStatmentPage()),
+        ),
         StatisticBoxMdel(
             title: "ads_payment".tr,
             subTitle: "${_adminHomeController.adminHomePageModel.adsAmount!}",
             currency: "kwd".tr,
+            onTap: () => Get.to(() => const AdminAccountStatmentPage()),
             icon: Icons.monetization_on_outlined),
         StatisticBoxMdel(
             title: "users_no".tr,
             subTitle: _adminHomeController.adminHomePageModel.users!
                 .round()
                 .toString(),
+            onTap: () => Get.to(() => const AdminUserProfilesPage()),
             icon: EvaIcons.peopleOutline),
         StatisticBoxMdel(
             title: "rec_com_no".tr,
@@ -98,12 +106,14 @@ class _AdminMainPageState extends State<AdminMainPage>
                 .adminHomePageModel.compnaiesRecruitment!
                 .round()
                 .toString(),
+            onTap: () => Get.to(() => const AdminCompanyProfilesPage()),
             icon: Iconsax.buildings),
         StatisticBoxMdel(
             title: "clean_com_no".tr,
             subTitle: _adminHomeController.adminHomePageModel.compnaiesCleaning!
                 .round()
                 .toString(),
+            onTap: () => Get.to(() => const AdminCompanyProfilesPage()),
             icon: Iconsax.buildings),
       ];
     });
@@ -155,77 +165,77 @@ class _AdminMainPageState extends State<AdminMainPage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             spaceY(25.sp),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: _myZoomDrawerController
-                                      .zoomDrawerController.open,
-                                  child: Icon(
-                                    EvaIcons.menu,
-                                    color: Colors.white,
-                                    size: 22.sp,
-                                  ),
-                                ),
-                                spaceX(5.sp),
-                                coloredText(
-                                  text: "${"hello".tr} Admin",
-                                  fontSize: 14.sp,
-                                  color: Colors.white,
-                                ),
-                                Spacer(),
-                                GetBuilder<NotificationController>(
-                                    builder: (c) {
-                                  return badges.Badge(
-                                    position: badges.BadgePosition.topEnd(
-                                        top: 0, end: 0),
-                                    showBadge: c.newNotifications,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Get.to(() => NotificationsPage());
-                                      },
-                                      child: Icon(
-                                        EvaIcons.bell,
-                                        color: Colors.white,
-                                        size: 22.0.sp,
-                                      ),
+                            GetBuilder<GlobalController>(builder: (c) {
+                              return Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: _myZoomDrawerController
+                                        .zoomDrawerController.open,
+                                    child: Icon(
+                                      EvaIcons.menu,
+                                      color: Colors.white,
+                                      size: 22.sp,
                                     ),
-                                  );
-                                }),
-                                spaceX(12.sp),
-                                Container(
-                                  padding: const EdgeInsets.all(5),
-                                  width: 30.sp,
-                                  height: 30.sp,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      )
-                                      // boxShadow: [
-                                      //   BoxShadow(
-                                      //     color: Colors.black.withOpacity(0.3),
-                                      //     spreadRadius: 1,
-                                      //     blurRadius: 1,
-                                      //     offset: const Offset(
-                                      //         0, 0), // changes position of shadow
-                                      //   ),
-                                      // ],
-                                      // border: Border.all(
-                                      //   width: 1,
-                                      //   color: const Color(0xffD1D1D1),
-                                      // ),
-                                      ),
-                                  child: Image(
-                                    image: AssetImage("assets/images/logo.png"),
-                                    fit: BoxFit.contain,
-                                    width: 20.sp,
-                                    height: 20.sp,
                                   ),
-                                ),
-                              ],
-                            ),
+                                  spaceX(5.sp),
+                                  coloredText(
+                                    text:
+                                        "${"hello".tr} ${_globalController.me.fullName}",
+                                    fontSize: 14.sp,
+                                    color: Colors.white,
+                                  ),
+                                  Spacer(),
+                                  GetBuilder<NotificationController>(
+                                      builder: (c) {
+                                    return badges.Badge(
+                                      position: badges.BadgePosition.topEnd(
+                                          top: 0, end: 0),
+                                      showBadge: c.newNotifications,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Get.to(() => NotificationsPage());
+                                        },
+                                        child: Icon(
+                                          EvaIcons.bell,
+                                          color: Colors.white,
+                                          size: 22.0.sp,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                  spaceX(12.sp),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.to(() =>
+                                          PersonalSettings(userType: "admin"));
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      width: 30.sp,
+                                      height: 30.sp,
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: _globalController
+                                                          .me.adminPhoto ==
+                                                      null
+                                                  ? const AssetImage(
+                                                      "assets/images/logo.png")
+                                                  : NetworkImage(
+                                                          _globalController
+                                                              .me.adminPhoto!)
+                                                      as ImageProvider,
+                                              fit: BoxFit.cover),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          )),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
                             spaceY(10.sp),
                             c.getAdminHomePageflag
                                 ? const SizedBox(
@@ -625,11 +635,14 @@ class StatisticBoxMdel {
   final String subTitle;
   final IconData icon;
   final String? currency;
-  StatisticBoxMdel(
-      {required this.title,
-      required this.subTitle,
-      required this.icon,
-      this.currency});
+  void Function()? onTap;
+  StatisticBoxMdel({
+    required this.title,
+    required this.subTitle,
+    required this.icon,
+    this.currency,
+    this.onTap,
+  });
 }
 
 class StatisticBoxWidget extends StatelessWidget {
@@ -640,57 +653,60 @@ class StatisticBoxWidget extends StatelessWidget {
   final StatisticBoxMdel statisticBoxMdel;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(5),
-      width: 140.sp,
-      height: 140.sp,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 2,
-              blurRadius: 3,
-              offset: const Offset(0, 1), // changes position of shadow
+    return GestureDetector(
+      onTap: statisticBoxMdel.onTap,
+      child: Container(
+        margin: const EdgeInsets.all(5),
+        width: 140.sp,
+        height: 140.sp,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 2,
+                blurRadius: 3,
+                offset: const Offset(0, 1), // changes position of shadow
+              ),
+            ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SizedBox(
+              width: 100.sp,
+              child: coloredText(
+                textAlign: TextAlign.center,
+                text: statisticBoxMdel.title,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
-          ]),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SizedBox(
-            width: 100.sp,
-            child: coloredText(
-              textAlign: TextAlign.center,
-              text: statisticBoxMdel.title,
+            Icon(
+              statisticBoxMdel.icon,
               color: Theme.of(context).colorScheme.primary,
+              size: 20.sp,
             ),
-          ),
-          Icon(
-            statisticBoxMdel.icon,
-            color: Theme.of(context).colorScheme.primary,
-            size: 20.sp,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              coloredText(
-                  text: statisticBoxMdel.subTitle,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14.sp),
-              statisticBoxMdel.currency == null ? Container() : spaceX(5.sp),
-              statisticBoxMdel.currency == null
-                  ? Container()
-                  : coloredText(
-                      text: statisticBoxMdel.currency!,
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 11.sp),
-            ],
-          ),
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                coloredText(
+                    text: statisticBoxMdel.subTitle,
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14.sp),
+                statisticBoxMdel.currency == null ? Container() : spaceX(5.sp),
+                statisticBoxMdel.currency == null
+                    ? Container()
+                    : coloredText(
+                        text: statisticBoxMdel.currency!,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11.sp),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

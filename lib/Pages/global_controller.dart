@@ -1,5 +1,7 @@
 // ignore_for_file: unused_catch_clause
 
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Admin/pages/categories/models/categories_model.dart';
 import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
 import 'package:khedma/Admin/pages/languages/models/language_model.dart';
+import 'package:khedma/Pages/HomePage/company%20home/company_employees.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
@@ -48,7 +51,9 @@ class GlobalController extends GetxController {
   List<MaritalStatusModel> maritalStatusList = [];
   List<CertificateModel> certificates = [];
   List<JobModel> jobs = [];
+  List<JobModel> jobsToShow = [];
   List<CategoryModel> categories = [];
+  List<CategoryModel> categoriesToShow = [];
   UserHomePageModel userHomePage = UserHomePageModel();
   CompanyHomePageModel companyHomePage = CompanyHomePageModel();
   List<CleaningBooking> cleaningBookings = [];
@@ -152,6 +157,7 @@ class GlobalController extends GetxController {
         tmp.add(t);
       }
       categories = tmp;
+      categoriesToShow = tmp;
       logSuccess("Categories get done");
       getCategoriesFlag = false;
       update();
@@ -318,10 +324,36 @@ class GlobalController extends GetxController {
       logSuccess("CompanyHomePage get done");
       // logError(companyHomePage.toJson());
       overView = [
-        OverView(companyHomePage.allEmplyeesCount!, "all_employees".tr),
-        OverView(companyHomePage.availableEmployeesCount!, "available".tr),
-        OverView(companyHomePage.pendingEmployeesCount!, "pending".tr),
-        OverView(companyHomePage.bookedEmployeesCount!, "booked".tr),
+        OverView(
+            onTap: () {
+              Get.to(() => CompanyEmployeesSearchPage());
+            },
+            number: companyHomePage.allEmplyeesCount!,
+            string: "all_employees".tr),
+        OverView(
+            onTap: () {
+              Get.to(() => CompanyEmployeesSearchPage(
+                    filterStatus: "not_booked".tr,
+                  ));
+            },
+            number: companyHomePage.availableEmployeesCount!,
+            string: "available".tr),
+        OverView(
+            onTap: () {
+              Get.to(() => CompanyEmployeesSearchPage(
+                    filterStatus: "pending".tr,
+                  ));
+            },
+            number: companyHomePage.pendingEmployeesCount!,
+            string: "pending".tr),
+        OverView(
+            onTap: () {
+              Get.to(() => CompanyEmployeesSearchPage(
+                    filterStatus: "booked".tr,
+                  ));
+            },
+            number: companyHomePage.bookedEmployeesCount!,
+            string: "booked".tr),
       ];
       await getReservations();
 
@@ -394,6 +426,7 @@ class GlobalController extends GetxController {
         tmp.add(t);
       }
       jobs = tmp;
+      jobsToShow = tmp;
       logSuccess(jobs);
       logSuccess("Jobs get done");
       getjobsFlag = false;
@@ -1051,13 +1084,13 @@ class GlobalController extends GetxController {
       final body = d.FormData();
       for (var i = 0; i < files.length; i++) {
         body.fields.add(MapEntry("documents[$i][name]", files[i].description));
-        XFile? tmp = files[i].file;
+        File? tmp = files[i].file;
 
         body.files.add(MapEntry(
           "documents[$i][file]",
           await d.MultipartFile.fromFile(
             tmp.path,
-            filename: tmp.name,
+            filename: files[i].fileName,
             contentType: MediaType('image', '*'),
           ),
         ));
@@ -1257,5 +1290,152 @@ class GlobalController extends GetxController {
       Get.back();
     }
     return false;
+  }
+
+  List<MapEntry<String, String>> currencySymbols = [];
+  MapEntry<String, String> currencySymbol = MapEntry("KWD", "Kuwaiti Dinar");
+  double currencyRate = 1;
+  Future getCurrencySymbols() async {
+    try {
+      var res = await dio.get(
+        EndPoints.getcurrencySymbols,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "apikey": "mCFAqSZGgfz1vYfLic62hcqbMHnZKm7G"
+          },
+        ),
+      );
+      currencySymbols =
+          Map<String, String>.from(res.data['symbols']).entries.toList();
+
+      update();
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      update();
+    }
+  }
+
+  Future convertCurrency({
+    required String from,
+    required String to,
+    required String amount,
+  }) async {
+    try {
+      var res = await dio.get(
+        EndPoints.convertCurrency(from: from, to: to, amount: amount),
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "apikey": "mCFAqSZGgfz1vYfLic62hcqbMHnZKm7G"
+          },
+        ),
+      );
+      currencySymbol =
+          currencySymbols.where((element) => element.key == to).first;
+      currencyRate = res.data['info']['rate'];
+      logWarning("rate is $currencyRate");
+      update();
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      update();
+    }
+  }
+
+  handleJobsSearch({required String name}) {
+    List<JobModel> tmp = [];
+    for (var i in jobs) {
+      if (i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
+          i.nameAr!.toLowerCase().contains(name.toLowerCase())) {
+        tmp.add(i);
+      }
+      if (name == "") {
+        jobsToShow = jobs;
+      } else {
+        jobsToShow = tmp;
+      }
+      update();
+    }
+  }
+
+  handleCategoriesSearch({required String name}) {
+    List<CategoryModel> tmp = [];
+    for (var i in categories) {
+      if (i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
+          i.nameAr!.toLowerCase().contains(name.toLowerCase())) {
+        tmp.add(i);
+      }
+      if (name == "") {
+        categoriesToShow = categories;
+      } else {
+        categoriesToShow = tmp;
+      }
+      update();
+    }
+  }
+
+  Future updateAdminProfile({
+    String? name,
+    String? phone,
+    String? email,
+    XFile? personaPhoto,
+  }) async {
+    try {
+      Get.dialog(const Center(
+        child: CircularProgressIndicator(),
+      ));
+
+      final body = d.FormData();
+
+      body.fields.add(const MapEntry("_method", "PUT"));
+      if (email != null) body.fields.add(MapEntry("email", email));
+      if (phone != null) body.fields.add(MapEntry("phone", phone));
+      if (name != null) body.fields.add(MapEntry("full_name", name));
+      // XFile? idPhotoNationality = userInfo.idPhotoNationality;
+
+      // if (idPhotoNationality != null) {
+      //   body.files.add(MapEntry(
+      //     "id_photo_nationality",
+      //     await d.MultipartFile.fromFile(
+      //       idPhotoNationality.path,
+      //       filename: idPhotoNationality.name,
+      //       contentType: MediaType('image', '*'),
+      //     ),
+      //   ));
+      // }
+      if (personaPhoto != null) {
+        body.files.add(MapEntry(
+          "photo",
+          await d.MultipartFile.fromFile(
+            personaPhoto.path,
+            filename: personaPhoto.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      logSuccess(body.files);
+      String? token = await Utils.readToken();
+
+      await dio.post(
+        EndPoints.updateProfileAdmin(1),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+      await getMe();
+      update();
+      Get.back();
+      return true;
+    } on DioException catch (error) {
+      Get.back();
+      logError(error.response!.data);
+
+      // Utils.showSnackBar(message: error.response!.data["message"]);
+      return error.response!.data;
+    }
   }
 }

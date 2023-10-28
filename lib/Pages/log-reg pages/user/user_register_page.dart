@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/gestures.dart';
@@ -395,6 +396,123 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                           return null;
                         }),
                     spaceY(10.0.sp),
+                    GetBuilder<GlobalController>(builder: (c) {
+                      return SearchableDropDown(
+                        // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                        borderRadius: 8,
+                        // padding:
+                        //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                        hint: "${"nationality".tr} (${"optional".tr})",
+                        prefixIcon: Icon(
+                          EvaIcons.globe2Outline,
+                          size: 20.0.sp,
+                        ),
+                        focusNode: _focusNodes[3],
+                        border: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: _focusNodes[3].hasFocus
+                                ? Theme.of(context).colorScheme.secondary
+                                : const Color(0xffBDC1C8),
+                          ),
+                        ),
+                        items: c.countries
+                            .map(
+                              (e) => DropDownValueModel(
+                                value: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr,
+                                name: Get.locale == const Locale('en', 'US')
+                                    ? e.nameEn!
+                                    : e.nameAr!,
+                              ),
+                            )
+                            .toList(),
+                        validator: (String? value) {
+                          if (errors['nationality_id'] != null) {
+                            String tmp = "";
+                            tmp = errors['nationality_id'].join("\n");
+
+                            return tmp;
+                          }
+                          return null;
+                        },
+                        // value: nationality == "" ? null : nationality,
+                        onChanged: (p0) {
+                          DropDownValueModel d = p0;
+
+                          nationality = d.name;
+                          errors['nationality_id'] = null;
+                          setState(() {});
+                          userRegisterData.nationalityId = c.countries
+                              .where((element) =>
+                                  element.nameEn == d.name ||
+                                  element.nameAr == d.name)
+                              .first
+                              .id
+                              .toString();
+                        },
+                      );
+
+                      // CustomDropDownMenuButton(
+                      //   hintPadding: 0, focusNode: _focusNodes[3],
+                      //   value: nationality == "" ? null : nationality,
+                      //   hint: "${"nationality".tr} (${"optional".tr})",
+                      //   autovalidateMode: AutovalidateMode.always,
+                      //   validator: (String? value) {
+                      //     if (errors['nationality_id'] != null) {
+                      //       String tmp = "";
+                      //       tmp = errors['nationality_id'].join("\n");
+
+                      //       return tmp;
+                      //     }
+                      //     return null;
+                      //   },
+                      //   width: 100.w,
+                      //   items: c.countries
+                      //       .map(
+                      //         (e) => DropdownMenuItem<String>(
+                      //           value: Get.locale == const Locale('en', 'US')
+                      //               ? e.nameEn!
+                      //               : e.nameAr,
+                      //           child: coloredText(
+                      //               text: Get.locale == const Locale('en', 'US')
+                      //                   ? e.nameEn!
+                      //                   : e.nameAr!,
+                      //               color: Colors.black),
+                      //         ),
+                      //       )
+                      //       .toList(),
+                      //   border: UnderlineInputBorder(
+                      //     borderSide: BorderSide(
+                      //       color: _focusNodes[4].hasFocus
+                      //           ? Theme.of(context).colorScheme.secondary
+                      //           : const Color(0xffBDC1C8),
+                      //     ),
+                      //   ),
+                      //   onChanged: (p0) {
+                      //     nationality = p0!;
+                      //     errors['nationality_id'] = null;
+                      //     setState(() {});
+                      //     userRegisterData.nationalityId = c.countries
+                      //         .where((element) =>
+                      //             element.nameEn == p0 || element.nameAr == p0)
+                      //         .first
+                      //         .id
+                      //         .toString();
+                      //     ;
+                      //   },
+
+                      //   prefixIcon: Icon(
+                      //     EvaIcons.globe2Outline,
+                      //     size: 20.0.sp,
+                      //   ),
+                      //   // borderc: Border.all(color: const Color(0xffE3E3E3)),
+                      //   borderRadius: BorderRadius.circular(8),
+                      //   // padding:
+                      //   //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                      // );
+                    }),
+                    spaceY(10.0.sp),
                     UnderlinedCustomTextField(
                         focusNode: _focusNodes[1],
                         controller: _emailController,
@@ -468,67 +586,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       //         : "please_enter_a_valid_email".tr,
                     ),
                     spaceY(10.0.sp),
-                    GetBuilder<GlobalController>(builder: (c) {
-                      return CustomDropDownMenuButton(
-                        hintPadding: 0, focusNode: _focusNodes[3],
-                        value: nationality == "" ? null : nationality,
-                        hint: "${"nationality".tr} (${"optional".tr})",
-                        autovalidateMode: AutovalidateMode.always,
-                        validator: (String? value) {
-                          if (errors['nationality_id'] != null) {
-                            String tmp = "";
-                            tmp = errors['nationality_id'].join("\n");
 
-                            return tmp;
-                          }
-                          return null;
-                        },
-                        width: 100.w,
-                        items: c.countries
-                            .map(
-                              (e) => DropdownMenuItem<String>(
-                                value: Get.locale == const Locale('en', 'US')
-                                    ? e.nameEn!
-                                    : e.nameAr,
-                                child: coloredText(
-                                    text: Get.locale == const Locale('en', 'US')
-                                        ? e.nameEn!
-                                        : e.nameAr!,
-                                    color: Colors.black),
-                              ),
-                            )
-                            .toList(),
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _focusNodes[4].hasFocus
-                                ? Theme.of(context).colorScheme.secondary
-                                : const Color(0xffBDC1C8),
-                          ),
-                        ),
-                        onChanged: (p0) {
-                          nationality = p0!;
-                          errors['nationality_id'] = null;
-                          setState(() {});
-                          userRegisterData.nationalityId = c.countries
-                              .where((element) =>
-                                  element.nameEn == p0 || element.nameAr == p0)
-                              .first
-                              .id
-                              .toString();
-                          ;
-                        },
-
-                        prefixIcon: Icon(
-                          EvaIcons.globe2Outline,
-                          size: 20.0.sp,
-                        ),
-                        // borderc: Border.all(color: const Color(0xffE3E3E3)),
-                        borderRadius: BorderRadius.circular(8),
-                        // padding:
-                        //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                      );
-                    }),
-                    spaceY(10.0.sp),
                     // UnderlinedCustomTextField(
                     //   focusNode: _focusNodes[3],
                     //   keyBoardType: TextInputType.text,
@@ -591,102 +649,101 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                   primary: false,
                   children: [
                     GetBuilder<GlobalController>(builder: (c) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                      return
+                          //  Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
                           //todo:langs needs to be fixed
-                          CustomDropDownMenuButton(
-                            hint: "city".tr,
-                            value: city == "" ? null : city,
-                            hintPadding: 0,
-                            border: const UnderlineInputBorder(),
-                            width: 40.0.w,
-                            items: c.cities
-                                .map((e) => DropdownMenuItem<String>(
-                                      value:
-                                          Get.locale == const Locale('en', 'US')
-                                              ? e.nameEn!
-                                              : e.nameAr,
-                                      child: coloredText(
-                                        text: Get.locale ==
-                                                const Locale('en', 'US')
-                                            ? e.nameEn!
-                                            : e.nameAr!,
-                                        fontSize: 17,
-                                      ),
-                                    ))
-                                .toList(),
-                            autovalidateMode: AutovalidateMode.always,
-                            validator: (String? value) {
-                              if (errors['city_id'] != null) {
-                                String tmp = "";
-                                tmp = errors['city_id'].join("\n");
+                          SearchableDropDown(
+                        hint: "city".tr,
+                        value: city == "" ? null : city,
+                        hintPadding: 0,
+                        border: const UnderlineInputBorder(),
+                        items: c.cities
+                            .where((element) =>
+                                userRegisterData.nationalityId == null
+                                    ? true
+                                    : element.countryId.toString() ==
+                                        userRegisterData.nationalityId)
+                            .map((e) => DropDownValueModel(
+                                  value: Get.locale == const Locale('en', 'US')
+                                      ? e.nameEn!
+                                      : e.nameAr,
+                                  name: Get.locale == const Locale('en', 'US')
+                                      ? e.nameEn!
+                                      : e.nameAr!,
+                                ))
+                            .toList(),
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (String? value) {
+                          if (errors['city_id'] != null) {
+                            String tmp = "";
+                            tmp = errors['city_id'].join("\n");
 
-                                return tmp;
-                              }
-                              return null;
-                            },
-                            onChanged: (p0) {
-                              city = p0!;
-                              errors["city_id"] = null;
-                              setState(() {});
-                              userRegisterData.cityId = c.cities
-                                  .where((element) =>
-                                      element.nameEn == p0 ||
-                                      element.nameAr == p0)
-                                  .first
-                                  .id
-                                  .toString();
-                            },
-                          ),
-                          //todo:langs need to be fixed
-                          CustomDropDownMenuButton(
-                            hint: "region".tr,
-                            border: const UnderlineInputBorder(),
-                            width: 40.0.w,
-                            hintPadding: 0,
-                            value: region == "" ? null : region,
-                            items: c.regions
-                                .map((e) => DropdownMenuItem<String>(
-                                      value:
-                                          Get.locale == const Locale('en', 'US')
-                                              ? e.nameEn!
-                                              : e.nameAr,
-                                      child: coloredText(
-                                        text: Get.locale ==
-                                                const Locale('en', 'US')
-                                            ? e.nameEn!
-                                            : e.nameAr!,
-                                        fontSize: 17,
-                                      ),
-                                    ))
-                                .toList(),
-                            autovalidateMode: AutovalidateMode.always,
-                            validator: (String? value) {
-                              if (errors['region_id'] != null) {
-                                String tmp = "";
-                                tmp = errors['region_id'].join("\n");
-
-                                return tmp;
-                              }
-                              return null;
-                            },
-                            onChanged: (p0) {
-                              region = p0!;
-                              errors["region_id"] = null;
-                              setState(() {});
-                              userRegisterData.regionId = c.regions
-                                  .where((element) =>
-                                      element.nameEn == p0 ||
-                                      element.nameAr == p0)
-                                  .first
-                                  .id
-                                  .toString();
-                              ;
-                            },
-                          ),
-                        ],
+                            return tmp;
+                          }
+                          return null;
+                        },
+                        onChanged: (p0) {
+                          city = p0!;
+                          errors["city_id"] = null;
+                          setState(() {});
+                          userRegisterData.cityId = c.cities
+                              .where((element) =>
+                                  element.nameEn == p0 || element.nameAr == p0)
+                              .first
+                              .id
+                              .toString();
+                        },
                       );
+                      //     //todo:langs need to be fixed
+                      //     CustomDropDownMenuButton(
+                      //       hint: "region".tr,
+                      //       border: const UnderlineInputBorder(),
+                      //       width: 40.0.w,
+                      //       hintPadding: 0,
+                      //       value: region == "" ? null : region,
+                      //       items: c.regions
+                      //           .map((e) => DropdownMenuItem<String>(
+                      //                 value:
+                      //                     Get.locale == const Locale('en', 'US')
+                      //                         ? e.nameEn!
+                      //                         : e.nameAr,
+                      //                 child: coloredText(
+                      //                   text: Get.locale ==
+                      //                           const Locale('en', 'US')
+                      //                       ? e.nameEn!
+                      //                       : e.nameAr!,
+                      //                   fontSize: 17,
+                      //                 ),
+                      //               ))
+                      //           .toList(),
+                      //       autovalidateMode: AutovalidateMode.always,
+                      //       validator: (String? value) {
+                      //         if (errors['region_id'] != null) {
+                      //           String tmp = "";
+                      //           tmp = errors['region_id'].join("\n");
+
+                      //           return tmp;
+                      //         }
+                      //         return null;
+                      //       },
+                      //       onChanged: (p0) {
+                      //         region = p0!;
+                      //         errors["region_id"] = null;
+                      //         setState(() {});
+                      //         userRegisterData.regionId = c.regions
+                      //             .where((element) =>
+                      //                 element.nameEn == p0 ||
+                      //                 element.nameAr == p0)
+                      //             .first
+                      //             .id
+                      //             .toString();
+                      //         ;
+                      //       },
+                      //     ),
+                      //   ],
+                      // );
                     }),
                     spaceY(10.0.sp),
                     UnderlinedCustomTextField(

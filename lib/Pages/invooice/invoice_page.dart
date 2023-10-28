@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as intl;
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
@@ -39,6 +40,7 @@ class _InvoicePageState extends State<InvoicePage> {
     super.initState();
   }
 
+  GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,7 +137,7 @@ class _InvoicePageState extends State<InvoicePage> {
                             color: const Color(0xff919191),
                             fontSize: 12.0.sp),
                         coloredText(
-                          text: DateFormat(DateFormat.YEAR_MONTH_DAY)
+                          text: intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY)
                               .format(DateTime.now()),
                           fontSize: 13.0.sp,
                         )
@@ -230,8 +232,9 @@ class _InvoicePageState extends State<InvoicePage> {
                   ),
                   spaceX(10),
                   coloredText(
+                      textDirection: TextDirection.ltr,
                       text:
-                          "${widget.isOffer == 1 ? widget.contractAmountAfterDiscount : widget.contractAmount} ${'kwd'.tr}",
+                          "${widget.isOffer == 1 ? (widget.contractAmountAfterDiscount! * _globalController.currencyRate).toStringAsFixed(1) : (double.parse(widget.contractAmount) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key}",
                       fontSize: 13.0.sp,
                       color: Theme.of(context).colorScheme.secondary),
                 ],

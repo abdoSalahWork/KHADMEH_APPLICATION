@@ -1,5 +1,4 @@
 // ignore_for_file: unused_field
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -23,6 +22,7 @@ import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/forget%20password/controller/password_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Utils/utils.dart';
+import 'package:local_auth/local_auth.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -61,41 +61,51 @@ class _SplashPageState extends State<SplashPage>
     _globalController.getCountries();
     _globalController.getCities();
     _globalController.getRegions();
+    _globalController.getCurrencySymbols();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     Future.delayed(
       const Duration(seconds: 2),
       () async {
         String? rem = await Utils.readRemmemberMe();
         String? lang = await Utils.readLanguage();
-        if (lang == null) {
-          Get.offAll(
-            () => SelectLanguagePage(),
-          );
-        } else {
-          await _globalController.setLocale();
-          bool x = await _globalController.getMe();
-          if (x) {
-            if (rem == "yes") {
-              if (_globalController.me.userType == "user") {
-                Get.offAll(
-                  () => const UserHomePage(),
-                );
-              } else if (_globalController.me.userType == "company") {
-                Get.offAll(
-                  () => const CompanyHomePage(),
-                );
-              } else if (_globalController.me.userType == "admin") {
-                Get.offAll(
-                  () => AdminHomePage(),
-                );
+        String? fingerPrint = await Utils.readFingerprint();
+        bool localAuthenticated = true;
+        if (fingerPrint != null) {
+          localAuthenticated = await localAuth();
+        }
+
+        if (localAuthenticated) {
+          if (lang == null) {
+            Get.offAll(
+              () => SelectLanguagePage(),
+            );
+          } else {
+            await _globalController.setLocale();
+            bool x = await _globalController.getMe();
+
+            if (x) {
+              if (rem == "yes") {
+                if (_globalController.me.userType == "user") {
+                  Get.offAll(
+                    () => const UserHomePage(),
+                  );
+                } else if (_globalController.me.userType == "company") {
+                  Get.offAll(
+                    () => const CompanyHomePage(),
+                  );
+                } else if (_globalController.me.userType == "admin") {
+                  Get.offAll(
+                    () => AdminHomePage(),
+                  );
+                } else {
+                  Get.off(() => LoginPage());
+                }
               } else {
                 Get.off(() => LoginPage());
               }
             } else {
               Get.off(() => LoginPage());
             }
-          } else {
-            Get.off(() => LoginPage());
           }
         }
       },
@@ -138,5 +148,33 @@ class _SplashPageState extends State<SplashPage>
         ),
       ),
     );
+  }
+
+  Future<bool> localAuth() async {
+    final LocalAuthentication auth = LocalAuthentication();
+    final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+    // final bool canAuthenticate =
+    //     canAuthenticateWithBiometrics || await auth.isDeviceSupported();
+    if (canAuthenticateWithBiometrics) {
+      logWarning("can auth");
+      final List<BiometricType> availableBiometrics =
+          await auth.getAvailableBiometrics();
+      if (availableBiometrics.isNotEmpty) {
+        for (var i in availableBiometrics) {
+          logWarning(i.name);
+        }
+
+        try {
+          final bool didAuthenticate = await auth.authenticate(
+            localizedReason: 'localizedReason'.tr,
+          );
+          return didAuthenticate;
+        } on PlatformException catch (e) {
+          logError(e.toString());
+          return false;
+        }
+      }
+    }
+    return false;
   }
 }

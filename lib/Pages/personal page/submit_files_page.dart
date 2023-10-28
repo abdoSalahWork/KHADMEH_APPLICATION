@@ -1,10 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
@@ -25,7 +27,7 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
   TextEditingController descriptionController = TextEditingController();
   final GlobalController _globalController = Get.find();
   List<DesFile> files = [];
-  XFile? file;
+  File? file;
   String uploadText = "upload_files".tr;
   @override
   void initState() {
@@ -109,12 +111,28 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                         child: primaryButton(
                                           radius: 10,
                                           onTap: () async {
-                                            XFile? image = await Utils()
-                                                .selectImageSheet();
+                                            FilePickerResult? result =
+                                                await FilePicker.platform
+                                                    .pickFiles(
+                                                        allowMultiple: false);
 
-                                            if (image != null) {
-                                              file = image;
-                                              uploadText = image.name;
+                                            // XFile? image = await Utils()
+                                            //     .selectImageSheet();
+
+                                            // if (image != null) {
+                                            //   file = image;
+                                            //   uploadText = image.name;
+
+                                            //   s(() {});
+                                            //   setState(() {});
+                                            // }
+
+                                            if (result != null) {
+                                              file = File(
+                                                  result.files.single.path!);
+
+                                              uploadText =
+                                                  result.files.single.name;
 
                                               s(() {});
                                               setState(() {});
@@ -278,13 +296,24 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                                     child: primaryButton(
                                                       radius: 10,
                                                       onTap: () async {
-                                                        XFile? image = await Utils()
-                                                            .selectImageSheet();
+                                                        FilePickerResult?
+                                                            result =
+                                                            await FilePicker
+                                                                .platform
+                                                                .pickFiles(
+                                                                    allowMultiple:
+                                                                        false);
 
-                                                        if (image != null) {
-                                                          file = image;
-                                                          uploadText =
-                                                              image.name;
+                                                        if (result != null) {
+                                                          file = File(result
+                                                              .files
+                                                              .single
+                                                              .path!);
+
+                                                          uploadText = result
+                                                              .files
+                                                              .single
+                                                              .name;
 
                                                           s(() {});
                                                           setState(() {});
@@ -522,12 +551,12 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
 
 class DesFile {
   final String description;
-  final XFile file;
+  final File file;
   String? fileName;
   DesFile(
     this.description,
     this.file,
   ) {
-    fileName = file.name;
+    fileName = file.path.split('/').last;
   }
 }

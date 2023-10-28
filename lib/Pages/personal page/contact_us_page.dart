@@ -1,9 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../Utils/utils.dart';
 
@@ -39,24 +42,61 @@ class _ContactUsPageState extends State<ContactUsPage> {
             // spaceY(10.sp),
             coloredText(
               text: "contact".tr,
-              // fontSize: 14.sp,
-              // textAlign: TextAlign.justify,/
             ),
             spaceY(3.sp),
-            coloredText(
-              text:
-                  "+965${_adminController.contactModel != null ? _adminController.contactModel!.phoneNumber! : ""}",
-              fontSize: 12.sp,
-              color: Colors.grey,
-              // textAlign: TextAlign.justify,
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: GestureDetector(
+                onTap: () {
+                  if (_adminController.contactModel != null) {
+                    launchUrlString(
+                        "tel://+965${_adminController.contactModel!.phoneNumber!}");
+                  }
+                },
+                child: coloredText(
+                  textDirection: TextDirection.ltr,
+                  text:
+                      "+965${_adminController.contactModel != null ? _adminController.contactModel!.phoneNumber! : ""}",
+                  fontSize: 12.sp,
+                  color: Colors.grey,
+                  // textAlign: TextAlign.justify,
+                ),
+              ),
             ),
             spaceY(3.sp),
-            coloredText(
-              text:
-                  "${_adminController.contactModel != null ? _adminController.contactModel!.email! : ""}",
-              fontSize: 12.sp,
-              color: Colors.grey,
-              // textAlign: TextAlign.justify,
+            GestureDetector(
+              onTap: () {
+                if (_adminController.contactModel != null)
+                  launchUrlString(
+                      "mailto:${_adminController.contactModel!.email!}?subject=Khedmah%20Feedback");
+              },
+              child: coloredText(
+                text:
+                    "${_adminController.contactModel != null ? _adminController.contactModel!.email! : ""}",
+                fontSize: 12.sp,
+                color: Colors.grey,
+                // textAlign: TextAlign.justify,
+              ),
+            ),
+            spaceY(10.sp),
+            GestureDetector(
+              onTap: () {
+                whatsapp();
+              },
+              child: Row(
+                children: [
+                  const Icon(
+                    FontAwesomeIcons.whatsapp,
+                    color: Colors.green,
+                  ),
+                  spaceX(10.sp),
+                  coloredText(
+                      text: "whatsapp".tr,
+                      fontSize: 15.sp,
+                      textAlign: TextAlign.center,
+                      color: Colors.green)
+                ],
+              ),
             ),
             spaceY(10.sp),
             coloredText(
@@ -102,5 +142,20 @@ class _ContactUsPageState extends State<ContactUsPage> {
             ),
           ],
         ));
+  }
+
+  whatsapp() async {
+    var contact = "+905519971930";
+    var url = "whatsapp://send?phone=$contact&text=Hi, I need some help";
+    // var iosUrl =
+    //     "https://wa.me/$contact?text=${Uri.parse('Hi, I need some help')}";
+
+    try {
+      // if (Platform.isIOS) {
+      //   await launchUrl(Uri.parse(iosUrl));
+      // } else {
+      await launchUrl(Uri.parse(url));
+      // }
+    } on Exception {}
   }
 }

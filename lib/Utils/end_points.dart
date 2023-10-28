@@ -70,6 +70,7 @@ class EndPoints {
 
   static String get registerUser => "$_baseURL/register/user";
   static String get updateProfileUser => "$_baseURL/update/profile/user";
+
   static String get updateProfileCompany => "$_baseURL/update/profile/company";
   static String get completeDataUser => "$_baseURL/user/data";
   static String get completeDataCompany => "$_baseURL/company/data";
@@ -179,4 +180,10 @@ class EndPoints {
       "$_adminBaseURL/company/profile/show/$id";
   static String refundAdminAdvertisment(int id) =>
       "$_adminBaseURL/advertisement/refund/$id";
+  static String updateProfileAdmin(int id) => "$_adminBaseURL/admin/update/$id";
+  static String get getcurrencySymbols =>
+      "https://api.apilayer.com/exchangerates_data/symbols";
+  static String convertCurrency(
+          {required String from, required String to, required String amount}) =>
+      "https://api.apilayer.com/exchangerates_data/convert?to=$to&from=$from&amount=$amount";
 }

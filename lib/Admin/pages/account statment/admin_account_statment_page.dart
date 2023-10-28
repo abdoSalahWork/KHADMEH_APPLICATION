@@ -1,10 +1,13 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/models/account_statment.dart';
+import 'package:khedma/Admin/pages/account%20statment/account_statment_filter_page.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
+import 'package:khedma/widgets/search_text_field.dart';
 import 'package:sizer/sizer.dart';
 
 class AdminAccountStatmentPage extends StatefulWidget {
@@ -73,38 +76,44 @@ class _AdminAccountStatmentPageState extends State<AdminAccountStatmentPage> {
                 child: Column(
                   children: [
                     spaceY(10.sp),
-                    // SearchTextField(
-                    //   hintText: "${"search".tr} ...",
-                    //   prefixIcon: const Icon(
-                    //     EvaIcons.search,
-                    //     color: Color(0xffAFAFAF),
-                    //   ),
-                    //   suffixIcon: GestureDetector(
-                    //     onTap: () {},
-                    //     child: const Image(
-                    //       width: 15,
-                    //       height: 15,
-                    //       image: AssetImage("assets/images/filter-icon.png"),
-                    //     ),
-                    //   ),
-                    // ),
-                    // spaceY(10.sp),
+                    SearchTextField(
+                      onchanged: (s) {
+                        if (s != null)
+                          _adminController.handleAccountStatmentSearch(name: s);
+                      },
+                      hintText: "${"search".tr} ...",
+                      prefixIcon: const Icon(
+                        EvaIcons.search,
+                        color: Color(0xffAFAFAF),
+                      ),
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          Get.to(() => AccountStatmentFilterPage());
+                        },
+                        child: const Image(
+                          width: 15,
+                          height: 15,
+                          image: AssetImage("assets/images/filter-icon.png"),
+                        ),
+                      ),
+                    ),
+                    spaceY(10.sp),
                     GetBuilder<AdminController>(builder: (c) {
                       return Expanded(
                         child: c.accountStatmentFlag
                             ? Center(
                                 child: CircularProgressIndicator(),
                               )
-                            : c.accountStatments.isEmpty
+                            : c.accountStatmentsToShow.isEmpty
                                 ? NoItemsWidget()
                                 : ListView.separated(
                                     itemBuilder: (context, index) =>
                                         AccountStatmentCard(
-                                            accountStatmentModel:
-                                                c.accountStatments[index]),
+                                            accountStatmentModel: c
+                                                .accountStatmentsToShow[index]),
                                     separatorBuilder: (context, index) =>
                                         spaceY(10.sp),
-                                    itemCount: c.accountStatments.length),
+                                    itemCount: c.accountStatmentsToShow.length),
                       );
                     }),
                   ],
@@ -147,7 +156,7 @@ class AccountStatmentCard extends StatelessWidget {
           spaceY(10.sp),
           depositLine(
               title: "deposit_type".tr,
-              content: accountStatmentModel.depositType!),
+              content: accountStatmentModel.depositType!.tr),
           spaceY(10.sp),
           depositLine(
               title: "payment_date".tr,

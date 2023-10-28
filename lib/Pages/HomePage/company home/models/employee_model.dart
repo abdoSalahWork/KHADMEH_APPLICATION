@@ -23,6 +23,7 @@ class EmployeeModel {
   int? durationOfEmployment;
   String? residenceContract;
   String? finalContract;
+  String? desc;
 
   var image;
   var passportImege;
@@ -79,6 +80,7 @@ class EmployeeModel {
     this.passportImege,
     this.passportNum,
     this.status,
+    this.desc,
     this.passportIssueDate,
     this.passportExpiryDate,
     this.isOffer,
@@ -153,6 +155,7 @@ class EmployeeModel {
     religionId = json['religion_id'];
     maritalStatus = json['marital_status'];
     educationCertification = json['education_certification'];
+    desc = json['desc'];
 
     if (json['favourite'] != null) {
       favourite = Favourite.fromJson(json['favourite']);
@@ -188,6 +191,7 @@ class EmployeeModel {
       data['final_contract'] = finalContract;
     }
     if (status != null) data['status'] = status!.toJson();
+    if (desc != null) data['desc'] = desc;
     if (nameAr != null) data['name_ar'] = nameAr;
     if (nameEn != null) data['name_en'] = nameEn;
     if (dateOfBirth != null) data['date_of_birth'] = dateOfBirth;

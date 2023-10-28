@@ -83,7 +83,7 @@ class UnderlinedCustomTextField extends StatelessWidget {
           // cursorHeight: 3.0.sp,
           keyboardType: keyBoardType,
           inputFormatters: inputFormatters,
-          style: style ?? GoogleFonts.poppins(fontSize: 15.0.sp),
+          style: style ?? GoogleFonts.cairo(fontSize: 15.0.sp),
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(10),
             iconColor: Colors.red,
@@ -115,7 +115,7 @@ class UnderlinedCustomTextField extends StatelessWidget {
             prefix: prefix,
             suffix: suffix,
             hintText: hintText,
-            hintStyle: GoogleFonts.poppins(
+            hintStyle: GoogleFonts.cairo(
               fontSize: 13.0.sp,
               color: Colors.grey,
             ),
@@ -217,7 +217,7 @@ class SendMessageTextField extends StatelessWidget {
           // cursorHeight: 3.0.sp,
           keyboardType: keyBoardType,
           inputFormatters: inputFormatters,
-          style: style ?? GoogleFonts.poppins(fontSize: 13.0.sp),
+          style: style ?? GoogleFonts.cairo(fontSize: 13.0.sp),
           decoration: InputDecoration(
             contentPadding: padding ?? const EdgeInsets.all(10),
             fillColor: fillColor ?? const Color(0xffF1F1F1),
@@ -254,7 +254,7 @@ class SendMessageTextField extends StatelessWidget {
             prefix: prefix,
             suffix: suffix,
             hintText: hintText,
-            hintStyle: GoogleFonts.poppins(
+            hintStyle: GoogleFonts.cairo(
               fontSize: 13.0.sp,
               color: Colors.grey,
             ),

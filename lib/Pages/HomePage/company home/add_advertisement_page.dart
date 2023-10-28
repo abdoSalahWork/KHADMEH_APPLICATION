@@ -14,10 +14,10 @@ import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
 import 'package:khedma/Pages/HomePage/controllers/advertisment_controller.dart';
 import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
 import 'package:khedma/Themes/themes.dart';
+import 'package:khedma/web_view_container.dart';
 import 'package:khedma/widgets/radio_button.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:sizer/sizer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 
@@ -418,60 +418,66 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                     String? b = await _advertismentController
                         .createAdvertisment(advertisment: advertismentToCreate);
                     if (b != null) {
-                      Utils.customDialog(
-                          actions: [
-                            primaryButton(
-                              onTap: () async {
-                                Get.back();
-                                Uri url = Uri.parse(b);
-                                await launchUrl(url,
-                                    mode: LaunchMode.externalApplication);
+                      Get.to(() => WebViewContainer(
+                                url: b,
+                              ))!
+                          .then((value) {
+                        Utils.customDialog(
+                            actions: [
+                              primaryButton(
+                                onTap: () async {
+                                  Get.back();
+                                  Get.back();
 
-                                await Future.delayed(
-                                    Duration(milliseconds: 100));
-                                while (WidgetsBinding.instance.lifecycleState !=
-                                    AppLifecycleState.resumed) {
-                                  await Future.delayed(
-                                      Duration(milliseconds: 100));
-                                }
-                                Get.back();
-                              },
-                              width: 40.0.w,
-                              height: 50,
-                              radius: 10.w,
-                              color: Theme.of(context).colorScheme.primary,
-                              text: coloredText(
-                                text: "ok".tr,
-                                color: Colors.white,
+                                  // Uri url = Uri.parse(b);
+                                  // await launchUrl(url,
+                                  //     mode: LaunchMode.externalApplication);
+
+                                  // await Future.delayed(
+                                  //     Duration(milliseconds: 100));
+                                  // while (WidgetsBinding.instance.lifecycleState !=
+                                  //     AppLifecycleState.resumed) {
+                                  //   await Future.delayed(
+                                  //       Duration(milliseconds: 100));
+                                  // }
+                                },
+                                width: 40.0.w,
+                                height: 50,
+                                radius: 10.w,
+                                color: Theme.of(context).colorScheme.primary,
+                                text: coloredText(
+                                  text: "ok".tr,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                          context: context,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                spaceY(20),
-                                Icon(
-                                  EvaIcons.checkmarkCircle,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  size: 40.sp,
-                                ),
-                                spaceY(20),
-                                coloredText(
-                                    text: "your_advertisment_has_added".tr,
-                                    fontSize: 12.0.sp),
-                                coloredText(
-                                  text: "successfully".tr,
-                                  fontSize: 14.0.sp,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                              ],
-                            ),
-                          ));
+                            ],
+                            context: context,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  spaceY(20),
+                                  Icon(
+                                    EvaIcons.checkmarkCircle,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    size: 40.sp,
+                                  ),
+                                  spaceY(20),
+                                  coloredText(
+                                      text: "your_advertisment_has_added".tr,
+                                      fontSize: 12.0.sp),
+                                  coloredText(
+                                    text: "successfully".tr,
+                                    fontSize: 14.0.sp,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ],
+                              ),
+                            ));
+                      });
                     }
                   }
                 },

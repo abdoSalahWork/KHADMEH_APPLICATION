@@ -78,25 +78,36 @@ class ProfileCard extends StatelessWidget {
                       spaceY(5.sp),
                       Row(
                         children: [
-                          coloredText(
-                            text:
-                                "${employee.contractAmount!} ${'kwd'.tr} / ${employee.contractDuration! + "year".tr}",
-                            color: employee.isOffer == 1
-                                ? const Color(0xff919191)
-                                : Theme.of(context).colorScheme.tertiary,
-                            fontSize: 9.0.sp,
-                            decoration: employee.isOffer == 1
-                                ? TextDecoration.lineThrough
-                                : null,
+                          SizedBox(
+                            width: employee.isOffer == 1 ? 25.w : null,
+                            child: coloredText(
+                              textDirection: TextDirection.ltr,
+                              overflow: TextOverflow.ellipsis,
+                              text:
+                                  "${(double.parse(employee.contractAmount!) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} / ${"${employee.contractDuration!}  years"}",
+                              color: employee.isOffer == 1
+                                  ? const Color(0xff919191)
+                                  : Theme.of(context).colorScheme.tertiary,
+                              fontSize: 9.0.sp,
+                              decoration: employee.isOffer == 1
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
                           ),
                           employee.isOffer != 1 ? Container() : spaceX(4.sp),
                           employee.isOffer != 1
                               ? Container()
-                              : coloredText(
-                                  text:
-                                      "${employee.amountAfterDiscount!} ${'kwd'.tr} / ${employee.contractDuration! + "year".tr}",
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                  fontSize: 9.0.sp,
+                              : SizedBox(
+                                  width: employee.isOffer == 1 ? 25.w : null,
+                                  child: coloredText(
+                                    textDirection: TextDirection.ltr,
+                                    overflow: TextOverflow.ellipsis,
+                                    text:
+                                        "${(employee.amountAfterDiscount! * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} / ${"${employee.contractDuration!} years"}",
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                    fontSize: 9.0.sp,
+                                  ),
                                 ),
                         ],
                       )

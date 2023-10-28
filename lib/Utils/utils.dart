@@ -293,6 +293,19 @@ class Utils {
     await _storage.write(key: "token", value: token);
   }
 
+  static Future<String?> readFingerprint() async {
+    String? value = await _storage.read(key: "fingerprint");
+    return value;
+  }
+
+  static Future deleteFingerprint() async {
+    await _storage.delete(key: "fingerprint");
+  }
+
+  static Future saveFingerprint({required String fingerpring}) async {
+    await _storage.write(key: "fingerprint", value: fingerpring);
+  }
+
   static Future<String?> readFBToken() async {
     String? value = await _storage.read(key: "fb_token");
     return value;

@@ -494,47 +494,52 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                         child: ListView.builder(
                                           scrollDirection: Axis.horizontal,
                                           itemBuilder: (ctx, index) =>
-                                              Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.3),
-                                                  spreadRadius: 2,
-                                                  blurRadius: 3,
-                                                  offset: const Offset(0,
-                                                      0), // changes position of shadow
-                                                ),
-                                              ],
-                                            ),
-                                            width: 45.w,
-                                            height: 25.w,
-                                            margin: const EdgeInsets.symmetric(
-                                              vertical: 10,
-                                              horizontal: 10,
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                coloredText(
-                                                  text: c.overView[index].number
-                                                      .toString(),
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                  fontSize: 14.sp,
-                                                ),
-                                                spaceY(10),
-                                                coloredText(
-                                                  text:
-                                                      c.overView[index].string,
-                                                  fontSize: 14.sp,
-                                                ),
-                                              ],
+                                              GestureDetector(
+                                            onTap: c.overView[index].onTap,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.3),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 3,
+                                                    offset: const Offset(0,
+                                                        0), // changes position of shadow
+                                                  ),
+                                                ],
+                                              ),
+                                              width: 45.w,
+                                              height: 25.w,
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 10,
+                                                horizontal: 10,
+                                              ),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  coloredText(
+                                                    text: c
+                                                        .overView[index].number
+                                                        .toString(),
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                    fontSize: 14.sp,
+                                                  ),
+                                                  spaceY(10),
+                                                  coloredText(
+                                                    text: c
+                                                        .overView[index].string,
+                                                    fontSize: 14.sp,
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                           itemCount: c.overView.length,
@@ -2302,5 +2307,6 @@ class _CompanyHomePageState extends State<CompanyHomePage>
 class OverView {
   int number;
   String string;
-  OverView(this.number, this.string);
+  void Function() onTap;
+  OverView({required this.number, required this.string, required this.onTap});
 }

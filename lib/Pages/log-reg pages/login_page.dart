@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       // ),
                     ),
                     width: 100.0.w,
-                    height: 170.sp,
+                    height: 190.sp,
                     child: Column(
                       children: [
                         Row(
@@ -311,7 +311,7 @@ class _LoginPageState extends State<LoginPage> {
                                         () => const CompanyHomePage(),
                                       );
                                     } else {
-                                      Get.to(() => const AdminHomePage());
+                                      Get.offAll(() => const AdminHomePage());
                                     }
                                   } else if (state == LoginStates.needsVerify) {
                                     Get.to(
@@ -706,6 +706,10 @@ class _LoginPageState extends State<LoginPage> {
               child: coloredText(text: "geust".tr, color: Colors.white),
               onTap: () {
                 _globalController.guest = true;
+                _globalController.currencyRate = 1;
+                _globalController.currencySymbol =
+                    const MapEntry("KWD", "Kuwaiti Dinar");
+
                 Get.offAll(() => UserHomePage());
               },
             ),

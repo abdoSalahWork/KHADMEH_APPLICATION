@@ -1,11 +1,12 @@
 import 'package:chips_choice/chips_choice.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Themes/themes.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
@@ -19,10 +20,11 @@ class FillingDataPage extends StatefulWidget {
 }
 
 class _FillingDataPageState extends State<FillingDataPage> {
-  TextEditingController startDateController = TextEditingController();
+  TextEditingController dateTimeController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   CompaniesController _companiesController = Get.find();
+  GlobalController _globalController = Get.find();
   AdminController _adminController = Get.find();
   List<String> tags = [
     "company_headquarters",
@@ -58,143 +60,216 @@ class _FillingDataPageState extends State<FillingDataPage> {
           primary: false,
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: 40.w,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      spaceY(10.sp),
-                      coloredText(
-                        text: "${"start_date".tr}:",
-                      ),
-                      spaceY(5.sp),
-                      SizedBox(
-                        height: 40.sp,
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          onTap: () async {
-                            DateTime? x = await showDatePicker(
-                                builder: (context, child) => Theme(
-                                      data: ThemeData(
-                                        colorScheme: ColorScheme.fromSeed(
-                                          seedColor: AppThemes.colorCustom,
-                                        ),
-                                      ),
-                                      child: child!,
-                                    ),
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now()
-                                    .add(const Duration(days: 30)));
-                            if (x != null) {
-                              startDateController.text =
-                                  DateFormat('y/MM/dd').format(x);
-                            }
-                          },
-                          // maxLines: 3,
-                          controller: startDateController,
-                          readOnly: true,
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     SizedBox(
+            //       width: 40.w,
+            //       child: Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           spaceY(10.sp),
+            //           coloredText(
+            //             text: "${"start_date".tr}:",
+            //           ),
+            //           spaceY(5.sp),
+            //           SizedBox(
+            //             height: 40.sp,
+            //             child: TextFormField(
+            //               textAlign: TextAlign.center,
+            //               onTap: () async {
+            //                 DateTime? x = await showDatePicker(
+            //                     builder: (context, child) => Theme(
+            //                           data: ThemeData(
+            //                             colorScheme: ColorScheme.fromSeed(
+            //                               seedColor: AppThemes.colorCustom,
+            //                             ),
+            //                           ),
+            //                           child: child!,
+            //                         ),
+            //                     context: context,
+            //                     initialDate: DateTime.now(),
+            //                     firstDate: DateTime.now(),
+            //                     lastDate: DateTime.now()
+            //                         .add(const Duration(days: 30)));
+            //                 if (x != null) {
+            //                   dateTimeController.text =
+            //                       DateFormat('y/MM/dd').format(x);
+            //                 }
+            //               },
+            //               // maxLines: 3,
+            //               controller: dateTimeController,
+            //               readOnly: true,
 
-                          decoration: InputDecoration(
-                            hintText: 'YYYY/MM/DD',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xffE3E3E3),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xffE3E3E3),
-                              ),
-                            ),
-                          ),
+            //               decoration: InputDecoration(
+            //                 hintText: 'YYYY/MM/DD',
+            //                 enabledBorder: OutlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(8),
+            //                   borderSide: const BorderSide(
+            //                     color: Color(0xffE3E3E3),
+            //                   ),
+            //                 ),
+            //                 focusedBorder: OutlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(8),
+            //                   borderSide: const BorderSide(
+            //                     color: Color(0xffE3E3E3),
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     SizedBox(
+            //       width: 40.w,
+            //       child: Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           spaceY(10.sp),
+            //           coloredText(
+            //             text: "${"end_date".tr}:",
+            //           ),
+            //           spaceY(5.sp),
+            //           SizedBox(
+            //             height: 40.sp,
+            //             child: TextFormField(
+            //               textAlign: TextAlign.center,
+            //               onTap: () async {
+            //                 DateTime? x = await showDatePicker(
+            //                     builder: (context, child) => Theme(
+            //                           data: ThemeData(
+            //                             colorScheme: ColorScheme.fromSeed(
+            //                               seedColor: AppThemes.colorCustom,
+            //                             ),
+            //                           ),
+            //                           child: child!,
+            //                         ),
+            //                     context: context,
+            //                     initialDate: DateTime.now(),
+            //                     firstDate: DateTime.now(),
+            //                     lastDate: DateTime.now()
+            //                         .add(const Duration(days: 30)));
+            //                 if (x != null) {
+            //                   endDateController.text =
+            //                       DateFormat('y/MM/dd').format(x);
+            //                 }
+            //               },
+            //               // maxLines: 3,
+            //               controller: endDateController,
+            //               readOnly: true,
+
+            //               decoration: InputDecoration(
+            //                 hintText: 'YYYY/MM/DD',
+            //                 enabledBorder: OutlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(8),
+            //                   borderSide: const BorderSide(
+            //                     color: Color(0xffE3E3E3),
+            //                   ),
+            //                 ),
+            //                 focusedBorder: OutlineInputBorder(
+            //                   borderRadius: BorderRadius.circular(8),
+            //                   borderSide: const BorderSide(
+            //                     color: Color(0xffE3E3E3),
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ],
+            // ),
+
+            SizedBox(
+              // height: 40.sp,
+              child: TextFormField(
+                textAlign: TextAlign.center,
+                onTap: () async {
+                  DateTime? x = await showOmniDateTimePicker(
+                      theme: ThemeData(
+                        colorScheme: ColorScheme.fromSeed(
+                          seedColor: AppThemes.colorCustom,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: 40.w,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      spaceY(10.sp),
-                      coloredText(
-                        text: "${"end_date".tr}:",
+                      is24HourMode: false,
+                      isShowSeconds: false,
+                      minutesInterval: 1,
+                      secondsInterval: 1,
+                      borderRadius: const BorderRadius.all(Radius.circular(16)),
+                      constraints: const BoxConstraints(
+                        maxWidth: 350,
+                        maxHeight: 650,
                       ),
-                      spaceY(5.sp),
-                      SizedBox(
-                        height: 40.sp,
-                        child: TextFormField(
-                          textAlign: TextAlign.center,
-                          onTap: () async {
-                            DateTime? x = await showDatePicker(
-                                builder: (context, child) => Theme(
-                                      data: ThemeData(
-                                        colorScheme: ColorScheme.fromSeed(
-                                          seedColor: AppThemes.colorCustom,
-                                        ),
-                                      ),
-                                      child: child!,
-                                    ),
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now()
-                                    .add(const Duration(days: 30)));
-                            if (x != null) {
-                              endDateController.text =
-                                  DateFormat('y/MM/dd').format(x);
-                            }
-                          },
-                          // maxLines: 3,
-                          controller: endDateController,
-                          readOnly: true,
-
-                          decoration: InputDecoration(
-                            hintText: 'YYYY/MM/DD',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xffE3E3E3),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xffE3E3E3),
-                              ),
+                      transitionBuilder: (context, anim1, anim2, child) {
+                        return FadeTransition(
+                          opacity: anim1.drive(
+                            Tween(
+                              begin: 0,
+                              end: 1,
                             ),
                           ),
-                        ),
-                      ),
-                    ],
+                          child: child,
+                        );
+                      },
+                      transitionDuration: const Duration(milliseconds: 200),
+                      barrierDismissible: true,
+                      selectableDayPredicate: (dateTime) {
+                        // Disable 25th Feb 2023
+                        if (dateTime == DateTime(2023, 2, 25)) {
+                          return false;
+                        } else {
+                          return true;
+                        }
+                      },
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 30)));
+                  if (x != null) {
+                    dateTimeController.text =
+                        DateFormat('yyyy/M/dd hh:mm:ss').format(x);
+                  }
+                },
+                // maxLines: 3,
+                controller: dateTimeController,
+                readOnly: true,
+
+                decoration: InputDecoration(
+                  hintText: 'YYYY/MM/DD HH:MM',
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xffE3E3E3),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xffE3E3E3),
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
+
             spaceY(10.sp),
-            Row(
-              children: [
-                Icon(
-                  EvaIcons.info,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-                spaceX(5.sp),
-                coloredText(
-                  text: "Work hours per day is 8 max",
-                  fontSize: 11.sp,
-                  color: Theme.of(context).colorScheme.secondary,
-                )
-              ],
-            ),
-            spaceY(10.sp),
+            // Row(
+            //   children: [
+            //     Icon(
+            //       EvaIcons.info,
+            //       color: Theme.of(context).colorScheme.secondary,
+            //     ),
+            //     spaceX(5.sp),
+            //     coloredText(
+            //       text: "Work hours per day is 8 max",
+            //       fontSize: 11.sp,
+            //       color: Theme.of(context).colorScheme.secondary,
+            //     )
+            //   ],
+            // ),
+            // spaceY(10.sp),
             coloredText(
               text: "receipt_method".tr,
             ),
@@ -289,7 +364,7 @@ class _FillingDataPageState extends State<FillingDataPage> {
                     coloredText(text: "${"total".tr}:"),
                     coloredText(
                         text:
-                            "${_companiesController.getCartTotal() + diffPrice} ${'kwd'.tr}",
+                            "${((_companiesController.getCartTotal() + diffPrice) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key}",
                         color: Theme.of(context).colorScheme.secondary),
                   ],
                 ),
@@ -297,7 +372,7 @@ class _FillingDataPageState extends State<FillingDataPage> {
                     onTap: () async {
                       bool? x = await _companiesController.checkOut(
                         id: widget.companyId,
-                        startDate: startDateController.text,
+                        startDate: dateTimeController.text,
                         endDate: endDateController.text,
                         address: addressController.text,
                         receiptMethod: reciptMethod,

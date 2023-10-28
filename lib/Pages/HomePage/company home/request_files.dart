@@ -150,15 +150,29 @@ class _RequestFilesPageState extends State<RequestFilesPage> {
                         await launchUrl(x,
                             mode: LaunchMode.externalApplication);
                       },
-                      child: Container(
-                        height: 200,
-                        width: 300,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(contractFiles[index].file),
-                          ),
-                        ),
-                      ),
+                      child: contractFiles[index].file.endsWith("pdf") ||
+                              contractFiles[index].file.endsWith("docx")
+                          ? const SizedBox(
+                              height: 200,
+                              width: 300,
+                              child: Center(
+                                child: Icon(
+                                  EvaIcons.fileText,
+                                  color: Colors.grey,
+                                  size: 100,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              height: 200,
+                              width: 300,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image:
+                                      NetworkImage(contractFiles[index].file),
+                                ),
+                              ),
+                            ),
                     ),
                     spaceY(5.sp),
                     coloredText(

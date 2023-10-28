@@ -15,6 +15,7 @@ import 'package:khedma/Admin/pages/contact/admin_contact_page.dart';
 import 'package:khedma/Admin/pages/dropdowns/admin_dropdowns_page.dart';
 import 'package:khedma/Admin/pages/languages/admin_languages_page.dart';
 import 'package:khedma/Admin/pages/menu_page.dart';
+import 'package:khedma/Admin/pages/signiture/admin_signiture.dart';
 import 'package:khedma/Admin/pages/user%20profiles/admin_user_profiles_page.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
 import 'package:sizer/sizer.dart';
@@ -190,6 +191,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
         break;
       case MyAdminMenuItems.dropDowns:
         Get.to(() => const AdminDropDownsPage());
+        break;
+      case MyAdminMenuItems.signiture:
+        Get.to(() => const AdminSigniturePage());
         break;
 
       default:

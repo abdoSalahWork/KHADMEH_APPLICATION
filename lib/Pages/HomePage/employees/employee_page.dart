@@ -13,11 +13,11 @@ import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart'
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/invooice/invoice_page.dart';
+import 'package:khedma/web_view_container.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:sizer/sizer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 
@@ -267,6 +267,7 @@ class _EmployeePageState extends State<EmployeePage> {
                                   : widget.employeeModel.nameAr!,
                               color: Colors.white,
                               fontSize: 15.0.sp),
+                          spaceY(5.sp),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 3),
@@ -274,13 +275,14 @@ class _EmployeePageState extends State<EmployeePage> {
                                 color: const Color(0xff020404).withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(20)),
                             child: coloredText(
+                                textDirection: TextDirection.ltr,
                                 text: widget.employeeModel.isOffer != 1
-                                    ? "${widget.employeeModel.contractAmount!} ${"kwd".tr} /${"${widget.employeeModel.contractDuration!} ${"year".tr}"}"
-                                    : "${widget.employeeModel.amountAfterDiscount!} ${"kwd".tr} /${"${widget.employeeModel.contractDuration!} ${"year".tr}"}",
+                                    ? "${(double.parse(widget.employeeModel.contractAmount!) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} /${"${widget.employeeModel.contractDuration!} years"}"
+                                    : "${(widget.employeeModel.amountAfterDiscount! * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} /${"${widget.employeeModel.contractDuration!} ${"year".tr}"}",
                                 color: Colors.white,
                                 fontSize: 9.0.sp),
                           ),
-                          spaceY(10),
+                          spaceY(5.sp),
                           // SizedBox(
                           //   height: 25,
                           //   child: ListView.separated(
@@ -311,7 +313,7 @@ class _EmployeePageState extends State<EmployeePage> {
                           //             spaceX(5),
                           //   ),
                           // ),
-                          // spaceY(10),
+                          // spaceY(5.sp),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -340,7 +342,7 @@ class _EmployeePageState extends State<EmployeePage> {
                               ),
                             ],
                           ),
-                          spaceY(10),
+                          spaceY(5.sp),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -369,7 +371,7 @@ class _EmployeePageState extends State<EmployeePage> {
                               ),
                             ],
                           ),
-                          spaceY(10),
+                          spaceY(5.sp),
                           // Row(
                           //   mainAxisAlignment: MainAxisAlignment.start,
                           //   children: [
@@ -392,7 +394,7 @@ class _EmployeePageState extends State<EmployeePage> {
                           //     ),
                           //   ],
                           // ),
-                          // spaceY(10),
+                          // spaceY(5.sp),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -438,45 +440,54 @@ class _EmployeePageState extends State<EmployeePage> {
                                                               .id!);
                                               if (x != null) {
                                                 invoiceId = x.keys.first;
-                                                Uri url =
-                                                    Uri.parse(x.values.first);
-                                                logSuccess(x);
-                                                await launchUrl(url,
-                                                    mode: LaunchMode
-                                                        .externalApplication);
-
-                                                await Future.delayed(Duration(
-                                                    milliseconds: 100));
-                                                while (WidgetsBinding.instance
-                                                        .lifecycleState !=
-                                                    AppLifecycleState.resumed) {
-                                                  await Future.delayed(Duration(
-                                                      milliseconds: 100));
-                                                }
-                                                EmployeeModel? b =
-                                                    await _employeesController
-                                                        .showMyEmployee(
-                                                            id: widget
+                                                Get.to(() => WebViewContainer(
+                                                          url: x.values.first,
+                                                        ))!
+                                                    .then((value) async {
+                                                  EmployeeModel? b =
+                                                      await _employeesController
+                                                          .showMyEmployee(
+                                                              id: widget
+                                                                  .employeeModel
+                                                                  .id!,
+                                                              indicator: true);
+                                                  if (b != null) {
+                                                    widget.employeeModel = b;
+                                                    if (widget.employeeModel
+                                                                .status !=
+                                                            null &&
+                                                        widget
                                                                 .employeeModel
-                                                                .id!,
-                                                            indicator: false);
-                                                if (b != null) {
-                                                  widget.employeeModel = b;
-                                                  if (widget.employeeModel
-                                                              .status !=
-                                                          null &&
-                                                      widget.employeeModel
-                                                              .status!.status ==
-                                                          "pending") {
-                                                    contractFlag = true;
-                                                  } else {
-                                                    contractFlag = false;
+                                                                .status!
+                                                                .status ==
+                                                            "pending") {
+                                                      contractFlag = true;
+                                                    } else {
+                                                      contractFlag = false;
+                                                    }
+                                                    setState(() {});
+                                                    Utils.doneDialog(
+                                                        context: context);
+                                                    await _globalController
+                                                        .getMe();
                                                   }
-                                                  setState(() {});
-                                                }
-                                                Utils.doneDialog(
-                                                    context: context);
-                                                await _globalController.getMe();
+                                                });
+
+                                                // Uri url =
+                                                //     Uri.parse(x.values.first);
+                                                // logSuccess(x);
+                                                // await launchUrl(url,
+                                                //     mode: LaunchMode
+                                                //         .externalApplication);
+
+                                                // await Future.delayed(Duration(
+                                                //     milliseconds: 100));
+                                                // while (WidgetsBinding.instance
+                                                //         .lifecycleState !=
+                                                //     AppLifecycleState.resumed) {
+                                                //   await Future.delayed(Duration(
+                                                //       milliseconds: 100));
+                                                // }
                                               }
 
                                               // Get.to(() => PayPage(),
@@ -519,46 +530,56 @@ class _EmployeePageState extends State<EmployeePage> {
                                               .pendingEmployee(
                                                   id: widget.employeeModel.id!);
                                           if (x != null) {
-                                            Uri url = Uri.parse(x);
-                                            logSuccess(x);
-                                            await launchUrl(url,
-                                                mode: LaunchMode
-                                                    .externalApplication);
-
-                                            await Future.delayed(
-                                                Duration(milliseconds: 100));
-                                            while (WidgetsBinding
-                                                    .instance.lifecycleState !=
-                                                AppLifecycleState.resumed) {
-                                              await Future.delayed(
-                                                  Duration(milliseconds: 100));
-                                            }
-                                            EmployeeModel? b =
-                                                await _employeesController
-                                                    .showMyEmployee(
-                                                        id: widget
-                                                            .employeeModel.id!,
-                                                        indicator: false);
-                                            if (b != null) {
-                                              widget.employeeModel = b;
-                                              if (widget.employeeModel.status !=
-                                                      null &&
-                                                  widget.employeeModel.status!
-                                                          .status ==
-                                                      "pending") {
-                                                contractFlag = true;
-                                              } else {
-                                                contractFlag = false;
+                                            Get.to(() => WebViewContainer(
+                                                      url: x,
+                                                    ))!
+                                                .then((value) async {
+                                              EmployeeModel? b =
+                                                  await _employeesController
+                                                      .showMyEmployee(
+                                                          id: widget
+                                                              .employeeModel
+                                                              .id!,
+                                                          indicator: true);
+                                              if (b != null) {
+                                                widget.employeeModel = b;
+                                                if (widget.employeeModel
+                                                            .status !=
+                                                        null &&
+                                                    widget.employeeModel.status!
+                                                            .status ==
+                                                        "pending") {
+                                                  contractFlag = true;
+                                                } else {
+                                                  contractFlag = false;
+                                                }
+                                                Utils.doneDialog(
+                                                    context: context);
+                                                _globalController.getMe();
+                                                _globalController
+                                                    .getUserHomePage();
+                                                Utils().rateDialoge(
+                                                    context: context,
+                                                    companyId: widget
+                                                        .employeeModel
+                                                        .companyId!);
+                                                setState(() {});
                                               }
-                                              setState(() {});
-                                            }
-                                            Utils.doneDialog(context: context);
-                                            _globalController.getMe();
-                                            _globalController.getUserHomePage();
-                                            Utils().rateDialoge(
-                                                context: context,
-                                                companyId: widget
-                                                    .employeeModel.companyId!);
+                                            });
+                                            // Uri url = Uri.parse(x);
+                                            // logSuccess(x);
+                                            // await launchUrl(url,
+                                            //     mode: LaunchMode
+                                            //         .externalApplication);
+
+                                            // await Future.delayed(
+                                            //     Duration(milliseconds: 100));
+                                            // while (WidgetsBinding
+                                            //         .instance.lifecycleState !=
+                                            //     AppLifecycleState.resumed) {
+                                            //   await Future.delayed(
+                                            //       Duration(milliseconds: 100));
+                                            // }
                                           }
                                         }
                                       },
@@ -810,6 +831,9 @@ class _EmployeePageState extends State<EmployeePage> {
                 title1: "contract_duration".tr,
                 subTitle1:
                     "${widget.employeeModel.contractDuration} ${"years".tr}",
+                title2: "monthly_salery".tr,
+                subTitle2:
+                    "${widget.employeeModel.salaryMonth != null ? (double.parse(widget.employeeModel.salaryMonth!) * _globalController.currencyRate).toStringAsFixed(1) : 0} ${_globalController.currencySymbol.key}",
               ),
               spaceY(12.sp),
               DetailsItemWidget(
@@ -864,6 +888,14 @@ class _EmployeePageState extends State<EmployeePage> {
                     .toList()
                     .join(", "),
               ),
+
+              widget.employeeModel.desc == null ? Container() : spaceY(10.sp),
+              widget.employeeModel.desc == null
+                  ? Container()
+                  : DetailsItemWidget(
+                      width1: 80.w,
+                      title1: "more_details".tr,
+                      subTitle1: widget.employeeModel.desc),
 
               spaceY(10.sp),
               // Row(

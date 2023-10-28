@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/cleaning_company_service_widget.dart';
 import 'package:sizer/sizer.dart';
@@ -24,6 +25,7 @@ class _BookedCleaningServiceWidgetState
     super.initState();
   }
 
+  GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -50,7 +52,9 @@ class _BookedCleaningServiceWidgetState
               children: [
                 coloredText(text: widget.service.name),
                 coloredText(
-                    text: "${widget.service.price} ${'kwd'.tr}",
+                    textDirection: TextDirection.ltr,
+                    text:
+                        "${(double.parse(widget.service.price) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key}",
                     color: Theme.of(context).colorScheme.secondary),
                 Row(
                   children: [

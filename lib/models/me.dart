@@ -10,6 +10,8 @@ class Me {
   String? emailVerifiedAt;
   int? status;
   int? block;
+  String? phone;
+  String? adminPhoto;
   String? createdAt;
   String? updatedAt;
   String? userType;
@@ -24,6 +26,8 @@ class Me {
     this.id,
     this.fullName,
     this.email,
+    this.phone,
+    this.adminPhoto,
     this.reviewCompany,
     this.emailVerifiedAt,
     this.status,
@@ -48,6 +52,8 @@ class Me {
     block = json['block'];
     fullName = json['full_name'];
     email = json['email'];
+    phone = json['phone'];
+    adminPhoto = json['photo'];
     emailVerifiedAt = json['email_verified_at'];
     status = json['status'];
     createdAt = json['created_at'];

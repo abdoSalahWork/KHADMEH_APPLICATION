@@ -160,7 +160,13 @@ class EmployeesController extends GetxController {
 
     if (employeesFilter.status != null) {
       for (var i in tmp1) {
-        if (employeesFilter.status == "booked".tr && i.status != null) {
+        if (employeesFilter.status == "booked".tr &&
+            i.status != null &&
+            i.status!.status == "booked") {
+          tmp2.add(i);
+        } else if (employeesFilter.status == "pending".tr &&
+            i.status != null &&
+            i.status!.status == "pending") {
           tmp2.add(i);
         } else if (employeesFilter.status == "not_booked".tr &&
             i.status == null) {
@@ -440,8 +446,8 @@ class EmployeesController extends GetxController {
     } on DioException catch (e) {
       logError(e.response!.data);
       if (indicator) Get.back();
+      return null;
     }
-    return null;
   }
 
   Future<String?> pendingEmployee({required int id}) async {

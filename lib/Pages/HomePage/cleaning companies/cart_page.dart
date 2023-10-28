@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/employees/filling_data_page.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/widgets/booked_cleaning_company_service_widget.dart';
 import 'package:sizer/sizer.dart';
 
@@ -9,8 +11,9 @@ import '../../../Utils/utils.dart';
 
 // ignore: must_be_immutable
 class CartPage extends StatelessWidget {
-  const CartPage({super.key, required this.companyId});
+  CartPage({super.key, required this.companyId});
   final int companyId;
+  final GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +46,9 @@ class CartPage extends StatelessWidget {
                   children: [
                     coloredText(text: "${"total".tr}:"),
                     coloredText(
-                        text: "${c.getCartTotal()} ${'kwd'.tr}",
+                        textDirection: TextDirection.ltr,
+                        text:
+                            "${(c.getCartTotal() * _globalController.currencyRate).toCurrencyString()} ${_globalController.currencySymbol.key}",
                         color: Theme.of(context).colorScheme.secondary),
                   ],
                 ),

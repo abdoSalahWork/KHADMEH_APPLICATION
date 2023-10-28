@@ -46,7 +46,7 @@ void main() async {
   runApp(
     DevicePreview(
       // enabled: !kReleaseMode,
-      enabled: true,
+      enabled: false,
       // devices: [
       //   DeviceInfo.genericPhone(
       //     platform: TargetPlatform.iOS,

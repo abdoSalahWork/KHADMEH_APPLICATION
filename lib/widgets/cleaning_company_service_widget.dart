@@ -61,7 +61,9 @@ class _CleaningServiceWidgetState extends State<CleaningServiceWidget> {
               coloredText(text: widget.name),
               spaceY(3.sp),
               coloredText(
-                  text: "${widget.price} ${'kwd'.tr}",
+                  textDirection: TextDirection.ltr,
+                  text:
+                      "${(double.parse(widget.price) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key}",
                   color: Theme.of(context).colorScheme.secondary),
               spaceY(3.sp),
               Row(

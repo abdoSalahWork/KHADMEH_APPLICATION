@@ -15,8 +15,8 @@ import 'package:khedma/widgets/search_text_field.dart';
 import 'package:sizer/sizer.dart';
 
 class CompanyEmployeesSearchPage extends StatefulWidget {
-  const CompanyEmployeesSearchPage({super.key});
-
+  const CompanyEmployeesSearchPage({super.key, this.filterStatus});
+  final String? filterStatus;
   @override
   State<CompanyEmployeesSearchPage> createState() =>
       _CompanyEmployeesSearchPageState();
@@ -27,7 +27,13 @@ class _CompanyEmployeesSearchPageState
   EmployeesController _employeesController = Get.find();
   @override
   void initState() {
-    _employeesController.getCompanyEmployees();
+    _employeesController.getCompanyEmployees().then((value) {
+      if (widget.filterStatus != null) {
+        _employeesController.employeesFilter.status = widget.filterStatus;
+        _employeesController.applyCompanyFilter();
+      }
+    });
+
     super.initState();
   }
 
