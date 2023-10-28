@@ -10,7 +10,10 @@ import flutter_downloader
    
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
-    FlutterDownloaderPlugin.setPluginRegistrantCallback(registerPlugins)
+  FlutterDownloaderPlugin.setPluginRegistrantCallback({ registry in
+    FlutterDownloaderPlugin.register(with: registry.registrar(forPlugin: "vn.hunghd.flutter_downloader"))
+    GeneratedPluginRegistrant.register(with: registry)
+})
      if #available(iOS 10.0, *) {
   UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
 }
