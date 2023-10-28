@@ -223,6 +223,9 @@ class EmployeesController extends GetxController {
             "Authorization": "Bearer $token"
           },
         ),
+        onSendProgress: (count, total) {
+          logSuccess("${count}/${total}");
+        },
       );
 
       await getCompanyEmployees();

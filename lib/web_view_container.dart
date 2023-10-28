@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Utils/utils.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewContainer extends StatefulWidget {
@@ -52,11 +53,22 @@ class _WebViewContainerState extends State<WebViewContainer> {
     // #enddocregion webview_controller
   }
 
+  ScreenshotController scontroller = ScreenshotController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('pay'.tr)),
-      body: WebViewWidget(controller: controller),
+    return Screenshot(
+      controller: scontroller,
+      child: Scaffold(
+        appBar: AppBar(
+          title: GestureDetector(
+            onTap: () {
+              Utils.takeContainer(scontroller, "pay.png");
+            },
+            child: Text('pay'.tr),
+          ),
+        ),
+        body: WebViewWidget(controller: controller),
+      ),
     );
   }
 }

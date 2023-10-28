@@ -35,7 +35,7 @@ dependencies:
   chips_choice: ^3.0.0
   cupertino_icons: ^1.0.2
   custom_rating_bar: ^2.0.5
-  device_info_plus: ^9.1.0
+  # device_info_plus: ^9.1.0
   device_preview: ^1.1.0
   dio: ^5.2.1+1
   dotted_border: ^2.0.0+3
@@ -58,6 +58,7 @@ dependencies:
   flutter_custom_clippers: ^2.1.0
   flutter_downloader: ^1.11.3
   flutter_facebook_auth: ^6.0.1
+  flutter_file_dialog: ^3.0.2
   flutter_launcher_icons: ^0.13.1
   flutter_local_notifications: ^15.1.1
   flutter_multi_formatter: ^2.11.2
@@ -88,6 +89,7 @@ dependencies:
   printing: ^5.11.0
   restart_app: ^1.2.1
   rxdart: ^0.27.7
+  screenshot: ^2.1.0
   signature: ^5.4.0
   sizer: ^2.0.15
   sticky_headers: ^0.3.0+2

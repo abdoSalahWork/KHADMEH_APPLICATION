@@ -44,12 +44,16 @@ class AdvertismentController extends GetxController {
             "Accept": "application/json",
           },
         ),
+        onSendProgress: (count, total) {
+          logSuccess("${count}/${total}");
+        },
       );
 
       // await getAdvertisments();
       Get.back();
       return res.data['InvoiceURL'];
     } on DioException catch (e) {
+      logError(e.response!.data);
       BuildContext context = Get.context!;
       List<String> errorText = [];
       Map errors = e.response!.data["errors"];

@@ -27,6 +27,7 @@ import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/user_register_model.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -157,839 +158,840 @@ class _UserHomePageState extends State<UserHomePage> {
     super.initState();
   }
 
+  ScreenshotController controller = ScreenshotController();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Visibility(
-            visible: completedRegisterFlag,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 55,
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(children: [
-                        coloredText(
-                          text: "hello".tr,
-                          fontSize: 14.0.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        spaceX(3),
-                        coloredText(
-                          text: _globalController.guest
-                              ? "Guest"
-                              : _globalController.me.fullName ?? "",
-                          fontSize: 14.0.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ]),
-                      _globalController.guest
-                          ? GestureDetector(
-                              onTap: () {
-                                Get.offAll(() => LoginPage());
-                              },
-                              child: coloredText(
-                                text: "login".tr,
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline,
-                              ),
-                            )
-                          : Row(children: [
-                              GetBuilder<NotificationController>(builder: (c) {
-                                return badges.Badge(
-                                  position: badges.BadgePosition.topEnd(
-                                      top: 0, end: 0),
-                                  showBadge: c.newNotifications,
-                                  child: GestureDetector(
-                                    onTap: () => Get.to(
-                                      () => NotificationsPage(),
-                                    ),
-                                    child: Icon(
-                                      EvaIcons.bell,
-                                      color: const Color(0xffD1D1D1),
-                                      size: 25.0.sp,
-                                    ),
-                                  ),
-                                );
-                              }),
-                              spaceX(10),
-                              GetBuilder<ChatController>(
-                                  builder: (chatController) {
-                                return badges.Badge(
-                                  showBadge: chatController.unreadChatsFlag,
-                                  position: badges.BadgePosition.topEnd(
-                                      top: 0, end: 0),
-                                  child: GestureDetector(
-                                    child: Icon(
-                                      EvaIcons.messageCircle,
-                                      color: const Color(0xffD1D1D1),
-                                      size: 22.0.sp,
-                                    ),
-                                    onTap: () =>
-                                        Get.to(() => const MessagesPage()),
-                                  ),
-                                );
-                              }),
-                              spaceX(10),
-                              GestureDetector(
+    return Screenshot(
+      controller: controller,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Visibility(
+              visible: completedRegisterFlag,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 55,
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(children: [
+                          GestureDetector(
+                            onTap: () {
+                              Utils.takeContainer(controller, "user_home.png");
+                            },
+                            child: coloredText(
+                              text: "hello".tr,
+                              fontSize: 14.0.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          spaceX(3),
+                          coloredText(
+                            text: _globalController.guest
+                                ? "Guest"
+                                : _globalController.me.fullName ?? "",
+                            fontSize: 14.0.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ]),
+                        _globalController.guest
+                            ? GestureDetector(
                                 onTap: () {
-                                  Get.to(
-                                    () => const PersonalPage(),
-                                  );
+                                  Get.offAll(() => LoginPage());
                                 },
-                                child:
-                                    GetBuilder<GlobalController>(builder: (c) {
-                                  return Container(
-                                    width: 25.sp,
-                                    height: 25.sp,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      // border: Border.all(
-                                      //   width: 1,
-                                      //   color: const Color(0xffD1D1D1),
-                                      // ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(c.me
-                                            .userInformation!.personalPhoto!),
-                                        fit: BoxFit.cover,
+                                child: coloredText(
+                                  text: "login".tr,
+                                  fontWeight: FontWeight.w600,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              )
+                            : Row(children: [
+                                GetBuilder<NotificationController>(
+                                    builder: (c) {
+                                  return badges.Badge(
+                                    position: badges.BadgePosition.topEnd(
+                                        top: 0, end: 0),
+                                    showBadge: c.newNotifications,
+                                    child: GestureDetector(
+                                      onTap: () => Get.to(
+                                        () => NotificationsPage(),
+                                      ),
+                                      child: Icon(
+                                        EvaIcons.bell,
+                                        color: const Color(0xffD1D1D1),
+                                        size: 25.0.sp,
                                       ),
                                     ),
                                   );
                                 }),
-                              ),
-                            ]),
-                    ],
-                  ),
-                  spaceY(1.5.h),
-                  GetBuilder<GlobalController>(builder: (globalController) {
-                    return Expanded(
-                      child: globalController.getUserHomePageFlag
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : ListView(
-                              padding: EdgeInsets.zero,
-                              physics: completedRegisterFlag
-                                  ? null
-                                  : const NeverScrollableScrollPhysics(),
-                              primary: false,
-                              children: [
-                                globalController.userHomePage.ads == null ||
-                                        globalController
-                                            .userHomePage.ads!.isEmpty
-                                    ? Container()
-                                    : CarouselSlider(
-                                        options: CarouselOptions(
-                                          height: 150.0,
-                                          aspectRatio: 16 / 9,
-                                          initialPage: 0,
-                                          enableInfiniteScroll: true,
-                                          reverse: false,
-                                          autoPlay: true,
-                                          autoPlayInterval:
-                                              const Duration(seconds: 3),
-                                          autoPlayAnimationDuration:
-                                              const Duration(milliseconds: 800),
-                                          autoPlayCurve: Curves.fastOutSlowIn,
-                                          enlargeCenterPage: true,
-                                          enlargeFactor: 0.2,
-                                          onPageChanged: (index, reason) {},
-                                          scrollDirection: Axis.horizontal,
+                                spaceX(10),
+                                GetBuilder<ChatController>(
+                                    builder: (chatController) {
+                                  return badges.Badge(
+                                    showBadge: chatController.unreadChatsFlag,
+                                    position: badges.BadgePosition.topEnd(
+                                        top: 0, end: 0),
+                                    child: GestureDetector(
+                                      child: Icon(
+                                        EvaIcons.messageCircle,
+                                        color: const Color(0xffD1D1D1),
+                                        size: 22.0.sp,
+                                      ),
+                                      onTap: () =>
+                                          Get.to(() => const MessagesPage()),
+                                    ),
+                                  );
+                                }),
+                                spaceX(10),
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.to(
+                                      () => const PersonalPage(),
+                                    );
+                                  },
+                                  child: GetBuilder<GlobalController>(
+                                      builder: (c) {
+                                    return Container(
+                                      width: 25.sp,
+                                      height: 25.sp,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        // border: Border.all(
+                                        //   width: 1,
+                                        //   color: const Color(0xffD1D1D1),
+                                        // ),
+                                        image: DecorationImage(
+                                          image: NetworkImage(c.me
+                                              .userInformation!.personalPhoto!),
+                                          fit: BoxFit.cover,
                                         ),
-                                        items: globalController
-                                            .userHomePage.ads!
-                                            .map((i) {
-                                          return Builder(
-                                            builder: (BuildContext context) {
-                                              return GestureDetector(
-                                                onTap: () async {
-                                                  if (i.promotionType == 1) {
-                                                    CompanyModel? x =
-                                                        await _companiesController
-                                                            .showCompany(
-                                                                indicator: true,
-                                                                id: i
-                                                                    .companyId!);
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              ]),
+                      ],
+                    ),
+                    spaceY(1.5.h),
+                    GetBuilder<GlobalController>(builder: (globalController) {
+                      return Expanded(
+                        child: globalController.getUserHomePageFlag
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : ListView(
+                                padding: EdgeInsets.zero,
+                                physics: completedRegisterFlag
+                                    ? null
+                                    : const NeverScrollableScrollPhysics(),
+                                primary: false,
+                                children: [
+                                  globalController.userHomePage.ads == null ||
+                                          globalController
+                                              .userHomePage.ads!.isEmpty
+                                      ? Container()
+                                      : CarouselSlider(
+                                          options: CarouselOptions(
+                                            height: 150.0,
+                                            aspectRatio: 16 / 9,
+                                            initialPage: 0,
+                                            enableInfiniteScroll: true,
+                                            reverse: false,
+                                            autoPlay: true,
+                                            autoPlayInterval:
+                                                const Duration(seconds: 3),
+                                            autoPlayAnimationDuration:
+                                                const Duration(
+                                                    milliseconds: 800),
+                                            autoPlayCurve: Curves.fastOutSlowIn,
+                                            enlargeCenterPage: true,
+                                            enlargeFactor: 0.2,
+                                            onPageChanged: (index, reason) {},
+                                            scrollDirection: Axis.horizontal,
+                                          ),
+                                          items: globalController
+                                              .userHomePage.ads!
+                                              .map((i) {
+                                            return Builder(
+                                              builder: (BuildContext context) {
+                                                return GestureDetector(
+                                                  onTap: () async {
+                                                    if (i.promotionType == 1) {
+                                                      CompanyModel? x =
+                                                          await _companiesController
+                                                              .showCompany(
+                                                                  indicator:
+                                                                      true,
+                                                                  id: i
+                                                                      .companyId!);
 
-                                                    if (x != null) {
-                                                      if (x.companyInformation !=
-                                                          null) {
-                                                        if (x.companyInformation!
-                                                                .companyType ==
-                                                            "cleaning") {
-                                                          Get.to(
-                                                            () => CleaningCompany(
-                                                                cleaningCompany:
-                                                                    x),
-                                                          );
-                                                        } else {
-                                                          Get.to(
-                                                            () =>
-                                                                RecruitmentCompany(
-                                                                    company: x),
-                                                          );
+                                                      if (x != null) {
+                                                        if (x.companyInformation !=
+                                                            null) {
+                                                          if (x.companyInformation!
+                                                                  .companyType ==
+                                                              "cleaning") {
+                                                            Get.to(
+                                                              () => CleaningCompany(
+                                                                  cleaningCompany:
+                                                                      x),
+                                                            );
+                                                          } else {
+                                                            Get.to(
+                                                              () =>
+                                                                  RecruitmentCompany(
+                                                                      company:
+                                                                          x),
+                                                            );
+                                                          }
                                                         }
                                                       }
+                                                    } else {
+                                                      Uri x = Uri.parse(
+                                                          i.externalLink!);
+                                                      await launchUrl(x,
+                                                          mode: LaunchMode
+                                                              .externalApplication);
                                                     }
-                                                  } else {
-                                                    Uri x = Uri.parse(
-                                                        i.externalLink!);
-                                                    await launchUrl(x,
-                                                        mode: LaunchMode
-                                                            .externalApplication);
+                                                  },
+                                                  child: Container(
+                                                    width: 100.w,
+                                                    height: 56.w,
+
+                                                    // margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                                                    decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: NetworkImage(
+                                                              i.image!),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        // color: Theme.of(context)
+                                                        //     .colorScheme
+                                                        //     .primary,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10)),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          }).toList(),
+                                        ),
+                                  spaceY(2.0.h),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      coloredText(
+                                        text: "rec_com".tr,
+                                        fontSize: 13.0.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => Get.to(
+                                          () =>
+                                              const RecruitmentCompaniesSearchPage(),
+                                        ),
+                                        child: coloredText(
+                                          text: "all".tr,
+                                          fontSize: 13.0.sp,
+                                          color: Colors.grey,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  spaceY(1.5.h),
+                                  SizedBox(
+                                    height: 100.sp,
+                                    child:
+                                        globalController.userHomePage
+                                                        .companiesRecruitment ==
+                                                    null ||
+                                                globalController
+                                                    .userHomePage
+                                                    .companiesRecruitment!
+                                                    .isEmpty
+                                            ? const NoItemsWidget()
+                                            : ListView.separated(
+                                                physics: completedRegisterFlag
+                                                    ? null
+                                                    : const NeverScrollableScrollPhysics(),
+                                                padding: EdgeInsets.zero,
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemBuilder: (context, index) {
+                                                  return GestureDetector(
+                                                    onTap: () async {
+                                                      CompanyModel? x =
+                                                          await _companiesController
+                                                              .showCompany(
+                                                                  indicator:
+                                                                      true,
+                                                                  id: globalController
+                                                                      .userHomePage
+                                                                      .companiesRecruitment![
+                                                                          index]
+                                                                      .id!);
+
+                                                      if (x != null) {
+                                                        Get.to(
+                                                          () =>
+                                                              RecruitmentCompany(
+                                                                  company: x),
+                                                        );
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      width: 40.0.w,
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(
+                                                            0xffF8F8F8),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        children: [
+                                                          Container(
+                                                            width: 60.0.sp,
+                                                            height: 60.0.sp,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                    shape: BoxShape
+                                                                        .circle,
+                                                                    image:
+                                                                        DecorationImage(
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      image: NetworkImage(
+                                                                          "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesRecruitment![index].companyInformation!.companyLogo!}/"),
+                                                                    )),
+                                                          ),
+                                                          coloredText(
+                                                            text: globalController
+                                                                        .userHomePage
+                                                                        .companiesRecruitment![
+                                                                            index]
+                                                                        .fullName!
+                                                                        .length >
+                                                                    12
+                                                                ? "${globalController.userHomePage.companiesRecruitment![index].fullName!.substring(0, 12)}.."
+                                                                : globalController
+                                                                    .userHomePage
+                                                                    .companiesRecruitment![
+                                                                        index]
+                                                                    .fullName!,
+                                                            fontSize: 12.0.sp,
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              const Icon(
+                                                                  EvaIcons.star,
+                                                                  color: Colors
+                                                                      .yellow),
+                                                              spaceX(5),
+                                                              coloredText(
+                                                                text: (globalController.userHomePage.companiesRecruitment![index].reviewCompanySumReviewValue !=
+                                                                                null &&
+                                                                            globalController.userHomePage.companiesRecruitment![index].reviewCompanyCount !=
+                                                                                null
+                                                                        ? int.parse(globalController.userHomePage.companiesRecruitment![index].reviewCompanySumReviewValue!) /
+                                                                            globalController.userHomePage.companiesRecruitment![index].reviewCompanyCount!
+                                                                        : 0)
+                                                                    .toStringAsFixed(1),
+                                                                fontSize:
+                                                                    13.0.sp,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                itemCount: globalController
+                                                    .userHomePage
+                                                    .companiesRecruitment!
+                                                    .length,
+                                                separatorBuilder:
+                                                    (BuildContext context,
+                                                            int index) =>
+                                                        spaceX(10),
+                                              ),
+                                  ),
+                                  spaceY(2.0.h),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      coloredText(
+                                        text: "cl_com".tr,
+                                        fontSize: 13.0.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.to(
+                                            () =>
+                                                const CleaningCompaniesSearchPage(),
+                                          );
+                                        },
+                                        child: coloredText(
+                                          text: "all".tr,
+                                          fontSize: 13.0.sp,
+                                          color: Colors.grey,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  spaceY(1.5.h),
+                                  SizedBox(
+                                    height: 100.sp,
+                                    child:
+                                        globalController.userHomePage
+                                                        .companiesCleaning ==
+                                                    null ||
+                                                globalController.userHomePage
+                                                    .companiesCleaning!.isEmpty
+                                            ? const NoItemsWidget()
+                                            : ListView.separated(
+                                                physics: completedRegisterFlag
+                                                    ? null
+                                                    : const NeverScrollableScrollPhysics(),
+                                                padding: EdgeInsets.zero,
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemBuilder: (context, index) {
+                                                  return GestureDetector(
+                                                    onTap: () async {
+                                                      CompanyModel? x =
+                                                          await _companiesController
+                                                              .showCompany(
+                                                                  indicator:
+                                                                      true,
+                                                                  id: globalController
+                                                                      .userHomePage
+                                                                      .companiesCleaning![
+                                                                          index]
+                                                                      .id!);
+
+                                                      if (x != null) {
+                                                        if (x.companyInformation !=
+                                                            null) {
+                                                          logSuccess(x
+                                                              .companyInformation!
+                                                              .companyType!);
+                                                          if (x.companyInformation!
+                                                                  .companyType ==
+                                                              "recruitment") {
+                                                            Get.to(
+                                                              () =>
+                                                                  RecruitmentCompany(
+                                                                      company:
+                                                                          x),
+                                                            );
+                                                          } else {
+                                                            Get.to(
+                                                              () => CleaningCompany(
+                                                                  cleaningCompany:
+                                                                      x),
+                                                            );
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      width: 40.0.w,
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(
+                                                            0xffF8F8F8),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        children: [
+                                                          Container(
+                                                            width: 60.0.sp,
+                                                            height: 60.0.sp,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                    shape: BoxShape
+                                                                        .circle,
+                                                                    image:
+                                                                        DecorationImage(
+                                                                      image: NetworkImage(
+                                                                          "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesCleaning![index].companyInformation!.companyLogo!}/"),
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    )),
+                                                          ),
+                                                          coloredText(
+                                                            text: globalController
+                                                                        .userHomePage
+                                                                        .companiesCleaning![
+                                                                            index]
+                                                                        .fullName!
+                                                                        .length >
+                                                                    12
+                                                                ? "${globalController.userHomePage.companiesCleaning![index].fullName!.substring(0, 12)}.."
+                                                                : globalController
+                                                                    .userHomePage
+                                                                    .companiesCleaning![
+                                                                        index]
+                                                                    .fullName!,
+                                                            fontSize: 13.0.sp,
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              const Icon(
+                                                                  EvaIcons.star,
+                                                                  color: Colors
+                                                                      .yellow),
+                                                              spaceX(5),
+                                                              coloredText(
+                                                                text: (globalController.userHomePage.companiesCleaning![index].reviewCompanySumReviewValue !=
+                                                                                null &&
+                                                                            globalController.userHomePage.companiesCleaning![index].reviewCompanyCount !=
+                                                                                null
+                                                                        ? int.parse(globalController.userHomePage.companiesCleaning![index].reviewCompanySumReviewValue!) /
+                                                                            globalController.userHomePage.companiesCleaning![index].reviewCompanyCount!
+                                                                        : 0)
+                                                                    .toStringAsFixed(1),
+                                                                fontSize:
+                                                                    13.0.sp,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                itemCount: globalController
+                                                    .userHomePage
+                                                    .companiesCleaning!
+                                                    .length,
+                                                separatorBuilder:
+                                                    (BuildContext context,
+                                                            int index) =>
+                                                        spaceX(10),
+                                              ),
+                                  ),
+                                  spaceY(2.0.h),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      coloredText(
+                                        text: "employees".tr,
+                                        fontSize: 13.0.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => Get.to(
+                                          () => const EmployeesSearchPage(),
+                                        ),
+                                        child: coloredText(
+                                          text: "all".tr,
+                                          fontSize: 13.0.sp,
+                                          color: Colors.grey,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  spaceY(2.0.h),
+                                  SizedBox(
+                                    height: 120.sp,
+                                    child: globalController
+                                                    .userHomePage.employees ==
+                                                null ||
+                                            globalController
+                                                .userHomePage.employees!.isEmpty
+                                        ? const NoItemsWidget()
+                                        : ListView.separated(
+                                            physics: completedRegisterFlag
+                                                ? null
+                                                : const NeverScrollableScrollPhysics(),
+                                            padding: EdgeInsets.zero,
+                                            scrollDirection: Axis.horizontal,
+                                            itemBuilder: (context, index) {
+                                              return GestureDetector(
+                                                onTap: () async {
+                                                  EmployeeModel? em =
+                                                      await _employeesController
+                                                          .showEmployee(
+                                                              id: globalController
+                                                                  .userHomePage
+                                                                  .employees![
+                                                                      index]
+                                                                  .id!,
+                                                              indicator: true);
+                                                  if (em != null) {
+                                                    Get.to(
+                                                      () => EmployeePage(
+                                                          employeeModel: em),
+                                                    );
                                                   }
                                                 },
-                                                child: Container(
-                                                  width: 100.w,
-                                                  height: 56.w,
-
-                                                  // margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                                                  decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                        image: NetworkImage(
-                                                            i.image!),
-                                                        fit: BoxFit.cover,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      width: 25.0.w,
+                                                      height: 25.0.w,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        image: DecorationImage(
+                                                            image: NetworkImage(
+                                                                "${globalController.userHomePage.employees![index].image}/"),
+                                                            fit: BoxFit.cover),
                                                       ),
-                                                      // color: Theme.of(context)
-                                                      //     .colorScheme
-                                                      //     .primary,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
+                                                    ),
+                                                    spaceY(5.sp),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsetsDirectional
+                                                                  .only(
+                                                                  start: 2),
+                                                          child: Get.locale ==
+                                                                  const Locale(
+                                                                      'en',
+                                                                      'us')
+                                                              ? coloredText(
+                                                                  text: globalController.userHomePage.employees![index].nameEn!.length >
+                                                                          12
+                                                                      ? "${globalController.userHomePage.employees![index].nameEn!.substring(0, 12)}.."
+                                                                      : globalController
+                                                                          .userHomePage
+                                                                          .employees![
+                                                                              index]
+                                                                          .nameEn!,
+                                                                  fontSize:
+                                                                      13.0.sp)
+                                                              : coloredText(
+                                                                  text: globalController.userHomePage.employees![index].nameAr!.length >
+                                                                          12
+                                                                      ? "${globalController.userHomePage.employees![index].nameAr!.substring(0, 12)}.."
+                                                                      : globalController
+                                                                          .userHomePage
+                                                                          .employees![
+                                                                              index]
+                                                                          .nameAr!,
+                                                                  fontSize:
+                                                                      13.0.sp),
+                                                        ),
+                                                        spaceY(2),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Icon(
+                                                              EvaIcons.pin,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                              size: 13.0.sp,
+                                                            ),
+                                                            spaceX(3),
+                                                            coloredText(
+                                                              text: Get.locale ==
+                                                                      const Locale(
+                                                                          'en',
+                                                                          'US')
+                                                                  ? globalController
+                                                                      .userHomePage
+                                                                      .employees![
+                                                                          index]
+                                                                      .nationality!
+                                                                      .nameEn!
+                                                                  : globalController
+                                                                      .userHomePage
+                                                                      .employees![
+                                                                          index]
+                                                                      .nationality!
+                                                                      .nameAr!,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                              fontSize: 12.0.sp,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
                                                 ),
                                               );
                                             },
-                                          );
-                                        }).toList(),
-                                      ),
-                                spaceY(2.0.h),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    coloredText(
-                                      text: "rec_com".tr,
-                                      fontSize: 13.0.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => Get.to(
-                                        () =>
-                                            const RecruitmentCompaniesSearchPage(),
-                                      ),
-                                      child: coloredText(
-                                        text: "all".tr,
-                                        fontSize: 13.0.sp,
-                                        color: Colors.grey,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                spaceY(1.5.h),
-                                SizedBox(
-                                  height: 100.sp,
-                                  child: globalController.userHomePage
-                                                  .companiesRecruitment ==
-                                              null ||
-                                          globalController.userHomePage
-                                              .companiesRecruitment!.isEmpty
-                                      ? const NoItemsWidget()
-                                      : ListView.separated(
-                                          physics: completedRegisterFlag
-                                              ? null
-                                              : const NeverScrollableScrollPhysics(),
-                                          padding: EdgeInsets.zero,
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () async {
-                                                CompanyModel? x =
-                                                    await _companiesController
-                                                        .showCompany(
-                                                            indicator: true,
-                                                            id: globalController
-                                                                .userHomePage
-                                                                .companiesRecruitment![
-                                                                    index]
-                                                                .id!);
-
-                                                if (x != null) {
-                                                  Get.to(
-                                                    () => RecruitmentCompany(
-                                                        company: x),
-                                                  );
-                                                }
-                                              },
-                                              child: Container(
-                                                width: 40.0.w,
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      const Color(0xffF8F8F8),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Container(
-                                                      width: 60.0.sp,
-                                                      height: 60.0.sp,
-                                                      decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          image:
-                                                              DecorationImage(
-                                                            fit: BoxFit.cover,
-                                                            image: NetworkImage(
-                                                                "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesRecruitment![index].companyInformation!.companyLogo!}/"),
-                                                          )),
-                                                    ),
-                                                    coloredText(
-                                                      text: globalController
-                                                                  .userHomePage
-                                                                  .companiesRecruitment![
-                                                                      index]
-                                                                  .fullName!
-                                                                  .length >
-                                                              12
-                                                          ? "${globalController.userHomePage.companiesRecruitment![index].fullName!.substring(0, 12)}.."
-                                                          : globalController
-                                                              .userHomePage
-                                                              .companiesRecruitment![
-                                                                  index]
-                                                              .fullName!,
-                                                      fontSize: 12.0.sp,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        const Icon(
-                                                            EvaIcons.star,
-                                                            color:
-                                                                Colors.yellow),
-                                                        spaceX(5),
-                                                        coloredText(
-                                                          text: (globalController
-                                                                              .userHomePage
-                                                                              .companiesRecruitment![
-                                                                                  index]
-                                                                              .reviewCompanySumReviewValue !=
-                                                                          null &&
-                                                                      globalController
-                                                                              .userHomePage
-                                                                              .companiesRecruitment![
-                                                                                  index]
-                                                                              .reviewCompanyCount !=
-                                                                          null
-                                                                  ? int.parse(globalController
-                                                                          .userHomePage
-                                                                          .companiesRecruitment![
-                                                                              index]
-                                                                          .reviewCompanySumReviewValue!) /
-                                                                      globalController
-                                                                          .userHomePage
-                                                                          .companiesRecruitment![
-                                                                              index]
-                                                                          .reviewCompanyCount!
-                                                                  : 0)
-                                                              .toStringAsFixed(
-                                                                  1),
-                                                          fontSize: 13.0.sp,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          itemCount: globalController
-                                              .userHomePage
-                                              .companiesRecruitment!
-                                              .length,
-                                          separatorBuilder:
-                                              (BuildContext context,
-                                                      int index) =>
-                                                  spaceX(10),
-                                        ),
-                                ),
-                                spaceY(2.0.h),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    coloredText(
-                                      text: "cl_com".tr,
-                                      fontSize: 13.0.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Get.to(
-                                          () =>
-                                              const CleaningCompaniesSearchPage(),
-                                        );
-                                      },
-                                      child: coloredText(
-                                        text: "all".tr,
-                                        fontSize: 13.0.sp,
-                                        color: Colors.grey,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                spaceY(1.5.h),
-                                SizedBox(
-                                  height: 100.sp,
-                                  child: globalController.userHomePage
-                                                  .companiesCleaning ==
-                                              null ||
-                                          globalController.userHomePage
-                                              .companiesCleaning!.isEmpty
-                                      ? const NoItemsWidget()
-                                      : ListView.separated(
-                                          physics: completedRegisterFlag
-                                              ? null
-                                              : const NeverScrollableScrollPhysics(),
-                                          padding: EdgeInsets.zero,
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () async {
-                                                CompanyModel? x =
-                                                    await _companiesController
-                                                        .showCompany(
-                                                            indicator: true,
-                                                            id: globalController
-                                                                .userHomePage
-                                                                .companiesCleaning![
-                                                                    index]
-                                                                .id!);
-
-                                                if (x != null) {
-                                                  if (x.companyInformation !=
-                                                      null) {
-                                                    logSuccess(x
-                                                        .companyInformation!
-                                                        .companyType!);
-                                                    if (x.companyInformation!
-                                                            .companyType ==
-                                                        "recruitment") {
-                                                      Get.to(
-                                                        () =>
-                                                            RecruitmentCompany(
-                                                                company: x),
-                                                      );
-                                                    } else {
-                                                      Get.to(
-                                                        () => CleaningCompany(
-                                                            cleaningCompany: x),
-                                                      );
-                                                    }
-                                                  }
-                                                }
-                                              },
-                                              child: Container(
-                                                width: 40.0.w,
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      const Color(0xffF8F8F8),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Container(
-                                                      width: 60.0.sp,
-                                                      height: 60.0.sp,
-                                                      decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          image:
-                                                              DecorationImage(
-                                                            image: NetworkImage(
-                                                                "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesCleaning![index].companyInformation!.companyLogo!}/"),
-                                                            fit: BoxFit.cover,
-                                                          )),
-                                                    ),
-                                                    coloredText(
-                                                      text: globalController
-                                                                  .userHomePage
-                                                                  .companiesCleaning![
-                                                                      index]
-                                                                  .fullName!
-                                                                  .length >
-                                                              12
-                                                          ? "${globalController.userHomePage.companiesCleaning![index].fullName!.substring(0, 12)}.."
-                                                          : globalController
-                                                              .userHomePage
-                                                              .companiesCleaning![
-                                                                  index]
-                                                              .fullName!,
-                                                      fontSize: 13.0.sp,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        const Icon(
-                                                            EvaIcons.star,
-                                                            color:
-                                                                Colors.yellow),
-                                                        spaceX(5),
-                                                        coloredText(
-                                                          text: (globalController
-                                                                              .userHomePage
-                                                                              .companiesCleaning![
-                                                                                  index]
-                                                                              .reviewCompanySumReviewValue !=
-                                                                          null &&
-                                                                      globalController
-                                                                              .userHomePage
-                                                                              .companiesCleaning![
-                                                                                  index]
-                                                                              .reviewCompanyCount !=
-                                                                          null
-                                                                  ? int.parse(globalController
-                                                                          .userHomePage
-                                                                          .companiesCleaning![
-                                                                              index]
-                                                                          .reviewCompanySumReviewValue!) /
-                                                                      globalController
-                                                                          .userHomePage
-                                                                          .companiesCleaning![
-                                                                              index]
-                                                                          .reviewCompanyCount!
-                                                                  : 0)
-                                                              .toStringAsFixed(
-                                                                  1),
-                                                          fontSize: 13.0.sp,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          itemCount: globalController
-                                              .userHomePage
-                                              .companiesCleaning!
-                                              .length,
-                                          separatorBuilder:
-                                              (BuildContext context,
-                                                      int index) =>
-                                                  spaceX(10),
-                                        ),
-                                ),
-                                spaceY(2.0.h),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    coloredText(
-                                      text: "employees".tr,
-                                      fontSize: 13.0.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => Get.to(
-                                        () => const EmployeesSearchPage(),
-                                      ),
-                                      child: coloredText(
-                                        text: "all".tr,
-                                        fontSize: 13.0.sp,
-                                        color: Colors.grey,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                spaceY(2.0.h),
-                                SizedBox(
-                                  height: 120.sp,
-                                  child: globalController
-                                                  .userHomePage.employees ==
-                                              null ||
-                                          globalController
-                                              .userHomePage.employees!.isEmpty
-                                      ? const NoItemsWidget()
-                                      : ListView.separated(
-                                          physics: completedRegisterFlag
-                                              ? null
-                                              : const NeverScrollableScrollPhysics(),
-                                          padding: EdgeInsets.zero,
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (context, index) {
-                                            return GestureDetector(
-                                              onTap: () async {
-                                                EmployeeModel? em =
-                                                    await _employeesController
-                                                        .showEmployee(
-                                                            id: globalController
-                                                                .userHomePage
-                                                                .employees![
-                                                                    index]
-                                                                .id!,
-                                                            indicator: true);
-                                                if (em != null) {
-                                                  Get.to(
-                                                    () => EmployeePage(
-                                                        employeeModel: em),
-                                                  );
-                                                }
-                                              },
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Container(
-                                                    width: 25.0.w,
-                                                    height: 25.0.w,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      image: DecorationImage(
-                                                          image: NetworkImage(
-                                                              "${globalController.userHomePage.employees![index].image}/"),
-                                                          fit: BoxFit.cover),
-                                                    ),
-                                                  ),
-                                                  spaceY(5.sp),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsetsDirectional
-                                                                .only(start: 2),
-                                                        child: Get.locale ==
-                                                                const Locale(
-                                                                    'en', 'us')
-                                                            ? coloredText(
-                                                                text: globalController.userHomePage.employees![index].nameEn!.length > 12
-                                                                    ? "${globalController.userHomePage.employees![index].nameEn!.substring(0, 12)}.."
-                                                                    : globalController
-                                                                        .userHomePage
-                                                                        .employees![
-                                                                            index]
-                                                                        .nameEn!,
-                                                                fontSize:
-                                                                    13.0.sp)
-                                                            : coloredText(
-                                                                text: globalController
-                                                                            .userHomePage
-                                                                            .employees![
-                                                                                index]
-                                                                            .nameAr!
-                                                                            .length >
-                                                                        12
-                                                                    ? "${globalController.userHomePage.employees![index].nameAr!.substring(0, 12)}.."
-                                                                    : globalController
-                                                                        .userHomePage
-                                                                        .employees![
-                                                                            index]
-                                                                        .nameAr!,
-                                                                fontSize: 13.0.sp),
-                                                      ),
-                                                      spaceY(2),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Icon(
-                                                            EvaIcons.pin,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .secondary,
-                                                            size: 13.0.sp,
-                                                          ),
-                                                          spaceX(3),
-                                                          coloredText(
-                                                            text: Get.locale ==
-                                                                    const Locale(
-                                                                        'en',
-                                                                        'US')
-                                                                ? globalController
-                                                                    .userHomePage
-                                                                    .employees![
-                                                                        index]
-                                                                    .nationality!
-                                                                    .nameEn!
-                                                                : globalController
-                                                                    .userHomePage
-                                                                    .employees![
-                                                                        index]
-                                                                    .nationality!
-                                                                    .nameAr!,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .secondary,
-                                                            fontSize: 12.0.sp,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                          itemCount: globalController
-                                              .userHomePage.employees!.length,
-                                          separatorBuilder:
-                                              (BuildContext context,
-                                                      int index) =>
-                                                  spaceX(20),
-                                        ),
-                                ),
-                                spaceY(3.0.h)
-                              ],
-                            ),
-                    );
-                  }),
-                ],
-              ),
-            ),
-          ),
-          Visibility(
-            visible: !completedRegisterFlag,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-              child: Container(
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.5)),
-                width: 100.0.w,
-                height: 100.0.h,
-              ),
-            ),
-          ),
-          Visibility(
-            visible: !completedRegisterFlag,
-            child: Material(
-              color: Colors.transparent,
-              elevation: 15,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.elliptical(50.0.w, 30),
-                bottomRight: Radius.elliptical(50.0.w, 30),
-              ),
-              child: ClipPath(
-                clipper: OvalBottomBorderClipper(),
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 100.0.w,
-                      height: _currentStep == 1
-                          ? h2
-                          : _currentStep == 2
-                              ? h3
-                              : h,
-                      color: Colors.white,
-                      // duration: const const Duration(milliseconds: 250),
-                      child: Column(
-                        children: [
-                          spaceY(100),
-                          EasyStepper(
-                            activeStep: _currentStep,
-                            lineLength: 30.0.w,
-                            lineSpace: 0,
-                            lineType: LineType.normal,
-                            defaultLineColor: Colors.grey,
-
-                            finishedLineColor:
-                                Theme.of(context).colorScheme.tertiary,
-                            activeStepTextColor:
-                                Theme.of(context).colorScheme.tertiary,
-                            finishedStepTextColor: Colors.transparent,
-                            internalPadding: 0,
-                            showLoadingAnimation: false,
-                            stepRadius: 10,
-                            showStepBorder: false,
-                            lineThickness: 0.7,
-                            alignment: Alignment.topCenter,
-                            disableScroll: true,
-                            fitWidth: true,
-                            steps: stepList(),
-                            // onStepReached: (index) =>
-                            //     setState(() => _currentStep = index),
-                          ),
-                          Expanded(
-                            child: Form(
-                              child: PageView(
-                                controller: pageController,
-                                physics: const NeverScrollableScrollPhysics(),
-                                children: pageList,
+                                            itemCount: globalController
+                                                .userHomePage.employees!.length,
+                                            separatorBuilder:
+                                                (BuildContext context,
+                                                        int index) =>
+                                                    spaceX(20),
+                                          ),
+                                  ),
+                                  spaceY(3.0.h)
+                                ],
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    PositionedDirectional(
-                      top: 40,
-                      start: 30,
-                      child: GestureDetector(
-                        onTap: () {
-                          if (_currentStep == 2) {
-                            _currentStep -= 1;
-                            setState(() {});
-                            pageController.jumpToPage(_currentStep);
-                          } else if (_currentStep == 0) {
-                            Get.back();
-                            setState(() {});
-                          } else {
-                            _currentStep -= 1;
-                            pageController.jumpToPage(_currentStep);
-                            setState(() {});
-                          }
-                          logSuccess(_currentStep);
-                        },
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Theme.of(context).colorScheme.primary,
-                          size: 22.0.sp,
-                        ),
-                      ),
-                    ),
-                    Positioned.fill(
-                        top: 40,
-                        child: Align(
-                          alignment: AlignmentDirectional.topCenter,
-                          child: coloredText(
-                            text: "complete_data".tr,
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 14.0.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ))
+                      );
+                    }),
                   ],
                 ),
               ),
             ),
-          )
-        ],
+            Visibility(
+              visible: !completedRegisterFlag,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                child: Container(
+                  decoration:
+                      BoxDecoration(color: Colors.white.withOpacity(0.5)),
+                  width: 100.0.w,
+                  height: 100.0.h,
+                ),
+              ),
+            ),
+            Visibility(
+              visible: !completedRegisterFlag,
+              child: Material(
+                color: Colors.transparent,
+                elevation: 15,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.elliptical(50.0.w, 30),
+                  bottomRight: Radius.elliptical(50.0.w, 30),
+                ),
+                child: ClipPath(
+                  clipper: OvalBottomBorderClipper(),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 100.0.w,
+                        height: _currentStep == 1
+                            ? h2
+                            : _currentStep == 2
+                                ? h3
+                                : h,
+                        color: Colors.white,
+                        // duration: const const Duration(milliseconds: 250),
+                        child: Column(
+                          children: [
+                            spaceY(100),
+                            EasyStepper(
+                              activeStep: _currentStep,
+                              lineLength: 30.0.w,
+                              lineSpace: 0,
+                              lineType: LineType.normal,
+                              defaultLineColor: Colors.grey,
+
+                              finishedLineColor:
+                                  Theme.of(context).colorScheme.tertiary,
+                              activeStepTextColor:
+                                  Theme.of(context).colorScheme.tertiary,
+                              finishedStepTextColor: Colors.transparent,
+                              internalPadding: 0,
+                              showLoadingAnimation: false,
+                              stepRadius: 10,
+                              showStepBorder: false,
+                              lineThickness: 0.7,
+                              alignment: Alignment.topCenter,
+                              disableScroll: true,
+                              fitWidth: true,
+                              steps: stepList(),
+                              // onStepReached: (index) =>
+                              //     setState(() => _currentStep = index),
+                            ),
+                            Expanded(
+                              child: Form(
+                                child: PageView(
+                                  controller: pageController,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: pageList,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PositionedDirectional(
+                        top: 40,
+                        start: 30,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_currentStep == 2) {
+                              _currentStep -= 1;
+                              setState(() {});
+                              pageController.jumpToPage(_currentStep);
+                            } else if (_currentStep == 0) {
+                              Get.back();
+                              setState(() {});
+                            } else {
+                              _currentStep -= 1;
+                              pageController.jumpToPage(_currentStep);
+                              setState(() {});
+                            }
+                            logSuccess(_currentStep);
+                          },
+                          child: Icon(
+                            Icons.arrow_back,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 22.0.sp,
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                          top: 40,
+                          child: Align(
+                            alignment: AlignmentDirectional.topCenter,
+                            child: coloredText(
+                              text: "complete_data".tr,
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize: 14.0.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ))
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

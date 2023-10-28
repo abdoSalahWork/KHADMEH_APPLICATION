@@ -237,7 +237,7 @@ class _AdminDropDownsPageState extends State<AdminDropDownsPage>
                     ],
                   ),
                   color: Colors.black),
-              // spaceY(30.sp),
+              spaceY(10.sp),
               Expanded(
                 child: globalController.getRelegionsFlag
                     ? const Center(
@@ -524,7 +524,7 @@ class _AdminDropDownsPageState extends State<AdminDropDownsPage>
                     ],
                   ),
                   color: Colors.black),
-              // spaceY(30.sp),
+              spaceY(10.sp),
               Expanded(
                 child: globalController.getComplexionFlag
                     ? const Center(
@@ -812,7 +812,7 @@ class _AdminDropDownsPageState extends State<AdminDropDownsPage>
                     ],
                   ),
                   color: Colors.black),
-              // spaceY(30.sp),
+              spaceY(10.sp),
               Expanded(
                 child: globalController.getMaritalStatusFlag
                     ? const Center(
@@ -1098,7 +1098,7 @@ class _AdminDropDownsPageState extends State<AdminDropDownsPage>
                     ],
                   ),
                   color: Colors.black),
-              // spaceY(30.sp),
+              spaceY(10.sp),
               Expanded(
                 child: globalController.getCertificatesFlag
                     ? const Center(

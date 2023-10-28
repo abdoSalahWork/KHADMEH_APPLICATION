@@ -18,6 +18,7 @@ import 'package:khedma/models/send_items_model.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:sizer/sizer.dart';
 // import 'dart:io';
 
@@ -32,6 +33,39 @@ import 'package:sizer/sizer.dart';
 
 // /
 class Utils {
+  static Future<void> takeContainer(
+      ScreenshotController controller, String imageName) async {
+    // ScreenshotController controller = ScreenshotController();
+    // try {
+    //   controller.capture().then(
+    //     (value) async {
+    //       final pickedDirectory = await FlutterFileDialog.pickDirectory();
+    //       if (pickedDirectory != null) {
+    //         logSuccess("asda");
+
+    //         await FlutterFileDialog.saveFileToDirectory(
+    //           directory: pickedDirectory,
+    //           data: value!,
+    //           mimeType: "image/png",
+    //           fileName: imageName,
+    //           replace: true,
+    //           // params: SaveFileDialogParams(
+    //           //     localOnly: false,
+    //           //     // directory: pickedDirectory,
+    //           //     data: value,
+    //           //     // mimeType: mime(outputFile),
+    //           //     fileName: imageName
+    //           //     // replace: true,
+    //           //     ),
+    //         );
+    //       }
+    //     },
+    //   );
+    // } catch (e) {
+    //   logError(e);
+    // }
+  }
+
   static bool getDeviceType() {
     // final data = MediaQueryData.fromView(View.of(Get.context! ));
     // return data.size.shortestSide < 600 ? 'phone' : 'tablet';

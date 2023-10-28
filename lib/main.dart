@@ -46,37 +46,46 @@ void main() async {
   runApp(
     DevicePreview(
       // enabled: !kReleaseMode,
+
       enabled: false,
-      // devices: [
-      //   DeviceInfo.genericPhone(
-      //     platform: TargetPlatform.iOS,
-      //     id: "my-phone",
-      //     name: "5.5 ihone",
-      //     screenSize: const Size(1242 / 3, 2208 / 3),
-      //     pixelRatio: 3,
-      //   ),
-      //   DeviceInfo.genericPhone(
-      //     platform: TargetPlatform.iOS,
-      //     id: "my-tab",
-      //     name: "tab ihone",
-      //     screenSize: const Size(2048 / 3, 2732 / 3),
-      //     pixelRatio: 3,
-      //   ),
-      //   DeviceInfo.genericPhone(
-      //     platform: TargetPlatform.iOS,
-      //     id: "6.7",
-      //     name: "6.7",
-      //     screenSize: const Size(1284 / 3, 2778 / 3),
-      //     pixelRatio: 3,
-      //   ),
-      //   DeviceInfo.genericPhone(
-      //     platform: TargetPlatform.iOS,
-      //     id: "6.5",
-      //     name: "6.5",
-      //     screenSize: const Size(1242 / 3, 2688 / 3),
-      //     pixelRatio: 3,
-      //   ),
-      // ],
+      devices: [
+        ...DevicePreview.defaultDevices,
+        // DeviceInfo.genericPhone(
+        //   platform: TargetPlatform.iOS,
+        //   id: "my-phone",
+        //   name: "5.5 ihone",
+        //   screenSize: const Size(1242 / 3, 2208 / 3),
+        //   pixelRatio: 3,
+        // ),
+        DeviceInfo.genericPhone(
+          platform: TargetPlatform.iOS,
+          id: "my-tab",
+          name: "tab ihone",
+          screenSize: const Size(2048 / 3, 2732 / 3),
+          pixelRatio: 3,
+        ),
+        DeviceInfo.genericPhone(
+          platform: TargetPlatform.iOS,
+          id: "6.7",
+          name: "6.7",
+          screenSize: const Size(1290 / 3, 2796 / 3),
+          pixelRatio: 3,
+        ),
+        DeviceInfo.genericPhone(
+          platform: TargetPlatform.iOS,
+          id: "6.5",
+          name: "6.5",
+          screenSize: const Size(1242 / 3, 2688 / 3),
+          pixelRatio: 3,
+        ),
+        DeviceInfo.genericPhone(
+          platform: TargetPlatform.iOS,
+          id: "5.5",
+          name: "5.5",
+          screenSize: const Size(1242 / 3, 2208 / 3),
+          pixelRatio: 3,
+        ),
+      ],
 
       tools: const [
         ...DevicePreview.defaultTools,

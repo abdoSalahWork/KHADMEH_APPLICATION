@@ -31,6 +31,7 @@ import 'package:khedma/widgets/company_request.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:screenshot/screenshot.dart';
 // import 'package:pusher_client/pusher_client.dart';
 import 'package:sizer/sizer.dart';
 import 'package:textfield_datepicker/textfield_datepicker.dart';
@@ -213,550 +214,560 @@ class _CompanyHomePageState extends State<CompanyHomePage>
     super.initState();
   }
 
+  ScreenshotController controller = ScreenshotController();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: !completedRegisterFlag
-          ? null
-          : Theme(
-              data: ThemeData(
-                useMaterial3: false,
-              ),
-              child: FloatingActionButton(
-                onPressed: meCompanyType != "recruitment"
-                    ? () {
-                        int price = 0;
-                        int serviceId = 0;
-                        Utils.showDialogBox(
-                            context: context,
-                            actions: [
-                              primaryButton(
-                                onTap: () async {
-                                  FocusScope.of(context).unfocus();
-                                  bool b = await _globalController
-                                      .createCompanyService(
-                                          id: serviceId, price: price);
-                                  if (b)
-                                    Utils.doneDialog(
-                                        context: context, backTimes: 2);
-                                },
-                                width: 40.0.w,
-                                height: 50,
-                                radius: 10.w,
-                                color: Colors.black,
-                                text: coloredText(
-                                  text: "submit".tr,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                            content: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                coloredText(text: "choose_service".tr),
-                                spaceY(5.sp),
-                                CustomDropDownMenuButtonV2(
-                                  hintPadding: 0,
-                                  focusNode: FocusNode(),
-                                  fillColor: const Color(0xffF8F8F8),
-                                  filled: true,
-                                  width: 100.w,
-                                  items: _globalController.cleanDropdownServices
-                                      .map(
-                                        (e) => DropdownMenuItem<String>(
-                                          value: Get.locale ==
-                                                  const Locale('en', 'US')
-                                              ? e.nameEn!
-                                              : e.nameAr!,
-                                          child: coloredText(
-                                              text: Get.locale ==
-                                                      const Locale('en', 'US')
-                                                  ? e.nameEn!
-                                                  : e.nameAr!,
-                                              color: Colors.black),
-                                        ),
-                                      )
-                                      .toList(),
-                                  border: null,
-                                  onChanged: (p0) {
-                                    serviceId = _globalController.categories
-                                        .where((element) =>
-                                            element.nameAr == p0 ||
-                                            element.nameEn == p0)
-                                        .first
-                                        .id!;
+    return Screenshot(
+      controller: controller,
+      child: Scaffold(
+        floatingActionButton: !completedRegisterFlag
+            ? null
+            : Theme(
+                data: ThemeData(
+                  useMaterial3: false,
+                ),
+                child: FloatingActionButton(
+                  onPressed: meCompanyType != "recruitment"
+                      ? () {
+                          int price = 0;
+                          int serviceId = 0;
+                          Utils.showDialogBox(
+                              context: context,
+                              actions: [
+                                primaryButton(
+                                  onTap: () async {
+                                    FocusScope.of(context).unfocus();
+                                    bool b = await _globalController
+                                        .createCompanyService(
+                                            id: serviceId, price: price);
+                                    if (b)
+                                      Utils.doneDialog(
+                                          context: context, backTimes: 2);
                                   },
-                                  borderRadius: 10,
+                                  width: 40.0.w,
+                                  height: 50,
+                                  radius: 10.w,
+                                  color: Colors.black,
+                                  text: coloredText(
+                                    text: "submit".tr,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                                coloredText(text: "price".tr),
-                                spaceY(5.sp),
-                                SendMessageTextField(
-                                  suffixIcon: Utils.kwdSuffix("kwd".tr),
-                                  borderRadius: 5,
-                                  keyBoardType: TextInputType.number,
-                                  focusNode: FocusNode(),
-                                  onchanged: (s) {
-                                    if (s != null && s != "")
-                                      price = int.parse(s);
-                                  },
-                                )
                               ],
-                            ));
-                      }
-                    : () {
-                        Get.to(
-                          () => const AddEmployeePage(),
-                        );
-                      },
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: AlignmentDirectional.bottomStart,
-                      end: AlignmentDirectional.topEnd,
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.secondary
-                      ],
+                              content: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  coloredText(text: "choose_service".tr),
+                                  spaceY(5.sp),
+                                  CustomDropDownMenuButtonV2(
+                                    hintPadding: 0,
+                                    focusNode: FocusNode(),
+                                    fillColor: const Color(0xffF8F8F8),
+                                    filled: true,
+                                    width: 100.w,
+                                    items: _globalController
+                                        .cleanDropdownServices
+                                        .map(
+                                          (e) => DropdownMenuItem<String>(
+                                            value: Get.locale ==
+                                                    const Locale('en', 'US')
+                                                ? e.nameEn!
+                                                : e.nameAr!,
+                                            child: coloredText(
+                                                text: Get.locale ==
+                                                        const Locale('en', 'US')
+                                                    ? e.nameEn!
+                                                    : e.nameAr!,
+                                                color: Colors.black),
+                                          ),
+                                        )
+                                        .toList(),
+                                    border: null,
+                                    onChanged: (p0) {
+                                      serviceId = _globalController.categories
+                                          .where((element) =>
+                                              element.nameAr == p0 ||
+                                              element.nameEn == p0)
+                                          .first
+                                          .id!;
+                                    },
+                                    borderRadius: 10,
+                                  ),
+                                  coloredText(text: "price".tr),
+                                  spaceY(5.sp),
+                                  SendMessageTextField(
+                                    suffixIcon: Utils.kwdSuffix("kwd".tr),
+                                    borderRadius: 5,
+                                    keyBoardType: TextInputType.number,
+                                    focusNode: FocusNode(),
+                                    onchanged: (s) {
+                                      if (s != null && s != "")
+                                        price = int.parse(s);
+                                    },
+                                  )
+                                ],
+                              ));
+                        }
+                      : () {
+                          Get.to(
+                            () => const AddEmployeePage(),
+                          );
+                        },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: AlignmentDirectional.bottomStart,
+                        end: AlignmentDirectional.topEnd,
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.secondary
+                        ],
+                      ),
                     ),
-                  ),
-                  width: 60,
-                  height: 60,
-                  child: const Icon(
-                    EvaIcons.plus,
-                    color: Colors.white,
+                    width: 60,
+                    height: 60,
+                    child: const Icon(
+                      EvaIcons.plus,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-      body: Stack(
-        children: [
-          Visibility(
-            visible: completedRegisterFlag,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 55,
-              ),
-              child: GetBuilder<GlobalController>(builder: (c) {
-                return Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        meCompanyType == "cleaning"
-                            ? GestureDetector(
-                                onTap: () =>
-                                    Get.to(() => const CompanyServicesPage()),
-                                child: Icon(
-                                  EvaIcons.grid,
-                                  color: const Color(0xffD1D1D1),
-                                  size: 25.0.sp,
-                                ),
-                              )
-                            : GestureDetector(
-                                onTap: () =>
-                                    Get.to(() => CompanyEmployeesSearchPage()),
-                                child: Icon(
-                                  EvaIcons.people,
-                                  color: const Color(0xffD1D1D1),
-                                  size: 25.0.sp,
-                                ),
-                              ),
-                        spaceX(10),
-                        GetBuilder<NotificationController>(builder: (c) {
-                          return badges.Badge(
-                            showBadge: c.newNotifications,
-                            position:
-                                badges.BadgePosition.topEnd(top: 0, end: 0),
-                            child: GestureDetector(
-                              onTap: () => Get.to(
-                                () => NotificationsPage(),
-                              ),
-                              child: Icon(
-                                EvaIcons.bell,
-                                color: const Color(0xffD1D1D1),
-                                size: 25.0.sp,
-                              ),
-                            ),
-                          );
-                        }),
-                        spaceX(10),
-                        GetBuilder<ChatController>(builder: (chatController) {
-                          return badges.Badge(
-                            showBadge: chatController.unreadChatsFlag,
-                            position:
-                                badges.BadgePosition.topEnd(top: 0, end: 0),
-                            child: GestureDetector(
-                              child: Icon(
-                                EvaIcons.messageCircle,
-                                color: const Color(0xffD1D1D1),
-                                size: 22.0.sp,
-                              ),
-                              onTap: () => Get.to(() => const MessagesPage()),
-                            ),
-                          );
-                        }),
-                        spaceX(10),
-                        GestureDetector(
-                          onTap: () => Get.to(
-                            () => const CompanyPersonalPage(),
-                          ),
-                          child: Container(
-                            width: 45,
-                            height: 45,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              // border: Border.all(
-                              //   width: 1,
-                              //   color: const Color(0xffD1D1D1),
-                              // ),
-                              image: DecorationImage(
-                                image: NetworkImage(_globalController
-                                    .me.companyInformation!.companyLogo!),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: c.getCompanyHomePageFlag
-                          ? const Center(child: CircularProgressIndicator())
-                          : Column(
-                              children: [
-                                spaceY(1.5.h),
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.to(() => const AddAdvertismentPage());
-                                  },
-                                  child: Container(
-                                    width: 100.w,
-                                    height: 40.w,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      image: const DecorationImage(
-                                          image: AssetImage(
-                                              "assets/images/adv_background.png"),
-                                          fit: BoxFit.cover),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        coloredText(
-                                          text: "add_your".tr,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16.sp,
-                                          color: Colors.white,
-                                        ),
-                                        spaceY(10),
-                                        coloredText(
-                                          text: "ad".tr,
-                                          textstyle: TextStyle(
-                                            fontSize: 24.sp,
-                                            color: Colors.white,
-                                            fontFamily: "Gabriola",
-                                            fontStyle: FontStyle.normal,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+        body: Stack(
+          children: [
+            Visibility(
+              visible: completedRegisterFlag,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 55,
+                ),
+                child: GetBuilder<GlobalController>(builder: (c) {
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          meCompanyType == "cleaning"
+                              ? GestureDetector(
+                                  onTap: () =>
+                                      Get.to(() => const CompanyServicesPage()),
+                                  child: Icon(
+                                    EvaIcons.grid,
+                                    color: const Color(0xffD1D1D1),
+                                    size: 25.0.sp,
+                                  ),
+                                )
+                              : GestureDetector(
+                                  onTap: () => Get.to(
+                                      () => CompanyEmployeesSearchPage()),
+                                  child: Icon(
+                                    EvaIcons.people,
+                                    color: const Color(0xffD1D1D1),
+                                    size: 25.0.sp,
                                   ),
                                 ),
-                                meCompanyType != "recruitment"
-                                    ? Container()
-                                    : spaceY(10),
-                                meCompanyType != "recruitment"
-                                    ? Container()
-                                    : GestureDetector(
-                                        onTap: () {
-                                          // Utils.showBigTextNotification(
-                                          //     title: "title",
-                                          //     body: "body",
-                                          //     fln: Utils.flutterLocalNotificationsPlugin);
-                                        },
-                                        child: Align(
-                                          alignment:
-                                              AlignmentDirectional.centerStart,
-                                          child: coloredText(
-                                              text: "overview".tr,
-                                              fontSize: 16.0.sp),
-                                        ),
-                                      ),
-                                meCompanyType != "recruitment"
-                                    ? Container()
-                                    : SizedBox(
-                                        height: 30.w,
-                                        child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (ctx, index) =>
-                                              GestureDetector(
-                                            onTap: c.overView[index].onTap,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.3),
-                                                    spreadRadius: 2,
-                                                    blurRadius: 3,
-                                                    offset: const Offset(0,
-                                                        0), // changes position of shadow
-                                                  ),
-                                                ],
-                                              ),
-                                              width: 45.w,
-                                              height: 25.w,
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                vertical: 10,
-                                                horizontal: 10,
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  coloredText(
-                                                    text: c
-                                                        .overView[index].number
-                                                        .toString(),
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                    fontSize: 14.sp,
-                                                  ),
-                                                  spaceY(10),
-                                                  coloredText(
-                                                    text: c
-                                                        .overView[index].string,
-                                                    fontSize: 14.sp,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          itemCount: c.overView.length,
-                                        ),
-                                      ),
-                                spaceY(10),
-                                // Align(
-                                //   alignment: AlignmentDirectional.centerStart,
-                                //   child: coloredText(
-                                //       text: "requests".tr, fontSize: 15.sp),
-                                // ),
-                                meCompanyType != "recruitment"
-                                    ? TabBar(
-                                        dividerColor: Colors.grey,
-                                        // indicatorColor: Colors.black,
-                                        indicator: UnderlineTabIndicator(
-                                            borderSide: BorderSide(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        )),
-                                        indicatorSize: TabBarIndicatorSize.tab,
-                                        labelPadding: EdgeInsets.zero,
-                                        // isScrollable: true,
-                                        controller: tabController,
-                                        onTap: (value) {
-                                          selectedTabIndex = value;
-                                          setState(() {});
-                                        },
-                                        tabs: List<Widget>.generate(
-                                          tabController.length,
-                                          (index) => Tab(
-                                            child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              child: coloredText(
-                                                  fontSize: 10.sp,
-                                                  text: tabsCleaning[index].tr,
-                                                  color:
-                                                      selectedTabIndex == index
-                                                          ? Colors.black
-                                                          : Colors.grey),
-                                            ),
-                                          ),
-                                        ))
-                                    : TabBar(
-                                        dividerColor: Colors.grey,
-                                        // indicatorColor: Colors.black,
-                                        indicator: UnderlineTabIndicator(
-                                            borderSide: BorderSide(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        )),
-                                        indicatorSize: TabBarIndicatorSize.tab,
-                                        labelPadding: EdgeInsets.zero,
-                                        // isScrollable: true,
-                                        controller: tabController,
-                                        onTap: (value) {
-                                          selectedTabIndex = value;
-                                          setState(() {});
-                                        },
-                                        tabs: List<Widget>.generate(
-                                          tabController.length,
-                                          (index) => Tab(
-                                            child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              child: coloredText(
-                                                  fontSize: 10.sp,
-                                                  text:
-                                                      tabsRecruitment[index].tr,
-                                                  color:
-                                                      selectedTabIndex == index
-                                                          ? Colors.black
-                                                          : Colors.grey),
-                                            ),
-                                          ),
-                                        )),
-                                // meCompanyType != "recruitment"
-                                //     ? spaceY(10.sp)
-                                //     : Container(),
-
-                                Expanded(
-                                    child: meCompanyType != "recruitment"
-                                        ? TabBarView(
-                                            controller: tabController,
-                                            children: tapCleaningList)
-                                        : TabBarView(
-                                            controller: tabController,
-                                            children: tapRecruitmentList)),
-                                // Expanded(
-                                //   child:         )
-                              ],
+                          spaceX(10),
+                          GetBuilder<NotificationController>(builder: (c) {
+                            return badges.Badge(
+                              showBadge: c.newNotifications,
+                              position:
+                                  badges.BadgePosition.topEnd(top: 0, end: 0),
+                              child: GestureDetector(
+                                onTap: () => Get.to(
+                                  () => NotificationsPage(),
+                                ),
+                                child: Icon(
+                                  EvaIcons.bell,
+                                  color: const Color(0xffD1D1D1),
+                                  size: 25.0.sp,
+                                ),
+                              ),
+                            );
+                          }),
+                          spaceX(10),
+                          GetBuilder<ChatController>(builder: (chatController) {
+                            return badges.Badge(
+                              showBadge: chatController.unreadChatsFlag,
+                              position:
+                                  badges.BadgePosition.topEnd(top: 0, end: 0),
+                              child: GestureDetector(
+                                child: Icon(
+                                  EvaIcons.messageCircle,
+                                  color: const Color(0xffD1D1D1),
+                                  size: 22.0.sp,
+                                ),
+                                onTap: () => Get.to(() => const MessagesPage()),
+                              ),
+                            );
+                          }),
+                          spaceX(10),
+                          GestureDetector(
+                            onTap: () => Get.to(
+                              () => const CompanyPersonalPage(),
                             ),
-                    ),
-                  ],
-                );
-              }),
-            ),
-          ),
-          Visibility(
-            visible: !completedRegisterFlag,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-              child: Container(
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.5)),
-                width: 100.0.w,
-                height: 100.0.h,
-              ),
-            ),
-          ),
-          Visibility(
-            visible: !completedRegisterFlag,
-            child: Material(
-              color: Colors.transparent,
-              elevation: 15,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.elliptical(50.0.w, 30),
-                bottomRight: Radius.elliptical(50.0.w, 30),
-              ),
-              child: ClipPath(
-                clipper: _currentStep == 1 ? null : OvalBottomBorderClipper(),
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 100.0.w,
-                      height: _currentStep == 0
-                          ? h
-                          : _currentStep == 1
-                              ? h2
-                              : h3,
-                      color: Colors.white,
-                      // duration: const Duration(milliseconds: 250),
-                      child: Column(
-                        children: [
-                          spaceY(100),
-                          EasyStepper(
-                            activeStep: _currentStep,
-                            lineLength: 15.0.w,
-                            lineSpace: 0,
-                            lineType: LineType.normal,
-                            defaultLineColor: Colors.grey,
-
-                            finishedLineColor:
-                                Theme.of(context).colorScheme.tertiary,
-                            activeStepTextColor:
-                                Theme.of(context).colorScheme.tertiary,
-                            finishedStepTextColor: Colors.transparent,
-                            internalPadding: 0,
-                            showLoadingAnimation: false,
-                            stepRadius: 12,
-                            showStepBorder: false,
-                            lineThickness: 1,
-                            alignment: Alignment.topCenter,
-                            disableScroll: true,
-                            fitWidth: true,
-                            steps: stepList(),
-                            // onStepReached: (index) =>
-                            //     setState(() => _currentStep = index),
-                          ),
-                          Expanded(
-                            child: Form(
-                              child: PageView(
-                                controller: pageController,
-                                children: pageList,
+                            child: Container(
+                              width: 45,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                // border: Border.all(
+                                //   width: 1,
+                                //   color: const Color(0xffD1D1D1),
+                                // ),
+                                image: DecorationImage(
+                                  image: NetworkImage(_globalController
+                                      .me.companyInformation!.companyLogo!),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    PositionedDirectional(
-                      top: 40,
-                      start: 30,
-                      child: GestureDetector(
-                        onTap: () {
-                          if (_currentStep == 2) {
-                            _currentStep -= 1;
-                            setState(() {});
-                            pageController.jumpToPage(_currentStep);
-                          } else if (_currentStep == 0) {
-                            Get.back();
-                            setState(() {});
-                          } else {
-                            _currentStep -= 1;
-                            pageController.jumpToPage(_currentStep);
-                            setState(() {});
-                          }
-                          logSuccess(_currentStep);
-                        },
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Theme.of(context).colorScheme.primary,
-                          size: 22.0.sp,
-                        ),
+                      Expanded(
+                        child: c.getCompanyHomePageFlag
+                            ? const Center(child: CircularProgressIndicator())
+                            : Column(
+                                children: [
+                                  spaceY(1.5.h),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.to(() => const AddAdvertismentPage());
+                                    },
+                                    child: Container(
+                                      width: 100.w,
+                                      height: 30.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        image: const DecorationImage(
+                                            image: AssetImage(
+                                                "assets/images/adv_background.png"),
+                                            fit: BoxFit.cover),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          coloredText(
+                                            text: "add_your".tr,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16.sp,
+                                            color: Colors.white,
+                                          ),
+                                          spaceY(10),
+                                          coloredText(
+                                            text: "ad".tr,
+                                            textstyle: TextStyle(
+                                              fontSize: 24.sp,
+                                              color: Colors.white,
+                                              fontFamily: "Gabriola",
+                                              fontStyle: FontStyle.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  meCompanyType != "recruitment"
+                                      ? Container()
+                                      : spaceY(10),
+                                  meCompanyType != "recruitment"
+                                      ? Container()
+                                      : GestureDetector(
+                                          onTap: () {
+                                            // Utils.showBigTextNotification(
+                                            //     title: "title",
+                                            //     body: "body",
+                                            //     fln: Utils.flutterLocalNotificationsPlugin);
+                                          },
+                                          child: Align(
+                                            alignment: AlignmentDirectional
+                                                .centerStart,
+                                            child: coloredText(
+                                                text: "overview".tr,
+                                                fontSize: 16.0.sp),
+                                          ),
+                                        ),
+                                  meCompanyType != "recruitment"
+                                      ? Container()
+                                      : SizedBox(
+                                          height: 25.w,
+                                          child: ListView.builder(
+                                            scrollDirection: Axis.horizontal,
+                                            itemBuilder: (ctx, index) =>
+                                                GestureDetector(
+                                              onTap: c.overView[index].onTap,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.3),
+                                                      spreadRadius: 2,
+                                                      blurRadius: 3,
+                                                      offset: const Offset(0,
+                                                          0), // changes position of shadow
+                                                    ),
+                                                  ],
+                                                ),
+                                                width: 45.w,
+                                                height: 25.w,
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 10,
+                                                  horizontal: 10,
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    coloredText(
+                                                      text: c.overView[index]
+                                                          .number
+                                                          .toString(),
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                      fontSize: 14.sp,
+                                                    ),
+                                                    spaceY(10),
+                                                    coloredText(
+                                                      text: c.overView[index]
+                                                          .string,
+                                                      fontSize: 14.sp,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            itemCount: c.overView.length,
+                                          ),
+                                        ),
+                                  spaceY(10),
+                                  // Align(
+                                  //   alignment: AlignmentDirectional.centerStart,
+                                  //   child: coloredText(
+                                  //       text: "requests".tr, fontSize: 15.sp),
+                                  // ),
+                                  meCompanyType != "recruitment"
+                                      ? TabBar(
+                                          dividerColor: Colors.grey,
+                                          // indicatorColor: Colors.black,
+                                          indicator: UnderlineTabIndicator(
+                                              borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          )),
+                                          indicatorSize:
+                                              TabBarIndicatorSize.tab,
+                                          labelPadding: EdgeInsets.zero,
+                                          // isScrollable: true,
+                                          controller: tabController,
+                                          onTap: (value) {
+                                            selectedTabIndex = value;
+                                            setState(() {});
+                                          },
+                                          tabs: List<Widget>.generate(
+                                            tabController.length,
+                                            (index) => Tab(
+                                              child: Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5),
+                                                child: coloredText(
+                                                    fontSize: 10.sp,
+                                                    text:
+                                                        tabsCleaning[index].tr,
+                                                    color: selectedTabIndex ==
+                                                            index
+                                                        ? Colors.black
+                                                        : Colors.grey),
+                                              ),
+                                            ),
+                                          ))
+                                      : TabBar(
+                                          dividerColor: Colors.grey,
+                                          // indicatorColor: Colors.black,
+                                          indicator: UnderlineTabIndicator(
+                                              borderSide: BorderSide(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          )),
+                                          indicatorSize:
+                                              TabBarIndicatorSize.tab,
+                                          labelPadding: EdgeInsets.zero,
+                                          // isScrollable: true,
+                                          controller: tabController,
+                                          onTap: (value) {
+                                            selectedTabIndex = value;
+                                            setState(() {});
+                                          },
+                                          tabs: List<Widget>.generate(
+                                            tabController.length,
+                                            (index) => Tab(
+                                              child: Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5),
+                                                child: coloredText(
+                                                    fontSize: 10.sp,
+                                                    text: tabsRecruitment[index]
+                                                        .tr,
+                                                    color: selectedTabIndex ==
+                                                            index
+                                                        ? Colors.black
+                                                        : Colors.grey),
+                                              ),
+                                            ),
+                                          )),
+                                  // meCompanyType != "recruitment"
+                                  //     ? spaceY(10.sp)
+                                  //     : Container(),
+
+                                  Expanded(
+                                      child: meCompanyType != "recruitment"
+                                          ? TabBarView(
+                                              controller: tabController,
+                                              children: tapCleaningList)
+                                          : TabBarView(
+                                              controller: tabController,
+                                              children: tapRecruitmentList)),
+                                  // Expanded(
+                                  //   child:         )
+                                ],
+                              ),
                       ),
-                    ),
-                    Positioned.fill(
-                        top: 40,
-                        child: Align(
-                          alignment: AlignmentDirectional.topCenter,
-                          child: coloredText(
-                            text: "complete_data".tr,
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 14.0.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ))
-                  ],
+                    ],
+                  );
+                }),
+              ),
+            ),
+            Visibility(
+              visible: !completedRegisterFlag,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                child: Container(
+                  decoration:
+                      BoxDecoration(color: Colors.white.withOpacity(0.5)),
+                  width: 100.0.w,
+                  height: 100.0.h,
                 ),
               ),
             ),
-          )
-        ],
+            Visibility(
+              visible: !completedRegisterFlag,
+              child: Material(
+                color: Colors.transparent,
+                elevation: 15,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.elliptical(50.0.w, 30),
+                  bottomRight: Radius.elliptical(50.0.w, 30),
+                ),
+                child: ClipPath(
+                  clipper: _currentStep == 1 ? null : OvalBottomBorderClipper(),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 100.0.w,
+                        height: _currentStep == 0
+                            ? h
+                            : _currentStep == 1
+                                ? h2
+                                : h3,
+                        color: Colors.white,
+                        // duration: const Duration(milliseconds: 250),
+                        child: Column(
+                          children: [
+                            spaceY(100),
+                            EasyStepper(
+                              activeStep: _currentStep,
+                              lineLength: 15.0.w,
+                              lineSpace: 0,
+                              lineType: LineType.normal,
+                              defaultLineColor: Colors.grey,
+
+                              finishedLineColor:
+                                  Theme.of(context).colorScheme.tertiary,
+                              activeStepTextColor:
+                                  Theme.of(context).colorScheme.tertiary,
+                              finishedStepTextColor: Colors.transparent,
+                              internalPadding: 0,
+                              showLoadingAnimation: false,
+                              stepRadius: 12,
+                              showStepBorder: false,
+                              lineThickness: 1,
+                              alignment: Alignment.topCenter,
+                              disableScroll: true,
+                              fitWidth: true,
+                              steps: stepList(),
+                              // onStepReached: (index) =>
+                              //     setState(() => _currentStep = index),
+                            ),
+                            Expanded(
+                              child: Form(
+                                child: PageView(
+                                  controller: pageController,
+                                  children: pageList,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PositionedDirectional(
+                        top: 40,
+                        start: 30,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_currentStep == 2) {
+                              _currentStep -= 1;
+                              setState(() {});
+                              pageController.jumpToPage(_currentStep);
+                            } else if (_currentStep == 0) {
+                              Get.back();
+                              setState(() {});
+                            } else {
+                              _currentStep -= 1;
+                              pageController.jumpToPage(_currentStep);
+                              setState(() {});
+                            }
+                            logSuccess(_currentStep);
+                          },
+                          child: Icon(
+                            Icons.arrow_back,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 22.0.sp,
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                          top: 40,
+                          child: Align(
+                            alignment: AlignmentDirectional.topCenter,
+                            child: coloredText(
+                              text: "complete_data".tr,
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize: 14.0.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ))
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
