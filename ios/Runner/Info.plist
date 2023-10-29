@@ -10,6 +10,7 @@
 			<string>tel</string>
 		</array>
 		<key>NSCameraUsageDescription</key>
+
 		<string>Permission needed to upload necessary pictures like profile and passport pictures</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Permission needed to upload necessary pictures like profile and passport pictures</string>
@@ -54,5 +55,7 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 	</dict>
 </plist>
