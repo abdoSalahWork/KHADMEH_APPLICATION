@@ -46,6 +46,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
   @override
   void initState() {
     companyInformation = _globalController.me.companyInformation!;
+    logError(companyInformation.toJson());
     _companyPhoneNumberController.text = companyInformation.phone!;
     {
       city = Get.locale == const Locale('en', 'US')
@@ -358,6 +359,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
             primaryButton(
               onTap: () async {
                 FocusScope.of(context).unfocus();
+
                 var x = await _globalController.updateCompanyProfile(
                     companyInformation: companyInformation);
                 if (x == true) {

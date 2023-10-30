@@ -43,6 +43,7 @@ class GlobalController extends GetxController {
 
   final Dio dio = Utils().dio;
   List<Country> countries = [];
+  List<Country> countriesToShow = [];
   List<City> cities = [];
   List<Region> regions = [];
   List<LanguageModel> languages = [];
@@ -608,6 +609,7 @@ class GlobalController extends GetxController {
         tmp.add(t);
       }
       countries = tmp;
+      countriesToShow = tmp;
       logSuccess("countries get done");
       getCountriesFlag = false;
       update();
@@ -666,7 +668,6 @@ class GlobalController extends GetxController {
         ),
       );
 
-      logError(res.data);
       if (res.data == "") {
         return false;
       } else if (res.data != "" && res.data['data'] == null) {
@@ -830,7 +831,7 @@ class GlobalController extends GetxController {
       Get.dialog(const Center(
         child: CircularProgressIndicator(),
       ));
-
+      logSuccess(companyInformation.toJson());
       final body = d.FormData.fromMap(companyInformation.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
 
@@ -1014,8 +1015,9 @@ class GlobalController extends GetxController {
     }
   }
 
-  Future<Map<String, String>?> requestMedicalExamination(
-      {required int id}) async {
+  Future<Map<String, String>?> requestMedicalExamination({
+    required int id,
+  }) async {
     try {
       Utils.circularIndicator();
       // final body = d.FormData.fromMap(employee.toJson());
@@ -1353,6 +1355,22 @@ class GlobalController extends GetxController {
         jobsToShow = jobs;
       } else {
         jobsToShow = tmp;
+      }
+      update();
+    }
+  }
+
+  handleCountryCitySearch({required String name}) {
+    List<Country> tmp = [];
+    for (var i in countries) {
+      if (i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
+          i.nameAr!.toLowerCase().contains(name.toLowerCase())) {
+        tmp.add(i);
+      }
+      if (name == "") {
+        countriesToShow = countries;
+      } else {
+        countriesToShow = tmp;
       }
       update();
     }

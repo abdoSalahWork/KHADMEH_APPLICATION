@@ -192,12 +192,15 @@ class _UserHomePageState extends State<UserHomePage> {
                             ),
                           ),
                           spaceX(3),
-                          coloredText(
-                            text: _globalController.guest
-                                ? "Guest"
-                                : _globalController.me.fullName ?? "",
-                            fontSize: 14.0.sp,
-                            fontWeight: FontWeight.w500,
+                          SizedBox(
+                            width: 35.w,
+                            child: coloredText(
+                                text: _globalController.guest
+                                    ? "Guest"
+                                    : _globalController.me.fullName ?? "",
+                                fontSize: 14.0.sp,
+                                fontWeight: FontWeight.w500,
+                                overflow: TextOverflow.ellipsis),
                           ),
                         ]),
                         _globalController.guest

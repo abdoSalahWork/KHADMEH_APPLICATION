@@ -1,4 +1,5 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/pages/Addressess/controller/addressess_controller.dart';
@@ -7,7 +8,10 @@ import 'package:khedma/Admin/pages/categories/admin_categories_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/city.dart';
+import 'package:khedma/models/country.dart';
 import 'package:khedma/models/region.dart';
+import 'package:khedma/widgets/no_items_widget.dart';
+import 'package:khedma/widgets/search_text_field.dart';
 import 'package:sizer/sizer.dart';
 
 class AdminAddressesPage extends StatefulWidget {
@@ -28,16 +32,45 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
   ];
   late TabController tabController;
   int selectedTabIndex = 0;
+  final GlobalController _globalController = Get.find();
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-
+    _globalController.getCountries();
+    // _globalController.getCities();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Theme(
+        data: ThemeData(
+          useMaterial3: false,
+        ),
+        child: FloatingActionButton(
+          onPressed: () {},
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: AlignmentDirectional.bottomStart,
+                end: AlignmentDirectional.topEnd,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary
+                ],
+              ),
+            ),
+            width: 60,
+            height: 60,
+            child: const Icon(
+              EvaIcons.plus,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
       body: Container(
         width: 100.w,
         height: 100.h,
@@ -82,49 +115,91 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
                       topRight: Radius.circular(20),
                     )),
                 width: 100.w,
-                child: Column(
-                  children: [
-                    spaceY(10.sp),
-                    TabBar(
-                        dividerColor: Colors.grey,
-                        // indicatorColor: Colors.black,
-                        indicator: UnderlineTabIndicator(
-                            borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary,
-                        )),
-                        indicatorSize: TabBarIndicatorSize.tab,
-
-                        // isScrollable: true,
-                        controller: tabController,
-                        onTap: (value) {
-                          selectedTabIndex = value;
-                          setState(() {});
+                child: GetBuilder<GlobalController>(builder: (c) {
+                  return Column(
+                    children: [
+                      SearchTextField(
+                        onchanged: (s) {
+                          if (s != null) {
+                            _globalController.handleCountryCitySearch(name: s);
+                          }
                         },
-                        tabs: List<Widget>.generate(
-                          tabController.length,
-                          (index) => Tab(
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 5),
-                              child: coloredText(
-                                  fontSize: 11.sp,
-                                  text: tabs[index].tr,
-                                  color: selectedTabIndex == index
-                                      ? Colors.black
-                                      : Colors.grey),
-                            ),
-                          ),
-                        )),
-                    Expanded(
-                        child: TabBarView(
-                      controller: tabController,
-                      children: [
-                        tab2(),
-                        tab1(),
-                        tab3(),
-                      ],
-                    )),
-                  ],
-                ),
+                        hintText: "${"search".tr} ...",
+                        prefixIcon: const Icon(
+                          EvaIcons.search,
+                          color: Color(0xffAFAFAF),
+                        ),
+                      ),
+                      spaceY(10.sp),
+                      Expanded(
+                        child: c.getCountriesFlag
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : c.countriesToShow.isEmpty
+                                ? const Center(child: NoItemsWidget())
+                                : ListView.separated(
+                                    itemBuilder: (context, index) =>
+                                        AdminCountryWidget(
+                                      country: c.countriesToShow[index],
+                                      cities: c.cities
+                                          .where((element) =>
+                                              element.countryId ==
+                                              c.countriesToShow[index].id)
+                                          .toList(),
+                                    ),
+                                    separatorBuilder: (context, index) =>
+                                        spaceY(10.sp),
+                                    itemCount: c.countriesToShow.length,
+                                  ),
+                      ),
+                    ],
+                  );
+                }),
+                // child:
+                //  Column(
+                //   children: [
+                //     spaceY(10.sp),
+                //     TabBar(
+                //         dividerColor: Colors.grey,
+                //         // indicatorColor: Colors.black,
+                //         indicator: UnderlineTabIndicator(
+                //             borderSide: BorderSide(
+                //           color: Theme.of(context).colorScheme.primary,
+                //         )),
+                //         indicatorSize: TabBarIndicatorSize.tab,
+
+                //         // isScrollable: true,
+                //         controller: tabController,
+                //         onTap: (value) {
+                //           selectedTabIndex = value;
+                //           setState(() {});
+                //         },
+                //         tabs: List<Widget>.generate(
+                //           tabController.length,
+                //           (index) => Tab(
+                //             child: Container(
+                //               margin: const EdgeInsets.symmetric(horizontal: 5),
+                //               child: coloredText(
+                //                   fontSize: 11.sp,
+                //                   text: tabs[index].tr,
+                //                   color: selectedTabIndex == index
+                //                       ? Colors.black
+                //                       : Colors.grey),
+                //             ),
+                //           ),
+                //         )),
+                //     Expanded(
+                //         child: TabBarView(
+                //       controller: tabController,
+                //       children: [
+                //         tab2(),
+                //         tab1(),
+                //         tab3(),
+                //       ],
+                //     )),
+                //   ],
+                // ),
               ),
             ),
           ],
@@ -979,4 +1054,75 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
           );
         });
       });
+}
+
+class AdminCountryWidget extends StatefulWidget {
+  AdminCountryWidget({super.key, required this.country, required this.cities});
+  final Country country;
+  final List<City> cities;
+
+  @override
+  State<AdminCountryWidget> createState() => _AdminCountryWidgetState();
+}
+
+class _AdminCountryWidgetState extends State<AdminCountryWidget> {
+  final ExpandableController _expandableController =
+      ExpandableController(initialExpanded: false);
+  @override
+  void initState() {
+    _expandableController.addListener(() {
+      setState(() {});
+    });
+
+    super.initState();
+  }
+
+  GlobalController _globalController = Get.find();
+  @override
+  Widget build(BuildContext context) {
+    return ExpandableNotifier(
+      child: ScrollOnExpand(
+        scrollOnExpand: true,
+        scrollOnCollapse: false,
+        child: Container(
+          // margin: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(10)),
+          child: ExpandablePanel(
+            controller: _expandableController,
+            theme: const ExpandableThemeData(
+              headerAlignment: ExpandablePanelHeaderAlignment.center,
+              tapBodyToCollapse: true,
+            ),
+            collapsed: Container(),
+            expanded: widget.cities.isEmpty
+                ? const Text("no cities found")
+                : ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: widget.cities.length,
+                    itemBuilder: (context, index) => coloredText(
+                      text:
+                          "${widget.cities[index].nameEn} - ${widget.cities[index].nameAr}",
+                    ),
+                    separatorBuilder: (BuildContext context, int index) =>
+                        spaceY(5.sp),
+                  ),
+            header: Container(
+                decoration: const BoxDecoration(
+                  // color: Colors.white,
+                  border: Border(
+                    bottom: BorderSide(color: Color(0xffEFEFEF)),
+                  ),
+                ),
+                child: coloredText(
+                    text:
+                        "${widget.country.nameEn} - ${widget.country.nameAr}")),
+          ),
+        ),
+      ),
+    );
+  }
 }

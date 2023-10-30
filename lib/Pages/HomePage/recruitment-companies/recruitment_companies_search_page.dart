@@ -194,34 +194,62 @@ class CompanyCard extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () async {
-            CompanyModel? x = await _companiesController.showCompany(
-                indicator: true, id: company.id!);
+            if (company.companyInformation!.busy != null &&
+                company.companyInformation!.busy == 0) {
+            } else {
+              CompanyModel? x = await _companiesController.showCompany(
+                  indicator: true, id: company.id!);
 
-            if (x != null) {
-              if (x.companyInformation != null) {
-                if (x.companyInformation!.companyType == "cleaning") {
-                  Get.to(
-                    () => CleaningCompany(cleaningCompany: x),
-                  );
-                } else {
-                  Get.to(
-                    () => RecruitmentCompany(company: x),
-                  );
+              if (x != null) {
+                if (x.companyInformation != null) {
+                  if (x.companyInformation!.companyType == "cleaning") {
+                    Get.to(
+                      () => CleaningCompany(cleaningCompany: x),
+                    );
+                  } else {
+                    Get.to(
+                      () => RecruitmentCompany(company: x),
+                    );
+                  }
                 }
               }
             }
           },
-          child: Container(
-            width: 50.0.sp,
-            height: 50.0.sp,
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xffEEEEEE)),
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: NetworkImage(company.companyInformation!.companyLogo!),
-                fit: BoxFit.contain,
+          child: Stack(
+            children: [
+              Container(
+                width: 50.0.sp,
+                height: 50.0.sp,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xffEEEEEE)),
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image:
+                        NetworkImage(company.companyInformation!.companyLogo!),
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
-            ),
+              Container(
+                width: 50.0.sp,
+                height: 50.0.sp,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: RotationTransition(
+                    turns: const AlwaysStoppedAnimation(15 / 360),
+                    child: coloredText(
+                      text: "busy",
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15.sp,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         spaceX(10),

@@ -219,6 +219,7 @@ class UserInformation {
 
 class CompanyInformation {
   int? id;
+  int? busy;
   String? firstName;
   String? lastName;
   String? phone;
@@ -253,6 +254,7 @@ class CompanyInformation {
   CompanyInformation(
       {this.id,
       this.firstName,
+      this.busy,
       this.city,
       this.employees,
       this.lastName,
@@ -294,6 +296,7 @@ class CompanyInformation {
       });
     }
     id = json['id'];
+    busy = json['busy'];
     firstName = json['first_name'];
     lastName = json['last_name'];
     phone = json['phone'];
@@ -337,6 +340,7 @@ class CompanyInformation {
       data['employee'] = employees!.map((v) => v.toJson()).toList();
     }
     data['id'] = id;
+    data['busy'] = busy;
     data['first_name'] = firstName;
     data['last_name'] = lastName;
     data['phone'] = phone;
