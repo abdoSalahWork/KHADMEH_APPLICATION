@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/recruitment-companies/recruitment_companies_search_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
@@ -609,6 +610,7 @@ class _PersonalPageState extends State<PersonalPage>
                                           isShowSeconds: false,
                                           minutesInterval: 1,
                                           secondsInterval: 1,
+                                          type: OmniDateTimePickerType.date,
                                           borderRadius: const BorderRadius.all(
                                               Radius.circular(16)),
                                           constraints: const BoxConstraints(
@@ -640,15 +642,19 @@ class _PersonalPageState extends State<PersonalPage>
                                             }
                                           },
                                           context: context,
-                                          initialDate: DateTime.now(),
-                                          firstDate: DateTime.now(),
+                                          initialDate: DateTime.now()
+                                              .add(Duration(days: 1)),
+                                          firstDate: DateTime.now()
+                                              .add(Duration(days: 1)),
                                           lastDate: DateTime.now()
                                               .add(const Duration(days: 30)));
                                   if (dateTime != null) {
                                     Map<String, String>? x =
                                         await _globalController
                                             .requestMedicalExamination(
-                                                id: bookedEmployees[index].id!);
+                                                id: bookedEmployees[index].id!,
+                                                date: DateFormat('y/MM/dd')
+                                                    .format(dateTime));
                                     if (x != null) {
                                       //   //String invoiceId = x.keys.first;
                                       //   Uri url = Uri.parse(x.values.first);

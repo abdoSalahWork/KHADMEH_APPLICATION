@@ -195,7 +195,7 @@ class CompanyCard extends StatelessWidget {
         GestureDetector(
           onTap: () async {
             if (company.companyInformation!.busy != null &&
-                company.companyInformation!.busy == 0) {
+                company.companyInformation!.busy == 1) {
             } else {
               CompanyModel? x = await _companiesController.showCompany(
                   indicator: true, id: company.id!);
@@ -230,25 +230,26 @@ class CompanyCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                width: 50.0.sp,
-                height: 50.0.sp,
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: RotationTransition(
-                    turns: const AlwaysStoppedAnimation(15 / 360),
-                    child: coloredText(
-                      text: "busy",
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.sp,
+              if (company.companyInformation!.busy == 1)
+                Container(
+                  width: 50.0.sp,
+                  height: 50.0.sp,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: RotationTransition(
+                      turns: const AlwaysStoppedAnimation(15 / 360),
+                      child: coloredText(
+                        text: "busy",
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.sp,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

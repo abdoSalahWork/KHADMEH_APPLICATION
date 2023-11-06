@@ -10,6 +10,7 @@ import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/city.dart';
 import 'package:khedma/models/country.dart';
 import 'package:khedma/models/region.dart';
+import 'package:khedma/widgets/dropdown_menu_button.dart';
 import 'package:khedma/widgets/no_items_widget.dart';
 import 'package:khedma/widgets/search_text_field.dart';
 import 'package:sizer/sizer.dart';
@@ -30,14 +31,16 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
     "cities",
     "regions",
   ];
+  String searchText = "";
+  int countryId = -1;
   late TabController tabController;
   int selectedTabIndex = 0;
   final GlobalController _globalController = Get.find();
   @override
   void initState() {
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 2, vsync: this);
     _globalController.getCountries();
-    // _globalController.getCities();
+    _globalController.getCities();
     super.initState();
   }
 
@@ -49,7 +52,130 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
           useMaterial3: false,
         ),
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            if (selectedTabIndex == 0) {
+              Get.to(() => const AdminCreateCountry());
+            } else {
+              City city = City();
+              int cId = 1;
+              Utils.showDialogBox(
+                context: context,
+                actions: [
+                  GetBuilder<AddressessController>(
+                      builder: (addressessController) {
+                    return primaryButton(
+                      onTap: () async {
+                        Get.back();
+                        bool b = await addressessController.createCity(
+                            city: city, countryId: cId);
+                        // ignore: use_build_context_synchronously
+                        if (b) Utils.doneDialog(context: context);
+                      },
+                      color: Colors.black,
+                      width: 50.w,
+                      height: 40.sp,
+                      text: coloredText(text: "create".tr, color: Colors.white),
+                    );
+                  }),
+                ],
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    coloredText(text: "name_ar".tr),
+                    spaceY(5.sp),
+                    SizedBox(
+                      height: 35.sp,
+                      child: TextFormField(
+                        // maxLines: 1,
+                        initialValue: city.nameAr,
+                        onChanged: (value) {
+                          city.nameAr = value;
+                        },
+                        decoration: const InputDecoration(
+                          // hintText: "write_your_notes".tr,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Color(0xffF5F5F5),
+                        ),
+                      ),
+                    ),
+                    spaceY(10.sp),
+                    coloredText(text: "name_en".tr),
+                    spaceY(5.sp),
+                    SizedBox(
+                      height: 35.sp,
+                      child: TextFormField(
+                        // maxLines: 1,
+                        initialValue: city.nameEn,
+                        onChanged: (value) {
+                          city.nameEn = value;
+                        },
+                        decoration: const InputDecoration(
+                          // hintText: "write_your_notes".tr,
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Color(0xffF5F5F5),
+                        ),
+                      ),
+                    ),
+                    spaceY(10.sp),
+                    coloredText(text: "country".tr),
+                    spaceY(5.sp),
+                    CustomDropDownMenuButtonV2(
+                      filled: true,
+                      focusNode: FocusNode(),
+                      fillColor: Color(0xffF5F5F5),
+                      borderRadius: 10,
+                      width: 70.sp,
+                      value: Get.locale == const Locale('en', 'US')
+                          ? _globalController.countries[0].nameEn
+                          : _globalController.countries[0].nameAr,
+                      items: _globalController.countries
+                          .map((e) => Get.locale == const Locale('en', 'US')
+                              ? e.nameEn!
+                              : e.nameAr!)
+                          .map(
+                            (e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(e),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (p0) {
+                        cId = _globalController.countries
+                            .where((element) =>
+                                element.nameAr == p0 || element.nameEn == p0)
+                            .single
+                            .id!;
+                      },
+                    )
+                  ],
+                ),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: const Icon(
+                        EvaIcons.close,
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }
+          },
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -119,40 +245,118 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
                   return Column(
                     children: [
                       SearchTextField(
-                        onchanged: (s) {
-                          if (s != null) {
-                            _globalController.handleCountryCitySearch(name: s);
-                          }
-                        },
-                        hintText: "${"search".tr} ...",
-                        prefixIcon: const Icon(
-                          EvaIcons.search,
-                          color: Color(0xffAFAFAF),
-                        ),
-                      ),
-                      spaceY(10.sp),
-                      Expanded(
-                        child: c.getCountriesFlag
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : c.countriesToShow.isEmpty
-                                ? const Center(child: NoItemsWidget())
-                                : ListView.separated(
-                                    itemBuilder: (context, index) =>
-                                        AdminCountryWidget(
-                                      country: c.countriesToShow[index],
-                                      cities: c.cities
+                          onchanged: (s) async {
+                            if (s != null) {
+                              logSuccess(countryId);
+                              c.handleCitySearch(name: s, countryID: countryId);
+
+                              c.handleCountrySearch(name: s);
+                              searchText = s;
+                            }
+                          },
+                          hintText: "${"search".tr} ...",
+                          prefixIcon: const Icon(
+                            EvaIcons.search,
+                            color: Color(0xffAFAFAF),
+                          ),
+                          suffixIcon: selectedTabIndex == 0
+                              ? null
+                              : CustomDropDownMenuButton(
+                                  width: 70.sp,
+                                  value: "all_cities".tr,
+                                  items: [
+                                    'all_cities'.tr,
+                                    ..._globalController.countries.map((e) =>
+                                        Get.locale == const Locale('en', 'US')
+                                            ? e.nameEn!
+                                            : e.nameAr!)
+                                  ]
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Text(e),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: (p0) {
+                                    if (p0 == "all_cities".tr) {
+                                      countryId = -1;
+                                    } else {
+                                      countryId = c.countries
                                           .where((element) =>
-                                              element.countryId ==
-                                              c.countriesToShow[index].id)
-                                          .toList(),
-                                    ),
-                                    separatorBuilder: (context, index) =>
-                                        spaceY(10.sp),
-                                    itemCount: c.countriesToShow.length,
-                                  ),
-                      ),
+                                              element.nameAr == p0 ||
+                                              element.nameEn == p0)
+                                          .single
+                                          .id!;
+                                    }
+                                    c.handleCitySearch(
+                                        name: searchText, countryID: countryId);
+                                  },
+                                )),
+                      spaceY(10.sp),
+
+                      TabBar(
+                          dividerColor: Colors.grey,
+                          // indicatorColor: Colors.black,
+                          indicator: UnderlineTabIndicator(
+                              borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                          )),
+                          indicatorSize: TabBarIndicatorSize.tab,
+
+                          // isScrollable: true,
+                          controller: tabController,
+                          onTap: (value) {
+                            selectedTabIndex = value;
+                            setState(() {});
+                          },
+                          tabs: List<Widget>.generate(
+                            tabController.length,
+                            (index) => Tab(
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: coloredText(
+                                    fontSize: 11.sp,
+                                    text: tabs[index].tr,
+                                    color: selectedTabIndex == index
+                                        ? Colors.black
+                                        : Colors.grey),
+                              ),
+                            ),
+                          )),
+                      Expanded(
+                          child: TabBarView(
+                        controller: tabController,
+                        children: [
+                          tab2(),
+                          tab1(),
+                          // tab3(),
+                        ],
+                      )),
+
+                      // Expanded(
+                      //   child: c.getCountriesFlag
+                      //       ? const Center(
+                      //           child: CircularProgressIndicator(),
+                      //         )
+                      //       : c.countriesToShow.isEmpty
+                      //           ? const Center(child: NoItemsWidget())
+                      //           : ListView.separated(
+                      //               itemBuilder: (context, index) =>
+                      //                   AdminCountryWidget(
+                      //                 country: c.countriesToShow[index],
+                      //                 cities: c.cities
+                      //                     .where((element) =>
+                      //                         element.countryId ==
+                      //                         c.countriesToShow[index].id)
+                      //                     .toList(),
+                      //               ),
+                      //               separatorBuilder: (context, index) =>
+                      //                   spaceY(10.sp),
+                      //               itemCount: c.countriesToShow.length,
+                      //             ),
+                      // ),
                     ],
                   );
                 }),
@@ -209,569 +413,608 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
   }
 
   Widget tab1() => GetBuilder<GlobalController>(builder: (globalController) {
-        return GetBuilder<AddressessController>(
-            builder: (addressessController) {
-          return Column(
-            children: [
-              spaceY(20.sp),
-              primaryBorderedButton(
-                  onTap: () {
-                    City city = City();
-                    Utils.showDialogBox(
-                      context: context,
-                      actions: [
-                        primaryButton(
-                          onTap: () async {
-                            Get.back();
-                            bool b = await addressessController.createCity(
-                                city: city);
-                            // ignore: use_build_context_synchronously
-                            if (b) Utils.doneDialog(context: context);
-                          },
-                          color: Colors.black,
-                          width: 50.w,
-                          height: 40.sp,
-                          text: coloredText(
-                              text: "create".tr, color: Colors.white),
-                        ),
-                      ],
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          coloredText(text: "name_ar".tr),
-                          spaceY(5.sp),
-                          SizedBox(
-                            height: 35.sp,
-                            child: TextFormField(
-                              // maxLines: 1,
-                              initialValue: city.nameAr,
-                              onChanged: (value) {
-                                city.nameAr = value;
-                              },
-                              decoration: const InputDecoration(
-                                // hintText: "write_your_notes".tr,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Color(0xffF5F5F5),
-                              ),
-                            ),
-                          ),
-                          spaceY(10.sp),
-                          coloredText(text: "name_en".tr),
-                          spaceY(5.sp),
-                          SizedBox(
-                            height: 35.sp,
-                            child: TextFormField(
-                              // maxLines: 1,
-                              initialValue: city.nameEn,
-                              onChanged: (value) {
-                                city.nameEn = value;
-                              },
-                              decoration: const InputDecoration(
-                                // hintText: "write_your_notes".tr,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Color(0xffF5F5F5),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          GestureDetector(
-                            onTap: () => Get.back(),
-                            child: const Icon(
-                              EvaIcons.close,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                  width: 100.w,
-                  text: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(EvaIcons.plus, color: Colors.black, size: 20.sp),
-                      spaceX(10.sp),
-                      coloredText(text: "create_new".tr),
-                    ],
-                  ),
-                  color: Colors.black),
-              spaceY(10.sp),
-              Expanded(
-                child: globalController.getCitiesFlag
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : ListView.separated(
-                        primary: false,
-                        shrinkWrap: true,
-                        // physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) => AdminItemCard(
-                              name:
-                                  "${globalController.cities[index].nameEn!} - ${globalController.cities[index].nameAr!}",
-                              margin: const EdgeInsets.only(bottom: 10),
-                              trailing: Theme(
-                                data: ThemeData(primaryColor: Colors.white),
-                                child: PopupMenuButton(
-                                  constraints: BoxConstraints(
-                                    minWidth: 2.0 * 56.0,
-                                    maxWidth: MediaQuery.of(context).size.width,
-                                  ),
-                                  itemBuilder: (BuildContext cc) => [
-                                    PopupMenuItem<int>(
-                                      value: 0,
-                                      child: Row(
-                                        children: [
-                                          Icon(EvaIcons.editOutline,
-                                              size: 15.sp),
-                                          spaceX(5.sp),
-                                          coloredText(
-                                              text: 'edit'.tr,
-                                              fontSize: 12.0.sp),
-                                        ],
-                                      ),
-                                      onTap: () {
-                                        City city = City.fromJson(
-                                            globalController.cities[index]
-                                                .toJson());
-                                        Utils.showDialogBox(
-                                          context: context,
-                                          actions: [
-                                            primaryButton(
-                                              onTap: () async {
-                                                Get.back();
-                                                bool b =
-                                                    await addressessController
-                                                        .updateCity(city: city);
-                                                // ignore: use_build_context_synchronously
-                                                if (b)
-                                                  Utils.doneDialog(
-                                                      context: context);
-                                              },
-                                              color: Colors.black,
-                                              width: 50.w,
-                                              height: 40.sp,
-                                              text: coloredText(
-                                                  text: "create".tr,
-                                                  color: Colors.white),
+        return Container(
+          margin: EdgeInsets.only(bottom: 20.sp),
+          child:
+              GetBuilder<AddressessController>(builder: (addressessController) {
+            return Column(
+              children: [
+                // spaceY(20.sp),
+                // primaryBorderedButton(
+                //     onTap: () {
+                //       City city = City();
+                //       Utils.showDialogBox(
+                //         context: context,
+                //         actions: [
+                //           primaryButton(
+                //             onTap: () async {
+                //               Get.back();
+                //               bool b = await addressessController.createCity(
+                //                   city: city);
+                //               // ignore: use_build_context_synchronously
+                //               if (b) Utils.doneDialog(context: context);
+                //             },
+                //             color: Colors.black,
+                //             width: 50.w,
+                //             height: 40.sp,
+                //             text: coloredText(
+                //                 text: "create".tr, color: Colors.white),
+                //           ),
+                //         ],
+                //         content: Column(
+                //           mainAxisSize: MainAxisSize.min,
+                //           crossAxisAlignment: CrossAxisAlignment.start,
+                //           children: [
+                //             coloredText(text: "name_ar".tr),
+                //             spaceY(5.sp),
+                //             SizedBox(
+                //               height: 35.sp,
+                //               child: TextFormField(
+                //                 // maxLines: 1,
+                //                 initialValue: city.nameAr,
+                //                 onChanged: (value) {
+                //                   city.nameAr = value;
+                //                 },
+                //                 decoration: const InputDecoration(
+                //                   // hintText: "write_your_notes".tr,
+                //                   border: OutlineInputBorder(
+                //                     borderSide: BorderSide.none,
+                //                     borderRadius: BorderRadius.all(
+                //                       Radius.circular(10),
+                //                     ),
+                //                   ),
+                //                   filled: true,
+                //                   fillColor: Color(0xffF5F5F5),
+                //                 ),
+                //               ),
+                //             ),
+                //             spaceY(10.sp),
+                //             coloredText(text: "name_en".tr),
+                //             spaceY(5.sp),
+                //             SizedBox(
+                //               height: 35.sp,
+                //               child: TextFormField(
+                //                 // maxLines: 1,
+                //                 initialValue: city.nameEn,
+                //                 onChanged: (value) {
+                //                   city.nameEn = value;
+                //                 },
+                //                 decoration: const InputDecoration(
+                //                   // hintText: "write_your_notes".tr,
+                //                   border: OutlineInputBorder(
+                //                     borderSide: BorderSide.none,
+                //                     borderRadius: BorderRadius.all(
+                //                       Radius.circular(10),
+                //                     ),
+                //                   ),
+                //                   filled: true,
+                //                   fillColor: Color(0xffF5F5F5),
+                //                 ),
+                //               ),
+                //             ),
+                //           ],
+                //         ),
+                //         title: Row(
+                //           mainAxisAlignment: MainAxisAlignment.end,
+                //           children: [
+                //             GestureDetector(
+                //               onTap: () => Get.back(),
+                //               child: const Icon(
+                //                 EvaIcons.close,
+                //               ),
+                //             )
+                //           ],
+                //         ),
+                //       );
+                //     },
+                //     width: 100.w,
+                //     text: Row(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Icon(EvaIcons.plus, color: Colors.black, size: 20.sp),
+                //         spaceX(10.sp),
+                //         coloredText(text: "create_new".tr),
+                //       ],
+                //     ),
+                //     color: Colors.black),
+                // spaceY(10.sp),
+                Expanded(
+                  child: globalController.getCitiesFlag
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : globalController.citiesToSHow.isEmpty
+                          ? NoItemsWidget()
+                          : ListView.separated(
+                              primary: false,
+                              shrinkWrap: true,
+                              // physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) => AdminItemCard(
+                                    name:
+                                        "${globalController.citiesToSHow[index].nameEn!} - ${globalController.citiesToSHow[index].nameAr!}",
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    trailing: Theme(
+                                      data:
+                                          ThemeData(primaryColor: Colors.white),
+                                      child: PopupMenuButton(
+                                        constraints: BoxConstraints(
+                                          minWidth: 2.0 * 56.0,
+                                          maxWidth:
+                                              MediaQuery.of(context).size.width,
+                                        ),
+                                        itemBuilder: (BuildContext cc) => [
+                                          PopupMenuItem<int>(
+                                            value: 0,
+                                            child: Row(
+                                              children: [
+                                                Icon(EvaIcons.editOutline,
+                                                    size: 15.sp),
+                                                spaceX(5.sp),
+                                                coloredText(
+                                                    text: 'edit'.tr,
+                                                    fontSize: 12.0.sp),
+                                              ],
                                             ),
-                                          ],
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              coloredText(text: "name_ar".tr),
-                                              spaceY(5.sp),
-                                              SizedBox(
-                                                height: 35.sp,
-                                                child: TextFormField(
-                                                  // maxLines: 1,
-                                                  initialValue: city.nameAr,
-                                                  onChanged: (value) {
-                                                    city.nameAr = value;
-                                                  },
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    // hintText: "write_your_notes".tr,
-                                                    border: OutlineInputBorder(
-                                                      borderSide:
-                                                          BorderSide.none,
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                        Radius.circular(10),
+                                            onTap: () {
+                                              City city = City.fromJson(
+                                                  globalController
+                                                      .citiesToSHow[index]
+                                                      .toJson());
+                                              logSuccess(globalController
+                                                  .citiesToSHow[index]
+                                                  .toJson());
+                                              Utils.showDialogBox(
+                                                context: context,
+                                                actions: [
+                                                  primaryButton(
+                                                    onTap: () async {
+                                                      Get.back();
+                                                      bool b =
+                                                          await addressessController
+                                                              .updateCity(
+                                                                  city: city);
+                                                      // ignore: use_build_context_synchronously
+                                                      if (b)
+                                                        Utils.doneDialog(
+                                                            context: context);
+                                                    },
+                                                    color: Colors.black,
+                                                    width: 50.w,
+                                                    height: 40.sp,
+                                                    text: coloredText(
+                                                        text: "create".tr,
+                                                        color: Colors.white),
+                                                  ),
+                                                ],
+                                                content: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    coloredText(
+                                                        text: "name_ar".tr),
+                                                    spaceY(5.sp),
+                                                    SizedBox(
+                                                      height: 35.sp,
+                                                      child: TextFormField(
+                                                        // maxLines: 1,
+                                                        initialValue:
+                                                            city.nameAr,
+                                                        onChanged: (value) {
+                                                          city.nameAr = value;
+                                                        },
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          // hintText: "write_your_notes".tr,
+                                                          border:
+                                                              OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide.none,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(
+                                                              Radius.circular(
+                                                                  10),
+                                                            ),
+                                                          ),
+                                                          filled: true,
+                                                          fillColor:
+                                                              Color(0xffF5F5F5),
+                                                        ),
                                                       ),
                                                     ),
-                                                    filled: true,
-                                                    fillColor:
-                                                        Color(0xffF5F5F5),
-                                                  ),
-                                                ),
-                                              ),
-                                              spaceY(10.sp),
-                                              coloredText(text: "name_en".tr),
-                                              spaceY(5.sp),
-                                              SizedBox(
-                                                height: 35.sp,
-                                                child: TextFormField(
-                                                  // maxLines: 1,
-                                                  initialValue: city.nameEn,
-                                                  onChanged: (value) {
-                                                    city.nameEn = value;
-                                                  },
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    // hintText: "write_your_notes".tr,
-                                                    border: OutlineInputBorder(
-                                                      borderSide:
-                                                          BorderSide.none,
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                        Radius.circular(10),
+                                                    spaceY(10.sp),
+                                                    coloredText(
+                                                        text: "name_en".tr),
+                                                    spaceY(5.sp),
+                                                    SizedBox(
+                                                      height: 35.sp,
+                                                      child: TextFormField(
+                                                        // maxLines: 1,
+                                                        initialValue:
+                                                            city.nameEn,
+                                                        onChanged: (value) {
+                                                          city.nameEn = value;
+                                                        },
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          // hintText: "write_your_notes".tr,
+                                                          border:
+                                                              OutlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide.none,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(
+                                                              Radius.circular(
+                                                                  10),
+                                                            ),
+                                                          ),
+                                                          filled: true,
+                                                          fillColor:
+                                                              Color(0xffF5F5F5),
+                                                        ),
                                                       ),
                                                     ),
-                                                    filled: true,
-                                                    fillColor:
-                                                        Color(0xffF5F5F5),
-                                                  ),
+                                                  ],
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          title: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () => Get.back(),
-                                                child: const Icon(
-                                                  EvaIcons.close,
+                                                title: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () => Get.back(),
+                                                      child: const Icon(
+                                                        EvaIcons.close,
+                                                      ),
+                                                    )
+                                                  ],
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                        );
+                                              );
 
-                                        //  Utils.doneDialog(context: context);
-                                      },
-                                    ),
-                                    PopupMenuItem<int>(
-                                      value: 1,
-                                      child: Row(
-                                        children: [
-                                          Icon(EvaIcons.trash2Outline,
-                                              size: 15.sp),
-                                          spaceX(5.sp),
-                                          coloredText(
-                                              text: 'delete'.tr,
-                                              fontSize: 12.0.sp),
+                                              //  Utils.doneDialog(context: context);
+                                            },
+                                          ),
+                                          PopupMenuItem<int>(
+                                            value: 1,
+                                            child: Row(
+                                              children: [
+                                                Icon(EvaIcons.trash2Outline,
+                                                    size: 15.sp),
+                                                spaceX(5.sp),
+                                                coloredText(
+                                                    text: 'delete'.tr,
+                                                    fontSize: 12.0.sp),
+                                              ],
+                                            ),
+                                            onTap: () async {
+                                              bool b =
+                                                  await addressessController
+                                                      .deleteCity(
+                                                city: globalController
+                                                    .citiesToSHow[index],
+                                              );
+                                              if (b) {
+                                                Utils.doneDialog(
+                                                    context: context);
+                                              }
+                                            },
+                                          ),
                                         ],
+                                        child: const Icon(
+                                          EvaIcons.moreVertical,
+                                        ),
                                       ),
-                                      onTap: () async {
-                                        bool b = await addressessController
-                                            .deleteCity(
-                                          city: globalController.cities[index],
-                                        );
-                                        if (b) {
-                                          Utils.doneDialog(context: context);
-                                        }
-                                      },
                                     ),
-                                  ],
-                                  child: const Icon(
-                                    EvaIcons.moreVertical,
                                   ),
-                                ),
-                              ),
-                            ),
-                        separatorBuilder: (context, index) => spaceY(10.sp),
-                        itemCount: globalController.cities.length),
-              )
-            ],
-          );
-        });
+                              separatorBuilder: (context, index) =>
+                                  spaceY(10.sp),
+                              itemCount: globalController.citiesToSHow.length),
+                )
+              ],
+            );
+          }),
+        );
       });
 
   Widget tab2() => GetBuilder<GlobalController>(builder: (globalController) {
-        return GetBuilder<AddressessController>(
-            builder: (addressessController) {
-          return Column(
-            children: [
-              spaceY(20.sp),
-              primaryBorderedButton(
-                  onTap: () {
-                    Get.to(() => AdminCreateCountry());
-                    // Country country = Country();
-                    // Utils.showDialogBox(
-                    //   context: context,
-                    //   actions: [
-                    //     primaryButton(
-                    //       onTap: () async {
-                    //         Get.back();
-                    //         bool b = await addressessController.createCountry(
-                    //             country: country);
-                    //         // ignore: use_build_context_synchronously
-                    //         if (b) Utils.doneDialog(context: context);
-                    //       },
-                    //       color: Colors.black,
-                    //       width: 50.w,
-                    //       height: 40.sp,
-                    //       text: coloredText(
-                    //           text: "create".tr, color: Colors.white),
-                    //     ),
-                    //   ],
-                    //   content: Column(
-                    //     mainAxisSize: MainAxisSize.min,
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: [
-                    //       coloredText(text: "name_ar".tr),
-                    //       spaceY(5.sp),
-                    //       SizedBox(
-                    //         height: 35.sp,
-                    //         child: TextFormField(
-                    //           // maxLines: 1,
-                    //           initialValue: country.nameAr,
-                    //           onChanged: (value) {
-                    //             country.nameAr = value;
-                    //           },
-                    //           decoration: const InputDecoration(
-                    //             // hintText: "write_your_notes".tr,
-                    //             border: OutlineInputBorder(
-                    //               borderSide: BorderSide.none,
-                    //               borderRadius: BorderRadius.all(
-                    //                 Radius.circular(10),
-                    //               ),
-                    //             ),
-                    //             filled: true,
-                    //             fillColor: Color(0xffF5F5F5),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       spaceY(10.sp),
-                    //       coloredText(text: "name_en".tr),
-                    //       spaceY(5.sp),
-                    //       SizedBox(
-                    //         height: 35.sp,
-                    //         child: TextFormField(
-                    //           // maxLines: 1,
-                    //           initialValue: country.nameEn,
-                    //           onChanged: (value) {
-                    //             country.nameEn = value;
-                    //           },
-                    //           decoration: const InputDecoration(
-                    //             // hintText: "write_your_notes".tr,
-                    //             border: OutlineInputBorder(
-                    //               borderSide: BorderSide.none,
-                    //               borderRadius: BorderRadius.all(
-                    //                 Radius.circular(10),
-                    //               ),
-                    //             ),
-                    //             filled: true,
-                    //             fillColor: Color(0xffF5F5F5),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    //   title: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.end,
-                    //     children: [
-                    //       GestureDetector(
-                    //         onTap: () => Get.back(),
-                    //         child: const Icon(
-                    //           EvaIcons.close,
-                    //         ),
-                    //       )
-                    //     ],
-                    //   ),
-                    // );
-                  },
-                  width: 100.w,
-                  text: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(EvaIcons.plus, color: Colors.black, size: 20.sp),
-                      spaceX(10.sp),
-                      coloredText(text: "create_new".tr),
-                    ],
-                  ),
-                  color: Colors.black),
-              spaceY(10.sp),
-              Expanded(
-                child: globalController.getCitiesFlag
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : ListView.separated(
-                        primary: false,
-                        shrinkWrap: true,
-                        // physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) => AdminItemCard(
-                              // img: globalController.countries[index].flag,
-                              name:
-                                  "${globalController.countries[index].nameEn!} - ${globalController.countries[index].nameAr!}",
-                              margin: const EdgeInsets.only(bottom: 10),
-                              trailing: Theme(
-                                data: ThemeData(primaryColor: Colors.white),
-                                child: PopupMenuButton(
-                                  constraints: BoxConstraints(
-                                    minWidth: 2.0 * 56.0,
-                                    maxWidth: MediaQuery.of(context).size.width,
-                                  ),
-                                  itemBuilder: (BuildContext cc) => [
-                                    PopupMenuItem<int>(
-                                      value: 0,
-                                      child: Row(
-                                        children: [
-                                          Icon(EvaIcons.editOutline,
-                                              size: 15.sp),
-                                          spaceX(5.sp),
-                                          coloredText(
-                                              text: 'edit'.tr,
-                                              fontSize: 12.0.sp),
-                                        ],
-                                      ),
-                                      onTap: () {
-                                        Get.to(() => AdminCreateCountry(
-                                              countryToEdit: globalController
-                                                  .countries[index],
-                                            ));
-                                        // Country country = Country.fromJson(
-                                        //     globalController.countries[index]
-                                        //         .toJson());
-                                        // Utils.showDialogBox(
-                                        //   context: context,
-                                        //   actions: [
-                                        //     primaryButton(
-                                        //       onTap: () async {
-                                        //         Get.back();
-                                        //         bool b =
-                                        //             await addressessController
-                                        //                 .updateCountry(
-                                        //                     country: country);
-                                        //         // ignore: use_build_context_synchronously
-                                        //         if (b)
-                                        //           Utils.doneDialog(
-                                        //               context: context);
-                                        //       },
-                                        //       color: Colors.black,
-                                        //       width: 50.w,
-                                        //       height: 40.sp,
-                                        //       text: coloredText(
-                                        //           text: "create".tr,
-                                        //           color: Colors.white),
-                                        //     ),
-                                        //   ],
-                                        //   content: Column(
-                                        //     mainAxisSize: MainAxisSize.min,
-                                        //     crossAxisAlignment:
-                                        //         CrossAxisAlignment.start,
-                                        //     children: [
-                                        //       coloredText(text: "name_ar".tr),
-                                        //       spaceY(5.sp),
-                                        //       SizedBox(
-                                        //         height: 35.sp,
-                                        //         child: TextFormField(
-                                        //           // maxLines: 1,
-                                        //           initialValue: country.nameAr,
-                                        //           onChanged: (value) {
-                                        //             country.nameAr = value;
-                                        //           },
-                                        //           decoration:
-                                        //               const InputDecoration(
-                                        //             // hintText: "write_your_notes".tr,
-                                        //             border: OutlineInputBorder(
-                                        //               borderSide:
-                                        //                   BorderSide.none,
-                                        //               borderRadius:
-                                        //                   BorderRadius.all(
-                                        //                 Radius.circular(10),
-                                        //               ),
-                                        //             ),
-                                        //             filled: true,
-                                        //             fillColor:
-                                        //                 Color(0xffF5F5F5),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //       spaceY(10.sp),
-                                        //       coloredText(text: "name_en".tr),
-                                        //       spaceY(5.sp),
-                                        //       SizedBox(
-                                        //         height: 35.sp,
-                                        //         child: TextFormField(
-                                        //           // maxLines: 1,
-                                        //           initialValue: country.nameEn,
-                                        //           onChanged: (value) {
-                                        //             country.nameEn = value;
-                                        //           },
-                                        //           decoration:
-                                        //               const InputDecoration(
-                                        //             // hintText: "write_your_notes".tr,
-                                        //             border: OutlineInputBorder(
-                                        //               borderSide:
-                                        //                   BorderSide.none,
-                                        //               borderRadius:
-                                        //                   BorderRadius.all(
-                                        //                 Radius.circular(10),
-                                        //               ),
-                                        //             ),
-                                        //             filled: true,
-                                        //             fillColor:
-                                        //                 Color(0xffF5F5F5),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //     ],
-                                        //   ),
-                                        //   title: Row(
-                                        //     mainAxisAlignment:
-                                        //         MainAxisAlignment.end,
-                                        //     children: [
-                                        //       GestureDetector(
-                                        //         onTap: () => Get.back(),
-                                        //         child: const Icon(
-                                        //           EvaIcons.close,
-                                        //         ),
-                                        //       )
-                                        //     ],
-                                        //   ),
-                                        // );
+        return Container(
+          margin: EdgeInsets.only(bottom: 20.sp),
+          child:
+              GetBuilder<AddressessController>(builder: (addressessController) {
+            return Column(
+              children: [
+                // spaceY(20.sp),
+                // primaryBorderedButton(
+                //     onTap: () {
+                //       Get.to(() => AdminCreateCountry());
+                //       // Country country = Country();
+                //       // Utils.showDialogBox(
+                //       //   context: context,
+                //       //   actions: [
+                //       //     primaryButton(
+                //       //       onTap: () async {
+                //       //         Get.back();
+                //       //         bool b = await addressessController.createCountry(
+                //       //             country: country);
+                //       //         // ignore: use_build_context_synchronously
+                //       //         if (b) Utils.doneDialog(context: context);
+                //       //       },
+                //       //       color: Colors.black,
+                //       //       width: 50.w,
+                //       //       height: 40.sp,
+                //       //       text: coloredText(
+                //       //           text: "create".tr, color: Colors.white),
+                //       //     ),
+                //       //   ],
+                //       //   content: Column(
+                //       //     mainAxisSize: MainAxisSize.min,
+                //       //     crossAxisAlignment: CrossAxisAlignment.start,
+                //       //     children: [
+                //       //       coloredText(text: "name_ar".tr),
+                //       //       spaceY(5.sp),
+                //       //       SizedBox(
+                //       //         height: 35.sp,
+                //       //         child: TextFormField(
+                //       //           // maxLines: 1,
+                //       //           initialValue: country.nameAr,
+                //       //           onChanged: (value) {
+                //       //             country.nameAr = value;
+                //       //           },
+                //       //           decoration: const InputDecoration(
+                //       //             // hintText: "write_your_notes".tr,
+                //       //             border: OutlineInputBorder(
+                //       //               borderSide: BorderSide.none,
+                //       //               borderRadius: BorderRadius.all(
+                //       //                 Radius.circular(10),
+                //       //               ),
+                //       //             ),
+                //       //             filled: true,
+                //       //             fillColor: Color(0xffF5F5F5),
+                //       //           ),
+                //       //         ),
+                //       //       ),
+                //       //       spaceY(10.sp),
+                //       //       coloredText(text: "name_en".tr),
+                //       //       spaceY(5.sp),
+                //       //       SizedBox(
+                //       //         height: 35.sp,
+                //       //         child: TextFormField(
+                //       //           // maxLines: 1,
+                //       //           initialValue: country.nameEn,
+                //       //           onChanged: (value) {
+                //       //             country.nameEn = value;
+                //       //           },
+                //       //           decoration: const InputDecoration(
+                //       //             // hintText: "write_your_notes".tr,
+                //       //             border: OutlineInputBorder(
+                //       //               borderSide: BorderSide.none,
+                //       //               borderRadius: BorderRadius.all(
+                //       //                 Radius.circular(10),
+                //       //               ),
+                //       //             ),
+                //       //             filled: true,
+                //       //             fillColor: Color(0xffF5F5F5),
+                //       //           ),
+                //       //         ),
+                //       //       ),
+                //       //     ],
+                //       //   ),
+                //       //   title: Row(
+                //       //     mainAxisAlignment: MainAxisAlignment.end,
+                //       //     children: [
+                //       //       GestureDetector(
+                //       //         onTap: () => Get.back(),
+                //       //         child: const Icon(
+                //       //           EvaIcons.close,
+                //       //         ),
+                //       //       )
+                //       //     ],
+                //       //   ),
+                //       // );
+                //     },
+                //     width: 100.w,
+                //     text: Row(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Icon(EvaIcons.plus, color: Colors.black, size: 20.sp),
+                //         spaceX(10.sp),
+                //         coloredText(text: "create_new".tr),
+                //       ],
+                //     ),
+                //     color: Colors.black),
+                // spaceY(10.sp),
+                Expanded(
+                  child: globalController.getCountriesFlag
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : globalController.countriesToShow.isEmpty
+                          ? NoItemsWidget()
+                          : ListView.separated(
+                              primary: false,
+                              shrinkWrap: true,
+                              // physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) => AdminItemCard(
+                                    // img: globalController.countriesToShow[index].flag,
+                                    name:
+                                        "${globalController.countriesToShow[index].nameEn!} - ${globalController.countriesToShow[index].nameAr!}",
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    trailing: Theme(
+                                      data:
+                                          ThemeData(primaryColor: Colors.white),
+                                      child: PopupMenuButton(
+                                        constraints: BoxConstraints(
+                                          minWidth: 2.0 * 56.0,
+                                          maxWidth:
+                                              MediaQuery.of(context).size.width,
+                                        ),
+                                        itemBuilder: (BuildContext cc) => [
+                                          PopupMenuItem<int>(
+                                            value: 0,
+                                            child: Row(
+                                              children: [
+                                                Icon(EvaIcons.editOutline,
+                                                    size: 15.sp),
+                                                spaceX(5.sp),
+                                                coloredText(
+                                                    text: 'edit'.tr,
+                                                    fontSize: 12.0.sp),
+                                              ],
+                                            ),
+                                            onTap: () {
+                                              Get.to(() => AdminCreateCountry(
+                                                    countryToEdit:
+                                                        globalController
+                                                            .countries[index],
+                                                  ));
+                                              // Country country = Country.fromJson(
+                                              //     globalController.countriesToShow[index]
+                                              //         .toJson());
+                                              // Utils.showDialogBox(
+                                              //   context: context,
+                                              //   actions: [
+                                              //     primaryButton(
+                                              //       onTap: () async {
+                                              //         Get.back();
+                                              //         bool b =
+                                              //             await addressessController
+                                              //                 .updateCountry(
+                                              //                     country: country);
+                                              //         // ignore: use_build_context_synchronously
+                                              //         if (b)
+                                              //           Utils.doneDialog(
+                                              //               context: context);
+                                              //       },
+                                              //       color: Colors.black,
+                                              //       width: 50.w,
+                                              //       height: 40.sp,
+                                              //       text: coloredText(
+                                              //           text: "create".tr,
+                                              //           color: Colors.white),
+                                              //     ),
+                                              //   ],
+                                              //   content: Column(
+                                              //     mainAxisSize: MainAxisSize.min,
+                                              //     crossAxisAlignment:
+                                              //         CrossAxisAlignment.start,
+                                              //     children: [
+                                              //       coloredText(text: "name_ar".tr),
+                                              //       spaceY(5.sp),
+                                              //       SizedBox(
+                                              //         height: 35.sp,
+                                              //         child: TextFormField(
+                                              //           // maxLines: 1,
+                                              //           initialValue: country.nameAr,
+                                              //           onChanged: (value) {
+                                              //             country.nameAr = value;
+                                              //           },
+                                              //           decoration:
+                                              //               const InputDecoration(
+                                              //             // hintText: "write_your_notes".tr,
+                                              //             border: OutlineInputBorder(
+                                              //               borderSide:
+                                              //                   BorderSide.none,
+                                              //               borderRadius:
+                                              //                   BorderRadius.all(
+                                              //                 Radius.circular(10),
+                                              //               ),
+                                              //             ),
+                                              //             filled: true,
+                                              //             fillColor:
+                                              //                 Color(0xffF5F5F5),
+                                              //           ),
+                                              //         ),
+                                              //       ),
+                                              //       spaceY(10.sp),
+                                              //       coloredText(text: "name_en".tr),
+                                              //       spaceY(5.sp),
+                                              //       SizedBox(
+                                              //         height: 35.sp,
+                                              //         child: TextFormField(
+                                              //           // maxLines: 1,
+                                              //           initialValue: country.nameEn,
+                                              //           onChanged: (value) {
+                                              //             country.nameEn = value;
+                                              //           },
+                                              //           decoration:
+                                              //               const InputDecoration(
+                                              //             // hintText: "write_your_notes".tr,
+                                              //             border: OutlineInputBorder(
+                                              //               borderSide:
+                                              //                   BorderSide.none,
+                                              //               borderRadius:
+                                              //                   BorderRadius.all(
+                                              //                 Radius.circular(10),
+                                              //               ),
+                                              //             ),
+                                              //             filled: true,
+                                              //             fillColor:
+                                              //                 Color(0xffF5F5F5),
+                                              //           ),
+                                              //         ),
+                                              //       ),
+                                              //     ],
+                                              //   ),
+                                              //   title: Row(
+                                              //     mainAxisAlignment:
+                                              //         MainAxisAlignment.end,
+                                              //     children: [
+                                              //       GestureDetector(
+                                              //         onTap: () => Get.back(),
+                                              //         child: const Icon(
+                                              //           EvaIcons.close,
+                                              //         ),
+                                              //       )
+                                              //     ],
+                                              //   ),
+                                              // );
 
-                                        //  Utils.doneDialog(context: context);
-                                      },
-                                    ),
-                                    PopupMenuItem<int>(
-                                      value: 1,
-                                      child: Row(
-                                        children: [
-                                          Icon(EvaIcons.trash2Outline,
-                                              size: 15.sp),
-                                          spaceX(5.sp),
-                                          coloredText(
-                                              text: 'delete'.tr,
-                                              fontSize: 12.0.sp),
+                                              //  Utils.doneDialog(context: context);
+                                            },
+                                          ),
+                                          PopupMenuItem<int>(
+                                            value: 1,
+                                            child: Row(
+                                              children: [
+                                                Icon(EvaIcons.trash2Outline,
+                                                    size: 15.sp),
+                                                spaceX(5.sp),
+                                                coloredText(
+                                                    text: 'delete'.tr,
+                                                    fontSize: 12.0.sp),
+                                              ],
+                                            ),
+                                            onTap: () async {
+                                              bool b =
+                                                  await addressessController
+                                                      .deleteCountry(
+                                                country: globalController
+                                                    .countriesToShow[index],
+                                              );
+                                              if (b) {
+                                                Utils.doneDialog(
+                                                    context: context);
+                                              }
+                                            },
+                                          ),
                                         ],
+                                        child: const Icon(
+                                          EvaIcons.moreVertical,
+                                        ),
                                       ),
-                                      onTap: () async {
-                                        bool b = await addressessController
-                                            .deleteCountry(
-                                          country:
-                                              globalController.countries[index],
-                                        );
-                                        if (b) {
-                                          Utils.doneDialog(context: context);
-                                        }
-                                      },
                                     ),
-                                  ],
-                                  child: const Icon(
-                                    EvaIcons.moreVertical,
                                   ),
-                                ),
-                              ),
-                            ),
-                        separatorBuilder: (context, index) => spaceY(10.sp),
-                        itemCount: globalController.countries.length),
-              )
-            ],
-          );
-        });
+                              separatorBuilder: (context, index) =>
+                                  spaceY(10.sp),
+                              itemCount:
+                                  globalController.countriesToShow.length),
+                )
+              ],
+            );
+          }),
+        );
       });
 
   Widget tab3() => GetBuilder<GlobalController>(builder: (globalController) {
@@ -779,105 +1022,105 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
             builder: (addressessController) {
           return Column(
             children: [
-              spaceY(20.sp),
-              primaryBorderedButton(
-                  onTap: () {
-                    Region region = Region();
-                    Utils.showDialogBox(
-                      context: context,
-                      actions: [
-                        primaryButton(
-                          onTap: () async {
-                            Get.back();
-                            bool b = await addressessController.createRegion(
-                                region: region);
-                            // ignore: use_build_context_synchronously
-                            if (b) Utils.doneDialog(context: context);
-                          },
-                          color: Colors.black,
-                          width: 50.w,
-                          height: 40.sp,
-                          text: coloredText(
-                              text: "create".tr, color: Colors.white),
-                        ),
-                      ],
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          coloredText(text: "name_ar".tr),
-                          spaceY(5.sp),
-                          SizedBox(
-                            height: 35.sp,
-                            child: TextFormField(
-                              // maxLines: 1,
-                              initialValue: region.nameAr,
-                              onChanged: (value) {
-                                region.nameAr = value;
-                              },
-                              decoration: const InputDecoration(
-                                // hintText: "write_your_notes".tr,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Color(0xffF5F5F5),
-                              ),
-                            ),
-                          ),
-                          spaceY(10.sp),
-                          coloredText(text: "name_en".tr),
-                          spaceY(5.sp),
-                          SizedBox(
-                            height: 35.sp,
-                            child: TextFormField(
-                              // maxLines: 1,
-                              initialValue: region.nameEn,
-                              onChanged: (value) {
-                                region.nameEn = value;
-                              },
-                              decoration: const InputDecoration(
-                                // hintText: "write_your_notes".tr,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Color(0xffF5F5F5),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          GestureDetector(
-                            onTap: () => Get.back(),
-                            child: const Icon(
-                              EvaIcons.close,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                  width: 100.w,
-                  text: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(EvaIcons.plus, color: Colors.black, size: 20.sp),
-                      spaceX(10.sp),
-                      coloredText(text: "create_new".tr),
-                    ],
-                  ),
-                  color: Colors.black),
-              spaceY(10.sp),
+              // spaceY(20.sp),
+              // primaryBorderedButton(
+              //     onTap: () {
+              //       Region region = Region();
+              //       Utils.showDialogBox(
+              //         context: context,
+              //         actions: [
+              //           primaryButton(
+              //             onTap: () async {
+              //               Get.back();
+              //               bool b = await addressessController.createRegion(
+              //                   region: region);
+              //               // ignore: use_build_context_synchronously
+              //               if (b) Utils.doneDialog(context: context);
+              //             },
+              //             color: Colors.black,
+              //             width: 50.w,
+              //             height: 40.sp,
+              //             text: coloredText(
+              //                 text: "create".tr, color: Colors.white),
+              //           ),
+              //         ],
+              //         content: Column(
+              //           mainAxisSize: MainAxisSize.min,
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             coloredText(text: "name_ar".tr),
+              //             spaceY(5.sp),
+              //             SizedBox(
+              //               height: 35.sp,
+              //               child: TextFormField(
+              //                 // maxLines: 1,
+              //                 initialValue: region.nameAr,
+              //                 onChanged: (value) {
+              //                   region.nameAr = value;
+              //                 },
+              //                 decoration: const InputDecoration(
+              //                   // hintText: "write_your_notes".tr,
+              //                   border: OutlineInputBorder(
+              //                     borderSide: BorderSide.none,
+              //                     borderRadius: BorderRadius.all(
+              //                       Radius.circular(10),
+              //                     ),
+              //                   ),
+              //                   filled: true,
+              //                   fillColor: Color(0xffF5F5F5),
+              //                 ),
+              //               ),
+              //             ),
+              //             spaceY(10.sp),
+              //             coloredText(text: "name_en".tr),
+              //             spaceY(5.sp),
+              //             SizedBox(
+              //               height: 35.sp,
+              //               child: TextFormField(
+              //                 // maxLines: 1,
+              //                 initialValue: region.nameEn,
+              //                 onChanged: (value) {
+              //                   region.nameEn = value;
+              //                 },
+              //                 decoration: const InputDecoration(
+              //                   // hintText: "write_your_notes".tr,
+              //                   border: OutlineInputBorder(
+              //                     borderSide: BorderSide.none,
+              //                     borderRadius: BorderRadius.all(
+              //                       Radius.circular(10),
+              //                     ),
+              //                   ),
+              //                   filled: true,
+              //                   fillColor: Color(0xffF5F5F5),
+              //                 ),
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //         title: Row(
+              //           mainAxisAlignment: MainAxisAlignment.end,
+              //           children: [
+              //             GestureDetector(
+              //               onTap: () => Get.back(),
+              //               child: const Icon(
+              //                 EvaIcons.close,
+              //               ),
+              //             )
+              //           ],
+              //         ),
+              //       );
+              //     },
+              //     width: 100.w,
+              //     text: Row(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         Icon(EvaIcons.plus, color: Colors.black, size: 20.sp),
+              //         spaceX(10.sp),
+              //         coloredText(text: "create_new".tr),
+              //       ],
+              //     ),
+              //     color: Colors.black),
+              // spaceY(10.sp),
               Expanded(
                 child: globalController.getCitiesFlag
                     ? const Center(
@@ -1077,7 +1320,7 @@ class _AdminCountryWidgetState extends State<AdminCountryWidget> {
     super.initState();
   }
 
-  GlobalController _globalController = Get.find();
+  // GlobalController _globalController = Get.find();
   @override
   Widget build(BuildContext context) {
     return ExpandableNotifier(

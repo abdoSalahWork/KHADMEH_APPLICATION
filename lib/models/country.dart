@@ -28,7 +28,7 @@ class Country {
     nameAr = json['name_ar'];
     nationalityEn = json['nationality_en'];
     nationalityAr = json['nationality_ar'];
-    flag = "https://khdmah.online/image/country/" + json['flag'];
+    flag = "https://khdmah.online/image/country/${json['flag']}";
     code = json['code'];
     currency = json['currency'];
     shortCurrency = json['short_currency'];

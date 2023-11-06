@@ -43,10 +43,23 @@ class CompanyTypesController extends GetxController {
   Future updateCompanyType(
       {required CompanyType companyType, required int id}) async {
     try {
+      String? token = await Utils.readToken();
+
       Utils.circularIndicator();
       final body = d.FormData.fromMap(companyType.toJson());
-      body.fields.add(const MapEntry("_method", "PUT"));
-      await dio.post(EndPoints.updateCompanyType(id), data: body);
+      body.fields.add(
+        const MapEntry("_method", "PUT"),
+      );
+      await dio.post(
+        EndPoints.updateCompanyType(id),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
 
       await getCompanyTypes();
       Get.back();
@@ -60,7 +73,17 @@ class CompanyTypesController extends GetxController {
   Future getCompanyTypes() async {
     try {
       getCompanyTypesFlag = true;
-      var res = await dio.get(EndPoints.getAllCommunityTypes);
+      String? token = await Utils.readToken();
+
+      var res = await dio.get(
+        EndPoints.getAllCompanyTypes,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
       List<CompanyType> tmp = [];
       for (var i in res.data['data']) {
         CompanyType t = CompanyType.fromJson(i);

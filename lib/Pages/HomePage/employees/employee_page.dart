@@ -203,7 +203,9 @@ class _EmployeePageState extends State<EmployeePage> {
                                         text: 'contract'.tr, fontSize: 12.0.sp),
                                     onTap: () async {
                                       String? token = await Utils.readToken();
-
+                                      logSuccess(widget
+                                          .employeeModel.residenceContract!);
+                                      logSuccess(token!);
                                       Utils.circularIndicator();
                                       var res = await Dio().get(
                                         widget.employeeModel.residenceContract!,

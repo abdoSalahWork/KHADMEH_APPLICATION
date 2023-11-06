@@ -220,6 +220,7 @@ class UserInformation {
 class CompanyInformation {
   int? id;
   int? busy;
+  int? approveAdmin;
   String? firstName;
   String? lastName;
   String? phone;
@@ -237,6 +238,13 @@ class CompanyInformation {
   String? taxNumber;
   String? licenseNumber;
   var companyLogo;
+  var signatureOfficial;
+  var signatureAuthorization;
+  var commercialLicense;
+  var articlesOfAssociation;
+  var contractMyfatoorah;
+  var contractKhedmah;
+  int? verifyContract;
   String? identityConfirmation;
   String? frontSideIdImage;
   String? backSideIdImage;
@@ -256,7 +264,11 @@ class CompanyInformation {
       this.firstName,
       this.busy,
       this.city,
+      this.contractKhedmah,
+      this.contractMyfatoorah,
       this.employees,
+      this.approveAdmin,
+      this.verifyContract,
       this.lastName,
       this.phone,
       this.idNumber,
@@ -273,6 +285,10 @@ class CompanyInformation {
       this.taxNumber,
       this.licenseNumber,
       this.companyLogo,
+      this.signatureOfficial,
+      this.signatureAuthorization,
+      this.commercialLicense,
+      this.articlesOfAssociation,
       this.identityConfirmation,
       this.frontSideIdImage,
       this.backSideIdImage,
@@ -295,6 +311,9 @@ class CompanyInformation {
         employees!.add(EmployeeModel.fromJson(v));
       });
     }
+    verifyContract = json['verify_contract'];
+    contractKhedmah = json['contract_khedmah'];
+    contractMyfatoorah = json['contract_myfatoorah'];
     id = json['id'];
     busy = json['busy'];
     firstName = json['first_name'];
@@ -313,16 +332,25 @@ class CompanyInformation {
     commercialRegistrationNumber = json['commercial_registration_number'];
     taxNumber = json['tax_number'];
     licenseNumber = json['license_number'];
-    companyLogo =
-        "https://khdmah.online/api/images/company/${json['company_logo']}";
+    companyLogo = "${json['company_logo']}";
+    signatureOfficial = "${json['signatureـofficial']}";
+    signatureAuthorization = "${json['signature_authorization']}";
+    commercialLicense = "${json['commercial_license']}";
+    articlesOfAssociation = "${json['articles_of_association']}";
 
     identityConfirmation = json['identity_confirmation'];
-    frontSideIdImage =
-        "https://khdmah.online/api/images/company/${json['front_side_id_image']}";
-    backSideIdImage =
-        "https://khdmah.online/api/images/company/${json['back_side_id_image']}";
-    passportImage =
-        "https://khdmah.online/api/images/company/${json['passport_image']}/";
+    if (json['front_side_id_image'] != null) {
+      frontSideIdImage =
+          "https://khdmah.online/api/images/company/${json['front_side_id_image']}";
+    }
+    if (json['back_side_id_image'] != null) {
+      backSideIdImage =
+          "https://khdmah.online/api/images/company/${json['back_side_id_image']}";
+    }
+    if (json['passport_image'] != null) {
+      passportImage =
+          "https://khdmah.online/api/images/company/${json['passport_image']}/";
+    }
     nationalityId = json['nationality_id'];
     companyId = json['company_id'];
     cityId = json['city_id'];
@@ -340,7 +368,11 @@ class CompanyInformation {
       data['employee'] = employees!.map((v) => v.toJson()).toList();
     }
     data['id'] = id;
+    data['verify_contract'] = verifyContract;
+    data['contract_khedmah'] = contractKhedmah;
+    data['contract_myfatoorah'] = contractMyfatoorah;
     data['busy'] = busy;
+    data['approve_admin'] = approveAdmin;
     data['first_name'] = firstName;
     data['last_name'] = lastName;
     data['phone'] = phone;
@@ -357,7 +389,7 @@ class CompanyInformation {
     data['commercial_registration_number'] = commercialRegistrationNumber;
     data['tax_number'] = taxNumber;
     data['license_number'] = licenseNumber;
-    // data['company_logo'] = this.companyLogo;
+    data['company_logo'] = this.companyLogo;
     data['identity_confirmation'] = identityConfirmation;
     data['front_side_id_image'] = frontSideIdImage;
     data['back_side_id_image'] = backSideIdImage;
@@ -369,6 +401,7 @@ class CompanyInformation {
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     data['company_name'] = companyName;
+    data['approve_admin'] = approveAdmin;
     return data;
   }
 }

@@ -6,6 +6,7 @@ class EndPoints {
   static String get loginFacebook => "$_baseURL/login/facebook";
   static String get login => "$_baseURL/login";
   static String get me => "$_baseURL/me";
+  static String get verifyContract => "$_baseURL/verify/contract";
   static String get getAllCompanyAdvertisments => "$_baseURL/advertisments";
 
   static String get getAllRecruitmentCompanies =>
@@ -116,7 +117,7 @@ class EndPoints {
   static String get storeCategory => "$_adminBaseURL/service/store";
   static String updateCategory(int id) => "$_adminBaseURL/service/update/$id";
   static String deleteCategory(int id) => "$_adminBaseURL/service/delete/$id";
-  static String get getAllCommunityTypes => "$_baseURL/companyTypes";
+  static String get getAllCompanyTypes => "$_baseURL/companyTypes";
   static String get storeCompanyType => "$_adminBaseURL/companyType/store";
   static String updateCompanyType(int id) =>
       "$_adminBaseURL/companyType/update/$id";
@@ -168,6 +169,7 @@ class EndPoints {
   static String get getMedicals => "$_adminBaseURL/medicals";
   static String deleteMedical(int id) => "$_adminBaseURL/medical/delete/$id";
   static String blockProfile(int id) => "$_adminBaseURL/block/$id";
+  static String approveCompanyProfile(int id) => "$_adminBaseURL/approve/$id";
   static String get getAllAdminCompanyProfiles =>
       "$_adminBaseURL/companies/profile";
   static String get getAllAccountStatments =>

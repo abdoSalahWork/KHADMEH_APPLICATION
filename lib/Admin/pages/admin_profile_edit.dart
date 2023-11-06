@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Pages/global_controller.dart';
-import 'package:khedma/models/me.dart';
 import 'package:khedma/widgets/search_text_field.dart';
 import 'package:sizer/sizer.dart';
 
@@ -42,10 +41,11 @@ class _AdminProfileEditPageState extends State<AdminProfileEditPage> {
     FocusNode(),
   ];
   GlobalController _globalController = Get.find();
-  late UserInformation userInformation;
+
   @override
   void initState() {
     _emailController.text = "";
+
     if (_globalController.me.adminPhoto != null) {
       imageToEdit = _globalController.me.adminPhoto;
       imageWidget = null;
@@ -160,7 +160,6 @@ class _AdminProfileEditPageState extends State<AdminProfileEditPage> {
               onchanged: (s) {
                 errors['full_name'] = null;
                 setState(() {});
-                userInformation.phone = s!;
               },
               validator: (String? value) {
                 if (errors['full_name'] != null) {
@@ -185,7 +184,6 @@ class _AdminProfileEditPageState extends State<AdminProfileEditPage> {
               onchanged: (s) {
                 errors['phone'] = null;
                 setState(() {});
-                userInformation.phone = s!;
               },
               validator: (String? value) {
                 if (errors['phone'] != null) {
@@ -211,7 +209,6 @@ class _AdminProfileEditPageState extends State<AdminProfileEditPage> {
               onchanged: (s) {
                 errors['email'] = null;
                 setState(() {});
-                userInformation.phone = s!;
               },
               validator: (String? value) {
                 if (errors['email'] != null) {

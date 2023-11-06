@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
@@ -93,7 +94,11 @@ class Utils {
         onTap: () async {
           bool b = await Utils.checkPermissionCamera();
           if (b) {
-            image = await ImagePicker().pickImage(source: ImageSource.camera);
+            image = await ImagePicker().pickImage(
+                source: ImageSource.camera,
+                maxHeight: 480,
+                maxWidth: 640,
+                imageQuality: 50);
           }
           Get.back();
         },
@@ -105,7 +110,11 @@ class Utils {
         onTap: () async {
           bool b = await Utils.checkPermissionGallery();
           if (b) {
-            image = await ImagePicker().pickImage(source: ImageSource.gallery);
+            image = await ImagePicker().pickImage(
+                source: ImageSource.gallery,
+                maxHeight: 480,
+                maxWidth: 640,
+                imageQuality: 50);
           }
           Get.back();
         },
@@ -386,7 +395,7 @@ class Utils {
       Widget? title}) {
     showDialog<void>(
         context: context,
-        builder: (BuildContext context) {
+        builder: (BuildContext ctx) {
           return AlertDialog(
             title: title,
             content: SizedBox(
@@ -416,8 +425,18 @@ class Utils {
 
   static Future<bool> checkPermissionGallery() async {
     // FocusScope.of(context).requestFocus(FocusNode());
-
-    PermissionStatus? statusPhotos = await Permission.photos.request();
+    PermissionStatus? statusPhotos;
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      if (androidInfo.version.sdkInt <= 32) {
+        /// use [Permissions.storage.status]
+        ///
+        statusPhotos = await Permission.storage.request();
+      } else {
+        /// use [Permissions.photos.status]
+        statusPhotos = await Permission.photos.request();
+      }
+    }
 
     bool isGranted = statusPhotos == PermissionStatus.granted;
     return isGranted;

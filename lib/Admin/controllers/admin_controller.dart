@@ -352,6 +352,37 @@ class AdminController extends GetxController {
     return false;
   }
 
+  approveCompanyProfile({
+    required int id,
+    required int approve,
+  }) async {
+    try {
+      Utils.circularIndicator();
+      String? token = await Utils.readToken();
+      logSuccess(EndPoints.approveCompanyProfile(id));
+      var res = await dio.post(
+        EndPoints.approveCompanyProfile(id),
+        data: d.FormData.fromMap({"_method": "PUT", "approve": approve}),
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+
+      logSuccess(res.data);
+      await getCompanyProfiles();
+
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      Get.back();
+    }
+    return false;
+  }
+
   Future getAdminHomePage() async {
     try {
       getAdminHomePageflag = true;

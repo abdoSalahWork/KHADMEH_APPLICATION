@@ -1,5 +1,6 @@
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/models/advertisment_model.dart';
+import 'package:khedma/models/me.dart';
 
 class UserHomePageModel {
   List<UserStatsCompanyHomePageModel>? companiesRecruitment;
@@ -115,28 +116,6 @@ class UserStatsCompanyHomePageModel {
     if (this.companyInformation != null) {
       data['company_information'] = this.companyInformation!.toJson();
     }
-    return data;
-  }
-}
-
-class CompanyInformation {
-  int? id;
-  int? companyId;
-  String? companyLogo;
-
-  CompanyInformation({this.id, this.companyId, this.companyLogo});
-
-  CompanyInformation.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    companyId = json['company_id'];
-    companyLogo = json['company_logo'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['company_id'] = this.companyId;
-    data['company_logo'] = this.companyLogo;
     return data;
   }
 }

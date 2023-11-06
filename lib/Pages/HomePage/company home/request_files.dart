@@ -31,6 +31,7 @@ class _RequestFilesPageState extends State<RequestFilesPage> {
         ContractFiles(
           file: widget.documentModel.files![i],
           name: widget.documentModel.names![i],
+          contractFileType: ContractFileType.localFile,
         ),
       );
     }
@@ -323,10 +324,17 @@ class _RequestFilesPageState extends State<RequestFilesPage> {
 class ContractFiles {
   final String file;
   final String name;
+  final ContractFileType contractFileType;
   // final String size;
-
   ContractFiles({
     required this.file,
     required this.name,
+    required this.contractFileType,
   });
+}
+
+enum ContractFileType {
+  networkImage,
+  localFile,
+  networkFile,
 }

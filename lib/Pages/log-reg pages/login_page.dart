@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:get/get.dart';
+// import 'package:htmltopdfwidgets/htmltopdfwidgets.dart' as w;
 import 'package:khedma/Admin/pages/admin_home.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
@@ -10,6 +11,8 @@ import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/forget%20password/forget_passwrod_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/otp_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/user_type_page.dart.dart';
+// import 'package:pdf/pdf.dart';
+// import 'package:printing/printing.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:sizer/sizer.dart';
 
@@ -109,8 +112,43 @@ class _LoginPageState extends State<LoginPage> {
                           spaceY(8.0.h),
                           GestureDetector(
                             onTap: () async {
+                              logSuccess("asd");
                               await Utils.takeContainer(
                                   controller, "imageName.png");
+                              // final htmlContent = await Dio().get(
+                              //   "https://www.google.com",
+                              //   // options: Options(headers: {
+                              //   //   "Authorization":
+                              //   //       "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2toZG1haC5vbmxpbmUvYXBpL2xvZ2luIiwiaWF0IjoxNjk4OTYxMDk3LCJleHAiOjE2OTg5NjQ2OTcsIm5iZiI6MTY5ODk2MTA5NywianRpIjoiVU5PcWpQeHcxYll6UDU2RCIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3Iiwicm9sZV90eXBlIjoidXNlciIsImNvbXBsaXRlX2RhdGEiOnRydWV9.X7z42AY2XOTveFO5etLJx7y42QM-J_LR9XBo2Zb3z7A"
+                              //   // })
+                              // );
+                              // logError(htmlContent.data);
+
+                              // Directory d =
+                              //     Directory('/storage/emulated/0/Download');
+
+                              // var filePath = '${d.path}/example.pdf';
+                              // var file = File(filePath);
+                              // await Printing.layoutPdf(
+                              //     usePrinterSettings: true,
+                              //     format: PdfPageFormat.a3,
+                              //     name: "ex",
+                              //     onLayout: (PdfPageFormat format) async =>
+                              //         await Printing.convertHtml(
+                              //           format: format,
+                              //           html: htmlContent.data,
+                              //         ));
+                              // var newpdf = await Printing.convertHtml(
+                              //   format: PdfPageFormat.a3,
+                              //   html: htmlContent.data,
+                              // );
+                              // logSuccess("asda");
+                              // File f = await file.writeAsBytes(newpdf);
+                              // logSuccess(f.path);
+
+                              // var generatedPdfFile =
+                              //     await FlutterHtmlToPdf.convertFromHtmlContent(
+                              //         htmlContent.data, d.path, "asda.pdf");
                             },
                             child: Container(
                               width: 30.0.w,

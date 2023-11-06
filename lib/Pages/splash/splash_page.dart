@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
 import 'package:khedma/Admin/pages/Addressess/controller/addressess_controller.dart';
+import 'package:khedma/Admin/pages/Company%20Types/controller/company_types_controller.dart';
 import 'package:khedma/Admin/pages/admin_home.dart';
 import 'package:khedma/Admin/pages/categories/controller/categories_controller.dart';
 import 'package:khedma/Admin/pages/dropdowns/controller/dropdown_controller.dart';
@@ -33,6 +34,8 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
+  final CompanyTypesController _companyTypesController =
+      Get.put(CompanyTypesController());
   final EmployeesController _employeesController =
       Get.put(EmployeesController());
   final CompaniesController _companiesController =
@@ -62,6 +65,7 @@ class _SplashPageState extends State<SplashPage>
     _globalController.getCities();
     _globalController.getRegions();
     _globalController.getCurrencySymbols();
+    _companyTypesController.getCompanyTypes();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     Future.delayed(
       const Duration(seconds: 2),

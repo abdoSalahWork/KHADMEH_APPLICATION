@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +15,7 @@ import 'package:khedma/Pages/Notifications/controller/notofication_controller.da
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/firebase_api.dart';
+import 'package:path/path.dart';
 
 import '../../../Utils/end_points.dart';
 import '../models/company_register_model.dart';
@@ -274,6 +277,13 @@ class AuthController extends GetxController {
       XFile? passportImage = companyRegisterData.passportImage;
       XFile? frontSideIdImage = companyRegisterData.frontSideIdImage;
       XFile? backSideIdImage = companyRegisterData.backSideIdImage;
+      PlatformFile? commercialLicense = companyRegisterData.commercialLicense;
+
+      PlatformFile? articlesOfAssociation =
+          companyRegisterData.articlesOfAssociation;
+      PlatformFile? signatureAuthorization =
+          companyRegisterData.signatureAuthorization;
+      File? signatureOfficial = companyRegisterData.signatureOfficial;
 
       if (companyLogo != null) {
         body.files.add(MapEntry(
@@ -315,10 +325,56 @@ class AuthController extends GetxController {
           ),
         ));
       }
-
-      await dio.post(EndPoints.registerCompany,
-          data: body,
-          options: Options(headers: {"Accept": "application/json"}));
+      if (commercialLicense != null) {
+        body.files.add(MapEntry(
+          "commercial_license",
+          await d.MultipartFile.fromFile(
+            commercialLicense.path!,
+            filename: commercialLicense.name,
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (signatureAuthorization != null) {
+        body.files.add(MapEntry(
+          "signature_authorization",
+          await d.MultipartFile.fromFile(
+            signatureAuthorization.path!,
+            filename: signatureAuthorization.name,
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (articlesOfAssociation != null) {
+        body.files.add(MapEntry(
+          "articles_of_association",
+          await d.MultipartFile.fromFile(
+            articlesOfAssociation.path!,
+            filename: articlesOfAssociation.name,
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (signatureOfficial != null) {
+        body.files.add(MapEntry(
+          "signatureـofficial",
+          await d.MultipartFile.fromFile(
+            signatureOfficial.path,
+            filename: basename(signatureOfficial.path),
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      await dio.post(
+        EndPoints.registerCompany,
+        data: body,
+        options: Options(
+            headers: {"Accept": "application/json"},
+            sendTimeout: const Duration(minutes: 1)),
+        onSendProgress: (count, total) {
+          logSuccess("$count/$total");
+        },
+      );
 
       Get.back();
       return true;

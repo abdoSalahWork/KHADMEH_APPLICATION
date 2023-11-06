@@ -4,6 +4,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/pages/admin_profile_edit.dart';
+import 'package:khedma/Pages/HomePage/company%20home/company_contracts.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
@@ -263,6 +264,32 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                         coloredText(
                           color: const Color(0xff919191),
                           text: "currency".tr,
+                        ),
+                      ],
+                    ),
+                    color: const Color(0xffE9E9E9),
+                  ),
+                if (_globalController.me.userType == 'company') spaceY(20),
+                if (_globalController.me.userType == 'company')
+                  primaryBorderedButton(
+                    onTap: () {
+                      Get.to(() => const CompanyDocsPage(
+                            readOnly: true,
+                          ));
+                    },
+                    width: 100.w,
+                    text: Row(
+                      children: [
+                        spaceX(10),
+                        Icon(
+                          EvaIcons.fileOutline,
+                          size: 18.0.sp,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        spaceX(10),
+                        coloredText(
+                          color: const Color(0xff919191),
+                          text: "contracts".tr,
                         ),
                       ],
                     ),

@@ -27,7 +27,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService().initializePlatformNotifications();
   await FirebaseApi().initNotifications(_notificationController);
-  await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
+  await FlutterDownloader.initialize(debug: false, ignoreSsl: true);
 
   // await FirebaseApi().handleNotifications();
 

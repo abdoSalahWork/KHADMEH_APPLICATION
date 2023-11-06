@@ -31,6 +31,10 @@ class CompanyRegisterData {
   var passportImage;
   var frontSideIdImage;
   var backSideIdImage;
+  var signatureOfficial;
+  var signatureAuthorization;
+  var commercialLicense;
+  var articlesOfAssociation;
 
   CompanyRegisterData({
     this.userType,
@@ -61,6 +65,10 @@ class CompanyRegisterData {
     this.passportImage,
     this.frontSideIdImage,
     this.backSideIdImage,
+    this.signatureOfficial,
+    this.signatureAuthorization,
+    this.commercialLicense,
+    this.articlesOfAssociation,
     this.bankId,
     this.iban,
     this.accountNumber,
@@ -100,6 +108,10 @@ class CompanyRegisterData {
     passportImage = json['passport_image'];
     frontSideIdImage = json['front_side_id_image'];
     backSideIdImage = json['back_side_id_image'];
+    commercialLicense = json['commercial_license'];
+    articlesOfAssociation = json['articles_of_association'];
+    signatureAuthorization = json['signature_authorization'];
+    signatureOfficial = json['signature_official'];
   }
 
   Map<String, dynamic> toJson() {

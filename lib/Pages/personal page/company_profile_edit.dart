@@ -1,8 +1,16 @@
+import 'dart:io';
+
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/models/me.dart';
+import 'package:khedma/widgets/radio_button.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:signature/signature.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../Utils/utils.dart';
@@ -24,14 +32,24 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
   String region = "";
   String city = "";
   var errors = {};
-
+  int busyGroup = 0;
+  String commerciallicenseButton = "commercial_license".tr;
+  String articlesOfAssociationButton = "articles_of_association".tr;
+  String signitureAuthButton = "signiture_auth".tr;
+  String signitureButton = "signiture".tr;
+  File? signature;
+  final SignatureController _controller = SignatureController(
+    penStrokeWidth: 5,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+  );
   final TextEditingController _companyPhoneNumberController =
       TextEditingController();
   final TextEditingController _pieceNumberController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
   final TextEditingController _adnController = TextEditingController();
-
+  bool canEditFiles = false;
   final List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -46,7 +64,13 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
   @override
   void initState() {
     companyInformation = _globalController.me.companyInformation!;
-    logError(companyInformation.toJson());
+    busyGroup = companyInformation.busy!;
+    if (companyInformation.approveAdmin == null ||
+        companyInformation.approveAdmin == 0) {
+      if (companyInformation.verifyContract == 0) {
+        canEditFiles = true;
+      }
+    }
     _companyPhoneNumberController.text = companyInformation.phone!;
     {
       city = Get.locale == const Locale('en', 'US')
@@ -58,17 +82,22 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
               .where((element) => element.id == companyInformation.cityId)
               .first
               .nameAr!;
-      region = Get.locale == const Locale('en', 'US')
-          ? _globalController.regions
-              .where((element) => element.id == companyInformation.regionId)
-              .first
-              .nameEn!
-          : _globalController.regions
-              .where((element) => element.id == companyInformation.regionId)
-              .first
-              .nameAr!;
+      // region = Get.locale == const Locale('en', 'US')
+      //     ? _globalController.regions
+      //         .where((element) => element.id == companyInformation.regionId)
+      //         .first
+      //         .nameEn!
+      // : _globalController.regions
+      //     .where((element) => element.id == companyInformation.regionId)
+      //     .first
+      //     .nameAr!;
     }
 
+    commerciallicenseButton = basename(companyInformation.commercialLicense);
+    articlesOfAssociationButton =
+        basename(companyInformation.articlesOfAssociation);
+    signitureAuthButton = basename(companyInformation.signatureAuthorization);
+    signitureButton = basename(companyInformation.signatureOfficial);
     _pieceNumberController.text = companyInformation.pieceNumber!;
     _streetController.text = companyInformation.street!;
     _buildingController.text = companyInformation.building!;
@@ -169,108 +198,104 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
             //     size: 15.0.sp,
             //   ),
             // ),
-            spaceY(15.0.sp),
+            // spaceY(15.0.sp),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                //todo:langs needs to be fixed
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    coloredText(text: "city".tr),
-                    CustomDropDownMenuButton(
-                      hint: "city".tr,
-                      value: city == "" ? null : city,
-                      hintPadding: 0,
-                      border: const UnderlineInputBorder(),
-                      width: 40.0.w,
-                      items: _globalController.cities
-                          .map((e) => DropdownMenuItem<String>(
-                                value: Get.locale == const Locale('en', 'US')
-                                    ? e.nameEn!
-                                    : e.nameAr,
-                                child: coloredText(
-                                  text: Get.locale == const Locale('en', 'US')
-                                      ? e.nameEn!
-                                      : e.nameAr!,
-                                  fontSize: 17,
-                                ),
-                              ))
-                          .toList(),
-                      autovalidateMode: AutovalidateMode.always,
-                      validator: (String? value) {
-                        if (errors['city_id'] != null) {
-                          String tmp = "";
-                          tmp = errors['city_id'].join("\n");
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //todo:langs needs to be fixed
+            coloredText(text: "city".tr),
+            SearchableDropDown(
+              hintPadding: 10,
+              hint: "city".tr,
+              border: const UnderlineInputBorder(),
+              // width: 40.0.w,
+              value: city == "" ? null : city,
+              items: _globalController.cities
+                  .where((element) => companyInformation.nationalityId == null
+                      ? true
+                      : element.countryId == companyInformation.nationalityId)
+                  .map((e) => DropDownValueModel(
+                        value: Get.locale == const Locale('en', 'US')
+                            ? e.nameEn!
+                            : e.nameAr,
+                        name: Get.locale == const Locale('en', 'US')
+                            ? e.nameEn!
+                            : e.nameAr!,
+                      ))
+                  .toList(),
+              autovalidateMode: AutovalidateMode.always,
+              validator: (String? value) {
+                if (errors['city_id'] != null) {
+                  String tmp = "";
+                  tmp = errors['city_id'].join("\n");
 
-                          return tmp;
-                        }
-                        return null;
-                      },
-                      onChanged: (p0) {
-                        city = p0!;
-                        errors["city_id"] = null;
-                        setState(() {});
-                        companyInformation.cityId = _globalController.cities
-                            .where((element) =>
-                                element.nameEn == p0 || element.nameAr == p0)
-                            .first
-                            .id!;
-                      },
-                    ),
-                  ],
-                ),
-                //todo:langs need to be fixed
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    coloredText(text: "region".tr),
-                    CustomDropDownMenuButton(
-                      hint: "region".tr,
-                      border: const UnderlineInputBorder(),
-                      width: 40.0.w,
-                      hintPadding: 0,
-                      value: region == "" ? null : region,
-                      items: _globalController.regions
-                          .map((e) => DropdownMenuItem<String>(
-                                value: Get.locale == const Locale('en', 'US')
-                                    ? e.nameEn!
-                                    : e.nameAr,
-                                child: coloredText(
-                                  text: Get.locale == const Locale('en', 'US')
-                                      ? e.nameEn!
-                                      : e.nameAr!,
-                                  fontSize: 17,
-                                ),
-                              ))
-                          .toList(),
-                      autovalidateMode: AutovalidateMode.always,
-                      validator: (String? value) {
-                        if (errors['region_id'] != null) {
-                          String tmp = "";
-                          tmp = errors['region_id'].join("\n");
-
-                          return tmp;
-                        }
-                        return null;
-                      },
-                      onChanged: (p0) {
-                        region = p0!;
-                        errors["region_id"] = null;
-                        setState(() {});
-                        companyInformation.regionId = _globalController.regions
-                            .where((element) =>
-                                element.nameEn == p0 || element.nameAr == p0)
-                            .first
-                            .id!;
-                        ;
-                      },
-                    ),
-                  ],
-                ),
-              ],
+                  return tmp;
+                }
+                return null;
+              },
+              onChanged: (p0) {
+                DropDownValueModel d = p0;
+                city = d.name;
+                errors["city_id"] = null;
+                setState(() {});
+                companyInformation.cityId = _globalController.cities
+                    .where((element) =>
+                        element.nameEn == d.name || element.nameAr == d.name)
+                    .first
+                    .id;
+              },
             ),
+            //todo:langs need to be fixed
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     coloredText(text: "region".tr),
+            //     CustomDropDownMenuButton(
+            //       hint: "region".tr,
+            //       border: const UnderlineInputBorder(),
+            //       width: 40.0.w,
+            //       hintPadding: 0,
+            //       value: region == "" ? null : region,
+            //       items: _globalController.regions
+            //           .map((e) => DropdownMenuItem<String>(
+            //                 value: Get.locale == const Locale('en', 'US')
+            //                     ? e.nameEn!
+            //                     : e.nameAr,
+            //                 child: coloredText(
+            //                   text: Get.locale == const Locale('en', 'US')
+            //                       ? e.nameEn!
+            //                       : e.nameAr!,
+            //                   fontSize: 17,
+            //                 ),
+            //               ))
+            //           .toList(),
+            //       autovalidateMode: AutovalidateMode.always,
+            //       validator: (String? value) {
+            //         if (errors['region_id'] != null) {
+            //           String tmp = "";
+            //           tmp = errors['region_id'].join("\n");
+
+            //           return tmp;
+            //         }
+            //         return null;
+            //       },
+            //       onChanged: (p0) {
+            //         region = p0!;
+            //         errors["region_id"] = null;
+            //         setState(() {});
+            //         companyInformation.regionId = _globalController.regions
+            //             .where((element) =>
+            //                 element.nameEn == p0 || element.nameAr == p0)
+            //             .first
+            //             .id!;
+            //         ;
+            //       },
+            //     ),
+            //   ],
+            // ),
+            //   ],
+            // ),
             spaceY(15.0.sp), coloredText(text: "piece_num".tr),
             UnderlinedCustomTextField(
               focusNode: _focusNodes[3],
@@ -355,6 +380,306 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
                 companyInformation.automatedAddressNumber = s;
               },
             ),
+
+            spaceY(10.sp),
+            coloredText(fontSize: 14.0.sp, text: "busy".tr),
+            spaceY(5.sp),
+            Row(
+              children: [
+                MyRadioButton(
+                  text: "no".tr,
+                  value: 0,
+                  color: Theme.of(Get.context!).colorScheme.secondary,
+                  groupValue: busyGroup,
+                  onChanged: (p0) {
+                    busyGroup = p0;
+                    companyInformation.busy = p0;
+                    setState(() {});
+                  },
+                ),
+                spaceX(10.sp),
+                MyRadioButton(
+                  color: Theme.of(Get.context!).colorScheme.secondary,
+                  text: "yes".tr,
+                  value: 1,
+                  groupValue: busyGroup,
+                  onChanged: (p0) {
+                    busyGroup = p0;
+                    companyInformation.busy = p0;
+                    setState(() {});
+                  },
+                ),
+              ],
+            ),
+            !canEditFiles ? Container() : spaceY(10.0.sp),
+            !canEditFiles
+                ? Container()
+                : primaryButton(
+                    onTap: () async {
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(allowMultiple: false);
+                      if (result != null) {
+                        companyInformation.commercialLicense =
+                            result.files.single;
+
+                        commerciallicenseButton = result.files.single.name;
+
+                        setState(() {});
+                      }
+                    },
+                    color: const Color(0xffF5F5F5),
+                    width: 100.0.w,
+                    height: 55,
+                    radius: 10,
+                    text: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            spaceX(10),
+                            Icon(
+                              EvaIcons.fileOutline,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 18.0.sp,
+                            ),
+                            spaceX(10),
+                            SizedBox(
+                              width: 65.w,
+                              child: coloredText(
+                                overflow: TextOverflow.ellipsis,
+                                text: commerciallicenseButton,
+                                color: const Color(0xff919191),
+                                fontSize: 13.0.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 20.0.sp,
+                            ),
+                            spaceX(10),
+                          ],
+                        ),
+                      ],
+                    )),
+            !canEditFiles ? Container() : spaceY(10.0.sp),
+            !canEditFiles
+                ? Container()
+                : primaryButton(
+                    onTap: () async {
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(allowMultiple: false);
+                      if (result != null) {
+                        companyInformation.articlesOfAssociation =
+                            result.files.single;
+
+                        articlesOfAssociationButton = result.files.single.name;
+
+                        setState(() {});
+                      }
+                    },
+                    color: const Color(0xffF5F5F5),
+                    width: 100.0.w,
+                    height: 55,
+                    radius: 10,
+                    text: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            spaceX(10),
+                            Icon(
+                              EvaIcons.fileOutline,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 18.0.sp,
+                            ),
+                            spaceX(10),
+                            SizedBox(
+                              width: 65.w,
+                              child: coloredText(
+                                overflow: TextOverflow.ellipsis,
+                                text: articlesOfAssociationButton,
+                                color: const Color(0xff919191),
+                                fontSize: 13.0.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 20.0.sp,
+                            ),
+                            spaceX(10),
+                          ],
+                        ),
+                      ],
+                    )),
+            !canEditFiles ? Container() : spaceY(10.0.sp),
+            !canEditFiles
+                ? Container()
+                : primaryButton(
+                    onTap: () async {
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(allowMultiple: false);
+                      if (result != null) {
+                        companyInformation.signatureAuthorization =
+                            result.files.single;
+
+                        signitureAuthButton = result.files.single.name;
+
+                        setState(() {});
+                      }
+                    },
+                    color: const Color(0xffF5F5F5),
+                    width: 100.0.w,
+                    height: 55,
+                    radius: 10,
+                    text: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            spaceX(10),
+                            Icon(
+                              EvaIcons.fileOutline,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 18.0.sp,
+                            ),
+                            spaceX(10),
+                            SizedBox(
+                              width: 65.w,
+                              child: coloredText(
+                                overflow: TextOverflow.ellipsis,
+                                text: signitureAuthButton,
+                                color: const Color(0xff919191),
+                                fontSize: 13.0.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 20.0.sp,
+                            ),
+                            spaceX(10),
+                          ],
+                        ),
+                      ],
+                    )),
+            !canEditFiles ? Container() : spaceY(10.0.sp),
+            !canEditFiles
+                ? Container()
+                : primaryButton(
+                    onTap: () async {
+                      // XFile? image;
+                      Utils.customDialog(
+                          actions: [
+                            primaryButton(
+                              onTap: () async {
+                                var image = await _controller.toPngBytes();
+                                Directory tmp = await getTemporaryDirectory();
+                                String path =
+                                    "${tmp.path}com_sig${DateTime.now().millisecondsSinceEpoch}.png";
+                                logSuccess(await File(path).exists());
+
+                                if (await File(path).exists()) {
+                                  await File(path).delete();
+                                  logSuccess(await File(path).exists());
+                                }
+                                signature = await File(path).writeAsBytes(
+                                  image!,
+                                  mode: FileMode.writeOnly,
+                                );
+                                companyInformation.signatureOfficial =
+                                    signature;
+                                setState(() {});
+                                Get.back();
+                              },
+                              color: Theme.of(context).colorScheme.primary,
+                              text: coloredText(
+                                  text: "accept".tr, color: Colors.white),
+                            ),
+                            primaryButton(
+                              onTap: () async {
+                                _controller.clear();
+                                setState(() {});
+                              },
+                              color: Theme.of(context).colorScheme.primary,
+                              text: coloredText(
+                                  text: "clear".tr, color: Colors.white),
+                            )
+                          ],
+                          onClose: (p0) {},
+                          child: Container(
+                            padding: const EdgeInsets.all(8.0),
+                            margin: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                                border: Border.all(),
+                                borderRadius: BorderRadius.circular(20)),
+                            child: ClipRRect(
+                              child: Signature(
+                                controller: _controller,
+                                height: 50.h,
+                                // width: 100.w,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                          ),
+                          context: context);
+                    },
+                    color: const Color(0xffF5F5F5),
+                    width: 100.0.w,
+                    height: 55,
+                    radius: 10,
+                    text: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            spaceX(10),
+                            Icon(
+                              Icons.fingerprint,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 18.0.sp,
+                            ),
+                            spaceX(10),
+                            SizedBox(
+                              width: 65.w,
+                              child: coloredText(
+                                overflow: TextOverflow.ellipsis,
+                                text: signitureButton,
+                                color: const Color(0xff919191),
+                                fontSize: 13.0.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 20.0.sp,
+                            ),
+                            spaceX(10),
+                          ],
+                        ),
+                      ],
+                    )),
             spaceY(40.0.sp),
             primaryButton(
               onTap: () async {

@@ -4,7 +4,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html_to_pdf/flutter_html_to_pdf.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,8 +36,16 @@ import 'package:khedma/models/me.dart' as m;
 import 'package:khedma/models/region.dart';
 import 'package:khedma/models/relegion.dart';
 import 'package:khedma/models/reservation_model.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class GlobalController extends GetxController {
+  Directory? tempDir;
+  Future getTempDir() async {
+    tempDir = await getExternalStorageDirectory();
+    // tempDir = Directory('/storage/emulated/0/Download');
+  }
+
   bool guest = false;
   void updateGuest({required bool g}) {
     guest = g;
@@ -45,6 +55,7 @@ class GlobalController extends GetxController {
   List<Country> countries = [];
   List<Country> countriesToShow = [];
   List<City> cities = [];
+  List<City> citiesToSHow = [];
   List<Region> regions = [];
   List<LanguageModel> languages = [];
   List<ComplexionModel> complexionList = [];
@@ -641,6 +652,7 @@ class GlobalController extends GetxController {
         tmp.add(t);
       }
       cities = tmp;
+      citiesToSHow = tmp;
       logSuccess("Cities get done");
       getCitiesFlag = false;
       update();
@@ -666,6 +678,9 @@ class GlobalController extends GetxController {
             "Authorization": "Bearer $token"
           },
         ),
+        onReceiveProgress: (count, total) {
+          logSuccess("${count}/${total}");
+        },
       );
 
       if (res.data == "") {
@@ -834,9 +849,64 @@ class GlobalController extends GetxController {
       logSuccess(companyInformation.toJson());
       final body = d.FormData.fromMap(companyInformation.toJson());
       body.fields.add(const MapEntry("_method", "PUT"));
+      PlatformFile? commercialLicense =
+          companyInformation.commercialLicense.runtimeType != String
+              ? companyInformation.commercialLicense
+              : null;
 
+      PlatformFile? articlesOfAssociation =
+          companyInformation.articlesOfAssociation.runtimeType != String
+              ? companyInformation.articlesOfAssociation
+              : null;
+      PlatformFile? signatureAuthorization =
+          companyInformation.signatureAuthorization.runtimeType != String
+              ? companyInformation.signatureAuthorization
+              : null;
+      File? signatureOfficial =
+          companyInformation.signatureOfficial.runtimeType != String
+              ? companyInformation.signatureOfficial
+              : null;
       // XFile? personaPhoto = userInfo.personalPhoto;
-
+      if (commercialLicense != null) {
+        body.files.add(MapEntry(
+          "commercial_license",
+          await d.MultipartFile.fromFile(
+            commercialLicense.path!,
+            filename: commercialLicense.name,
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (signatureAuthorization != null) {
+        body.files.add(MapEntry(
+          "signature_authorization",
+          await d.MultipartFile.fromFile(
+            signatureAuthorization.path!,
+            filename: signatureAuthorization.name,
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (articlesOfAssociation != null) {
+        body.files.add(MapEntry(
+          "articles_of_association",
+          await d.MultipartFile.fromFile(
+            articlesOfAssociation.path!,
+            filename: articlesOfAssociation.name,
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (signatureOfficial != null) {
+        body.files.add(MapEntry(
+          "signatureـofficial",
+          await d.MultipartFile.fromFile(
+            signatureOfficial.path,
+            filename: basename(signatureOfficial.path),
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
       if (logo != null) {
         body.files.add(MapEntry(
           "company_logo",
@@ -1017,15 +1087,16 @@ class GlobalController extends GetxController {
 
   Future<Map<String, String>?> requestMedicalExamination({
     required int id,
+    required String date,
   }) async {
     try {
       Utils.circularIndicator();
-      // final body = d.FormData.fromMap(employee.toJson());
+      final body = d.FormData.fromMap({"date": date});
       // body.fields.add(const MapEntry("_method", "DELETE"));
       String? token = await Utils.readToken();
 
-      var res = await dio.get(EndPoints.requestMedicalExamination(id),
-          // data: body,
+      var res = await dio.post(EndPoints.requestMedicalExamination(id),
+          data: body,
           options: Options(headers: {
             "Accept": "application/json",
             "Authorization": "Bearer $token"
@@ -1360,7 +1431,7 @@ class GlobalController extends GetxController {
     }
   }
 
-  handleCountryCitySearch({required String name}) {
+  handleCountrySearch({required String name}) {
     List<Country> tmp = [];
     for (var i in countries) {
       if (i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
@@ -1371,6 +1442,28 @@ class GlobalController extends GetxController {
         countriesToShow = countries;
       } else {
         countriesToShow = tmp;
+      }
+      update();
+    }
+  }
+
+  handleCitySearch({required String name, required int countryID}) {
+    logSuccess("$name $countryID");
+    List<City> tmp = [];
+    for (var i in cities) {
+      if ((i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
+              i.nameAr!.toLowerCase().contains(name.toLowerCase())) &&
+          (i.countryId == countryID || countryID == -1)) {
+        tmp.add(i);
+      }
+
+      if (name == "") {
+        citiesToSHow = cities
+            .where((element) =>
+                countryID == -1 ? true : element.countryId == countryID)
+            .toList();
+      } else {
+        citiesToSHow = tmp;
       }
       update();
     }
@@ -1450,10 +1543,118 @@ class GlobalController extends GetxController {
       return true;
     } on DioException catch (error) {
       Get.back();
-      logError(error.response!.data);
+      logError(error);
 
       // Utils.showSnackBar(message: error.response!.data["message"]);
       return error.response!.data;
+    }
+  }
+
+  Future downloadContracts() async {
+    try {
+      await getTempDir();
+      logError(tempDir!.path);
+      String? token = await Utils.readToken();
+
+      final htmlContent = await Dio().get(
+        "https://khdmah.online/company/contract_khedmah",
+        options: Options(
+          headers: {
+            // "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+        onReceiveProgress: (count, total) {
+          logWarning("$count / $total");
+        },
+      );
+
+      await FlutterHtmlToPdf.convertFromHtmlContent(
+          htmlContent.data, tempDir!.path, "contract_khedmah");
+      final htmlContent2 = await Dio().get(
+        "https://khdmah.online/company/contract_myfatoorah",
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+        onReceiveProgress: (count, total) {
+          logError("$count/ $total");
+        },
+      );
+      await FlutterHtmlToPdf.convertFromHtmlContent(
+          htmlContent2.data, tempDir!.path, "contract_myfatoorah");
+    } on DioException catch (e) {
+      logError(e.response!.data);
+    }
+  }
+
+  Future verifyContract({
+    required File contractMyfatoorah,
+    required File contractKhedmah,
+  }) async {
+    try {
+      Get.dialog(const Center(
+        child: CircularProgressIndicator(),
+      ));
+
+      final body = d.FormData();
+      // body.fields.add(const MapEntry("_method", "PUT"));
+      // XFile? idPhotoNationality = userInfo.idPhotoNationality;
+
+      // if (idPhotoNationality != null) {
+      //   body.files.add(MapEntry(
+      //     "id_photo_nationality",
+      //     await d.MultipartFile.fromFile(
+      //       idPhotoNationality.path,
+      //       filename: idPhotoNationality.name,
+      //       contentType: MediaType('image', '*'),
+      //     ),
+      //   ));
+      // }
+
+      body.files.add(MapEntry(
+        "contract_khedmah",
+        await d.MultipartFile.fromFile(
+          contractKhedmah.path,
+          filename: basename(contractKhedmah.path),
+          // contentType: MediaType('image', '*'),
+        ),
+      ));
+      body.files.add(MapEntry(
+        "contract_myfatoorah",
+        await d.MultipartFile.fromFile(
+          contractMyfatoorah.path,
+          filename: basename(contractMyfatoorah.path),
+          // contentType: MediaType('image', '*'),
+        ),
+      ));
+
+      logSuccess(body.files);
+      String? token = await Utils.readToken();
+
+      await dio.post(
+        EndPoints.verifyContract,
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+      logSuccess("asda");
+      await getMe();
+      update();
+      Get.back();
+      return true;
+    } on DioException catch (error) {
+      Get.back();
+      logError(error.message!);
+
+      // Utils.showSnackBar(message: error.response!.data["message"]);
+      return false;
     }
   }
 }

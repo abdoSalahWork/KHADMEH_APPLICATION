@@ -8,6 +8,7 @@ import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/models/me.dart';
 import 'package:khedma/widgets/zero_app_bar.dart';
+import 'package:path/path.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,7 +22,7 @@ class AdminCompanyDetailsPage extends StatefulWidget {
 
 class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
   final ExpandableController _expandableController =
-      ExpandableController(initialExpanded: true);
+      ExpandableController(initialExpanded: false);
 
   final ExpandableController _expandable2Controller =
       ExpandableController(initialExpanded: false);
@@ -121,8 +122,11 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
                   ],
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                      image: NetworkImage(widget
-                          .companyProfile.companyInformation!.companyLogo),
+                      image: NetworkImage(
+                          // ignore: prefer_interpolation_to_compose_strings
+                          "https://khdmah.online/api/images/company/logo/" +
+                              widget.companyProfile.companyInformation!
+                                  .companyLogo),
                       fit: BoxFit.contain),
                 ),
               ),
@@ -358,17 +362,17 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
                                         ? e.nameEn!
                                         : e.nameAr!)
                                 .first,
-                            title2: "region".tr,
-                            subTitle2: _globalController.regions
-                                .where((element) =>
-                                    element.id ==
-                                    widget.companyProfile.companyInformation!
-                                        .regionId)
-                                .map((e) =>
-                                    Get.locale == const Locale("en", "US")
-                                        ? e.nameEn!
-                                        : e.nameAr!)
-                                .first,
+                            // title2: "region".tr,
+                            // subTitle2: _globalController.regions
+                            //     .where((element) =>
+                            //         element.id ==
+                            //         widget.companyProfile.companyInformation!
+                            //             .regionId)
+                            //     .map((e) =>
+                            //         Get.locale == const Locale("en", "US")
+                            //             ? e.nameEn!
+                            //             : e.nameAr!)
+                            //     .first,
                           ),
                           spaceY(12.sp),
                           DetailsItemWidget(
@@ -570,12 +574,354 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
                                     ],
                                   ),
                                 ),
+                          spaceY(12.sp),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              coloredText(
+                                  text: "commercial_license".tr,
+                                  color: Colors.black,
+                                  fontSize: 13.sp),
+                              spaceY(5.sp),
+                              widget.companyProfile.companyInformation!
+                                          .commercialLicense!
+                                          .endsWith("png") ||
+                                      widget.companyProfile.companyInformation!
+                                          .commercialLicense!
+                                          .endsWith("jpeg") ||
+                                      widget.companyProfile.companyInformation!
+                                          .commercialLicense!
+                                          .endsWith("jpg")
+                                  ? Image(
+                                      image: NetworkImage(widget
+                                          .companyProfile
+                                          .companyInformation!
+                                          .commercialLicense!),
+                                      width: 50.w,
+                                    )
+                                  : GestureDetector(
+                                      onTap: () async {
+                                        Uri x = Uri.parse(widget
+                                            .companyProfile
+                                            .companyInformation!
+                                            .commercialLicense!);
+                                        await launchUrl(x,
+                                            mode:
+                                                LaunchMode.externalApplication);
+                                      },
+                                      child: coloredText(
+                                          text: basename(widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .commercialLicense!),
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                          fontSize: 11.sp),
+                                    ),
+                              spaceY(12.sp),
+                              coloredText(
+                                  text: "articles_of_association".tr,
+                                  color: Colors.black,
+                                  fontSize: 13.sp),
+                              spaceY(5.sp),
+                              widget.companyProfile.companyInformation!
+                                          .articlesOfAssociation!
+                                          .endsWith("png") ||
+                                      widget.companyProfile.companyInformation!
+                                          .articlesOfAssociation!
+                                          .endsWith("jpeg") ||
+                                      widget.companyProfile.companyInformation!
+                                          .articlesOfAssociation!
+                                          .endsWith("jpg")
+                                  ? Image(
+                                      image: NetworkImage(widget
+                                          .companyProfile
+                                          .companyInformation!
+                                          .articlesOfAssociation!),
+                                      width: 50.w,
+                                    )
+                                  : GestureDetector(
+                                      onTap: () async {
+                                        Uri x = Uri.parse(widget
+                                            .companyProfile
+                                            .companyInformation!
+                                            .articlesOfAssociation!);
+                                        await launchUrl(x,
+                                            mode:
+                                                LaunchMode.externalApplication);
+                                      },
+                                      child: coloredText(
+                                          text: basename(widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .articlesOfAssociation!),
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                          fontSize: 11.sp),
+                                    ),
+                              spaceY(12.sp),
+                              coloredText(
+                                  text: "signiture_auth".tr,
+                                  color: Colors.black,
+                                  fontSize: 13.sp),
+                              spaceY(5.sp),
+                              widget.companyProfile.companyInformation!
+                                          .signatureAuthorization!
+                                          .endsWith("png") ||
+                                      widget.companyProfile.companyInformation!
+                                          .signatureAuthorization!
+                                          .endsWith("jpeg") ||
+                                      widget.companyProfile.companyInformation!
+                                          .signatureAuthorization!
+                                          .endsWith("jpg")
+                                  ? Image(
+                                      image: NetworkImage(widget
+                                          .companyProfile
+                                          .companyInformation!
+                                          .signatureAuthorization!),
+                                      width: 50.w,
+                                    )
+                                  : GestureDetector(
+                                      onTap: () async {
+                                        Uri x = Uri.parse(widget
+                                            .companyProfile
+                                            .companyInformation!
+                                            .signatureAuthorization!);
+                                        await launchUrl(x,
+                                            mode:
+                                                LaunchMode.externalApplication);
+                                      },
+                                      child: coloredText(
+                                          text: basename(widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .signatureAuthorization!),
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                          fontSize: 11.sp),
+                                    ),
+                              spaceY(12.sp),
+                              coloredText(
+                                  text: "signiture".tr,
+                                  color: Colors.black,
+                                  fontSize: 13.sp),
+                              spaceY(5.sp),
+                              widget.companyProfile.companyInformation!
+                                          .signatureOfficial!
+                                          .endsWith("png") ||
+                                      widget.companyProfile.companyInformation!
+                                          .signatureOfficial!
+                                          .endsWith("jpeg") ||
+                                      widget.companyProfile.companyInformation!
+                                          .signatureOfficial!
+                                          .endsWith("jpg")
+                                  ? Image(
+                                      image: NetworkImage(widget
+                                          .companyProfile
+                                          .companyInformation!
+                                          .signatureOfficial!),
+                                      width: 50.w,
+                                    )
+                                  : GestureDetector(
+                                      onTap: () async {
+                                        Uri x = Uri.parse(widget
+                                            .companyProfile
+                                            .companyInformation!
+                                            .signatureOfficial!);
+                                        await launchUrl(x,
+                                            mode:
+                                                LaunchMode.externalApplication);
+                                      },
+                                      child: coloredText(
+                                          text: basename(widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .signatureOfficial!),
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                          fontSize: 11.sp),
+                                    ),
+                              spaceY(12.sp),
+                              widget.companyProfile.companyInformation!
+                                          .contractMyfatoorah ==
+                                      null
+                                  ? Container()
+                                  : coloredText(
+                                      text: "Myfatoorah Contract".tr,
+                                      color: Colors.black,
+                                      fontSize: 13.sp),
+                              widget.companyProfile.companyInformation!
+                                          .contractMyfatoorah ==
+                                      null
+                                  ? Container()
+                                  : spaceY(5.sp),
+                              widget.companyProfile.companyInformation!
+                                          .contractMyfatoorah ==
+                                      null
+                                  ? Container()
+                                  : widget.companyProfile.companyInformation!
+                                              .contractMyfatoorah!
+                                              .endsWith("png") ||
+                                          widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .contractMyfatoorah!
+                                              .endsWith("jpeg") ||
+                                          widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .contractMyfatoorah!
+                                              .endsWith("jpg")
+                                      ? Image(
+                                          image: NetworkImage(widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .contractMyfatoorah!),
+                                          width: 50.w,
+                                        )
+                                      : GestureDetector(
+                                          onTap: () async {
+                                            Uri x = Uri.parse(widget
+                                                .companyProfile
+                                                .companyInformation!
+                                                .contractMyfatoorah!);
+                                            await launchUrl(x,
+                                                mode: LaunchMode
+                                                    .externalApplication);
+                                          },
+                                          child: coloredText(
+                                              text: basename(widget
+                                                  .companyProfile
+                                                  .companyInformation!
+                                                  .contractMyfatoorah!),
+                                              color: Colors.blue,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              fontSize: 11.sp),
+                                        ),
+                              widget.companyProfile.companyInformation!
+                                          .contractMyfatoorah ==
+                                      null
+                                  ? Container()
+                                  : spaceY(12.sp),
+                              widget.companyProfile.companyInformation!
+                                          .contractKhedmah ==
+                                      null
+                                  ? Container()
+                                  : coloredText(
+                                      text: "khedmah Contract".tr,
+                                      color: Colors.black,
+                                      fontSize: 13.sp),
+                              widget.companyProfile.companyInformation!
+                                          .contractKhedmah ==
+                                      null
+                                  ? Container()
+                                  : spaceY(5.sp),
+                              widget.companyProfile.companyInformation!
+                                          .contractKhedmah ==
+                                      null
+                                  ? Container()
+                                  : widget.companyProfile.companyInformation!
+                                              .contractKhedmah!
+                                              .endsWith("png") ||
+                                          widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .contractKhedmah!
+                                              .endsWith("jpeg") ||
+                                          widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .contractKhedmah!
+                                              .endsWith("jpg")
+                                      ? Image(
+                                          image: NetworkImage(widget
+                                              .companyProfile
+                                              .companyInformation!
+                                              .contractKhedmah!),
+                                          width: 50.w,
+                                        )
+                                      : GestureDetector(
+                                          onTap: () async {
+                                            Uri x = Uri.parse(widget
+                                                .companyProfile
+                                                .companyInformation!
+                                                .contractKhedmah!);
+                                            await launchUrl(x,
+                                                mode: LaunchMode
+                                                    .externalApplication);
+                                          },
+                                          child: coloredText(
+                                              text: basename(widget
+                                                  .companyProfile
+                                                  .companyInformation!
+                                                  .contractKhedmah!),
+                                              color: Colors.blue,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              fontSize: 11.sp),
+                                        ),
+                              widget.companyProfile.companyInformation!
+                                          .contractKhedmah ==
+                                      null
+                                  ? Container()
+                                  : spaceY(12.sp),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ),
               ),
+              widget.companyProfile.companyInformation!.approveAdmin != null &&
+                      widget.companyProfile.companyInformation!.approveAdmin ==
+                          1
+                  ? Container()
+                  : spaceY(10.sp),
+              widget.companyProfile.companyInformation!.approveAdmin != null &&
+                      widget.companyProfile.companyInformation!.approveAdmin ==
+                          1
+                  ? Container()
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        primaryButton(
+                          onTap: () async {
+                            bool b =
+                                await _adminController.approveCompanyProfile(
+                              id: widget.companyProfile.id!,
+                              approve: 1,
+                            );
+                            if (b) {
+                              // ignore: use_build_context_synchronously
+                              Utils.doneDialog(context: context);
+                            }
+                          },
+                          width: 40.w,
+                          color: Colors.black,
+                          text: coloredText(
+                              text: "approve".tr, color: Colors.white),
+                        ),
+                        primaryBorderedButton(
+                          onTap: () async {
+                            bool b =
+                                await _adminController.approveCompanyProfile(
+                              id: widget.companyProfile.id!,
+                              approve: 0,
+                            );
+                            if (b) {
+                              // ignore: use_build_context_synchronously
+                              Utils.doneDialog(context: context);
+                            }
+                          },
+                          width: 40.w,
+                          color: Colors.black,
+                          text: coloredText(
+                              text: "refuse".tr, color: Colors.black),
+                        )
+                      ],
+                    ),
               spaceY(10.sp),
             ],
           ),

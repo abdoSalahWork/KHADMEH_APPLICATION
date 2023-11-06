@@ -5,6 +5,7 @@ import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:easy_stepper/easy_stepper.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
@@ -486,6 +487,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               ),
               spaceY(10.0.sp),
               SearchableDropDown(
+                value: ownerNationality == "" ? null : ownerNationality,
+
                 // borderc: Border.all(color: const Color(0xffE3E3E3)),
                 borderRadius: 8,
                 // padding:
@@ -1279,16 +1282,16 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               spaceY(10.0.sp),
               primaryButton(
                   onTap: () async {
-                    // XFile? image = await Utils().selectImageSheet();
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(allowMultiple: false);
+                    if (result != null) {
+                      companyRegisterData.commercialLicense =
+                          result.files.single;
 
-                    // if (image != null) {
-                    //   setState(() {});
+                      commerciallicenseButton = result.files.single.name;
 
-                    //   passportButton =
-                    //       image.name.substring(0, min(15, image.name.length));
-                    //   companyRegisterData.passportImage = image;
-                    //   setState(() {});
-                    // }
+                      setState(() {});
+                    }
                   },
                   color: const Color(0xffF5F5F5),
                   width: 100.0.w,
@@ -1307,10 +1310,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                             size: 18.0.sp,
                           ),
                           spaceX(10),
-                          coloredText(
-                            text: commerciallicenseButton,
-                            color: const Color(0xff919191),
-                            fontSize: 13.0.sp,
+                          SizedBox(
+                            width: 65.w,
+                            child: coloredText(
+                              overflow: TextOverflow.ellipsis,
+                              text: commerciallicenseButton,
+                              color: const Color(0xff919191),
+                              fontSize: 13.0.sp,
+                            ),
                           ),
                         ],
                       ),
@@ -1329,16 +1336,16 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               spaceY(10.0.sp),
               primaryButton(
                   onTap: () async {
-                    // XFile? image = await Utils().selectImageSheet();
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(allowMultiple: false);
+                    if (result != null) {
+                      companyRegisterData.articlesOfAssociation =
+                          result.files.single;
 
-                    // if (image != null) {
-                    //   setState(() {});
+                      articlesOfAssociationButton = result.files.single.name;
 
-                    //   passportButton =
-                    //       image.name.substring(0, min(15, image.name.length));
-                    //   companyRegisterData.passportImage = image;
-                    //   setState(() {});
-                    // }
+                      setState(() {});
+                    }
                   },
                   color: const Color(0xffF5F5F5),
                   width: 100.0.w,
@@ -1357,10 +1364,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                             size: 18.0.sp,
                           ),
                           spaceX(10),
-                          coloredText(
-                            text: articlesOfAssociationButton,
-                            color: const Color(0xff919191),
-                            fontSize: 13.0.sp,
+                          SizedBox(
+                            width: 65.w,
+                            child: coloredText(
+                              overflow: TextOverflow.ellipsis,
+                              text: articlesOfAssociationButton,
+                              color: const Color(0xff919191),
+                              fontSize: 13.0.sp,
+                            ),
                           ),
                         ],
                       ),
@@ -1379,16 +1390,16 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               spaceY(10.0.sp),
               primaryButton(
                   onTap: () async {
-                    // XFile? image = await Utils().selectImageSheet();
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(allowMultiple: false);
+                    if (result != null) {
+                      companyRegisterData.signatureAuthorization =
+                          result.files.single;
 
-                    // if (image != null) {
-                    //   setState(() {});
+                      signitureAuthButton = result.files.single.name;
 
-                    //   passportButton =
-                    //       image.name.substring(0, min(15, image.name.length));
-                    //   companyRegisterData.passportImage = image;
-                    //   setState(() {});
-                    // }
+                      setState(() {});
+                    }
                   },
                   color: const Color(0xffF5F5F5),
                   width: 100.0.w,
@@ -1407,10 +1418,14 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                             size: 18.0.sp,
                           ),
                           spaceX(10),
-                          coloredText(
-                            text: signitureAuthButton,
-                            color: const Color(0xff919191),
-                            fontSize: 13.0.sp,
+                          SizedBox(
+                            width: 65.w,
+                            child: coloredText(
+                              overflow: TextOverflow.ellipsis,
+                              text: signitureAuthButton,
+                              color: const Color(0xff919191),
+                              fontSize: 13.0.sp,
+                            ),
                           ),
                         ],
                       ),
@@ -1429,7 +1444,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               spaceY(10.0.sp),
               primaryButton(
                   onTap: () async {
-                    XFile? image;
+                    // XFile? image;
                     Utils.customDialog(
                         actions: [
                           primaryButton(
@@ -1437,7 +1452,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                               var image = await _controller.toPngBytes();
                               Directory tmp = await getTemporaryDirectory();
                               String path =
-                                  "${tmp.path}admin_sig${DateTime.now().millisecondsSinceEpoch}.png";
+                                  "${tmp.path}com_sig${DateTime.now().millisecondsSinceEpoch}.png";
                               logSuccess(await File(path).exists());
 
                               if (await File(path).exists()) {
@@ -1448,7 +1463,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                 image!,
                                 mode: FileMode.writeOnly,
                               );
-
+                              companyRegisterData.signatureOfficial = signature;
                               setState(() {});
                               Get.back();
                             },
@@ -2199,6 +2214,10 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                   null ||
                               errors['tax_number'] != null ||
                               errors['license_number'] != null ||
+                              errors['signatureـofficial'] != null ||
+                              errors['signature_authorization'] != null ||
+                              errors['articles_of_association'] != null ||
+                              errors['commercial_license'] != null ||
                               errors['company_logo'] != null) {
                             _currentStep = 1;
                             setState(() {});
@@ -2217,6 +2236,27 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                   message: tmp, fontSize: 12.0.sp);
                             } else if (errors['company_type'] != null) {
                               tmp = errors['company_type'].join("\n");
+                              Utils.showSnackBar(
+                                  message: tmp, fontSize: 12.0.sp);
+                            }
+                            tmp = "";
+                            if (errors['commercial_license'] != null) {
+                              tmp =
+                                  tmp + errors['commercial_license'].join("\n");
+                            }
+                            if (errors['articles_of_association'] != null) {
+                              tmp = tmp +
+                                  errors['articles_of_association'].join("\n");
+                            }
+                            if (errors['signature_authorization'] != null) {
+                              tmp = tmp +
+                                  errors['signature_authorization'].join("\n");
+                            }
+                            if (errors['signatureـofficial'] != null) {
+                              tmp =
+                                  tmp + errors['signatureـofficial'].join("\n");
+                            }
+                            if (tmp != "") {
                               Utils.showSnackBar(
                                   message: tmp, fontSize: 12.0.sp);
                             }

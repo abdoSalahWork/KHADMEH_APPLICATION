@@ -101,8 +101,13 @@ class _AdminCompanyProfilesPageState extends State<AdminCompanyProfilesPage> {
                                     padding: EdgeInsets.zero,
                                     itemBuilder: (context, index) =>
                                         AdminCompanyCard(
-                                      img: c.companyProfilesToShow[index]
-                                          .companyInformation!.companyLogo,
+                                      img:
+                                          // ignore: prefer_interpolation_to_compose_strings
+                                          "https://khdmah.online/api/images/company/logo/" +
+                                              c
+                                                  .companyProfilesToShow[index]
+                                                  .companyInformation!
+                                                  .companyLogo,
                                       name: c.companyProfilesToShow[index]
                                           .fullName!,
                                       phone: c.companyProfilesToShow[index]

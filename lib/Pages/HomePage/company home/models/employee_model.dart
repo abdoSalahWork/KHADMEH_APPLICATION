@@ -119,7 +119,7 @@ class EmployeeModel {
     nameEn = json['name_en'];
     nameAr = json['name_ar'];
     residenceContract = json['residence_contract'];
-    finalContract = json['final_contract'];
+    finalContract = json["agreement_threed_contract"];
     dateOfBirth = json['date_of_birth'];
     timeWorkPerDay = json['time_work_per_day'];
     hourSalary = json['hour_salary'];
@@ -188,7 +188,7 @@ class EmployeeModel {
       data['residence_contract'] = residenceContract;
     }
     if (finalContract != null) {
-      data['final_contract'] = finalContract;
+      data["agreement_threed_contract"] = finalContract;
     }
     if (status != null) data['status'] = status!.toJson();
     if (desc != null) data['desc'] = desc;

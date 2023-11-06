@@ -432,23 +432,29 @@ class _UserHomePageState extends State<UserHomePage> {
                                                 itemBuilder: (context, index) {
                                                   return GestureDetector(
                                                     onTap: () async {
-                                                      CompanyModel? x =
-                                                          await _companiesController
-                                                              .showCompany(
-                                                                  indicator:
-                                                                      true,
-                                                                  id: globalController
-                                                                      .userHomePage
-                                                                      .companiesRecruitment![
-                                                                          index]
-                                                                      .id!);
+                                                      if (globalController
+                                                              .userHomePage
+                                                              .companiesRecruitment![
+                                                                  index]
+                                                              .companyInformation!
+                                                              .busy !=
+                                                          1) {
+                                                        CompanyModel? x =
+                                                            await _companiesController.showCompany(
+                                                                indicator: true,
+                                                                id: globalController
+                                                                    .userHomePage
+                                                                    .companiesRecruitment![
+                                                                        index]
+                                                                    .id!);
 
-                                                      if (x != null) {
-                                                        Get.to(
-                                                          () =>
-                                                              RecruitmentCompany(
-                                                                  company: x),
-                                                        );
+                                                        if (x != null) {
+                                                          Get.to(
+                                                            () =>
+                                                                RecruitmentCompany(
+                                                                    company: x),
+                                                          );
+                                                        }
                                                       }
                                                     },
                                                     child: Container(
@@ -465,20 +471,65 @@ class _UserHomePageState extends State<UserHomePage> {
                                                             MainAxisAlignment
                                                                 .spaceEvenly,
                                                         children: [
-                                                          Container(
-                                                            width: 60.0.sp,
-                                                            height: 60.0.sp,
-                                                            decoration:
-                                                                BoxDecoration(
+                                                          Stack(
+                                                            children: [
+                                                              Container(
+                                                                width: 60.0.sp,
+                                                                height: 60.0.sp,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                        image:
+                                                                            DecorationImage(
+                                                                          fit: BoxFit
+                                                                              .cover,
+                                                                          image:
+                                                                              NetworkImage("${globalController.userHomePage.companiesRecruitment![index].companyInformation!.companyLogo!}/"),
+                                                                        )),
+                                                              ),
+                                                              if (globalController
+                                                                      .userHomePage
+                                                                      .companiesRecruitment![
+                                                                          index]
+                                                                      .companyInformation!
+                                                                      .busy ==
+                                                                  1)
+                                                                Container(
+                                                                  width:
+                                                                      60.0.sp,
+                                                                  height:
+                                                                      60.0.sp,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Colors
+                                                                        .black
+                                                                        .withOpacity(
+                                                                            0.5),
                                                                     shape: BoxShape
                                                                         .circle,
-                                                                    image:
-                                                                        DecorationImage(
-                                                                      fit: BoxFit
-                                                                          .cover,
-                                                                      image: NetworkImage(
-                                                                          "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesRecruitment![index].companyInformation!.companyLogo!}/"),
-                                                                    )),
+                                                                  ),
+                                                                  child: Center(
+                                                                    child:
+                                                                        RotationTransition(
+                                                                      turns: const AlwaysStoppedAnimation(
+                                                                          15 /
+                                                                              360),
+                                                                      child:
+                                                                          coloredText(
+                                                                        text:
+                                                                            "busy",
+                                                                        color: Colors
+                                                                            .red,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            15.sp,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                            ],
                                                           ),
                                                           coloredText(
                                                             text: globalController
@@ -583,38 +634,44 @@ class _UserHomePageState extends State<UserHomePage> {
                                                 itemBuilder: (context, index) {
                                                   return GestureDetector(
                                                     onTap: () async {
-                                                      CompanyModel? x =
-                                                          await _companiesController
-                                                              .showCompany(
-                                                                  indicator:
-                                                                      true,
-                                                                  id: globalController
-                                                                      .userHomePage
-                                                                      .companiesCleaning![
-                                                                          index]
-                                                                      .id!);
-
-                                                      if (x != null) {
-                                                        if (x.companyInformation !=
-                                                            null) {
-                                                          logSuccess(x
+                                                      if (globalController
+                                                              .userHomePage
+                                                              .companiesCleaning![
+                                                                  index]
                                                               .companyInformation!
-                                                              .companyType!);
-                                                          if (x.companyInformation!
-                                                                  .companyType ==
-                                                              "recruitment") {
-                                                            Get.to(
-                                                              () =>
-                                                                  RecruitmentCompany(
-                                                                      company:
-                                                                          x),
-                                                            );
-                                                          } else {
-                                                            Get.to(
-                                                              () => CleaningCompany(
-                                                                  cleaningCompany:
-                                                                      x),
-                                                            );
+                                                              .busy !=
+                                                          1) {
+                                                        CompanyModel? x =
+                                                            await _companiesController.showCompany(
+                                                                indicator: true,
+                                                                id: globalController
+                                                                    .userHomePage
+                                                                    .companiesCleaning![
+                                                                        index]
+                                                                    .id!);
+
+                                                        if (x != null) {
+                                                          if (x.companyInformation !=
+                                                              null) {
+                                                            logSuccess(x
+                                                                .companyInformation!
+                                                                .companyType!);
+                                                            if (x.companyInformation!
+                                                                    .companyType ==
+                                                                "recruitment") {
+                                                              Get.to(
+                                                                () =>
+                                                                    RecruitmentCompany(
+                                                                        company:
+                                                                            x),
+                                                              );
+                                                            } else {
+                                                              Get.to(
+                                                                () => CleaningCompany(
+                                                                    cleaningCompany:
+                                                                        x),
+                                                              );
+                                                            }
                                                           }
                                                         }
                                                       }
@@ -633,20 +690,65 @@ class _UserHomePageState extends State<UserHomePage> {
                                                             MainAxisAlignment
                                                                 .spaceEvenly,
                                                         children: [
-                                                          Container(
-                                                            width: 60.0.sp,
-                                                            height: 60.0.sp,
-                                                            decoration:
-                                                                BoxDecoration(
+                                                          Stack(
+                                                            children: [
+                                                              Container(
+                                                                width: 60.0.sp,
+                                                                height: 60.0.sp,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                        image:
+                                                                            DecorationImage(
+                                                                          image:
+                                                                              NetworkImage("${globalController.userHomePage.companiesCleaning![index].companyInformation!.companyLogo!}/"),
+                                                                          fit: BoxFit
+                                                                              .cover,
+                                                                        )),
+                                                              ),
+                                                              if (globalController
+                                                                      .userHomePage
+                                                                      .companiesCleaning![
+                                                                          index]
+                                                                      .companyInformation!
+                                                                      .busy ==
+                                                                  1)
+                                                                Container(
+                                                                  width:
+                                                                      60.0.sp,
+                                                                  height:
+                                                                      60.0.sp,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Colors
+                                                                        .black
+                                                                        .withOpacity(
+                                                                            0.5),
                                                                     shape: BoxShape
                                                                         .circle,
-                                                                    image:
-                                                                        DecorationImage(
-                                                                      image: NetworkImage(
-                                                                          "${globalController.userHomePage.logoUrlCompany!}/${globalController.userHomePage.companiesCleaning![index].companyInformation!.companyLogo!}/"),
-                                                                      fit: BoxFit
-                                                                          .cover,
-                                                                    )),
+                                                                  ),
+                                                                  child: Center(
+                                                                    child:
+                                                                        RotationTransition(
+                                                                      turns: const AlwaysStoppedAnimation(
+                                                                          15 /
+                                                                              360),
+                                                                      child:
+                                                                          coloredText(
+                                                                        text:
+                                                                            "busy",
+                                                                        color: Colors
+                                                                            .red,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            15.sp,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                            ],
                                                           ),
                                                           coloredText(
                                                             text: globalController

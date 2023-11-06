@@ -14,11 +14,11 @@ class AddressessController extends GetxController {
   final Dio dio = Utils().dio;
 
   GlobalController _globalController = Get.find();
-  Future<bool> createCity({required City city}) async {
+  Future<bool> createCity({required City city, required int countryId}) async {
     try {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(city.toJson());
-      body.fields.add(MapEntry("country_id", "2"));
+      body.fields.add(MapEntry("country_id", countryId.toString()));
       String? token = await Utils.readToken();
       await dio.post(
         EndPoints.storeCity,
