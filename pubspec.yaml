@@ -61,7 +61,7 @@ dependencies:
   flutter_file_dialog: ^3.0.2
 
   flutter_html_to_pdf:
-    path: "C:\\Users\\Mohammed Ammourie\\Desktop\\work\\khedma\\flutter_html_to_pdf"
+    path: "C:\\Users\\Mohammed Ammourie\\Desktop\\work\\khedma\\html_to_pdf"
   flutter_launcher_icons: ^0.13.1
   flutter_local_notifications: ^15.1.1
   flutter_multi_formatter: ^2.11.2
