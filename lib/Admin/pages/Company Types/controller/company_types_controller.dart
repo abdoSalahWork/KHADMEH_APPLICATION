@@ -40,8 +40,7 @@ class CompanyTypesController extends GetxController {
     }
   }
 
-  Future updateCompanyType(
-      {required CompanyType companyType, required int id}) async {
+  Future<bool> updateCompanyType({required CompanyType companyType}) async {
     try {
       String? token = await Utils.readToken();
 
@@ -51,7 +50,7 @@ class CompanyTypesController extends GetxController {
         const MapEntry("_method", "PUT"),
       );
       await dio.post(
-        EndPoints.updateCompanyType(id),
+        EndPoints.updateCompanyType(companyType.id!),
         data: body,
         options: Options(
           headers: {
@@ -63,9 +62,11 @@ class CompanyTypesController extends GetxController {
 
       await getCompanyTypes();
       Get.back();
+      return true;
     } on DioException catch (e) {
       logError(e.message!);
       Get.back();
+      return false;
     }
   }
 

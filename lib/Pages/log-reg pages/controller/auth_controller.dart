@@ -369,8 +369,8 @@ class AuthController extends GetxController {
         EndPoints.registerCompany,
         data: body,
         options: Options(
-            headers: {"Accept": "application/json"},
-            sendTimeout: const Duration(minutes: 1)),
+          headers: {"Accept": "application/json"},
+        ),
         onSendProgress: (count, total) {
           logSuccess("$count/$total");
         },

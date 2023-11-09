@@ -198,11 +198,13 @@ Row depositLine({
   required String content,
   TextDirection? textDirection,
   TextOverflow? overflow,
+  double? width,
 }) {
   return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       SizedBox(
-        width: 30.w,
+        width: width ?? 30.w,
         child: coloredText(text: "$title: ", color: Colors.grey),
       ),
       Expanded(

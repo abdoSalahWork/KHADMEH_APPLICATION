@@ -20,8 +20,12 @@ class EndPoints {
   static String refundCompanyAdvertisment(int id) =>
       "$_baseURL/advertisment/refund/$id";
   static String get storeReview => "$_baseURL/review/store";
+  static String get storeReport => "$_baseURL/report/store";
+  static String get getReports => "$_adminBaseURL/reports";
+  static String deleteReport(int id) => "$_adminBaseURL/report/delete/$id";
   static String get storeFavourite => "$_baseURL/favourite/store";
   static String deleteFavourite(int id) => "$_baseURL/favourite/delete/$id";
+  static String get deleteAccount => "$_baseURL/user/delete";
   static String get storeCompanyAdvertisment => "$_baseURL/advertisment/store";
   static String get getUserHomePage => "$_baseURL/homePageUser";
   static String get getRecruitmentCompanyHomePage =>

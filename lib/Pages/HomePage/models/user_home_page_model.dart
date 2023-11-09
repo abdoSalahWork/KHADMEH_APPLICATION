@@ -4,7 +4,8 @@ import 'package:khedma/models/me.dart';
 
 class UserHomePageModel {
   List<UserStatsCompanyHomePageModel>? companiesRecruitment;
-  List<UserStatsCompanyHomePageModel>? companiesCleaning;
+  List<UserStatsCompanyHomePageModel>? companiesGeneral;
+  List<CompaniesParent>? companiesParant;
   List<EmployeeModel>? employees;
   List<AdvertismentModel>? ads;
   String? logoUrlCompany;
@@ -13,7 +14,8 @@ class UserHomePageModel {
 
   UserHomePageModel(
       {this.companiesRecruitment,
-      this.companiesCleaning,
+      this.companiesGeneral,
+      this.companiesParant,
       this.employees,
       this.ads,
       this.logoUrlCompany,
@@ -27,10 +29,16 @@ class UserHomePageModel {
         companiesRecruitment!.add(UserStatsCompanyHomePageModel.fromJson(v));
       });
     }
-    if (json['companiesCleaning'] != null) {
-      companiesCleaning = <UserStatsCompanyHomePageModel>[];
-      json['companiesCleaning'].forEach((v) {
-        companiesCleaning!.add(UserStatsCompanyHomePageModel.fromJson(v));
+    if (json['companiesParant'] != null) {
+      companiesParant = <CompaniesParent>[];
+      json['companiesParant'].forEach((v) {
+        companiesParant!.add(CompaniesParent.fromJson(v));
+      });
+    }
+    if (json['companiesGeneral'] != null) {
+      companiesGeneral = <UserStatsCompanyHomePageModel>[];
+      json['companiesGeneral'].forEach((v) {
+        companiesGeneral!.add(UserStatsCompanyHomePageModel.fromJson(v));
       });
     }
     if (json['employees'] != null) {
@@ -56,9 +64,13 @@ class UserHomePageModel {
       data['companiesRecruitment'] =
           this.companiesRecruitment!.map((v) => v.toJson()).toList();
     }
-    if (this.companiesCleaning != null) {
-      data['companiesCleaning'] =
-          this.companiesCleaning!.map((v) => v.toJson()).toList();
+    if (this.companiesParant != null) {
+      data['companiesParant'] =
+          this.companiesParant!.map((v) => v.toJson()).toList();
+    }
+    if (this.companiesGeneral != null) {
+      data['companiesGeneral'] =
+          this.companiesGeneral!.map((v) => v.toJson()).toList();
     }
     if (this.employees != null) {
       data['employees'] = this.employees!.map((v) => v.toJson()).toList();
@@ -169,6 +181,51 @@ class Nationality {
     data['currency'] = this.currency;
     data['short_currency'] = this.shortCurrency;
     data['short_name'] = this.shortName;
+    return data;
+  }
+}
+
+class CompaniesParent {
+  int? id;
+  String? nameEn;
+  String? nameAr;
+  String? nameUnique;
+  int? parentCompany;
+  int? companyTypeId;
+  String? createdAt;
+  String? updatedAt;
+
+  CompaniesParent(
+      {this.id,
+      this.nameEn,
+      this.nameAr,
+      this.nameUnique,
+      this.parentCompany,
+      this.companyTypeId,
+      this.createdAt,
+      this.updatedAt});
+
+  CompaniesParent.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    nameEn = json['name_en'];
+    nameAr = json['name_ar'];
+    nameUnique = json['name_unique'];
+    parentCompany = json['parent_company'];
+    companyTypeId = json['company_type_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name_en'] = this.nameEn;
+    data['name_ar'] = this.nameAr;
+    data['name_unique'] = this.nameUnique;
+    data['parent_company'] = this.parentCompany;
+    data['company_type_id'] = this.companyTypeId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
     return data;
   }
 }

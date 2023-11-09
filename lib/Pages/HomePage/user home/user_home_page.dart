@@ -12,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
+import 'package:khedma/Admin/pages/Company%20Types/controller/company_types_controller.dart';
 import 'package:khedma/Pages/HomePage/cleaning%20companies/cleaning_company.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
@@ -56,6 +57,7 @@ class _UserHomePageState extends State<UserHomePage> {
   final AuthController _authController = Get.find();
   final ChatController _chatController = Get.find();
   final CompaniesController _companiesController = Get.find();
+  final CompanyTypesController _companyTypesController = Get.find();
 
   List<String> tags = [];
 
@@ -392,7 +394,13 @@ class _UserHomePageState extends State<UserHomePage> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       coloredText(
-                                        text: "rec_com".tr,
+                                        text: globalController
+                                            .userHomePage.companiesParant!
+                                            .map((e) => Get.locale ==
+                                                    const Locale('en', 'US')
+                                                ? e.nameEn!
+                                                : e.nameAr!)
+                                            .toList()[0],
                                         fontSize: 13.0.sp,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -412,7 +420,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                   ),
                                   spaceY(1.5.h),
                                   SizedBox(
-                                    height: 100.sp,
+                                    height: 125.sp,
                                     child:
                                         globalController.userHomePage
                                                         .companiesRecruitment ==
@@ -594,7 +602,13 @@ class _UserHomePageState extends State<UserHomePage> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       coloredText(
-                                        text: "cl_com".tr,
+                                        text: globalController
+                                            .userHomePage.companiesParant!
+                                            .map((e) => Get.locale ==
+                                                    const Locale('en', 'US')
+                                                ? e.nameEn!
+                                                : e.nameAr!)
+                                            .toList()[1],
                                         fontSize: 13.0.sp,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -616,13 +630,13 @@ class _UserHomePageState extends State<UserHomePage> {
                                   ),
                                   spaceY(1.5.h),
                                   SizedBox(
-                                    height: 100.sp,
+                                    height: 125.sp,
                                     child:
                                         globalController.userHomePage
-                                                        .companiesCleaning ==
+                                                        .companiesGeneral ==
                                                     null ||
                                                 globalController.userHomePage
-                                                    .companiesCleaning!.isEmpty
+                                                    .companiesGeneral!.isEmpty
                                             ? const NoItemsWidget()
                                             : ListView.separated(
                                                 physics: completedRegisterFlag
@@ -636,7 +650,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                                     onTap: () async {
                                                       if (globalController
                                                               .userHomePage
-                                                              .companiesCleaning![
+                                                              .companiesGeneral![
                                                                   index]
                                                               .companyInformation!
                                                               .busy !=
@@ -646,7 +660,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                                                 indicator: true,
                                                                 id: globalController
                                                                     .userHomePage
-                                                                    .companiesCleaning![
+                                                                    .companiesGeneral![
                                                                         index]
                                                                     .id!);
 
@@ -702,14 +716,14 @@ class _UserHomePageState extends State<UserHomePage> {
                                                                         image:
                                                                             DecorationImage(
                                                                           image:
-                                                                              NetworkImage("${globalController.userHomePage.companiesCleaning![index].companyInformation!.companyLogo!}/"),
+                                                                              NetworkImage("${globalController.userHomePage.companiesGeneral![index].companyInformation!.companyLogo!}"),
                                                                           fit: BoxFit
                                                                               .cover,
                                                                         )),
                                                               ),
                                                               if (globalController
                                                                       .userHomePage
-                                                                      .companiesCleaning![
+                                                                      .companiesGeneral![
                                                                           index]
                                                                       .companyInformation!
                                                                       .busy ==
@@ -753,19 +767,29 @@ class _UserHomePageState extends State<UserHomePage> {
                                                           coloredText(
                                                             text: globalController
                                                                         .userHomePage
-                                                                        .companiesCleaning![
+                                                                        .companiesGeneral![
                                                                             index]
                                                                         .fullName!
                                                                         .length >
                                                                     12
-                                                                ? "${globalController.userHomePage.companiesCleaning![index].fullName!.substring(0, 12)}.."
+                                                                ? "${globalController.userHomePage.companiesGeneral![index].fullName!.substring(0, 12)}.."
                                                                 : globalController
                                                                     .userHomePage
-                                                                    .companiesCleaning![
+                                                                    .companiesGeneral![
                                                                         index]
                                                                     .fullName!,
                                                             fontSize: 13.0.sp,
                                                           ),
+                                                          coloredText(
+                                                              text: globalController
+                                                                  .userHomePage
+                                                                  .companiesGeneral![
+                                                                      index]
+                                                                  .companyInformation!
+                                                                  .companyType!,
+                                                              fontSize: 11.0.sp,
+                                                              color:
+                                                                  Colors.grey),
                                                           Row(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -777,12 +801,12 @@ class _UserHomePageState extends State<UserHomePage> {
                                                                       .yellow),
                                                               spaceX(5),
                                                               coloredText(
-                                                                text: (globalController.userHomePage.companiesCleaning![index].reviewCompanySumReviewValue !=
+                                                                text: (globalController.userHomePage.companiesGeneral![index].reviewCompanySumReviewValue !=
                                                                                 null &&
-                                                                            globalController.userHomePage.companiesCleaning![index].reviewCompanyCount !=
+                                                                            globalController.userHomePage.companiesGeneral![index].reviewCompanyCount !=
                                                                                 null
-                                                                        ? int.parse(globalController.userHomePage.companiesCleaning![index].reviewCompanySumReviewValue!) /
-                                                                            globalController.userHomePage.companiesCleaning![index].reviewCompanyCount!
+                                                                        ? int.parse(globalController.userHomePage.companiesGeneral![index].reviewCompanySumReviewValue!) /
+                                                                            globalController.userHomePage.companiesGeneral![index].reviewCompanyCount!
                                                                         : 0)
                                                                     .toStringAsFixed(1),
                                                                 fontSize:
@@ -799,7 +823,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                                 },
                                                 itemCount: globalController
                                                     .userHomePage
-                                                    .companiesCleaning!
+                                                    .companiesGeneral!
                                                     .length,
                                                 separatorBuilder:
                                                     (BuildContext context,
@@ -893,7 +917,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                                           child: Get.locale ==
                                                                   const Locale(
                                                                       'en',
-                                                                      'us')
+                                                                      'uS')
                                                               ? coloredText(
                                                                   text: globalController.userHomePage.employees![index].nameEn!.length >
                                                                           12

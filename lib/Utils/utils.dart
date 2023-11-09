@@ -707,6 +707,86 @@ class Utils {
           );
         });
   }
+
+  void reportDialoge({
+    required BuildContext context,
+    void Function()? onOk,
+    required int companyId,
+  }) {
+    String desc = "";
+    final GlobalController _globalController = Get.find();
+
+    showDialog<void>(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: Center(
+              child: coloredText(
+                text: "report".tr,
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            content: SizedBox(
+              width: 100.w,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    onChanged: (value) {
+                      desc = value;
+                    },
+                    maxLines: 5,
+                    validator: (value) {
+                      if (value!.isNotEmpty && value.length < 15)
+                        return "must be at least 15 characters";
+                      return null;
+                    },
+                    autovalidateMode: AutovalidateMode.always,
+                    decoration: InputDecoration(
+                      hintText: "write_your_notes".tr,
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Color(0xffF5F5F5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              primaryButton(
+                onTap: () async {
+                  Get.back();
+                  bool b = await _globalController.storeReport(
+                    companyId: companyId,
+                    report: desc,
+                  );
+                  logError(b);
+                  if (b) {
+                    Utils.doneDialog(context: context);
+                  }
+                },
+                width: 40.0.w,
+                height: 50,
+                radius: 10.w,
+                color: Theme.of(context).colorScheme.primary,
+                text: coloredText(
+                  text: "ok".tr,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+            surfaceTintColor: Colors.white,
+          );
+        });
+  }
 }
 
 // class AppUtil {

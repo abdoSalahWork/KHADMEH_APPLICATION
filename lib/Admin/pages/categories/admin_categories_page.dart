@@ -1,6 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/pages/Company%20Types/controller/company_types_controller.dart';
 import 'package:khedma/Admin/pages/categories/controller/categories_controller.dart';
 import 'package:khedma/Admin/pages/categories/create_job_page.dart';
 import 'package:khedma/Admin/pages/categories/create_service_page.dart';
@@ -26,14 +27,25 @@ class _AdminCategoriesPageState extends State<AdminCategoriesPage>
   ];
   late TabController tabController;
   int selectedTabIndex = 0;
+  CompanyTypesController _companyTypesController = Get.find();
+  GlobalController _globalController = Get.find();
+  String companyType = "";
+  String search = "";
+  late int companyTypeId;
   @override
   void initState() {
+    _globalController.getCategories();
+    _globalController.getjobs();
     tabController = TabController(length: 2, vsync: this);
+    companyType = _companyTypesController.companyTypes
+        .map((e) =>
+            Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+        .first;
+    companyTypeId = _companyTypesController.companyTypes[0].id!;
 
     super.initState();
   }
 
-  String companyType = "All";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,65 +225,72 @@ class _AdminCategoriesPageState extends State<AdminCategoriesPage>
               // spaceY(30.sp),
               Expanded(
                 child: GetBuilder<JobsController>(builder: (c) {
-                  return ListView.separated(
-                    // physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (context, index) => AdminItemCard(
-                      img: globalController.jobsToShow[index].icon,
-                      name:
-                          "${globalController.jobsToShow[index].nameEn!} - ${globalController.jobsToShow[index].nameAr!}",
-                      trailing: Theme(
-                        data: ThemeData(primaryColor: Colors.white),
-                        child: PopupMenuButton(
-                          constraints: BoxConstraints(
-                            minWidth: 2.0 * 56.0,
-                            maxWidth: MediaQuery.of(context).size.width,
-                          ),
-                          itemBuilder: (BuildContext cc) => [
-                            PopupMenuItem<int>(
-                              value: 0,
-                              child: Row(
-                                children: [
-                                  Icon(EvaIcons.editOutline, size: 15.sp),
-                                  spaceX(5.sp),
-                                  coloredText(
-                                      text: 'edit'.tr, fontSize: 12.0.sp),
+                  return globalController.getjobsFlag
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ListView.separated(
+                          // physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (context, index) => AdminItemCard(
+                            img: globalController.jobsToShow[index].icon,
+                            name:
+                                "${globalController.jobsToShow[index].nameEn!} - ${globalController.jobsToShow[index].nameAr!}",
+                            trailing: Theme(
+                              data: ThemeData(primaryColor: Colors.white),
+                              child: PopupMenuButton(
+                                constraints: BoxConstraints(
+                                  minWidth: 2.0 * 56.0,
+                                  maxWidth: MediaQuery.of(context).size.width,
+                                ),
+                                itemBuilder: (BuildContext cc) => [
+                                  PopupMenuItem<int>(
+                                    value: 0,
+                                    child: Row(
+                                      children: [
+                                        Icon(EvaIcons.editOutline, size: 15.sp),
+                                        spaceX(5.sp),
+                                        coloredText(
+                                            text: 'edit'.tr, fontSize: 12.0.sp),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Future(() => Get.to(() => AdminCreateJob(
+                                            jobToEdit: globalController
+                                                .jobsToShow[index],
+                                          )));
+                                    },
+                                  ),
+                                  PopupMenuItem<int>(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        Icon(EvaIcons.trash2Outline,
+                                            size: 15.sp),
+                                        spaceX(5.sp),
+                                        coloredText(
+                                            text: 'delete'.tr,
+                                            fontSize: 12.0.sp),
+                                      ],
+                                    ),
+                                    onTap: () async {
+                                      bool b = await c.deleteJob(
+                                          job: globalController
+                                              .jobsToShow[index]);
+                                      if (b) Utils.doneDialog(context: context);
+                                    },
+                                  ),
                                 ],
+                                child: const Icon(
+                                  EvaIcons.moreVertical,
+                                ),
                               ),
-                              onTap: () {
-                                Future(() => Get.to(() => AdminCreateJob(
-                                      jobToEdit:
-                                          globalController.jobsToShow[index],
-                                    )));
-                              },
                             ),
-                            PopupMenuItem<int>(
-                              value: 1,
-                              child: Row(
-                                children: [
-                                  Icon(EvaIcons.trash2Outline, size: 15.sp),
-                                  spaceX(5.sp),
-                                  coloredText(
-                                      text: 'delete'.tr, fontSize: 12.0.sp),
-                                ],
-                              ),
-                              onTap: () async {
-                                bool b = await c.deleteJob(
-                                    job: globalController.jobsToShow[index]);
-                                if (b) Utils.doneDialog(context: context);
-                              },
-                            ),
-                          ],
-                          child: const Icon(
-                            EvaIcons.moreVertical,
                           ),
-                        ),
-                      ),
-                    ),
-                    separatorBuilder: (context, index) => spaceY(20.sp),
-                    itemCount: globalController.jobsToShow.length,
-                  );
+                          separatorBuilder: (context, index) => spaceY(20.sp),
+                          itemCount: globalController.jobsToShow.length,
+                        );
                 }),
               ),
             ],
@@ -283,7 +302,11 @@ class _AdminCategoriesPageState extends State<AdminCategoriesPage>
               SearchTextField(
                 onchanged: (s) {
                   if (s != null) {
-                    globalController.handleCategoriesSearch(name: s);
+                    search = s;
+                    globalController.handleCategoriesSearch(
+                      name: search,
+                      typeId: companyTypeId,
+                    );
                     setState(() {});
                   }
                 },
@@ -311,20 +334,31 @@ class _AdminCategoriesPageState extends State<AdminCategoriesPage>
                 alignment: AlignmentDirectional.centerStart,
                 child: CustomDropDownMenuButton(
                   width: 50.w,
-                  items: [
-                    "All",
-                    "Recruitment",
-                    "Cleaning",
-                  ]
+                  items: _companyTypesController.companyTypes
+                      .map((e) => Get.locale == const Locale('en', 'US')
+                          ? e.nameEn!
+                          : e.nameAr!)
                       .map(
                         (e) => DropdownMenuItem<String>(
                           value: e,
-                          child: coloredText(text: e.tr, color: Colors.black),
+                          child: coloredText(
+                              text: e, color: Colors.black, fontSize: 11.sp),
                         ),
                       )
                       .toList(),
                   onChanged: (p0) {
                     companyType = p0!;
+                    companyTypeId = _companyTypesController.companyTypes
+                        .where((element) =>
+                            element.nameAr == p0 || element.nameEn == p0)
+                        .first
+                        .id!;
+
+                    globalController.handleCategoriesSearch(
+                      name: search,
+                      typeId: companyTypeId,
+                    );
+                    setState(() {});
                     // globalController.accountStatmentFilter.status = p0;
                   },
                   value: companyType == "" ? null : companyType,
@@ -355,114 +389,134 @@ class _AdminCategoriesPageState extends State<AdminCategoriesPage>
               // // spaceY(30.sp),
               Expanded(
                 child: GetBuilder<CategoriesController>(builder: (c) {
-                  return GridView.count(
-                    // physics: const NeverScrollableScrollPhysics(),
-                    childAspectRatio: 0.75,
-                    padding: EdgeInsets.zero,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    crossAxisCount: 2,
-                    children: List.generate(
-                        globalController.categoriesToShow.length,
-                        (index) => Column(
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      width: 45.w,
-                                      height: 45.w,
-                                      // margin: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        image: DecorationImage(
-                                            image: NetworkImage(globalController
-                                                .categoriesToShow[index].image),
-                                            fit: BoxFit.cover),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: 10,
-                                      right: 10,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color:
-                                                Colors.black.withOpacity(0.2),
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        child: Theme(
-                                          data: ThemeData(
-                                              primaryColor: Colors.white),
-                                          child: PopupMenuButton(
-                                            constraints: BoxConstraints(
-                                              minWidth: 2.0 * 56.0,
-                                              maxWidth: 100.w,
-                                            ),
-                                            itemBuilder: (BuildContext ctx) => [
-                                              PopupMenuItem<int>(
-                                                value: 0,
-                                                child: Row(
-                                                  children: [
-                                                    Icon(EvaIcons.editOutline,
-                                                        size: 15.sp),
-                                                    spaceX(5.sp),
-                                                    coloredText(
-                                                        text: 'edit'.tr,
-                                                        fontSize: 12.0.sp),
-                                                  ],
-                                                ),
-                                                onTap: () {
-                                                  Future(() => Get.to(
-                                                      () => AdminCreateService(
-                                                            categoryToEdit:
-                                                                globalController
-                                                                        .categoriesToShow[
-                                                                    index],
-                                                          )));
-                                                },
-                                              ),
-                                              PopupMenuItem<int>(
-                                                value: 1,
-                                                child: Row(
-                                                  children: [
-                                                    Icon(EvaIcons.trash2Outline,
-                                                        size: 15.sp),
-                                                    spaceX(5.sp),
-                                                    coloredText(
-                                                        text: 'delete'.tr,
-                                                        fontSize: 12.0.sp),
-                                                  ],
-                                                ),
-                                                onTap: () async {
-                                                  bool b = await c.deleteCategory(
-                                                      category: globalController
-                                                              .categoriesToShow[
-                                                          index]);
-                                                  if (b)
-                                                    Utils.doneDialog(
-                                                        context: Get.context!);
-                                                },
-                                              ),
-                                            ],
-                                            child: const Icon(
-                                              EvaIcons.moreVertical,
-                                              color: Colors.white,
+                  return globalController.getCategoriesFlag
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : GridView.count(
+                          // physics: const NeverScrollableScrollPhysics(),
+                          childAspectRatio: 0.75,
+                          padding: EdgeInsets.zero,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          crossAxisCount: 2,
+                          children: List.generate(
+                              globalController.categoriesToShow.length,
+                              (index) => Column(
+                                    children: [
+                                      Stack(
+                                        children: [
+                                          Container(
+                                            width: 45.w,
+                                            height: 45.w,
+                                            // margin: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              image: DecorationImage(
+                                                  image: NetworkImage(
+                                                      globalController
+                                                          .categoriesToShow[
+                                                              index]
+                                                          .image),
+                                                  fit: BoxFit.cover),
                                             ),
                                           ),
-                                        ),
+                                          Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black
+                                                      .withOpacity(0.2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(5)),
+                                              child: Theme(
+                                                data: ThemeData(
+                                                    primaryColor: Colors.white),
+                                                child: PopupMenuButton(
+                                                  constraints: BoxConstraints(
+                                                    minWidth: 2.0 * 56.0,
+                                                    maxWidth: 100.w,
+                                                  ),
+                                                  itemBuilder:
+                                                      (BuildContext ctx) => [
+                                                    PopupMenuItem<int>(
+                                                      value: 0,
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(
+                                                              EvaIcons
+                                                                  .editOutline,
+                                                              size: 15.sp),
+                                                          spaceX(5.sp),
+                                                          coloredText(
+                                                              text: 'edit'.tr,
+                                                              fontSize:
+                                                                  12.0.sp),
+                                                        ],
+                                                      ),
+                                                      onTap: () {
+                                                        Future(() => Get.to(() =>
+                                                            AdminCreateService(
+                                                              categoryToEdit:
+                                                                  globalController
+                                                                          .categoriesToShow[
+                                                                      index],
+                                                            )));
+                                                      },
+                                                    ),
+                                                    PopupMenuItem<int>(
+                                                      value: 1,
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(
+                                                              EvaIcons
+                                                                  .trash2Outline,
+                                                              size: 15.sp),
+                                                          spaceX(5.sp),
+                                                          coloredText(
+                                                              text: 'delete'.tr,
+                                                              fontSize:
+                                                                  12.0.sp),
+                                                        ],
+                                                      ),
+                                                      onTap: () async {
+                                                        bool b = await c.deleteCategory(
+                                                            category:
+                                                                globalController
+                                                                        .categoriesToShow[
+                                                                    index]);
+                                                        if (b)
+                                                          Utils.doneDialog(
+                                                              context:
+                                                                  Get.context!);
+                                                      },
+                                                    ),
+                                                  ],
+                                                  child: const Icon(
+                                                    EvaIcons.moreVertical,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                                spaceY(10.sp),
-                                coloredText(
-                                    text: Get.locale == const Locale('en', 'US')
-                                        ? globalController
-                                            .categoriesToShow[index].nameEn!
-                                        : globalController
-                                            .categoriesToShow[index].nameAr!)
-                              ],
-                            )),
-                  );
+                                      spaceY(10.sp),
+                                      coloredText(
+                                          text: Get.locale ==
+                                                  const Locale('en', 'US')
+                                              ? globalController
+                                                  .categoriesToShow[index]
+                                                  .nameEn!
+                                              : globalController
+                                                  .categoriesToShow[index]
+                                                  .nameAr!)
+                                    ],
+                                  )),
+                        );
                 }),
               )
             ],

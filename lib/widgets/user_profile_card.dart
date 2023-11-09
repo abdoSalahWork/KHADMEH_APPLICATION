@@ -81,29 +81,39 @@ class UserProfileCard extends StatelessWidget {
                       spaceY(5.sp),
                       Row(
                         children: [
-                          coloredText(
-                            textDirection: TextDirection.ltr,
-                            text:
-                                "${(double.parse(employeeModel.contractAmount!) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} / ${"${employeeModel.contractDuration!} years"}",
-                            color: employeeModel.isOffer == 1
-                                ? const Color(0xff919191)
-                                : Theme.of(context).colorScheme.tertiary,
-                            fontSize: 9.0.sp,
-                            decoration: employeeModel.isOffer == 1
-                                ? TextDecoration.lineThrough
-                                : null,
+                          SizedBox(
+                            width: employeeModel.isOffer == 1 ? 25.w : null,
+                            child: coloredText(
+                              overflow: TextOverflow.ellipsis,
+                              textDirection: TextDirection.ltr,
+                              text:
+                                  "${(double.parse(employeeModel.contractAmount!) * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} / ${"${employeeModel.contractDuration!} years"}",
+                              color: employeeModel.isOffer == 1
+                                  ? const Color(0xff919191)
+                                  : Theme.of(context).colorScheme.tertiary,
+                              fontSize: 9.0.sp,
+                              decoration: employeeModel.isOffer == 1
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
                           ),
                           employeeModel.isOffer != 1
                               ? Container()
                               : spaceX(4.sp),
                           employeeModel.isOffer != 1
                               ? Container()
-                              : coloredText(
-                                  textDirection: TextDirection.ltr,
-                                  text:
-                                      "${(employeeModel.amountAfterDiscount! * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} / ${"${employeeModel.contractDuration!} years"}",
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                  fontSize: 9.0.sp,
+                              : SizedBox(
+                                  width:
+                                      employeeModel.isOffer == 1 ? 25.w : null,
+                                  child: coloredText(
+                                    overflow: TextOverflow.ellipsis,
+                                    textDirection: TextDirection.ltr,
+                                    text:
+                                        "${(employeeModel.amountAfterDiscount! * _globalController.currencyRate).toStringAsFixed(1)} ${_globalController.currencySymbol.key} / ${"${employeeModel.contractDuration!} years"}",
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                    fontSize: 9.0.sp,
+                                  ),
                                 ),
                         ],
                       )

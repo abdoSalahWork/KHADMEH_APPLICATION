@@ -47,8 +47,8 @@ class CompanyModel {
     reviewCompanySumReviewValue = json['review_company_sum_review_value'];
     companyInformation = json['company_information'] != null
         ? CompanyInformation.fromJson(json['company_information'])
-        : json['company_cleaning'] != null
-            ? CompanyInformation.fromJson(json['company_cleaning'])
+        : json['company_general'] != null
+            ? CompanyInformation.fromJson(json['company_general'])
             : null;
   }
 

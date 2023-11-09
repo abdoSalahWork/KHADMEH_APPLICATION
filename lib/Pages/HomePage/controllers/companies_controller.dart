@@ -335,30 +335,50 @@ class CompaniesController extends GetxController {
   List<MyService> servicesBooked = [];
   List<CompanyModel> cleanCompanies = [];
   List<CompanyModel> cleanCompaniesToShow = [];
-  filterCleanCompaniesByCity({required String city}) {
+  // filterCleanCompaniesByCity({required String city}) {
+  //   List<CompanyModel> tmp = [];
+  //   for (var i in cleanCompaniesToShow) {
+  //     if (i.companyInformation!.city!.nameAr == city ||
+  //         i.companyInformation!.city!.nameEn == city) {
+  //       tmp.add(i);
+  //     }
+
+  //     cleanCompaniesToShow = tmp;
+
+  //     update();
+  //   }
+  // }
+
+  handleCleanCompaniesSearch({
+    required String name,
+    required String companyType,
+    required String city,
+  }) {
     List<CompanyModel> tmp = [];
-    for (var i in cleanCompanies) {
-      if (i.companyInformation!.city!.nameAr == city ||
-          i.companyInformation!.city!.nameEn == city) {
-        tmp.add(i);
-      }
-
-      cleanCompaniesToShow = tmp;
-
-      update();
+    cleanCompaniesToShow = cleanCompanies;
+    logSuccess(companyType);
+    if (companyType != "") {
+      cleanCompaniesToShow = cleanCompaniesToShow
+          .where((element) =>
+              element.companyInformation!.companyType == companyType)
+          .toList();
     }
-  }
-
-  handleCleanCompaniesSearch({required String name}) {
-    List<CompanyModel> tmp = [];
-    for (var i in cleanCompanies) {
-      logSuccess(name);
-      logWarning(i.toJson());
+    update();
+    if (city != "") {
+      cleanCompaniesToShow = cleanCompaniesToShow
+          .where((element) =>
+              element.companyInformation!.city!.nameAr == city ||
+              element.companyInformation!.city!.nameEn == city)
+          .toList();
+    }
+    update();
+    logSuccess(cleanCompaniesToShow.length);
+    for (var i in cleanCompaniesToShow) {
       if (i.fullName!.contains(name)) {
         tmp.add(i);
       }
       if (name == "") {
-        cleanCompaniesToShow = cleanCompanies;
+        cleanCompaniesToShow = cleanCompaniesToShow;
       } else {
         cleanCompaniesToShow = tmp;
       }
@@ -388,13 +408,14 @@ class CompaniesController extends GetxController {
       }
       cleanCompanies = tmp;
       cleanCompaniesToShow = tmp;
-
+      handleCleanCompaniesSearch(name: "", companyType: "", city: "");
       logSuccess("Cleaning Companies get done");
       if (indicator) getCleanCompaniesFlag = false;
       update();
-    } on DioException {
+    } on DioException catch (e) {
       if (indicator) getCleanCompaniesFlag = false;
       update();
+      logError(e.response!.data);
       logError("Cleaning Companies failed");
     }
   }

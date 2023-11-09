@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:khedma/Admin/pages/Company%20Types/controller/company_types_controller.dart';
 import 'package:khedma/Admin/pages/categories/controller/categories_controller.dart';
 import 'package:khedma/Admin/pages/categories/models/categories_model.dart';
+import 'package:khedma/widgets/dropdown_menu_button.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:sizer/sizer.dart';
 
@@ -23,7 +25,10 @@ class _AdminCreateServiceState extends State<AdminCreateService> {
   String button1Text = "upload_service_icon".tr;
   CategoryModel categoryToCreate = CategoryModel();
   CategoriesController _categoriesController = Get.find();
+  CompanyTypesController _companyTypesController = Get.find();
   String? selectedValue;
+  String companyType = "";
+
   List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -33,6 +38,12 @@ class _AdminCreateServiceState extends State<AdminCreateService> {
     if (widget.categoryToEdit != null) {
       button1Text = widget.categoryToEdit!.image.toString().substring(
           widget.categoryToEdit!.image.toString().lastIndexOf("/") + 1);
+      companyType = _companyTypesController.companyTypes
+          .where(
+              (element) => element.id == widget.categoryToEdit!.companyTypeID)
+          .map((e) =>
+              Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
+          .first;
     }
     for (var i in _focusNodes) {
       i.addListener(() {
@@ -94,6 +105,61 @@ class _AdminCreateServiceState extends State<AdminCreateService> {
               },
               borderRadius: 10,
             ),
+            spaceY(10.sp),
+            coloredText(text: "company_type".tr),
+            spaceY(5.sp),
+            GetBuilder<CompanyTypesController>(
+                builder: (companyTypesController) {
+              return CustomDropDownMenuButton(
+                fillColor: const Color(0xffF5F5F5),
+                padding: const EdgeInsetsDirectional.only(end: 10, start: 10),
+                // hintPadding: 5,
+                width: 100.0.w,
+                height: 38.sp,
+                hint: "select".tr,
+                borderRadius: BorderRadius.circular(10),
+                value: companyType == "" ? null : companyType,
+                items: companyTypesController.companyTypes
+                    .map(
+                      (e) => DropdownMenuItem<String>(
+                        value: Get.locale == const Locale('en', 'US')
+                            ? e.nameEn!
+                            : e.nameAr!,
+                        child: coloredText(
+                            text: Get.locale == const Locale('en', 'US')
+                                ? e.nameEn!
+                                : e.nameAr!,
+                            fontSize: 10.sp),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (p0) {
+                  companyType = p0!;
+                  if (widget.categoryToEdit != null) {
+                    widget.categoryToEdit!.companyTypeID =
+                        companyTypesController.companyTypes
+                            .where((element) =>
+                                element.nameEn == p0 || element.nameAr == p0)
+                            .single
+                            .id;
+                  } else {
+                    categoryToCreate.companyTypeID = companyTypesController
+                        .companyTypes
+                        .where((element) =>
+                            element.nameEn == p0 || element.nameAr == p0)
+                        .single
+                        .id;
+                  }
+                  // companyRegisterData.companyType = companyTypesController
+                  //     .companyTypes
+                  //     .where((element) => element.uniqueName == p0)
+                  //     .map((e) => Get.locale == const Locale('en', 'US')
+                  //         ? e.nameEn!
+                  //         : e.nameAr!)
+                  //     .single;
+                },
+              );
+            }),
             spaceY(20.sp),
             Align(
               alignment: AlignmentDirectional.centerStart,

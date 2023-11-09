@@ -372,6 +372,72 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                     ),
                     color: const Color(0xffE9E9E9),
                   ),
+                if (widget.userType != "admin") spaceY(20),
+                if (widget.userType != "admin")
+                  primaryBorderedButton(
+                    onTap: () async {
+                      Utils.showDialogBox(
+                        context: context,
+                        title: Center(
+                          child: coloredText(
+                            fontSize: 19.sp,
+                            // fontWeight: FontWeight.w600,
+                            text: "are_you_sure".tr,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        actions: [
+                          primaryButton(
+                            onTap: () async {
+                              bool b = await _globalController.deleteAccount();
+                              if (b) {
+                                Get.back();
+                                await Utils.deleteToken();
+                                await Utils.deleteRemmemberMe();
+                                await Utils.deleteFBToken();
+                                Get.offAll(() => const LoginPage());
+                                AuthController _authController = Get.find();
+                                _authController.handleSignOut();
+                              }
+                            },
+                            text: coloredText(
+                              text: "yes".tr,
+                              color: Colors.white,
+                            ),
+                            color: Colors.red.shade400,
+                          ),
+                          spaceY(10.sp),
+                          primaryBorderedButton(
+                            onTap: () async {
+                              Get.back();
+                            },
+                            text: coloredText(
+                              text: "no".tr,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ],
+                      );
+                    },
+                    width: 100.w,
+                    text: Row(
+                      children: [
+                        spaceX(10),
+                        Icon(
+                          EvaIcons.trash2,
+                          size: 18.0.sp,
+                          color: Colors.red.shade400,
+                        ),
+                        spaceX(10),
+                        coloredText(
+                          color: Colors.red.shade400,
+                          text: "delete_account".tr,
+                        ),
+                      ],
+                    ),
+                    color: Colors.red.shade400,
+                  ),
               ],
             ),
           ),

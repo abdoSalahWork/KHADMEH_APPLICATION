@@ -3,6 +3,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/pages/Company%20Types/controller/company_types_controller.dart';
 import 'package:khedma/Pages/HomePage/cleaning%20companies/cleaning_company.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/models/company_model.dart';
@@ -184,6 +185,7 @@ class CompanyCard extends StatelessWidget {
   });
   final CompaniesController _companiesController = Get.find();
   final GlobalController _globalController = Get.find();
+  final CompanyTypesController _companyTypesController = Get.find();
   final CompanyModel company;
   bool deleteFlag = false;
   int deleteId = 0;
@@ -299,6 +301,18 @@ class CompanyCard extends StatelessWidget {
                   )
                 ],
               ),
+              spaceY(10),
+              coloredText(
+                  text: _companyTypesController.companyTypes
+                      .where((element) =>
+                          element.uniqueName ==
+                          company.companyInformation!.companyType!)
+                      .map((e) => Get.locale == const Locale('en', 'US')
+                          ? e.nameEn!
+                          : e.nameAr!)
+                      .first,
+                  fontSize: 11.0.sp,
+                  color: Colors.grey),
               spaceY(10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,

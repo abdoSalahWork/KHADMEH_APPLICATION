@@ -312,6 +312,7 @@ class AdminController extends GetxController {
       );
 
       if (indicator) Get.back();
+      logSuccess(Me.fromJson(res.data['data']).companyInformation!.toJson());
       return Me.fromJson(res.data['data']);
     } on DioException catch (e) {
       logError(e.message!);

@@ -20,6 +20,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:khedma/Admin/controllers/admin_controller.dart';
+import 'package:khedma/Admin/pages/Company%20Types/controller/company_types_controller.dart';
 import 'package:khedma/Admin/pages/jobs/controller/jobs_controller.dart';
 import 'package:khedma/Pages/HomePage/company%20home/add_employee_page.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_contracts.dart';
@@ -112,6 +113,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
+  final TextEditingController _unifiedNumController = TextEditingController();
 
   final TextEditingController _ownerPhoneNumberController =
       TextEditingController();
@@ -130,7 +132,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
   final TextEditingController _licenseController = TextEditingController();
   final GlobalController _globalController = Get.find();
   final AuthController _authController = Get.find();
-  final List<FocusNode> _focusNodes = List.generate(24, (index) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(25, (index) => FocusNode());
 
   final NotificationService notificationService = Utils.notificationService;
   final JobsController _jobsController = Get.find();
@@ -166,16 +168,20 @@ class _CompanyHomePageState extends State<CompanyHomePage>
   @override
   void initState() {
     _globalController.downloadContracts();
-    approveAdmin = _globalController.me.companyInformation!.approveAdmin != null
-        ? _globalController.me.companyInformation!.approveAdmin == 1
-        : false;
-    contractsVerify =
-        _globalController.me.companyInformation!.verifyContract == 1;
+    if (_globalController.me.companyInformation != null) {
+      approveAdmin =
+          _globalController.me.companyInformation!.approveAdmin != null
+              ? _globalController.me.companyInformation!.approveAdmin == 1
+              : false;
+      // logSuccess(approveAdmin);
+      contractsVerify =
+          _globalController.me.companyInformation!.verifyContract == 1;
+    }
     tabController = TabController(length: 2, vsync: this);
     if (_globalController.me.companyInformation != null) {
       meCompanyType = _globalController.me.companyInformation!.companyType!;
     }
-    logError(meCompanyType);
+
     _employeesController.getCompanyEmployees();
     meCompanyType == "recruitment"
         ? _globalController.getRecruitmentCompanyHomePage()
@@ -257,6 +263,9 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                         }
                       : meCompanyType != "recruitment"
                           ? () {
+                              logSuccess(_globalController
+                                  .me.companyInformation!.companyType!
+                                  .toLowerCase());
                               int price = 0;
                               int serviceId = 0;
                               Utils.showDialogBox(
@@ -289,42 +298,58 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                     children: [
                                       coloredText(text: "choose_service".tr),
                                       spaceY(5.sp),
-                                      CustomDropDownMenuButtonV2(
-                                        hintPadding: 0,
-                                        focusNode: FocusNode(),
-                                        fillColor: const Color(0xffF8F8F8),
-                                        filled: true,
-                                        width: 100.w,
-                                        items: _globalController
-                                            .cleanDropdownServices
-                                            .map(
-                                              (e) => DropdownMenuItem<String>(
-                                                value: Get.locale ==
-                                                        const Locale('en', 'US')
-                                                    ? e.nameEn!
-                                                    : e.nameAr!,
-                                                child: coloredText(
-                                                    text: Get.locale ==
-                                                            const Locale(
-                                                                'en', 'US')
-                                                        ? e.nameEn!
-                                                        : e.nameAr!,
-                                                    color: Colors.black),
-                                              ),
-                                            )
-                                            .toList(),
-                                        border: null,
-                                        onChanged: (p0) {
-                                          serviceId = _globalController
-                                              .categories
+                                      GetBuilder<CompanyTypesController>(
+                                          builder: (c) {
+                                        return CustomDropDownMenuButtonV2(
+                                          hintPadding: 0,
+                                          focusNode: FocusNode(),
+                                          fillColor: const Color(0xffF8F8F8),
+                                          filled: true,
+                                          width: 100.w,
+                                          items: _globalController
+                                              .cleanDropdownServices
                                               .where((element) =>
-                                                  element.nameAr == p0 ||
-                                                  element.nameEn == p0)
-                                              .first
-                                              .id!;
-                                        },
-                                        borderRadius: 10,
-                                      ),
+                                                  element.companyTypeID ==
+                                                  c.companyTypes
+                                                      .where((element) =>
+                                                          element.uniqueName ==
+                                                          _globalController
+                                                              .me
+                                                              .companyInformation!
+                                                              .companyType!
+                                                              .toLowerCase())
+                                                      .first
+                                                      .id)
+                                              .map(
+                                                (e) => DropdownMenuItem<String>(
+                                                  value: Get.locale ==
+                                                          const Locale(
+                                                              'en', 'US')
+                                                      ? e.nameEn!
+                                                      : e.nameAr!,
+                                                  child: coloredText(
+                                                      text: Get.locale ==
+                                                              const Locale(
+                                                                  'en', 'US')
+                                                          ? e.nameEn!
+                                                          : e.nameAr!,
+                                                      color: Colors.black),
+                                                ),
+                                              )
+                                              .toList(),
+                                          border: null,
+                                          onChanged: (p0) {
+                                            serviceId = _globalController
+                                                .categories
+                                                .where((element) =>
+                                                    element.nameAr == p0 ||
+                                                    element.nameEn == p0)
+                                                .first
+                                                .id!;
+                                          },
+                                          borderRadius: 10,
+                                        );
+                                      }),
                                       coloredText(text: "price".tr),
                                       spaceY(5.sp),
                                       SendMessageTextField(
@@ -382,7 +407,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          meCompanyType == "cleaning"
+                          meCompanyType != "recruitment"
                               ? GestureDetector(
                                   onTap: !approveAdmin
                                       ? () {
@@ -1419,27 +1444,42 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                     text: '${"company_type".tr} :',
                   ),
                   spaceX(15),
-                  CustomDropDownMenuButton(
-                    fillColor: const Color(0xffF5F5F5),
-                    padding: const EdgeInsetsDirectional.only(end: 5, start: 5),
-                    width: 40.0.w,
-                    height: 38.sp,
-                    contentPadding: 10,
-                    borderRadius: BorderRadius.circular(10),
-                    value: companyType == "" ? null : companyType,
-                    items: ["recruitment", "cleaning"]
-                        .map(
-                          (e) => DropdownMenuItem<String>(
-                            value: e,
-                            child: coloredText(text: e.tr),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (p0) {
-                      companyType = p0!;
-                      companyCompleteData.companyType = p0;
-                    },
-                  ),
+                  GetBuilder<CompanyTypesController>(
+                      builder: (companyTypesController) {
+                    return CustomDropDownMenuButton(
+                      fillColor: const Color(0xffF5F5F5),
+                      padding:
+                          const EdgeInsetsDirectional.only(end: 10, start: 10),
+                      // hintPadding: 5,
+                      width: 42.0.w,
+                      height: 38.sp,
+
+                      borderRadius: BorderRadius.circular(10),
+                      value: companyType == "" ? null : companyType,
+                      items: companyTypesController.companyTypes
+                          .map(
+                            (e) => DropdownMenuItem<String>(
+                              value: e.uniqueName,
+                              child: coloredText(
+                                  text: Get.locale == const Locale('en', 'US')
+                                      ? e.nameEn!
+                                      : e.nameAr!,
+                                  fontSize: 10.sp),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (p0) {
+                        companyType = p0!;
+                        companyCompleteData.companyType = companyTypesController
+                            .companyTypes
+                            .where((element) => element.uniqueName == p0)
+                            .map((e) => Get.locale == const Locale('en', 'US')
+                                ? e.nameEn!
+                                : e.nameAr!)
+                            .single;
+                      },
+                    );
+                  }),
                 ],
               ),
               spaceY(20.0.sp),
@@ -1778,6 +1818,27 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                 },
               ),
               spaceY(10.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[24],
+                controller: _unifiedNumController,
+                hintText: "unified_number".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['unified_number'] = null;
+                  setState(() {});
+                  companyCompleteData.unifiedNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['unified_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['unified_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.0.sp),
               primaryButton(
                   onTap: () async {
                     FilePickerResult? result = await FilePicker.platform
@@ -2558,6 +2619,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                   null ||
                               errors['tax_number'] != null ||
                               errors['license_number'] != null ||
+                              errors['unified_number'] != null ||
                               errors['signature_official'] != null ||
                               errors['signature_authorization'] != null ||
                               errors['articles_of_association'] != null ||

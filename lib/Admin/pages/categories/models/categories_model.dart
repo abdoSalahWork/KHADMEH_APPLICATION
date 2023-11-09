@@ -1,5 +1,6 @@
 class CategoryModel {
   int? id;
+  int? companyTypeID;
   String? nameEn;
   var image;
   String? nameAr;
@@ -8,6 +9,7 @@ class CategoryModel {
 
   CategoryModel({
     this.id,
+    this.companyTypeID,
     this.nameEn,
     this.nameAr,
     this.createdAt,
@@ -18,6 +20,7 @@ class CategoryModel {
   CategoryModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     nameEn = json['name_en'];
+    companyTypeID = json['company_type_id'];
     nameAr = json['name_ar'];
     image = "https://khdmah.online/api/images/service/${json['image']}";
     createdAt = json['created_at'];
@@ -28,6 +31,7 @@ class CategoryModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name_en'] = nameEn;
+    data['company_type_id'] = companyTypeID;
     data['name_ar'] = nameAr;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;

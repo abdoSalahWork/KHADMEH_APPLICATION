@@ -15,6 +15,7 @@ import 'package:iban/iban.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:khedma/Admin/pages/Company%20Types/controller/company_types_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/controller/auth_controller.dart';
 import 'package:khedma/Pages/log-reg%20pages/models/company_register_model.dart';
@@ -68,7 +69,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   String bankName = "";
 
   // String companyphoneCode = "";
-  String companyType = "recruitment";
+  String companyType = "";
   String city = "";
   String region = "";
   int idPassRadio = 0;
@@ -81,6 +82,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _unifiedNumController = TextEditingController();
   final TextEditingController _companyNameEnController =
       TextEditingController();
   final TextEditingController _ownerPhoneNumberController =
@@ -111,7 +113,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
     setState(() {});
   }
 
-  final List<FocusNode> _focusNodes = List.generate(24, (index) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(25, (index) => FocusNode());
   String logobuttonText = "upload_company_logo".tr;
   String frontIdButton = "upload_front_side_of_id".tr;
   String backIdButton = "upload_back_side_of_id".tr;
@@ -961,29 +963,42 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                     text: "company_type".tr + ' :',
                   ),
                   spaceX(15),
-                  CustomDropDownMenuButton(
-                    fillColor: const Color(0xffF5F5F5),
-                    padding:
-                        const EdgeInsetsDirectional.only(end: 10, start: 10),
-                    // hintPadding: 5,
-                    width: 42.0.w,
-                    height: 38.sp,
+                  GetBuilder<CompanyTypesController>(
+                      builder: (companyTypesController) {
+                    return CustomDropDownMenuButton(
+                      fillColor: const Color(0xffF5F5F5),
+                      padding:
+                          const EdgeInsetsDirectional.only(end: 10, start: 10),
+                      // hintPadding: 5,
+                      width: 42.0.w,
+                      height: 38.sp,
 
-                    borderRadius: BorderRadius.circular(10),
-                    value: companyType == "" ? null : companyType,
-                    items: ["recruitment", "cleaning"]
-                        .map(
-                          (e) => DropdownMenuItem<String>(
-                            value: e,
-                            child: coloredText(text: e.tr, fontSize: 10.sp),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (p0) {
-                      companyType = p0!;
-                      companyRegisterData.companyType = p0;
-                    },
-                  ),
+                      borderRadius: BorderRadius.circular(10),
+                      value: companyType == "" ? null : companyType,
+                      items: companyTypesController.companyTypes
+                          .map(
+                            (e) => DropdownMenuItem<String>(
+                              value: e.uniqueName,
+                              child: coloredText(
+                                  text: Get.locale == const Locale('en', 'US')
+                                      ? e.nameEn!
+                                      : e.nameAr!,
+                                  fontSize: 10.sp),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (p0) {
+                        companyType = p0!;
+                        companyRegisterData.companyType = companyTypesController
+                            .companyTypes
+                            .where((element) => element.uniqueName == p0)
+                            .map((e) => Get.locale == const Locale('en', 'US')
+                                ? e.nameEn!
+                                : e.nameAr!)
+                            .single;
+                      },
+                    );
+                  }),
                 ],
               ),
               spaceY(20.0.sp),
@@ -1273,6 +1288,27 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   if (errors['license_number'] != null) {
                     String tmp = "";
                     tmp = errors['license_number'].join("\n");
+
+                    return tmp;
+                  }
+                  return null;
+                },
+              ),
+              spaceY(10.sp),
+              UnderlinedCustomTextField(
+                focusNode: _focusNodes[24],
+                controller: _unifiedNumController,
+                hintText: "unified_number".tr,
+                autovalidateMode: AutovalidateMode.always,
+                onchanged: (s) {
+                  errors['unified_number'] = null;
+                  setState(() {});
+                  companyRegisterData.unifiedNumber = s;
+                },
+                validator: (String? value) {
+                  if (errors['unified_number'] != null) {
+                    String tmp = "";
+                    tmp = errors['unified_number'].join("\n");
 
                     return tmp;
                   }
@@ -2214,6 +2250,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                   null ||
                               errors['tax_number'] != null ||
                               errors['license_number'] != null ||
+                              errors['unified_number'] != null ||
                               errors['signatureـofficial'] != null ||
                               errors['signature_authorization'] != null ||
                               errors['articles_of_association'] != null ||

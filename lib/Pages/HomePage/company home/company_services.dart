@@ -1,6 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:khedma/Admin/pages/Company%20Types/controller/company_types_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/HomePage/employees/models/employees_filter.dart';
@@ -96,39 +97,53 @@ class _CompanyServicesPageState extends State<CompanyServicesPage> {
                             children: [
                               coloredText(text: "choose_service".tr),
                               spaceY(5.sp),
-                              CustomDropDownMenuButtonV2(
-                                hintPadding: 0,
-                                focusNode: FocusNode(),
-                                fillColor: const Color(0xffF8F8F8),
-                                filled: true,
-                                width: 100.w,
-                                items: _globalController.cleanDropdownServices
-                                    .map(
-                                      (e) => DropdownMenuItem<String>(
-                                        value: Get.locale ==
-                                                const Locale('en', 'US')
-                                            ? e.nameEn!
-                                            : e.nameAr!,
-                                        child: coloredText(
-                                            text: Get.locale ==
-                                                    const Locale('en', 'US')
-                                                ? e.nameEn!
-                                                : e.nameAr!,
-                                            color: Colors.black),
-                                      ),
-                                    )
-                                    .toList(),
-                                border: null,
-                                onChanged: (p0) {
-                                  serviceId = _globalController.categories
+                              GetBuilder<CompanyTypesController>(builder: (c) {
+                                return CustomDropDownMenuButtonV2(
+                                  hintPadding: 0,
+                                  focusNode: FocusNode(),
+                                  fillColor: const Color(0xffF8F8F8),
+                                  filled: true,
+                                  width: 100.w,
+                                  items: _globalController.cleanDropdownServices
                                       .where((element) =>
-                                          element.nameAr == p0 ||
-                                          element.nameEn == p0)
-                                      .first
-                                      .id!;
-                                },
-                                borderRadius: 10,
-                              ),
+                                          element.companyTypeID ==
+                                          c.companyTypes
+                                              .where((element) =>
+                                                  element.uniqueName ==
+                                                  _globalController
+                                                      .me
+                                                      .companyInformation!
+                                                      .companyType!
+                                                      .toLowerCase())
+                                              .first
+                                              .id)
+                                      .map(
+                                        (e) => DropdownMenuItem<String>(
+                                          value: Get.locale ==
+                                                  const Locale('en', 'US')
+                                              ? e.nameEn!
+                                              : e.nameAr!,
+                                          child: coloredText(
+                                              text: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr!,
+                                              color: Colors.black),
+                                        ),
+                                      )
+                                      .toList(),
+                                  border: null,
+                                  onChanged: (p0) {
+                                    serviceId = _globalController.categories
+                                        .where((element) =>
+                                            element.nameAr == p0 ||
+                                            element.nameEn == p0)
+                                        .first
+                                        .id!;
+                                  },
+                                  borderRadius: 10,
+                                );
+                              }),
                               coloredText(text: "price".tr),
                               spaceY(5.sp),
                               SendMessageTextField(

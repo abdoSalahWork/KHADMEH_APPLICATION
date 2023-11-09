@@ -217,7 +217,7 @@ class _AdminMainPageState extends State<AdminMainPage>
                                           image: DecorationImage(
                                               image: _globalController
                                                           .me.adminPhoto ==
-                                                      null
+                                                      "https://khdmah.online/api/images/admin/admin_photo"
                                                   ? const AssetImage(
                                                       "assets/images/logo.png")
                                                   : NetworkImage(

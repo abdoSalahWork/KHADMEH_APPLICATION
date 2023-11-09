@@ -125,6 +125,8 @@ class MyAdminMenuItems {
       titleAr: "كشف حساب");
   static const addresses = DrawerMenuItem(
       titleEn: "Addresses", icon: EvaIcons.pin, titleAr: "العناوين");
+  static const companyTypes = DrawerMenuItem(
+      titleEn: "Company Types", icon: EvaIcons.grid, titleAr: "أنواع الشركات");
   static const languages = DrawerMenuItem(
       titleEn: "Languages", icon: EvaIcons.globe3, titleAr: "اللغات");
   static const contactUs = DrawerMenuItem(
@@ -135,6 +137,8 @@ class MyAdminMenuItems {
       titleEn: "About Khedma", icon: EvaIcons.info, titleAr: "حول خدمة");
   static const signiture = DrawerMenuItem(
       titleEn: "My Signiture", icon: Icons.fingerprint, titleAr: "توقيعي");
+  static const reportPage = DrawerMenuItem(
+      titleEn: "Reports", icon: Icons.warning_rounded, titleAr: "الإبلاغات");
 
   static const logOut = DrawerMenuItem(
       titleEn: "Log out", icon: EvaIcons.logOut, titleAr: "تسجيل الخروج");
@@ -152,11 +156,12 @@ class MyAdminMenuItems {
     // refunds,
     acountStatment,
     addresses,
+    companyTypes,
     commissions,
     languages,
     dropDowns,
     contactUs,
-    about,
+    about, reportPage,
     signiture,
     logOut,
   ];

@@ -42,7 +42,8 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
   @override
   void initState() {
     blocked = widget.companyProfile.block!;
-    logSuccess(widget.companyProfile.toJson());
+    logSuccess(
+        widget.companyProfile.companyInformation!.approveAdmin.toString());
     super.initState();
   }
 
@@ -124,9 +125,9 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
                   image: DecorationImage(
                       image: NetworkImage(
                           // ignore: prefer_interpolation_to_compose_strings
-                          "https://khdmah.online/api/images/company/logo/" +
-                              widget.companyProfile.companyInformation!
-                                  .companyLogo),
+                          // "https://khdmah.online/api/images/company/logo/" +
+                          widget
+                              .companyProfile.companyInformation!.companyLogo),
                       fit: BoxFit.contain),
                 ),
               ),

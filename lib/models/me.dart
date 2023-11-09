@@ -6,6 +6,7 @@ import 'package:khedma/models/company_service_model.dart';
 class Me {
   int? id;
   String? fullName;
+  String? signatureOfficial;
   String? email;
   String? emailVerifiedAt;
   int? status;
@@ -25,6 +26,7 @@ class Me {
   Me({
     this.id,
     this.fullName,
+    this.signatureOfficial,
     this.email,
     this.phone,
     this.adminPhoto,
@@ -51,6 +53,7 @@ class Me {
     id = json['id'];
     block = json['block'];
     fullName = json['full_name'];
+    signatureOfficial = json['signatureـofficial'];
     email = json['email'];
     phone = json['phone'];
     adminPhoto = json['photo'];
@@ -91,6 +94,8 @@ class Me {
     if (data['id'] != null) data['id'] = id;
     if (data['block'] != null) data['block'] = block;
     if (data['full_name'] != null) data['full_name'] = fullName;
+    if (data['signatureـofficial'] != null)
+      data['signatureـofficial'] = signatureOfficial;
     if (data['email'] != null) data['email'] = email;
     if (data['email_verified_at'] != null) {
       data['email_verified_at'] = emailVerifiedAt;
@@ -312,6 +317,7 @@ class CompanyInformation {
       });
     }
     verifyContract = json['verify_contract'];
+    approveAdmin = json['approve_admin'];
     contractKhedmah = json['contract_khedmah'];
     contractMyfatoorah = json['contract_myfatoorah'];
     id = json['id'];
@@ -332,11 +338,28 @@ class CompanyInformation {
     commercialRegistrationNumber = json['commercial_registration_number'];
     taxNumber = json['tax_number'];
     licenseNumber = json['license_number'];
-    companyLogo = "${json['company_logo']}";
-    signatureOfficial = "${json['signatureـofficial']}";
-    signatureAuthorization = "${json['signature_authorization']}";
-    commercialLicense = "${json['commercial_license']}";
-    articlesOfAssociation = "${json['articles_of_association']}";
+    companyLogo = "${json['company_logo']}"
+            .startsWith("https://khdmah.online/api/images/company/logo/")
+        ? "${json['company_logo']}"
+        : "https://khdmah.online/api/images/company/logo/${json['company_logo']}";
+    signatureOfficial = "${json['signatureـofficial']}"
+            .startsWith("https://khdmah.online/api/images/company/")
+        ? "${json['signatureـofficial']}"
+        : "https://khdmah.online/api/images/company/${json['signatureـofficial']}";
+
+    signatureAuthorization = "${json['signature_authorization']}"
+            .startsWith("https://khdmah.online/api/images/company/")
+        ? "${json['signature_authorization']}"
+        : "https://khdmah.online/api/images/company/${json['signature_authorization']}";
+    commercialLicense = "${json['commercial_license']}"
+            .startsWith("https://khdmah.online/api/images/company/")
+        ? "${json['commercial_license']}"
+        : "https://khdmah.online/api/images/company/${json['commercial_license']}";
+
+    articlesOfAssociation = "${json['articles_of_association']}"
+            .startsWith("https://khdmah.online/api/images/company/")
+        ? "${json['articles_of_association']}"
+        : "https://khdmah.online/api/images/company/${json['articles_of_association']}";
 
     identityConfirmation = json['identity_confirmation'];
     if (json['front_side_id_image'] != null) {
@@ -389,7 +412,7 @@ class CompanyInformation {
     data['commercial_registration_number'] = commercialRegistrationNumber;
     data['tax_number'] = taxNumber;
     data['license_number'] = licenseNumber;
-    data['company_logo'] = this.companyLogo;
+    // data['company_logo'] = this.companyLogo;
     data['identity_confirmation'] = identityConfirmation;
     data['front_side_id_image'] = frontSideIdImage;
     data['back_side_id_image'] = backSideIdImage;

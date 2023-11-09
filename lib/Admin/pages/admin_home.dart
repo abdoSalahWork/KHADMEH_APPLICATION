@@ -3,6 +3,7 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Admin/models/drawer_menu_item.dart';
 import 'package:khedma/Admin/pages/Addressess/admin_addresses_page.dart';
+import 'package:khedma/Admin/pages/Company%20Types/admin_company_types_page.dart';
 import 'package:khedma/Admin/pages/about/admin_about_page.dart';
 import 'package:khedma/Admin/pages/account%20statment/admin_account_statment_page.dart';
 import 'package:khedma/Admin/pages/admin_main_page.dart';
@@ -15,6 +16,7 @@ import 'package:khedma/Admin/pages/contact/admin_contact_page.dart';
 import 'package:khedma/Admin/pages/dropdowns/admin_dropdowns_page.dart';
 import 'package:khedma/Admin/pages/languages/admin_languages_page.dart';
 import 'package:khedma/Admin/pages/menu_page.dart';
+import 'package:khedma/Admin/pages/reports/admin_reports_page.dart';
 import 'package:khedma/Admin/pages/signiture/admin_signiture.dart';
 import 'package:khedma/Admin/pages/user%20profiles/admin_user_profiles_page.dart';
 import 'package:khedma/Admin/pages/zoom_drawer_controller.dart';
@@ -173,6 +175,12 @@ class _AdminHomePageState extends State<AdminHomePage> {
         break;
       case MyAdminMenuItems.acountStatment:
         Get.to(() => const AdminAccountStatmentPage());
+        break;
+      case MyAdminMenuItems.companyTypes:
+        Get.to(() => const AdminCompanyTypesPage());
+        break;
+      case MyAdminMenuItems.reportPage:
+        Get.to(() => const AdminReportsPage());
         break;
       case MyAdminMenuItems.addresses:
         Get.to(() => const AdminAddressesPage());

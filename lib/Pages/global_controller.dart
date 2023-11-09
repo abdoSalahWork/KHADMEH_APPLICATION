@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:khedma/Admin/pages/categories/models/categories_model.dart';
 import 'package:khedma/Admin/pages/jobs/models/job_model.dart';
 import 'package:khedma/Admin/pages/languages/models/language_model.dart';
+import 'package:khedma/Admin/pages/reports/models/report_model.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_employees.dart';
 import 'package:khedma/Pages/HomePage/company%20home/company_home_page.dart';
 import 'package:khedma/Pages/HomePage/controllers/companies_controller.dart';
@@ -170,6 +171,7 @@ class GlobalController extends GetxController {
       }
       categories = tmp;
       categoriesToShow = tmp;
+      handleCategoriesSearch(name: "", typeId: 1);
       logSuccess("Categories get done");
       getCategoriesFlag = false;
       update();
@@ -216,7 +218,9 @@ class GlobalController extends GetxController {
       List<CompanyServiceModel> tmp = [];
       for (var i in res.data['data']) {
         CompanyServiceModel t = CompanyServiceModel.fromJson(i);
-        tmp.add(t);
+        if (me.id == t.companyId) {
+          tmp.add(t);
+        }
       }
       companyServices = tmp;
       logSuccess("Services get done");
@@ -283,6 +287,61 @@ class GlobalController extends GetxController {
       return true;
     } on DioException catch (e) {
       logError(e.message!);
+      Get.back();
+    }
+    return false;
+  }
+
+  Future<bool> deleteAccount() async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData();
+      body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
+      await dio.post(
+        EndPoints.deleteAccount,
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      logError(e.message!);
+      Get.back();
+      return false;
+    }
+  }
+
+  Future<bool> deleteReport({
+    required int id,
+  }) async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData();
+      // body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
+      await dio.post(
+        EndPoints.deleteReport(id),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+
+      await getreports();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      logError(e.response!.data);
       Get.back();
     }
     return false;
@@ -632,6 +691,56 @@ class GlobalController extends GetxController {
     }
   }
 
+  List<ReportModel> reports = [];
+  bool getreportsFlag = false;
+  Future getreports() async {
+    try {
+      getreportsFlag = true;
+      String? token = await Utils.readToken();
+      var res = await dio.get(
+        EndPoints.getReports,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      List<ReportModel> tmp = [];
+      for (var i in res.data['data']) {
+        ReportModel t = ReportModel.fromJson(i);
+        tmp.add(t);
+      }
+      reports = tmp;
+
+      logSuccess("reports get done");
+      getreportsFlag = false;
+      update();
+      // reports = [
+      //   ReportModel(
+      //     typeId: 3,
+      //     type: "Addvertisment",
+      //     id: 1,
+      //     docs:
+      //         "hello this ad is illegal !! hello this ad is illegal !! hello this ad is illegal !! ",
+      //   ),
+      //   ReportModel(
+      //     typeId: 4,
+      //     type: "Addvertisment",
+      //     id: 1,
+      //     docs:
+      //         "hello this ad is illegal !! hello this ad is illegal !! hello this ad is illegal !! ",
+      //   ),
+      // ];
+    } on DioException catch (e) {
+      getreportsFlag = false;
+      logError(e.response!.data);
+      logError("reports failed");
+
+      update();
+    }
+  }
+
   bool getCitiesFlag = false;
   Future getCities() async {
     try {
@@ -908,6 +1017,7 @@ class GlobalController extends GetxController {
         ));
       }
       if (logo != null) {
+        logWarning(logo);
         body.files.add(MapEntry(
           "company_logo",
           await d.MultipartFile.fromFile(
@@ -985,6 +1095,42 @@ class GlobalController extends GetxController {
       logError(error.response!.data);
 
       return null;
+    }
+  }
+
+  Future<bool> storeReport({
+    required int companyId,
+    required String report,
+  }) async {
+    try {
+      Get.dialog(const Center(
+        child: CircularProgressIndicator(),
+      ));
+
+      final body = d.FormData.fromMap({
+        "type_id": companyId,
+        "type": "users",
+        "docs": report,
+      });
+      String? token = await Utils.readToken();
+      var res = await dio.post(
+        EndPoints.storeReport,
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      logSuccess(res.data);
+      Get.back();
+      return true;
+    } on DioException catch (error) {
+      Get.back();
+      logError(error.response!.data);
+
+      return false;
     }
   }
 
@@ -1469,15 +1615,21 @@ class GlobalController extends GetxController {
     }
   }
 
-  handleCategoriesSearch({required String name}) {
+  handleCategoriesSearch({
+    required String name,
+    required int typeId,
+  }) {
     List<CategoryModel> tmp = [];
-    for (var i in categories) {
+    categoriesToShow =
+        categories.where((element) => element.companyTypeID == typeId).toList();
+    update();
+    for (var i in categoriesToShow) {
       if (i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
           i.nameAr!.toLowerCase().contains(name.toLowerCase())) {
         tmp.add(i);
       }
       if (name == "") {
-        categoriesToShow = categories;
+        categoriesToShow = categoriesToShow;
       } else {
         categoriesToShow = tmp;
       }
@@ -1490,6 +1642,7 @@ class GlobalController extends GetxController {
     String? phone,
     String? email,
     XFile? personaPhoto,
+    File? signatureOfficial,
   }) async {
     try {
       Get.dialog(const Center(
@@ -1524,6 +1677,16 @@ class GlobalController extends GetxController {
           ),
         ));
       }
+      if (signatureOfficial != null) {
+        body.files.add(MapEntry(
+          "signatureـofficial",
+          await d.MultipartFile.fromFile(
+            signatureOfficial.path,
+            filename: basename(signatureOfficial.path),
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
       logSuccess(body.files);
       String? token = await Utils.readToken();
 
@@ -1543,7 +1706,7 @@ class GlobalController extends GetxController {
       return true;
     } on DioException catch (error) {
       Get.back();
-      logError(error);
+      logError(error.response!.data);
 
       // Utils.showSnackBar(message: error.response!.data["message"]);
       return error.response!.data;
@@ -1645,7 +1808,8 @@ class GlobalController extends GetxController {
         ),
       );
       logSuccess("asda");
-      await getMe();
+      await getCleanCompanyHomePage();
+      await getRecruitmentCompanyHomePage();
       update();
       Get.back();
       return true;

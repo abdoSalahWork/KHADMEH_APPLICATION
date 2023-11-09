@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
@@ -18,6 +19,7 @@ import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:sizer/sizer.dart';
+import 'package:translator/translator.dart';
 
 import '../../../Utils/utils.dart';
 import '../../../widgets/dropdown_menu_button.dart';
@@ -33,6 +35,7 @@ class AddEmployeePage extends StatefulWidget {
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
   String passportButton = "upload_your_passport".tr;
+  Debouncer _de = Debouncer();
   var errors = {};
   String? imageToEdit;
   String nationality = "";
@@ -262,6 +265,63 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   spaceY(10),
+                                  coloredText(text: "name_en".tr),
+                                  spaceY(5.sp),
+                                  SendMessageTextField(
+                                    borderRadius: 10,
+                                    focusNode: _focusNodes[23],
+                                    fillColor: const Color(0xffF8F8F8),
+                                    controller: _fullNameEnController,
+                                    onchanged: (s) {
+                                      _de.run(() {
+                                        if (s != null && s != "") {
+                                          final translator = GoogleTranslator();
+                                          translator
+                                              .translate(s,
+                                                  from: 'en', to: 'ar')
+                                              .then((value) {
+                                            _fullNameArController.text =
+                                                value.text;
+                                            if (widget.employeeToEdit != null) {
+                                              widget.employeeToEdit!.nameAr =
+                                                  value.text;
+                                            } else {
+                                              employeeToCreate.nameAr =
+                                                  value.text;
+                                            }
+                                            setState(() {});
+                                          });
+                                        }
+                                        if (s == "") {
+                                          _fullNameArController.text = "";
+                                          if (widget.employeeToEdit != null) {
+                                            widget.employeeToEdit!.nameAr =
+                                                null;
+                                          } else {
+                                            employeeToCreate.nameAr = null;
+                                          }
+                                          setState(() {});
+                                        }
+                                        //perform search here
+                                      });
+
+                                      if (widget.employeeToEdit != null) {
+                                        widget.employeeToEdit!.nameEn = s;
+                                      } else {
+                                        employeeToCreate.nameEn = s;
+                                      }
+                                    },
+                                    validator: (s) {
+                                      if (errors['name_en'] != null) {
+                                        String tmp = "";
+                                        tmp = errors['name_en'].join("\n");
+
+                                        return tmp;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  spaceY(10.sp),
                                   coloredText(text: "name_ar".tr),
                                   spaceY(5.sp),
                                   SendMessageTextField(
@@ -280,31 +340,6 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       if (errors['name_ar'] != null) {
                                         String tmp = "";
                                         tmp = errors['name_ar'].join("\n");
-
-                                        return tmp;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  spaceY(10.sp),
-                                  coloredText(text: "name_en".tr),
-                                  spaceY(5.sp),
-                                  SendMessageTextField(
-                                    borderRadius: 10,
-                                    focusNode: _focusNodes[23],
-                                    fillColor: const Color(0xffF8F8F8),
-                                    controller: _fullNameEnController,
-                                    onchanged: (s) {
-                                      if (widget.employeeToEdit != null) {
-                                        widget.employeeToEdit!.nameEn = s;
-                                      } else {
-                                        employeeToCreate.nameEn = s;
-                                      }
-                                    },
-                                    validator: (s) {
-                                      if (errors['name_en'] != null) {
-                                        String tmp = "";
-                                        tmp = errors['name_en'].join("\n");
 
                                         return tmp;
                                       }
@@ -2255,5 +2290,20 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
           .first;
     }
+  }
+}
+
+class Debouncer {
+  final int milliseconds;
+
+  Timer? _timer;
+
+  Debouncer({this.milliseconds = 500});
+
+  run(VoidCallback action) {
+    if (null != _timer) {
+      _timer!.cancel();
+    }
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
   }
 }

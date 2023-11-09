@@ -25,6 +25,7 @@ class CompanyRegisterData {
   String? passwordConfirmation;
   String? bankId;
   String? iban;
+  String? unifiedNumber;
   String? accountNumber;
   String? bankAccountName;
   var companyLogo;
@@ -40,6 +41,7 @@ class CompanyRegisterData {
     this.userType,
     this.firstName,
     this.lastName,
+    this.unifiedNumber,
     this.phone,
     this.nationalityId,
     this.idNumber,
@@ -80,6 +82,7 @@ class CompanyRegisterData {
     iban = json['iban'];
     accountNumber = json['account_number'];
     bankAccountName = json['bank_account_name'];
+    unifiedNumber = json['unified_number'];
     userType = json['user_type'];
     firstName = json['first_name'];
     lastName = json['last_name'];
@@ -115,11 +118,12 @@ class CompanyRegisterData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['bank_id'] = bankId;
     data['iban'] = iban;
     data['account_number'] = accountNumber;
     data['bank_account_name'] = bankAccountName;
+    data['unified_number'] = unifiedNumber;
     data['user_type'] = userType;
     data['first_name'] = firstName;
     data['last_name'] = lastName;
