@@ -161,34 +161,72 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                         ),
                         _globalController.guest
                             ? Container()
-                            : GestureDetector(
-                                child: Icon(
-                                  EvaIcons.messageCircle,
-                                  color: Colors.white,
-                                  size: 22.0.sp,
-                                ),
-                                onTap: () async {
-                                  GlobalChat? chat =
-                                      await _chatController.storeChat(
-                                          id: widget.cleaningCompany.id!);
-                                  if (chat != null) {
-                                    Get.to(
-                                      () => ChatPage(
-                                        chatId: chat.chat!.id!,
-                                        receiverId: chat.chat!.id!,
-                                        recieverName: chat.user!.fullName!,
-                                        recieverImage:
-                                            _globalController.me.userType ==
-                                                    "company"
-                                                ? chat.user!.userInformation!
-                                                    .personalPhoto!
-                                                : chat.user!.companyInformation!
-                                                    .companyLogo!,
+                            : Row(
+                                children: [
+                                  GestureDetector(
+                                    child: Icon(
+                                      EvaIcons.messageCircle,
+                                      color: Colors.white,
+                                      size: 22.0.sp,
+                                    ),
+                                    onTap: () async {
+                                      GlobalChat? chat =
+                                          await _chatController.storeChat(
+                                              id: widget.cleaningCompany.id!);
+                                      if (chat != null) {
+                                        Get.to(
+                                          () => ChatPage(
+                                            chatId: chat.chat!.id!,
+                                            receiverId: chat.chat!.id!,
+                                            recieverName: chat.user!.fullName!,
+                                            recieverImage:
+                                                _globalController.me.userType ==
+                                                        "company"
+                                                    ? chat
+                                                        .user!
+                                                        .userInformation!
+                                                        .personalPhoto!
+                                                    : chat
+                                                        .user!
+                                                        .companyInformation!
+                                                        .companyLogo!,
+                                          ),
+                                        );
+                                      }
+                                      // Get.to(() => const MessagesPage());
+                                    },
+                                  ),
+                                  spaceX(10.sp),
+                                  Theme(
+                                    data: ThemeData(primaryColor: Colors.white),
+                                    child: PopupMenuButton(
+                                      constraints: BoxConstraints(
+                                        minWidth: 2.0 * 56.0,
+                                        maxWidth:
+                                            MediaQuery.of(context).size.width,
                                       ),
-                                    );
-                                  }
-                                  // Get.to(() => const MessagesPage());
-                                },
+                                      itemBuilder: (BuildContext cc) => [
+                                        PopupMenuItem<int>(
+                                          value: 0,
+                                          child: coloredText(
+                                              text: 'report'.tr,
+                                              fontSize: 12.0.sp),
+                                          onTap: () async {
+                                            Utils().reportDialoge(
+                                              context: context,
+                                              companyId:
+                                                  widget.cleaningCompany.id!,
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                      child: const Icon(
+                                        EvaIcons.moreVertical,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                       ],
                     ),
