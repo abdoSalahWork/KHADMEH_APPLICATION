@@ -2,7 +2,6 @@ import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/Notifications/controller/notofication_controller.dart';
 import 'package:khedma/Pages/chat%20page/controller/chat_controller.dart';
@@ -27,7 +26,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService().initializePlatformNotifications();
   await FirebaseApi().initNotifications(_notificationController);
-  await FlutterDownloader.initialize(debug: false, ignoreSsl: true);
+  // await FlutterDownloader.initialize(debug: false, ignoreSsl: true);
 
   // await FirebaseApi().handleNotifications();
 

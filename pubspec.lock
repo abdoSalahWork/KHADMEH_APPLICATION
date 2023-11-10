@@ -521,7 +521,7 @@ packages:
   flutter_html_to_pdf:
     dependency: "direct main"
     description:
-      path: "C:\\Users\\Mohammed Ammourie\\Desktop\\work\\khedma\\flutter_html_to_pdf"
+      path: "C:\\Users\\Mohammed Ammourie\\Desktop\\work\\khedma\\html_to_pdf"
       relative: false
     source: path
     version: "0.7.0"
