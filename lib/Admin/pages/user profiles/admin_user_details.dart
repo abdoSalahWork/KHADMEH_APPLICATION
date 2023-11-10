@@ -256,17 +256,17 @@ class _AdminUserDetailsPageState extends State<AdminUserDetailsPage> {
                                         ? e.nameEn!
                                         : e.nameAr!)
                                 .first,
-                            title2: "region".tr,
-                            subTitle2: _globalController.regions
-                                .where((element) =>
-                                    element.id ==
-                                    widget
-                                        .userProfile.userInformation!.regionId)
-                                .map((e) =>
-                                    Get.locale == const Locale("en", "US")
-                                        ? e.nameEn!
-                                        : e.nameAr!)
-                                .first,
+                            // title2: "region".tr,
+                            // subTitle2: _globalController.regions
+                            //     .where((element) =>
+                            //         element.id ==
+                            //         widget
+                            //             .userProfile.userInformation!.regionId)
+                            //     .map((e) =>
+                            //         Get.locale == const Locale("en", "US")
+                            //             ? e.nameEn!
+                            //             : e.nameAr!)
+                            //     .first,
                           ),
                           spaceY(12.sp),
                           DetailsItemWidget(
