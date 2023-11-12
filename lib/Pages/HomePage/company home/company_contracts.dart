@@ -168,10 +168,11 @@ class _CompanyDocsPageState extends State<CompanyDocsPage> {
                 if (contractFiles[i].contractFileType ==
                     ContractFileType.localFile) {
                   File f = File(contractFiles[i].file);
-                  await f
-                      .copy("$_localPath/${basename(contractFiles[i].file)}");
-                  // await f.writeAsBytes(
-                  //     await File(contractFiles[i].file).readAsBytes());
+                  // await f
+                  //     .copy("$_localPath/${basename(contractFiles[i].file)}");
+                  await f.writeAsBytes(
+                      await File(contractFiles[i].file).readAsBytes(),
+                      mode: FileMode.writeOnly);
                   Utils.showToast(
                       message: "${basename(contractFiles[i].file)} Done");
                 } else {
