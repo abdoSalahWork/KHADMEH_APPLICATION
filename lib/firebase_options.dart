@@ -63,8 +63,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '705392766739',
     projectId: 'khedma-92ce7',
     storageBucket: 'khedma-92ce7.appspot.com',
-    androidClientId: '705392766739-kaluo3fn755vdgrq4e37khk0e9hrqs7b.apps.googleusercontent.com',
-    iosClientId: '705392766739-pm24lqml7o30s948lnv49euioq5kit4v.apps.googleusercontent.com',
+    androidClientId:
+        '705392766739-kaluo3fn755vdgrq4e37khk0e9hrqs7b.apps.googleusercontent.com',
+    iosClientId:
+        '705392766739-pm24lqml7o30s948lnv49euioq5kit4v.apps.googleusercontent.com',
     iosBundleId: 'com.dropidea.khedma',
   );
 }

@@ -155,7 +155,7 @@ class EmployeeModel {
     religionId = json['religion_id'];
     maritalStatus = json['marital_status'];
     educationCertification = json['education_certification'];
-    desc = json['desc'];
+    desc = json['about'];
 
     if (json['favourite'] != null) {
       favourite = Favourite.fromJson(json['favourite']);
@@ -191,7 +191,7 @@ class EmployeeModel {
       data["agreement_threed_contract"] = finalContract;
     }
     if (status != null) data['status'] = status!.toJson();
-    if (desc != null) data['desc'] = desc;
+    if (desc != null) data['about'] = desc;
     if (nameAr != null) data['name_ar'] = nameAr;
     if (nameEn != null) data['name_en'] = nameEn;
     if (dateOfBirth != null) data['date_of_birth'] = dateOfBirth;

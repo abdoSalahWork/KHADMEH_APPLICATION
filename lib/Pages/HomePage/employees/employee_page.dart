@@ -4,7 +4,9 @@ import 'dart:io';
 
 import 'package:android_path_provider/android_path_provider.dart';
 import 'package:dio/dio.dart';
+import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
@@ -13,7 +15,9 @@ import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart'
 import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Pages/invooice/invoice_page.dart';
+import 'package:khedma/Pages/personal%20page/submit_files_page.dart';
 import 'package:khedma/web_view_container.dart';
+import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
@@ -39,6 +43,9 @@ class _EmployeePageState extends State<EmployeePage> {
   EmployeesController _employeesController = Get.find();
   String invoiceId = "12314";
   bool contractFlag = false;
+  File? file;
+  String uploadText = "";
+
   @override
   void initState() {
     // jobs = widget.employeeModel.jobs!;
@@ -109,7 +116,7 @@ class _EmployeePageState extends State<EmployeePage> {
                                   minWidth: 2.0 * 56.0,
                                   maxWidth: MediaQuery.of(context).size.width,
                                 ),
-                                itemBuilder: (BuildContext context) => [
+                                itemBuilder: (BuildContext ctx) => [
                                   PopupMenuItem<int>(
                                     value: 1,
                                     child: coloredText(
@@ -229,6 +236,198 @@ class _EmployeePageState extends State<EmployeePage> {
                                                   ));
                                     },
                                   ),
+                                  if (contractFlag)
+                                    PopupMenuItem<int>(
+                                      value: 4,
+                                      child: coloredText(
+                                          text: 'refund'.tr, fontSize: 12.0.sp),
+                                      onTap: () async {
+                                        String desc = "";
+                                        Utils.customDialog(
+                                            context: context,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(12.0),
+                                              child: StatefulBuilder(
+                                                  builder: (c, s) {
+                                                return Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () =>
+                                                              Get.back(),
+                                                          child: const Icon(
+                                                            EvaIcons.close,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    coloredText(
+                                                        text: "desc".tr,
+                                                        fontSize: 12.0.sp),
+                                                    spaceY(20),
+                                                    SendMessageTextField(
+                                                      maxLength: 150,
+                                                      focusNode: FocusNode(),
+                                                      fillColor:
+                                                          Colors.transparent,
+                                                      wholeBorder:
+                                                          const OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                          Radius.circular(10),
+                                                        ),
+                                                        borderSide: BorderSide(
+                                                          color:
+                                                              Color(0xffC7C7C7),
+                                                        ),
+                                                      ),
+                                                      onchanged: (s) {
+                                                        if (s != null) desc = s;
+                                                      },
+                                                    ),
+                                                    spaceY(20),
+                                                    db.DottedBorder(
+                                                      dashPattern: const [
+                                                        8,
+                                                        8,
+                                                        8,
+                                                        8
+                                                      ],
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              1),
+                                                      radius:
+                                                          const Radius.circular(
+                                                              10),
+                                                      color: const Color(
+                                                          0xffC7C7C7),
+                                                      borderType:
+                                                          db.BorderType.RRect,
+                                                      child: primaryButton(
+                                                        radius: 10,
+                                                        onTap: () async {
+                                                          FilePickerResult?
+                                                              result =
+                                                              await FilePicker
+                                                                  .platform
+                                                                  .pickFiles(
+                                                                      allowMultiple:
+                                                                          false);
+
+                                                          // XFile? image = await Utils()
+                                                          //     .selectImageSheet();
+
+                                                          // if (image != null) {
+                                                          //   file = image;
+                                                          //   uploadText = image.name;
+
+                                                          //   s(() {});
+                                                          //   setState(() {});
+                                                          // }
+
+                                                          if (result != null) {
+                                                            file = File(result
+                                                                .files
+                                                                .single
+                                                                .path!);
+
+                                                            uploadText = result
+                                                                .files
+                                                                .single
+                                                                .name;
+
+                                                            s(() {});
+                                                            setState(() {});
+                                                          }
+                                                        },
+                                                        width: 100.0.w,
+                                                        height: 15.h,
+                                                        color: const Color(
+                                                                0xffC7C7C7)
+                                                            .withOpacity(0.1),
+                                                        text: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Icon(
+                                                              EvaIcons
+                                                                  .cloudUploadOutline,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                              size: 40.sp,
+                                                            ),
+                                                            if (uploadText !=
+                                                                "")
+                                                              spaceY(10),
+                                                            if (uploadText !=
+                                                                "")
+                                                              Align(
+                                                                child:
+                                                                    coloredText(
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  text: uploadText
+                                                                              .length >
+                                                                          15
+                                                                      ? "${uploadText.substring(0, 15)}..."
+                                                                      : uploadText,
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                              ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    spaceY(20),
+                                                    primaryButton(
+                                                      onTap: () async {
+                                                        DesFile tmp =
+                                                            DesFile(desc, file);
+                                                        Get.back();
+                                                        file = null;
+                                                        uploadText = "";
+
+                                                        bool b = await _globalController
+                                                            .requestRefund(
+                                                                desFile: tmp,
+                                                                employeeID: widget
+                                                                    .employeeModel
+                                                                    .id!);
+
+                                                        if (b) {
+                                                          Utils.doneDialog(
+                                                              context: context);
+                                                        }
+                                                        s(() {});
+                                                        setState(() {});
+                                                      },
+                                                      width: 40.0.w,
+                                                      radius: 10.w,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      text: coloredText(
+                                                        text: "submit".tr,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }),
+                                            ));
+                                      },
+                                    ),
                                 ],
                                 child: const Icon(
                                   EvaIcons.moreVertical,
@@ -769,7 +968,7 @@ class _EmployeePageState extends State<EmployeePage> {
                 spaceY(10.sp),
                 DetailsItemWidget(
                   title1: "living_town".tr,
-                  subTitle1: _globalController.cities
+                  subTitle1: _globalController.countries
                       .where((element) =>
                           element.id == widget.employeeModel.livingTown)
                       .map((e) => Get.locale == const Locale('en', 'US')

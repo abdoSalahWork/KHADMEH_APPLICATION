@@ -139,6 +139,10 @@ class MyAdminMenuItems {
       titleEn: "My Signiture", icon: Icons.fingerprint, titleAr: "توقيعي");
   static const reportPage = DrawerMenuItem(
       titleEn: "Reports", icon: Icons.warning_rounded, titleAr: "الإبلاغات");
+  static const refund = DrawerMenuItem(
+      titleEn: "Refund requests",
+      icon: EvaIcons.refresh,
+      titleAr: "طلبات الاسترداد");
 
   static const logOut = DrawerMenuItem(
       titleEn: "Log out", icon: EvaIcons.logOut, titleAr: "تسجيل الخروج");
@@ -158,10 +162,12 @@ class MyAdminMenuItems {
     addresses,
     companyTypes,
     commissions,
+    refund,
     languages,
     dropDowns,
     contactUs,
-    about, reportPage,
+    about,
+    reportPage,
     signiture,
     logOut,
   ];

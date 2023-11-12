@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:android_path_provider/android_path_provider.dart';
@@ -91,6 +93,8 @@ class _CompanyDocsPageState extends State<CompanyDocsPage> {
   late String _localPath;
 
   Future<void> _prepareSaveDir() async {
+    // PermissionStatus b = await Permission.storage.request();
+    // logSuccess(b.isGranted);
     _localPath = (await _getSavedDir())!;
     final savedDir = Directory(_localPath);
     if (!savedDir.existsSync()) {
@@ -161,14 +165,13 @@ class _CompanyDocsPageState extends State<CompanyDocsPage> {
               await _prepareSaveDir();
 
               for (var i = 0; i < contractFiles.length; i++) {
-                logSuccess(contractFiles[i].contractFileType ==
-                    ContractFileType.localFile);
                 if (contractFiles[i].contractFileType ==
                     ContractFileType.localFile) {
-                  File f =
-                      File("$_localPath/${basename(contractFiles[i].file)}");
-                  await f.writeAsBytes(
-                      await File(contractFiles[i].file).readAsBytes());
+                  File f = File(contractFiles[i].file);
+                  await f
+                      .copy("$_localPath/${basename(contractFiles[i].file)}");
+                  // await f.writeAsBytes(
+                  //     await File(contractFiles[i].file).readAsBytes());
                   Utils.showToast(
                       message: "${basename(contractFiles[i].file)} Done");
                 } else {
@@ -302,7 +305,18 @@ class _CompanyDocsPageState extends State<CompanyDocsPage> {
                       contractKhedmah: File(contractFiles[1].file),
                       contractMyfatoorah: File(contractFiles[0].file),
                     );
-                    if (b) Utils.doneDialog(context: context, backTimes: 2);
+                    if (b) {
+                      Utils.doneDialog(
+                        context: context,
+                        backTimes: 2,
+                        // onTap: () {
+                        //   Restart.restartApp();
+                        // },
+                        // onClose: (x) {
+                        //   Restart.restartApp();
+                        // },
+                      );
+                    }
                   },
                   color: Colors.black,
                   width: 80.w,

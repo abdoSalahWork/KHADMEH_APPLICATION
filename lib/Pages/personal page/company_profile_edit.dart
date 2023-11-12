@@ -212,9 +212,6 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
               // width: 40.0.w,
               value: city == "" ? null : city,
               items: _globalController.cities
-                  .where((element) => companyInformation.nationalityId == null
-                      ? true
-                      : element.countryId == companyInformation.nationalityId)
                   .map((e) => DropDownValueModel(
                         value: Get.locale == const Locale('en', 'US')
                             ? e.nameEn!

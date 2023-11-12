@@ -95,7 +95,6 @@ class _CompanyHomePageState extends State<CompanyHomePage>
   late double h2;
   late double h3;
   bool approveAdmin = false;
-  bool contractsVerify = false;
   tapped(int step) {
     setState(() => _currentStep = step);
   }
@@ -174,8 +173,6 @@ class _CompanyHomePageState extends State<CompanyHomePage>
               ? _globalController.me.companyInformation!.approveAdmin == 1
               : false;
       // logSuccess(approveAdmin);
-      contractsVerify =
-          _globalController.me.companyInformation!.verifyContract == 1;
     }
     tabController = TabController(length: 2, vsync: this);
     if (_globalController.me.companyInformation != null) {
@@ -487,8 +484,8 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                 //   color: const Color(0xffD1D1D1),
                                 // ),
                                 image: DecorationImage(
-                                  image: NetworkImage(_globalController
-                                      .me.companyInformation!.companyLogo!),
+                                  image: NetworkImage(
+                                      c.me.companyInformation!.companyLogo!),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -511,12 +508,15 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                                 BorderRadius.circular(15),
                                             color: Colors.red.shade50,
                                           ),
-                                          child: _globalController
-                                                          .me
-                                                          .companyInformation!
-                                                          .approveAdmin ==
-                                                      null &&
-                                                  !contractsVerify
+                                          child: ((c.me.companyInformation!
+                                                              .approveAdmin ==
+                                                          null ||
+                                                      c.me.companyInformation!
+                                                              .approveAdmin ==
+                                                          0) &&
+                                                  c.me.companyInformation!
+                                                          .verifyContract ==
+                                                      0)
                                               ? Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
@@ -1457,6 +1457,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                       borderRadius: BorderRadius.circular(10),
                       value: companyType == "" ? null : companyType,
                       items: companyTypesController.companyTypes
+                          .where((element) => element.uniqueName != "general")
                           .map(
                             (e) => DropdownMenuItem<String>(
                               value: e.uniqueName,
@@ -1473,9 +1474,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                         companyCompleteData.companyType = companyTypesController
                             .companyTypes
                             .where((element) => element.uniqueName == p0)
-                            .map((e) => Get.locale == const Locale('en', 'US')
-                                ? e.nameEn!
-                                : e.nameAr!)
+                            .map((e) => e.uniqueName)
                             .single;
                       },
                     );
@@ -1511,11 +1510,6 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                 // width: 40.0.w,
                 value: city == "" ? null : city,
                 items: c.cities
-                    .where((element) =>
-                        companyCompleteData.nationalityId == null
-                            ? true
-                            : element.countryId.toString() ==
-                                companyCompleteData.nationalityId)
                     .map((e) => DropDownValueModel(
                           value: Get.locale == const Locale('en', 'US')
                               ? e.nameEn!
@@ -1777,7 +1771,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                 controller: _taxController,
                 keyBoardType: TextInputType.number,
                 // prefixIcon: const Icon(Icons.email_outlined),
-                hintText: "tax_number".tr,
+                hintText: "${"tax_number".tr} (${"optional".tr})",
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['tax_number'] = null;
@@ -2501,7 +2495,9 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                   companyCompleteData.iban = s;
                 },
                 validator: (String? value) {
-                  if (!isValid(value!)) return "invalid iban";
+                  if (value!.isEmpty) return null;
+
+                  if (!isValid(value)) return "invalid iban";
                   if (errors['iban'] != null) {
                     String tmp = "";
                     tmp = errors['iban'].join("\n");
@@ -2792,17 +2788,15 @@ class _CompanyHomePageState extends State<CompanyHomePage>
               : ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   itemBuilder: (ctx, index) => CompanyRequestWidget(
-                    image: _globalController.companyHomePage.requests![index]
-                        .user!.userInformation!.personalPhoto!,
-                    userName: _globalController
-                        .companyHomePage.requests![index].user!.fullName!,
-                    employeeId: _globalController
-                        .companyHomePage.requests![index].employeeId!,
-                    docsId:
-                        _globalController.companyHomePage.requests![index].id!,
+                    image: c.companyHomePage.requests![index].user!
+                        .userInformation!.personalPhoto!,
+                    userName:
+                        c.companyHomePage.requests![index].user!.fullName!,
+                    employeeId: c.companyHomePage.requests![index].employeeId!,
+                    docsId: c.companyHomePage.requests![index].id!,
                   ),
                   separatorBuilder: (ctx, index) => spaceY(10.sp),
-                  itemCount: _globalController.companyHomePage.requests!.length,
+                  itemCount: c.companyHomePage.requests!.length,
                 );
         }),
         GetBuilder<GlobalController>(builder: (c) {
@@ -2829,7 +2823,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                   itemBuilder: (ctx, index) => CleanCompanyBookingWidget(
                       cleaningBooking: c.cleaningBookings[index]),
                   separatorBuilder: (ctx, index) => spaceY(10.sp),
-                  itemCount: _globalController.cleaningBookings.length,
+                  itemCount: c.cleaningBookings.length,
                 );
         }),
         GetBuilder<GlobalController>(builder: (c) {
@@ -2842,7 +2836,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                     approve: true,
                   ),
                   separatorBuilder: (ctx, index) => spaceY(10.sp),
-                  itemCount: _globalController.cleaningBookingsHistory.length,
+                  itemCount: c.cleaningBookingsHistory.length,
                 );
         })
       ];

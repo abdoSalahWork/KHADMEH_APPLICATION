@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/user%20home/user_home_page.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
+import 'package:path/path.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../Utils/utils.dart';
@@ -428,8 +429,8 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
                                   borderRadius: BorderRadius.circular(10),
                                   shadowColor: Colors.grey,
                                   child: ListTile(
-                                    visualDensity:
-                                        VisualDensity(vertical: 2), // to expand
+                                    visualDensity: const VisualDensity(
+                                        vertical: 2), // to expand
 
                                     contentPadding:
                                         EdgeInsets.symmetric(horizontal: 10),
@@ -551,12 +552,14 @@ class _SubmitFilesPageState extends State<SubmitFilesPage> {
 
 class DesFile {
   final String description;
-  final File file;
+  final File? file;
   String? fileName;
   DesFile(
     this.description,
     this.file,
   ) {
-    fileName = file.path.split('/').last;
+    if (file != null) {
+      fileName = basename(file!.path);
+    }
   }
 }

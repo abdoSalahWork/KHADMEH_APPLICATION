@@ -39,11 +39,14 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
   final AdminController _adminController = Get.find();
   final GlobalController _globalController = Get.find();
   int blocked = 0;
+  int? adminApprove;
+  int? verifyContract;
+
   @override
   void initState() {
     blocked = widget.companyProfile.block!;
-    logSuccess(
-        widget.companyProfile.companyInformation!.approveAdmin.toString());
+    adminApprove = widget.companyProfile.companyInformation!.approveAdmin;
+    verifyContract = widget.companyProfile.companyInformation!.verifyContract;
     super.initState();
   }
 
@@ -460,8 +463,9 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
                           DetailsItemWidget(
                             width1: 80.w,
                             title1: "tax_number".tr,
-                            subTitle1: widget
-                                .companyProfile.companyInformation!.taxNumber,
+                            subTitle1: widget.companyProfile.companyInformation!
+                                    .taxNumber ??
+                                "No tax number",
                           ),
                           spaceY(12.sp),
                           DetailsItemWidget(
@@ -875,54 +879,101 @@ class _AdminCompanyDetailsPageState extends State<AdminCompanyDetailsPage> {
                   ),
                 ),
               ),
-              widget.companyProfile.companyInformation!.approveAdmin != null &&
-                      widget.companyProfile.companyInformation!.approveAdmin ==
-                          1
+              spaceY(15.sp),
+              adminApprove != null && adminApprove == 1
                   ? Container()
-                  : spaceY(10.sp),
-              widget.companyProfile.companyInformation!.approveAdmin != null &&
-                      widget.companyProfile.companyInformation!.approveAdmin ==
-                          1
-                  ? Container()
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        primaryButton(
-                          onTap: () async {
-                            bool b =
-                                await _adminController.approveCompanyProfile(
-                              id: widget.companyProfile.id!,
-                              approve: 1,
-                            );
-                            if (b) {
-                              // ignore: use_build_context_synchronously
-                              Utils.doneDialog(context: context);
-                            }
-                          },
-                          width: 40.w,
-                          color: Colors.black,
-                          text: coloredText(
-                              text: "approve".tr, color: Colors.white),
+                  : verifyContract == 0
+                      ? Container()
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            primaryButton(
+                              height: 35.sp,
+                              onTap: () async {
+                                bool b = await _adminController
+                                    .approveCompanyProfile(
+                                  id: widget.companyProfile.id!,
+                                  approve: 1,
+                                );
+                                if (b) {
+                                  // ignore: use_build_context_synchronously
+                                  adminApprove = 1;
+                                  setState(() {});
+                                  Utils.doneDialog(context: context);
+                                }
+                              },
+                              width: 40.w,
+                              color: Colors.black,
+                              text: coloredText(
+                                  text: "approve".tr, color: Colors.white),
+                            ),
+                            primaryBorderedButton(
+                              height: 35.sp,
+                              onTap: () async {
+                                String desc = "";
+                                Utils.showDialogBox(
+                                  context: context,
+                                  actions: [
+                                    primaryButton(
+                                      onTap: () async {
+                                        Get.back();
+                                        bool b = await _adminController
+                                            .approveCompanyProfile(
+                                                id: widget.companyProfile.id!,
+                                                approve: 0,
+                                                desc: desc);
+                                        if (b) {
+                                          adminApprove = 1;
+                                          setState(() {});
+                                          // ignore: use_build_context_synchronously
+                                          Utils.doneDialog(context: context);
+                                        }
+                                      },
+                                      color: Colors.black,
+                                      width: 45.w,
+                                      height: 50,
+                                      text: coloredText(
+                                          text: "submit".tr,
+                                          color: Colors.white),
+                                    ),
+                                  ],
+                                  content: TextFormField(
+                                    onChanged: (value) {
+                                      desc = value;
+                                    },
+                                    maxLines: 5,
+                                    decoration: InputDecoration(
+                                      hintText: "write_your_notes".tr,
+                                      border: const OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: Color(0xffF5F5F5),
+                                    ),
+                                  ),
+                                  title: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () => Get.back(),
+                                        child: const Icon(
+                                          EvaIcons.close,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                              width: 40.w,
+                              color: Colors.black,
+                              text: coloredText(
+                                  text: "refuse".tr, color: Colors.black),
+                            )
+                          ],
                         ),
-                        primaryBorderedButton(
-                          onTap: () async {
-                            bool b =
-                                await _adminController.approveCompanyProfile(
-                              id: widget.companyProfile.id!,
-                              approve: 0,
-                            );
-                            if (b) {
-                              // ignore: use_build_context_synchronously
-                              Utils.doneDialog(context: context);
-                            }
-                          },
-                          width: 40.w,
-                          color: Colors.black,
-                          text: coloredText(
-                              text: "refuse".tr, color: Colors.black),
-                        )
-                      ],
-                    ),
               spaceY(10.sp),
             ],
           ),

@@ -156,7 +156,7 @@ class ProfileCard extends StatelessWidget {
                   ),
                   spaceX(3),
                   coloredText(
-                    text: _globalController.cities
+                    text: _globalController.countries
                         .where((element) {
                           if (employee.livingTown != null) {
                             return element.id == employee.livingTown;

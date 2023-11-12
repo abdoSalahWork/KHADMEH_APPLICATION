@@ -16,6 +16,7 @@ import 'package:khedma/Admin/pages/contact/admin_contact_page.dart';
 import 'package:khedma/Admin/pages/dropdowns/admin_dropdowns_page.dart';
 import 'package:khedma/Admin/pages/languages/admin_languages_page.dart';
 import 'package:khedma/Admin/pages/menu_page.dart';
+import 'package:khedma/Admin/pages/refunds/admin_refunds_page.dart';
 import 'package:khedma/Admin/pages/reports/admin_reports_page.dart';
 import 'package:khedma/Admin/pages/signiture/admin_signiture.dart';
 import 'package:khedma/Admin/pages/user%20profiles/admin_user_profiles_page.dart';
@@ -175,6 +176,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
         break;
       case MyAdminMenuItems.acountStatment:
         Get.to(() => const AdminAccountStatmentPage());
+        break;
+      case MyAdminMenuItems.refund:
+        Get.to(() => const AdminRefundsPage());
         break;
       case MyAdminMenuItems.companyTypes:
         Get.to(() => const AdminCompanyTypesPage());

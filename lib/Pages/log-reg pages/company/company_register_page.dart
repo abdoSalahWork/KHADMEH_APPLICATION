@@ -976,6 +976,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       borderRadius: BorderRadius.circular(10),
                       value: companyType == "" ? null : companyType,
                       items: companyTypesController.companyTypes
+                          .where((element) => element.uniqueName != "general")
                           .map(
                             (e) => DropdownMenuItem<String>(
                               value: e.uniqueName,
@@ -992,9 +993,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                         companyRegisterData.companyType = companyTypesController
                             .companyTypes
                             .where((element) => element.uniqueName == p0)
-                            .map((e) => Get.locale == const Locale('en', 'US')
-                                ? e.nameEn!
-                                : e.nameAr!)
+                            .map((e) => e.uniqueName)
                             .single;
                       },
                     );
@@ -1033,11 +1032,6 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 // width: 40.0.w,
                 value: city == "" ? null : city,
                 items: c.cities
-                    .where((element) =>
-                        companyRegisterData.nationalityId == null
-                            ? true
-                            : element.countryId.toString() ==
-                                companyRegisterData.nationalityId)
                     .map((e) => DropDownValueModel(
                           value: Get.locale == const Locale('en', 'US')
                               ? e.nameEn!
@@ -1254,7 +1248,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 controller: _taxController,
                 keyBoardType: TextInputType.number,
                 // prefixIcon: const Icon(Icons.email_outlined),
-                hintText: "tax_number".tr,
+                hintText: "${"tax_number".tr} (${"optional".tr})",
                 autovalidateMode: AutovalidateMode.always,
                 onchanged: (s) {
                   errors['tax_number'] = null;
@@ -1939,9 +1933,10 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   companyRegisterData.iban = s;
                 },
                 validator: (String? value) {
-                  if (!isValid(value!))
+                  if (value!.isEmpty) return null;
+                  if (!isValid(value)) {
                     return "invalid iban";
-                  else if (errors['iban'] != null) {
+                  } else if (errors['iban'] != null) {
                     String tmp = "";
                     tmp = errors['iban'].join("\n");
 

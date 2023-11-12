@@ -1297,6 +1297,56 @@ class GlobalController extends GetxController {
     return false;
   }
 
+  Future<bool> requestRefund({
+    required DesFile desFile,
+    required int employeeID,
+  }) async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData();
+      if (desFile.file != null) {
+        body.files.add(MapEntry(
+          "file",
+          await d.MultipartFile.fromFile(
+            desFile.file!.path,
+            filename: desFile.fileName,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      body.fields.add(MapEntry("docs", desFile.description));
+      // body.fields.add(MapEntry("_method", "PUT"));
+      // body.fields.add(MapEntry("employeeID", "$employeeID"));
+
+      String? token = await Utils.readToken();
+
+      await dio.post(
+        EndPoints.requestRefund(employeeID),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+        onSendProgress: (count, total) {
+          logSuccess("${count}/${total}");
+        },
+        onReceiveProgress: (count, total) {
+          logSuccess("${count}/${total}");
+        },
+      );
+
+      // await getCompanyEmployees();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      Get.back();
+    }
+    return false;
+  }
+
   Future<bool> submitDocs(
       {required List<DesFile> files, required int id}) async {
     try {
@@ -1308,7 +1358,7 @@ class GlobalController extends GetxController {
         body.files.add(MapEntry(
           "documents[$i][file]",
           await d.MultipartFile.fromFile(
-            tmp.path,
+            tmp!.path,
             filename: files[i].fileName,
             contentType: MediaType('image', '*'),
           ),
@@ -1593,21 +1643,20 @@ class GlobalController extends GetxController {
     }
   }
 
-  handleCitySearch({required String name, required int countryID}) {
-    logSuccess("$name $countryID");
+  handleCitySearch({
+    required String name,
+    // required int countryID,
+  }) {
+    // logSuccess("$name $countryID");
     List<City> tmp = [];
     for (var i in cities) {
       if ((i.nameEn!.toLowerCase().contains(name.toLowerCase()) ||
-              i.nameAr!.toLowerCase().contains(name.toLowerCase())) &&
-          (i.countryId == countryID || countryID == -1)) {
+          i.nameAr!.toLowerCase().contains(name.toLowerCase()))) {
         tmp.add(i);
       }
 
       if (name == "") {
-        citiesToSHow = cities
-            .where((element) =>
-                countryID == -1 ? true : element.countryId == countryID)
-            .toList();
+        citiesToSHow = cities;
       } else {
         citiesToSHow = tmp;
       }
@@ -1750,6 +1799,7 @@ class GlobalController extends GetxController {
           htmlContent2.data, tempDir!.path, "contract_myfatoorah");
     } on DioException catch (e) {
       logError(e.response!.data);
+      logError("contracts failed");
     }
   }
 
@@ -1806,16 +1856,24 @@ class GlobalController extends GetxController {
             "Authorization": "Bearer $token",
           },
         ),
+        onReceiveProgress: (count, total) {
+          logSuccess("${count}/${total}");
+        },
+        onSendProgress: (count, total) {
+          logSuccess("${count}/${total}");
+        },
       );
       logSuccess("asda");
       await getCleanCompanyHomePage();
       await getRecruitmentCompanyHomePage();
+      await getMe();
+
       update();
       Get.back();
       return true;
     } on DioException catch (error) {
       Get.back();
-      logError(error.message!);
+      logError(error.response!.data);
 
       // Utils.showSnackBar(message: error.response!.data["message"]);
       return false;

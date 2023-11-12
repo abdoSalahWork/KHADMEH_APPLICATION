@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
 import 'package:get/get.dart';
 import 'package:khedma/Admin/pages/Company%20Types/controller/models/company_type.dart';
+import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/end_points.dart';
 import 'package:khedma/Utils/utils.dart';
 
@@ -75,15 +76,18 @@ class CompanyTypesController extends GetxController {
     try {
       getCompanyTypesFlag = true;
       String? token = await Utils.readToken();
+      GlobalController g = Get.find();
 
       var res = await dio.get(
         EndPoints.getAllCompanyTypes,
-        options: Options(
-          headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer $token"
-          },
-        ),
+        options: g.me.userType == null
+            ? null
+            : Options(
+                headers: {
+                  "Accept": "application/json",
+                  "Authorization": "Bearer $token"
+                },
+              ),
       );
       List<CompanyType> tmp = [];
       for (var i in res.data['data']) {

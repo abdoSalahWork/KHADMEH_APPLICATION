@@ -188,6 +188,22 @@ class _AdminAddressesPageState extends State<AdminCommissionsPage> {
                       ),
                       spaceY(10.sp),
                       coloredText(
+                          fontSize: 14.0.sp, text: "price_pending_employee".tr),
+                      spaceY(5.sp),
+                      SendMessageTextField(
+                        suffixIcon: Utils.kwdSuffix("kwd".tr),
+                        borderRadius: 10,
+                        focusNode: FocusNode(),
+                        keyBoardType: TextInputType.number,
+                        initialValue: _settingAdmin.pricePendingEmployee,
+                        onchanged: (s) {
+                          if (s != null && s != "") {
+                            _settingAdmin.pricePendingEmployee = s;
+                          }
+                        },
+                      ),
+                      spaceY(10.sp),
+                      coloredText(
                           fontSize: 14.0.sp,
                           text: "end_date_pending_employee".tr),
                       spaceY(5.sp),

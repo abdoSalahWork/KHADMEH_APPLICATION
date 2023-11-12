@@ -193,13 +193,15 @@ class AccountStatmentCard extends StatelessWidget {
   }
 }
 
-Row depositLine({
-  required String title,
-  required String content,
-  TextDirection? textDirection,
-  TextOverflow? overflow,
-  double? width,
-}) {
+Row depositLine(
+    {required String title,
+    required String content,
+    TextDirection? textDirection,
+    TextOverflow? overflow,
+    double? width,
+    TextDecoration? decoration,
+    void Function()? onTap,
+    Color? color}) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -208,11 +210,16 @@ Row depositLine({
         child: coloredText(text: "$title: ", color: Colors.grey),
       ),
       Expanded(
-        child: coloredText(
-          overflow: overflow,
-          text: content,
-          fontSize: 12.sp,
-          textDirection: textDirection,
+        child: GestureDetector(
+          onTap: onTap,
+          child: coloredText(
+            overflow: overflow,
+            color: color,
+            text: content,
+            fontSize: 12.sp,
+            textDirection: textDirection,
+            decoration: decoration,
+          ),
         ),
       )
     ],

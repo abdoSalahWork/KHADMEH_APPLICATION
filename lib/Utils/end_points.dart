@@ -178,6 +178,12 @@ class EndPoints {
       "$_adminBaseURL/companies/profile";
   static String get getAllAccountStatments =>
       "$_adminBaseURL/account_statement";
+  static String approveRefundRequest(int id) =>
+      "$_adminBaseURL/employee/refund/approve/$id";
+  static String deleteRefundRequest(int id) =>
+      "$_adminBaseURL/delete/refund/$id";
+  static String requestRefund(int id) => "$_baseURL/employee/refund/$id";
+  static String get getAllRefunds => "$_adminBaseURL/employee/refunds";
   static String updateAdminAdvertisment(int id) =>
       "$_adminBaseURL/advertisement/update/$id";
   static String showAdminUserProfile(int id) =>

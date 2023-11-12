@@ -212,7 +212,7 @@ class EmployeeDetailsPage extends StatelessWidget {
                           spaceY(12.sp),
                           DetailsItemWidget(
                             title1: "living_town".tr,
-                            subTitle1: _globalController.cities
+                            subTitle1: _globalController.countries
                                 .where((element) =>
                                     element.id == employee.livingTown)
                                 .map((e) =>

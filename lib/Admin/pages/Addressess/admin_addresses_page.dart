@@ -245,54 +245,58 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
                   return Column(
                     children: [
                       SearchTextField(
-                          onchanged: (s) async {
-                            if (s != null) {
-                              logSuccess(countryId);
-                              c.handleCitySearch(name: s, countryID: countryId);
+                        onchanged: (s) async {
+                          if (s != null) {
+                            logSuccess(countryId);
+                            c.handleCitySearch(
+                              name: s,
+                            );
 
-                              c.handleCountrySearch(name: s);
-                              searchText = s;
-                            }
-                          },
-                          hintText: "${"search".tr} ...",
-                          prefixIcon: const Icon(
-                            EvaIcons.search,
-                            color: Color(0xffAFAFAF),
-                          ),
-                          suffixIcon: selectedTabIndex == 0
-                              ? null
-                              : CustomDropDownMenuButton(
-                                  width: 70.sp,
-                                  value: "all_cities".tr,
-                                  items: [
-                                    'all_cities'.tr,
-                                    ..._globalController.countries.map((e) =>
-                                        Get.locale == const Locale('en', 'US')
-                                            ? e.nameEn!
-                                            : e.nameAr!)
-                                  ]
-                                      .map(
-                                        (e) => DropdownMenuItem(
-                                          value: e,
-                                          child: Text(e),
-                                        ),
-                                      )
-                                      .toList(),
-                                  onChanged: (p0) {
-                                    if (p0 == "all_cities".tr) {
-                                      countryId = -1;
-                                    } else {
-                                      countryId = c.countries
-                                          .where((element) =>
-                                              element.nameAr == p0 ||
-                                              element.nameEn == p0)
-                                          .single
-                                          .id!;
-                                    }
-                                    c.handleCitySearch(
-                                        name: searchText, countryID: countryId);
-                                  },
-                                )),
+                            c.handleCountrySearch(name: s);
+                            searchText = s;
+                          }
+                        },
+                        hintText: "${"search".tr} ...",
+                        prefixIcon: const Icon(
+                          EvaIcons.search,
+                          color: Color(0xffAFAFAF),
+                        ),
+                        // suffixIcon: selectedTabIndex == 0
+                        //     ? null
+                        //     : CustomDropDownMenuButton(
+                        //         width: 70.sp,
+                        //         value: "all_cities".tr,
+                        //         items: [
+                        //           'all_cities'.tr,
+                        //           ..._globalController.countries.map((e) =>
+                        //               Get.locale == const Locale('en', 'US')
+                        //                   ? e.nameEn!
+                        //                   : e.nameAr!)
+                        //         ]
+                        //             .map(
+                        //               (e) => DropdownMenuItem(
+                        //                 value: e,
+                        //                 child: Text(e),
+                        //               ),
+                        //             )
+                        //             .toList(),
+                        //         onChanged: (p0) {
+                        //           if (p0 == "all_cities".tr) {
+                        //             countryId = -1;
+                        //           } else {
+                        //             countryId = c.countries
+                        //                 .where((element) =>
+                        //                     element.nameAr == p0 ||
+                        //                     element.nameEn == p0)
+                        //                 .single
+                        //                 .id!;
+                        //           }
+                        //           c.handleCitySearch(
+                        //             name: searchText,
+                        //           );
+                        //         },
+                        //       )),
+                      ),
                       spaceY(10.sp),
 
                       TabBar(
@@ -869,109 +873,6 @@ class _AdminAddressesPageState extends State<AdminAddressesPage>
                                                         globalController
                                                             .countries[index],
                                                   ));
-                                              // Country country = Country.fromJson(
-                                              //     globalController.countriesToShow[index]
-                                              //         .toJson());
-                                              // Utils.showDialogBox(
-                                              //   context: context,
-                                              //   actions: [
-                                              //     primaryButton(
-                                              //       onTap: () async {
-                                              //         Get.back();
-                                              //         bool b =
-                                              //             await addressessController
-                                              //                 .updateCountry(
-                                              //                     country: country);
-                                              //         // ignore: use_build_context_synchronously
-                                              //         if (b)
-                                              //           Utils.doneDialog(
-                                              //               context: context);
-                                              //       },
-                                              //       color: Colors.black,
-                                              //       width: 50.w,
-                                              //       height: 40.sp,
-                                              //       text: coloredText(
-                                              //           text: "create".tr,
-                                              //           color: Colors.white),
-                                              //     ),
-                                              //   ],
-                                              //   content: Column(
-                                              //     mainAxisSize: MainAxisSize.min,
-                                              //     crossAxisAlignment:
-                                              //         CrossAxisAlignment.start,
-                                              //     children: [
-                                              //       coloredText(text: "name_ar".tr),
-                                              //       spaceY(5.sp),
-                                              //       SizedBox(
-                                              //         height: 35.sp,
-                                              //         child: TextFormField(
-                                              //           // maxLines: 1,
-                                              //           initialValue: country.nameAr,
-                                              //           onChanged: (value) {
-                                              //             country.nameAr = value;
-                                              //           },
-                                              //           decoration:
-                                              //               const InputDecoration(
-                                              //             // hintText: "write_your_notes".tr,
-                                              //             border: OutlineInputBorder(
-                                              //               borderSide:
-                                              //                   BorderSide.none,
-                                              //               borderRadius:
-                                              //                   BorderRadius.all(
-                                              //                 Radius.circular(10),
-                                              //               ),
-                                              //             ),
-                                              //             filled: true,
-                                              //             fillColor:
-                                              //                 Color(0xffF5F5F5),
-                                              //           ),
-                                              //         ),
-                                              //       ),
-                                              //       spaceY(10.sp),
-                                              //       coloredText(text: "name_en".tr),
-                                              //       spaceY(5.sp),
-                                              //       SizedBox(
-                                              //         height: 35.sp,
-                                              //         child: TextFormField(
-                                              //           // maxLines: 1,
-                                              //           initialValue: country.nameEn,
-                                              //           onChanged: (value) {
-                                              //             country.nameEn = value;
-                                              //           },
-                                              //           decoration:
-                                              //               const InputDecoration(
-                                              //             // hintText: "write_your_notes".tr,
-                                              //             border: OutlineInputBorder(
-                                              //               borderSide:
-                                              //                   BorderSide.none,
-                                              //               borderRadius:
-                                              //                   BorderRadius.all(
-                                              //                 Radius.circular(10),
-                                              //               ),
-                                              //             ),
-                                              //             filled: true,
-                                              //             fillColor:
-                                              //                 Color(0xffF5F5F5),
-                                              //           ),
-                                              //         ),
-                                              //       ),
-                                              //     ],
-                                              //   ),
-                                              //   title: Row(
-                                              //     mainAxisAlignment:
-                                              //         MainAxisAlignment.end,
-                                              //     children: [
-                                              //       GestureDetector(
-                                              //         onTap: () => Get.back(),
-                                              //         child: const Icon(
-                                              //           EvaIcons.close,
-                                              //         ),
-                                              //       )
-                                              //     ],
-                                              //   ),
-                                              // );
-
-                                              //  Utils.doneDialog(context: context);
                                             },
                                           ),
                                           PopupMenuItem<int>(

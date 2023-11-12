@@ -8,6 +8,7 @@ import 'package:khedma/Admin/models/admin_home_page.dart';
 import 'package:khedma/Admin/models/contact_message_model.dart';
 import 'package:khedma/Admin/models/contact_model.dart';
 import 'package:khedma/Admin/models/my_chart_data.dart';
+import 'package:khedma/Admin/models/refund_model.dart';
 import 'package:khedma/Admin/models/setting_admin_model.dart';
 import 'package:khedma/Admin/pages/account%20statment/model/ac_filter.dart';
 import 'package:khedma/Utils/end_points.dart';
@@ -25,6 +26,7 @@ class AdminController extends GetxController {
   List<Me> companyProfilesToShow = [];
   List<MedicalsModel> medicalRequests = [];
   List<AccountStatmentModel> accountStatments = [];
+  List<RefundModel> refunds = [];
   List<AccountStatmentModel> accountStatmentsToShow = [];
   bool getUserProfilesFlag = false;
   bool getmedicalsRequestsFlag = false;
@@ -255,6 +257,80 @@ class AdminController extends GetxController {
     }
   }
 
+  bool getRefundsFlag = true;
+  Future<bool> getRefunds() async {
+    try {
+      getRefundsFlag = true;
+      String? token = await Utils.readToken();
+
+      var res = await dio.get(
+        EndPoints.getAllRefunds,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+      List<RefundModel> tmp = [];
+      for (var i in res.data['data']) {
+        RefundModel t = RefundModel.fromJson(i);
+
+        tmp.add(t);
+      }
+      refunds = tmp;
+
+      logSuccess("Refunds get done");
+
+      getRefundsFlag = false;
+      update();
+      return true;
+    } on DioException catch (e) {
+      refunds = [
+        RefundModel(
+          desc: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum ",
+          id: 0,
+          approved: 0,
+          user: Me(
+            id: 1,
+            fullName: "Ammourie",
+          ),
+          attchment: "https://i.stack.imgur.com/ILTQq.png",
+          createdAt: DateTime.now().toString(),
+          employeeId: 1,
+        ),
+        RefundModel(
+          desc: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum ",
+          id: 0,
+          approved: 1,
+          user: Me(
+            id: 1,
+            fullName: "Ammourie",
+          ),
+          attchment: "https://i.stack.imgur.com/ILTQq.png",
+          createdAt: DateTime.now().toString(),
+          employeeId: 1,
+        ),
+        RefundModel(
+          desc: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum ",
+          id: 0,
+          user: Me(
+            id: 1,
+            fullName: "Ammourie",
+          ),
+          attchment: "https://i.stack.imgur.com/ILTQq.png",
+          createdAt: DateTime.now().toString(),
+          employeeId: 1,
+        ),
+      ];
+      getRefundsFlag = false;
+      logError(e.response!.data);
+      update();
+      logError("Refunds failed");
+      return false;
+    }
+  }
+
   handleAccountStatmentSearch({required String name}) {
     List<AccountStatmentModel> tmp = [];
     for (var i in accountStatments) {
@@ -356,6 +432,7 @@ class AdminController extends GetxController {
   approveCompanyProfile({
     required int id,
     required int approve,
+    String? desc,
   }) async {
     try {
       Utils.circularIndicator();
@@ -363,7 +440,11 @@ class AdminController extends GetxController {
       logSuccess(EndPoints.approveCompanyProfile(id));
       var res = await dio.post(
         EndPoints.approveCompanyProfile(id),
-        data: d.FormData.fromMap({"_method": "PUT", "approve": approve}),
+        data: d.FormData.fromMap({
+          "_method": "PUT",
+          "approve": approve,
+          if (desc != null) "docs": desc,
+        }),
         options: Options(
           headers: {
             "Accept": "application/json",
@@ -618,6 +699,63 @@ class AdminController extends GetxController {
     return false;
   }
 
+  Future<bool> approveRefund(
+      {required int approve, required int id, String? desc}) async {
+    try {
+      Utils.circularIndicator();
+      final body = d.FormData.fromMap({
+        "_method": "PUT",
+        "approve": approve,
+        if (desc != null) "desc": desc,
+      });
+      logSuccess(approve);
+      String? token = await Utils.readToken();
+
+      await dio.post(EndPoints.approveRefundRequest(id),
+          data: body,
+          options: Options(headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          }));
+
+      await getRefunds();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      Get.back();
+    }
+    return false;
+  }
+
+  Future<bool> deleteRefund({required int id}) async {
+    try {
+      Utils.circularIndicator();
+      var body = d.FormData();
+      body.fields.add(const MapEntry("_method", "DELETE"));
+      String? token = await Utils.readToken();
+      await dio.post(
+        EndPoints.deleteRefundRequest(id),
+        data: body,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token"
+          },
+        ),
+      );
+
+      await getRefunds();
+      update();
+      Get.back();
+      return true;
+    } on DioException catch (e) {
+      logError(e.response!.data);
+      Get.back();
+    }
+    return false;
+  }
+
   bool getContactsFlag = false;
   Future getContacts() async {
     try {
@@ -718,7 +856,9 @@ class AdminController extends GetxController {
           },
         ),
       );
+      logWarning("setting admin : " + res.data.toString());
       settingAdmin = SettingAdmin.fromJson(res.data['data']);
+      logWarning("setting admin : " + settingAdmin.toJson().toString());
 
       logSuccess("SettingAdmin get done");
     } on DioException catch (e) {

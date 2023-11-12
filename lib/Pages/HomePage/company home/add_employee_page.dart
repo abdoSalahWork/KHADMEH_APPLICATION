@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -349,9 +350,10 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   spaceY(10.sp),
                                   coloredText(text: "nationality".tr),
                                   spaceY(5.sp),
-                                  CustomDropDownMenuButtonV2(
-                                    // height: 50.sp,
+                                  SearchableDropDownV2(
+                                    height: 40.sp,
                                     hintPadding: 0,
+
                                     // padding: const EdgeInsetsDirectional.only(
                                     //     start: 10),
                                     focusNode: _focusNodes[1],
@@ -361,41 +363,38 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     filled: true,
 
                                     width: 100.w,
+
                                     value:
                                         nationality == "" ? null : nationality,
                                     items: c.countries
-                                        .map(
-                                          (e) => DropdownMenuItem<String>(
-                                            value: Get.locale ==
-                                                    const Locale('en', 'US')
-                                                ? e.nameEn!
-                                                : e.nameAr!,
-                                            child: coloredText(
-                                                text: Get.locale ==
-                                                        const Locale('en', 'US')
-                                                    ? e.nameEn!
-                                                    : e.nameAr!,
-                                                color: Colors.black),
-                                          ),
-                                        )
+                                        .map((e) => DropDownValueModel(
+                                              value: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr,
+                                              name: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr!,
+                                            ))
                                         .toList(),
-                                    border: null,
 
                                     onChanged: (p0) {
-                                      nationality = p0!;
+                                      DropDownValueModel d = p0;
+                                      nationality = d.name;
                                       if (widget.employeeToEdit != null) {
                                         widget.employeeToEdit!.nationalityId = c
                                             .countries
                                             .lastWhere((element) =>
-                                                element.nameAr == p0 ||
-                                                element.nameEn == p0)
+                                                element.nameAr == d.name ||
+                                                element.nameEn == d.name)
                                             .id;
                                       } else {
                                         employeeToCreate.nationalityId = c
                                             .countries
                                             .lastWhere((element) =>
-                                                element.nameAr == p0 ||
-                                                element.nameEn == p0)
+                                                element.nameAr == d.name ||
+                                                element.nameEn == d.name)
                                             .id;
                                       }
 
@@ -415,6 +414,9 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
                                     // borderc: Border.all(color: const Color(0xffE3E3E3)),
                                     borderRadius: 10,
+                                    borderc:
+                                        Border.all(color: Colors.transparent),
+
                                     // padding:
                                     //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
                                   ),
@@ -526,7 +528,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   spaceY(10.sp),
                                   coloredText(text: "birth_place".tr),
                                   spaceY(5.sp),
-                                  CustomDropDownMenuButtonV2(
+                                  SearchableDropDownV2(
+                                    height: 40.sp,
                                     hintPadding: 0,
                                     padding: const EdgeInsetsDirectional.only(
                                         start: 10),
@@ -538,20 +541,16 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     width: 100.w,
                                     value: birthplace == "" ? null : birthplace,
                                     items: c.countries
-                                        .map(
-                                          (e) => DropdownMenuItem<String>(
-                                            value: Get.locale ==
-                                                    const Locale('en', 'US')
-                                                ? e.nameEn!
-                                                : e.nameAr!,
-                                            child: coloredText(
-                                                text: Get.locale ==
-                                                        const Locale('en', 'US')
-                                                    ? e.nameEn!
-                                                    : e.nameAr!,
-                                                color: Colors.black),
-                                          ),
-                                        )
+                                        .map((e) => DropDownValueModel(
+                                              value: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr,
+                                              name: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr!,
+                                            ))
                                         .toList(),
                                     border: null,
                                     validator: (s) {
@@ -564,22 +563,23 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       return null;
                                     },
                                     onChanged: (p0) {
-                                      birthplace = p0!;
+                                      DropDownValueModel d = p0;
+                                      birthplace = d.name;
 
                                       setState(() {});
                                       if (widget.employeeToEdit != null) {
                                         widget.employeeToEdit!.birthPlace = c
                                             .countries
                                             .lastWhere((element) =>
-                                                element.nameAr == p0 ||
-                                                element.nameEn == p0)
+                                                element.nameAr == d.name ||
+                                                element.nameEn == d.name)
                                             .id;
                                       } else {
                                         employeeToCreate.birthPlace = c
                                             .countries
                                             .lastWhere((element) =>
-                                                element.nameAr == p0 ||
-                                                element.nameEn == p0)
+                                                element.nameAr == d.name ||
+                                                element.nameEn == d.name)
                                             .id;
                                       }
 
@@ -594,7 +594,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   spaceY(10.sp),
                                   coloredText(text: "living_town".tr),
                                   spaceY(5.sp),
-                                  CustomDropDownMenuButtonV2(
+                                  SearchableDropDownV2(
+                                    height: 40.sp,
                                     hintPadding: 0,
                                     padding: const EdgeInsetsDirectional.only(
                                         start: 10),
@@ -604,21 +605,17 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     filled: true,
                                     width: 100.w,
                                     value: livingTown == "" ? null : livingTown,
-                                    items: c.cities
-                                        .map(
-                                          (e) => DropdownMenuItem<String>(
-                                            value: Get.locale ==
-                                                    const Locale('en', 'US')
-                                                ? e.nameEn!
-                                                : e.nameAr!,
-                                            child: coloredText(
-                                                text: Get.locale ==
-                                                        const Locale('en', 'US')
-                                                    ? e.nameEn!
-                                                    : e.nameAr!,
-                                                color: Colors.black),
-                                          ),
-                                        )
+                                    items: c.countries
+                                        .map((e) => DropDownValueModel(
+                                              value: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr,
+                                              name: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr!,
+                                            ))
                                         .toList(),
                                     border: null,
                                     validator: (s) {
@@ -631,21 +628,23 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       return null;
                                     },
                                     onChanged: (p0) {
-                                      livingTown = p0!;
+                                      DropDownValueModel d = p0;
+                                      livingTown = d.name;
 
                                       setState(() {});
                                       if (widget.employeeToEdit != null) {
                                         widget.employeeToEdit!.livingTown = c
-                                            .cities
+                                            .countries
                                             .lastWhere((element) =>
-                                                element.nameAr == p0 ||
-                                                element.nameEn == p0)
+                                                element.nameAr == d.name ||
+                                                element.nameEn == d.name)
                                             .id;
                                       } else {
-                                        employeeToCreate.livingTown = c.cities
+                                        employeeToCreate.livingTown = c
+                                            .countries
                                             .lastWhere((element) =>
-                                                element.nameAr == p0 ||
-                                                element.nameEn == p0)
+                                                element.nameAr == d.name ||
+                                                element.nameEn == d.name)
                                             .id;
                                       }
 
@@ -1067,7 +1066,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   spaceY(10.sp),
                                   coloredText(text: "issue_place".tr),
                                   spaceY(5.sp),
-                                  CustomDropDownMenuButtonV2(
+                                  SearchableDropDownV2(
+                                    height: 40.sp,
                                     hintPadding: 0,
                                     padding: const EdgeInsetsDirectional.only(
                                         start: 10),
@@ -1089,39 +1089,36 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     width: 100.w,
                                     value: issuePlace == "" ? null : issuePlace,
                                     items: c.countries
-                                        .map(
-                                          (e) => DropdownMenuItem<String>(
-                                            value: Get.locale ==
-                                                    const Locale('en', 'US')
-                                                ? e.nameEn!
-                                                : e.nameAr!,
-                                            child: coloredText(
-                                                text: Get.locale ==
-                                                        const Locale('en', 'US')
-                                                    ? e.nameEn!
-                                                    : e.nameAr!,
-                                                color: Colors.black),
-                                          ),
-                                        )
+                                        .map((e) => DropDownValueModel(
+                                              value: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr,
+                                              name: Get.locale ==
+                                                      const Locale('en', 'US')
+                                                  ? e.nameEn!
+                                                  : e.nameAr!,
+                                            ))
                                         .toList(),
                                     border: null,
 
                                     onChanged: (p0) {
-                                      issuePlace = p0!;
+                                      DropDownValueModel d = p0;
+                                      issuePlace = d.name;
                                       if (widget.employeeToEdit != null) {
                                         widget.employeeToEdit!
                                                 .passportPlaceOfIssue =
                                             c.countries
                                                 .lastWhere((element) =>
-                                                    element.nameAr == p0 ||
-                                                    element.nameEn == p0)
+                                                    element.nameAr == d.name ||
+                                                    element.nameEn == d.name)
                                                 .id;
                                       } else {
                                         employeeToCreate.passportPlaceOfIssue =
                                             c.countries
                                                 .lastWhere((element) =>
-                                                    element.nameAr == p0 ||
-                                                    element.nameEn == p0)
+                                                    element.nameAr == d.name ||
+                                                    element.nameEn == d.name)
                                                 .id;
                                       }
 

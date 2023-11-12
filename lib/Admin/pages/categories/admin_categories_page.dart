@@ -551,10 +551,14 @@ class AdminItemCard extends StatelessWidget {
       child: Row(
         children: [
           img != null
-              ? Image(
-                  image: NetworkImage(img!),
+              ? SizedBox(
                   width: 30.sp,
                   height: 30.sp,
+                  child: Image(
+                    image: NetworkImage(img!),
+                    width: 30.sp,
+                    height: 30.sp,
+                  ),
                 )
               : noIcon
                   ? Container()
@@ -563,7 +567,14 @@ class AdminItemCard extends StatelessWidget {
                       size: 25.sp,
                     ),
           spaceX(10.sp),
-          coloredText(text: name, fontSize: 12.0.sp),
+          SizedBox(
+            width: 60.w,
+            child: coloredText(
+              overflow: TextOverflow.ellipsis,
+              text: name,
+              fontSize: 12.0.sp,
+            ),
+          ),
           const Spacer(),
           trailing != null ? trailing! : Container(),
         ],
