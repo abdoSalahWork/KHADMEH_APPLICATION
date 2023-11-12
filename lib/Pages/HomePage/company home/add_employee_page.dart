@@ -2255,7 +2255,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           .map((e) =>
               Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)
           .first;
-      livingTown = _globalController.cities
+      livingTown = _globalController.countries
           .where((element) => element.id == widget.employeeToEdit!.livingTown)
           .map((e) =>
               Get.locale == const Locale('en', 'US') ? e.nameEn! : e.nameAr!)

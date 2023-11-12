@@ -1856,12 +1856,6 @@ class GlobalController extends GetxController {
             "Authorization": "Bearer $token",
           },
         ),
-        onReceiveProgress: (count, total) {
-          logSuccess("${count}/${total}");
-        },
-        onSendProgress: (count, total) {
-          logSuccess("${count}/${total}");
-        },
       );
       logSuccess("asda");
       await getCleanCompanyHomePage();
