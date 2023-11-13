@@ -1782,9 +1782,13 @@ class GlobalController extends GetxController {
       );
 
       await FlutterHtmlToPdf.convertFromHtmlContent(
-          htmlContent.data, tempDir!.path, "contract_khedmah");
+        htmlContent.data,
+        tempDir!.path,
+        "contract_khedmah",
+      );
       final htmlContent2 = await Dio().get(
         "https://khdmah.online/company/contract_myfatoorah",
+        // "https://ammourie.github.io/rrr/response.html",
         options: Options(
           headers: {
             "Accept": "application/json",
@@ -1795,6 +1799,9 @@ class GlobalController extends GetxController {
           logError("$count/ $total");
         },
       );
+      // await Printing.layoutPdf(onLayout: (pd.PdfPageFormat format) async {
+      //   return await Printing.convertHtml(html: htmlContent2.data);
+      // });
       await FlutterHtmlToPdf.convertFromHtmlContent(
           htmlContent2.data, tempDir!.path, "contract_myfatoorah");
     } on DioException catch (e) {
