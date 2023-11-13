@@ -255,7 +255,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                 child: FloatingActionButton(
                   onPressed: !approveAdmin
                       ? () async {
-                          await _globalController.downloadContracts();
+                          // await _globalController.downloadContracts();
                           // Utils.showToast(
                           //     message: "Your account is not approved yet !!");
                         }
