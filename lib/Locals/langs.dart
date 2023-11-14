@@ -385,8 +385,12 @@ class LocaleString extends Translations {
           "unified_number": "Unified number",
           "desc": "Description",
           "file": "File",
+          "pending_notice":
+              "This amount is for reservation fees and printing papers and has nothing to do with the worker's fees",
         },
         'ar_SYR': {
+          "pending_notice":
+              "هذا النبلغ هو رسوم الحجز وطباعة الأوراق وليس له علاقة برسوم العمالة",
           "desc": "الوصف",
           "file": "الملف",
           "unified_number": "الرقم الموحد",

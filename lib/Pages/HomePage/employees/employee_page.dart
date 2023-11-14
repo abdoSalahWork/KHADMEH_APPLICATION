@@ -745,63 +745,176 @@ class _EmployeePageState extends State<EmployeePage> {
                                             Utils.loginFirstDialoge(
                                                 context: context);
                                           } else {
-                                            String? x =
-                                                await _employeesController
-                                                    .pendingEmployee(
-                                                        id: widget
-                                                            .employeeModel.id!);
-                                            if (x != null) {
-                                              Get.to(() => WebViewContainer(
-                                                        url: x,
-                                                      ))!
-                                                  .then((value) async {
-                                                EmployeeModel? b =
+                                            Utils.customDialog(
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    spaceY(20),
+                                                    Icon(
+                                                      EvaIcons.infoOutline,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                      size: 40.sp,
+                                                    ),
+                                                    spaceY(20),
+                                                    coloredText(
+                                                        text:
+                                                            "pending_notice".tr,
+                                                        fontSize: 11.sp),
+                                                  ],
+                                                ),
+                                              ),
+                                              context: context,
+                                              actions: [
+                                                primaryButton(
+                                                  onTap: () async {
+                                                    String? x =
+                                                        await _employeesController
+                                                            .pendingEmployee(
+                                                                id: widget
+                                                                    .employeeModel
+                                                                    .id!);
+                                                    if (x != null) {
+                                                      Get.to(() =>
+                                                              WebViewContainer(
+                                                                url: x,
+                                                              ))!
+                                                          .then((value) async {
+                                                        EmployeeModel? b =
+                                                            await _employeesController
+                                                                .showMyEmployee(
+                                                                    id: widget
+                                                                        .employeeModel
+                                                                        .id!,
+                                                                    indicator:
+                                                                        true);
+                                                        if (b != null) {
+                                                          widget.employeeModel =
+                                                              b;
+                                                          if (widget.employeeModel
+                                                                      .status !=
+                                                                  null &&
+                                                              widget
+                                                                      .employeeModel
+                                                                      .status!
+                                                                      .status ==
+                                                                  "pending") {
+                                                            contractFlag = true;
+                                                          } else {
+                                                            contractFlag =
+                                                                false;
+                                                          }
+                                                          Utils.doneDialog(
+                                                              context: context);
+                                                          _globalController
+                                                              .getMe();
+                                                          _globalController
+                                                              .getUserHomePage();
+                                                          Utils().rateDialoge(
+                                                              context: context,
+                                                              companyId: widget
+                                                                  .employeeModel
+                                                                  .companyId!);
+                                                          setState(() {});
+                                                        }
+                                                      });
+                                                      // Uri url = Uri.parse(x);
+                                                      // logSuccess(x);
+                                                      // await launchUrl(url,
+                                                      //     mode: LaunchMode
+                                                      //         .externalApplication);
+
+                                                      // await Future.delayed(
+                                                      //     Duration(milliseconds: 100));
+                                                      // while (WidgetsBinding
+                                                      //         .instance.lifecycleState !=
+                                                      //     AppLifecycleState.resumed) {
+                                                      //   await Future.delayed(
+                                                      //       Duration(milliseconds: 100));
+                                                      // }
+                                                    }
+                                                  },
+                                                  width: 40.0.w,
+                                                  height: 35.sp,
+                                                  radius: 10.w,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                  text: coloredText(
+                                                    text: "ok".tr,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
+                                              onClose: (p0) async {
+                                                String? x =
                                                     await _employeesController
-                                                        .showMyEmployee(
+                                                        .pendingEmployee(
                                                             id: widget
                                                                 .employeeModel
-                                                                .id!,
-                                                            indicator: true);
-                                                if (b != null) {
-                                                  widget.employeeModel = b;
-                                                  if (widget.employeeModel
-                                                              .status !=
-                                                          null &&
-                                                      widget.employeeModel
-                                                              .status!.status ==
-                                                          "pending") {
-                                                    contractFlag = true;
-                                                  } else {
-                                                    contractFlag = false;
-                                                  }
-                                                  Utils.doneDialog(
-                                                      context: context);
-                                                  _globalController.getMe();
-                                                  _globalController
-                                                      .getUserHomePage();
-                                                  Utils().rateDialoge(
-                                                      context: context,
-                                                      companyId: widget
-                                                          .employeeModel
-                                                          .companyId!);
-                                                  setState(() {});
-                                                }
-                                              });
-                                              // Uri url = Uri.parse(x);
-                                              // logSuccess(x);
-                                              // await launchUrl(url,
-                                              //     mode: LaunchMode
-                                              //         .externalApplication);
+                                                                .id!);
+                                                if (x != null) {
+                                                  Get.to(() => WebViewContainer(
+                                                            url: x,
+                                                          ))!
+                                                      .then((value) async {
+                                                    EmployeeModel? b =
+                                                        await _employeesController
+                                                            .showMyEmployee(
+                                                                id: widget
+                                                                    .employeeModel
+                                                                    .id!,
+                                                                indicator:
+                                                                    true);
+                                                    if (b != null) {
+                                                      widget.employeeModel = b;
+                                                      if (widget.employeeModel
+                                                                  .status !=
+                                                              null &&
+                                                          widget
+                                                                  .employeeModel
+                                                                  .status!
+                                                                  .status ==
+                                                              "pending") {
+                                                        contractFlag = true;
+                                                      } else {
+                                                        contractFlag = false;
+                                                      }
+                                                      Utils.doneDialog(
+                                                          context: context);
+                                                      _globalController.getMe();
+                                                      _globalController
+                                                          .getUserHomePage();
+                                                      Utils().rateDialoge(
+                                                          context: context,
+                                                          companyId: widget
+                                                              .employeeModel
+                                                              .companyId!);
+                                                      setState(() {});
+                                                    }
+                                                  });
+                                                  // Uri url = Uri.parse(x);
+                                                  // logSuccess(x);
+                                                  // await launchUrl(url,
+                                                  //     mode: LaunchMode
+                                                  //         .externalApplication);
 
-                                              // await Future.delayed(
-                                              //     Duration(milliseconds: 100));
-                                              // while (WidgetsBinding
-                                              //         .instance.lifecycleState !=
-                                              //     AppLifecycleState.resumed) {
-                                              //   await Future.delayed(
-                                              //       Duration(milliseconds: 100));
-                                              // }
-                                            }
+                                                  // await Future.delayed(
+                                                  //     Duration(milliseconds: 100));
+                                                  // while (WidgetsBinding
+                                                  //         .instance.lifecycleState !=
+                                                  //     AppLifecycleState.resumed) {
+                                                  //   await Future.delayed(
+                                                  //       Duration(milliseconds: 100));
+                                                  // }
+                                                }
+                                              },
+                                            );
                                           }
                                         },
                                         text: coloredText(
