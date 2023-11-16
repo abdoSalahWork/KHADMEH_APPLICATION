@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expandable/expandable.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,7 @@ import 'package:khedma/widgets/radio_button.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:path/path.dart';
 import 'package:sizer/sizer.dart';
 import 'package:translator/translator.dart';
 
@@ -35,10 +37,15 @@ class AddEmployeePage extends StatefulWidget {
 }
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
-  String passportButton = "upload_your_passport".tr;
+  String passportButton = "upload".tr;
+  String drivingButton = "upload".tr;
+  String expirimentButton = "upload".tr;
+  String scientificButton = "upload".tr;
   Debouncer _de = Debouncer();
   var errors = {};
   String? imageToEdit;
+  String? personalImage1ToEdit;
+  String? personalImage2ToEdit;
   String nationality = "";
   String religion = "";
   String birthplace = "";
@@ -61,10 +68,23 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
   final GlobalController _globalController = Get.find();
   String imagePath = "";
+  String personalimage1Path = "";
+  String personalimage2Path = "";
+
   String passportPath = "";
-  Widget? imageWidget = Icon(
+  Widget? mainImagewidget = Icon(
     EvaIcons.person,
     size: 35.w,
+    color: Colors.white,
+  );
+  Widget? personalImage1 = Icon(
+    EvaIcons.person,
+    size: 30.w,
+    color: Colors.white,
+  );
+  Widget? personalImage2 = Icon(
+    EvaIcons.person,
+    size: 30.w,
     color: Colors.white,
   );
   @override
@@ -88,6 +108,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
   final formKey = GlobalKey<FormState>();
   final imageDataKey = GlobalKey();
+  final image2DataKey = GlobalKey();
   final dataKey = GlobalKey();
   final dataKey2 = GlobalKey();
   final dataKey3 = GlobalKey();
@@ -161,7 +182,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         XFile? image = await Utils().selectImageSheet();
 
                         if (image != null) {
-                          imageWidget = null;
+                          mainImagewidget = null;
                           imageToEdit = null;
                           imagePath = image.path;
                           if (widget.employeeToEdit != null) {
@@ -187,7 +208,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                         image: NetworkImage(imageToEdit!),
                                         fit: BoxFit.cover,
                                       )
-                                    : imageWidget != null
+                                    : mainImagewidget != null
                                         ? null
                                         : DecorationImage(
                                             image: FileImage(
@@ -196,7 +217,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                             fit: BoxFit.cover,
                                           ),
                               ),
-                              child: imageWidget,
+                              child: mainImagewidget,
                             ),
                           ),
                           PositionedDirectional(
@@ -943,6 +964,108 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                     //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
                                   ),
                                   spaceY(10.sp),
+                                  coloredText(text: "personal_photos".tr),
+                                  spaceY(10.sp),
+                                  Row(
+                                    key: image2DataKey,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          XFile? image =
+                                              await Utils().selectImageSheet();
+
+                                          if (image != null) {
+                                            personalImage1 = null;
+                                            personalImage1ToEdit = null;
+                                            personalimage1Path = image.path;
+                                            if (widget.employeeToEdit != null) {
+                                              widget.employeeToEdit!
+                                                  .personalImege2 = image;
+                                            } else {
+                                              employeeToCreate.personalImege2 =
+                                                  image;
+                                            }
+
+                                            setState(() {});
+                                          }
+                                        },
+                                        child: Container(
+                                          width: 40.w,
+                                          height: 40.w,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: const Color(0xffEFEFEF),
+                                            image: personalImage1ToEdit != null
+                                                ? DecorationImage(
+                                                    image: NetworkImage(
+                                                        personalImage1ToEdit!),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : personalImage1 != null
+                                                    ? null
+                                                    : DecorationImage(
+                                                        image: FileImage(
+                                                          File(
+                                                              personalimage1Path),
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                          ),
+                                          child: personalImage1,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          XFile? image =
+                                              await Utils().selectImageSheet();
+
+                                          if (image != null) {
+                                            personalImage2 = null;
+                                            personalImage2ToEdit = null;
+                                            personalimage2Path = image.path;
+                                            if (widget.employeeToEdit != null) {
+                                              widget.employeeToEdit!
+                                                  .personalImege3 = image;
+                                            } else {
+                                              employeeToCreate.personalImege3 =
+                                                  image;
+                                            }
+
+                                            setState(() {});
+                                          }
+                                        },
+                                        child: Container(
+                                          width: 40.w,
+                                          height: 40.w,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: const Color(0xffEFEFEF),
+                                            image: personalImage2ToEdit != null
+                                                ? DecorationImage(
+                                                    image: NetworkImage(
+                                                        personalImage2ToEdit!),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : personalImage2 != null
+                                                    ? null
+                                                    : DecorationImage(
+                                                        image: FileImage(
+                                                          File(
+                                                              personalimage2Path),
+                                                        ),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                          ),
+                                          child: personalImage2,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  spaceY(10.sp),
                                 ],
                               )
                             ],
@@ -1173,25 +1296,57 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       return null;
                                     },
                                   ),
-                                  spaceY(20.sp),
+                                  spaceY(10.sp),
+                                  coloredText(text: "passport".tr),
+                                  spaceY(5.sp),
                                   primaryButton(
                                       onTap: () async {
-                                        XFile? image =
-                                            await Utils().selectImageSheet();
-
-                                        if (image != null) {
-                                          passportButton = image.name;
-                                          passportPath = image.path;
+                                        FilePickerResult? result =
+                                            await FilePicker.platform.pickFiles(
+                                          allowMultiple: false,
+                                          allowedExtensions: [
+                                            'png',
+                                            'jpg',
+                                            'jpeg',
+                                            'pdf',
+                                            'doc',
+                                            'docx',
+                                          ],
+                                          type: FileType.custom,
+                                        );
+                                        if (result != null) {
+                                          passportButton = basename(
+                                              result.files.single.path!);
+                                          passportPath =
+                                              result.files.single.path!;
                                           if (widget.employeeToEdit != null) {
                                             widget.employeeToEdit!
-                                                .passportImege = image;
+                                                    .passportImege =
+                                                result.files.single;
                                           } else {
                                             employeeToCreate.passportImege =
-                                                image;
+                                                result.files.single;
                                           }
 
                                           setState(() {});
                                         }
+
+                                        // XFile? image =
+                                        //     await Utils().selectImageSheet();
+
+                                        // if (image != null) {
+                                        //   passportButton = image.name;
+                                        //   passportPath = image.path;
+                                        //   if (widget.employeeToEdit != null) {
+                                        //     widget.employeeToEdit!
+                                        //         .passportImege = image;
+                                        //   } else {
+                                        //     employeeToCreate.passportImege =
+                                        //         image;
+                                        //   }
+
+                                        //   setState(() {});
+                                        // }
                                       },
                                       color: const Color(0xffF5F5F5),
                                       width: 100.0.w,
@@ -1214,10 +1369,16 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                 size: 18.0.sp,
                                               ),
                                               spaceX(10),
-                                              coloredText(
-                                                text: passportButton,
-                                                color: const Color(0xff919191),
-                                                fontSize: 13.0.sp,
+                                              SizedBox(
+                                                width: 60.w,
+                                                child: coloredText(
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  text: passportButton,
+                                                  color:
+                                                      const Color(0xff919191),
+                                                  fontSize: 13.0.sp,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -1373,7 +1534,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       ),
                                       chipDisplay:
                                           MultiSelectChipDisplay<String>.none(),
-                                      initialValue: selectedJobs,
+                                      // initialValue: selectedJobs,
                                       onConfirm: (values) {
                                         selectedJobs =
                                             List<JobModel>.from(values);
@@ -1435,6 +1596,105 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                       spaceX(10.sp),
                                               itemCount: selectedJobs.length),
                                         ),
+                                  spaceY(10.sp),
+                                  coloredText(text: "driving_license".tr),
+                                  spaceY(5.sp),
+                                  primaryButton(
+                                      onTap: () async {
+                                        FilePickerResult? result =
+                                            await FilePicker.platform.pickFiles(
+                                          allowMultiple: false,
+                                          allowedExtensions: [
+                                            'png',
+                                            'jpg',
+                                            'jpeg',
+                                            'pdf',
+                                            'doc',
+                                            'docx',
+                                          ],
+                                          type: FileType.custom,
+                                        );
+                                        if (result != null) {
+                                          drivingButton =
+                                              result.files.single.name;
+
+                                          if (widget.employeeToEdit != null) {
+                                            widget.employeeToEdit!
+                                                    .drivingLicense =
+                                                result.files.single;
+                                          } else {
+                                            employeeToCreate.drivingLicense =
+                                                result.files.single;
+                                          }
+
+                                          setState(() {});
+                                        }
+
+                                        // XFile? image =
+                                        //     await Utils().selectImageSheet();
+
+                                        // if (image != null) {
+                                        //   passportButton = image.name;
+                                        //   passportPath = image.path;
+                                        //   if (widget.employeeToEdit != null) {
+                                        //     widget.employeeToEdit!
+                                        //         .passportImege = image;
+                                        //   } else {
+                                        //     employeeToCreate.passportImege =
+                                        //         image;
+                                        //   }
+
+                                        //   setState(() {});
+                                        // }
+                                      },
+                                      color: const Color(0xffF5F5F5),
+                                      width: 100.0.w,
+                                      height: 55,
+                                      radius: 10,
+                                      text: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              spaceX(10),
+                                              Icon(
+                                                EvaIcons.fileOutline,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 18.0.sp,
+                                              ),
+                                              spaceX(10),
+                                              SizedBox(
+                                                width: 60.w,
+                                                child: coloredText(
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  text: drivingButton,
+                                                  color:
+                                                      const Color(0xff919191),
+                                                  fontSize: 13.0.sp,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_forward,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 20.0.sp,
+                                              ),
+                                              spaceX(10),
+                                            ],
+                                          ),
+                                        ],
+                                      )),
                                   spaceY(10.sp),
                                   coloredText(text: "monthly_salery".tr),
                                   spaceY(5.sp),
@@ -1850,6 +2110,208 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   ),
                                   spaceY(10.sp),
                                   coloredText(
+                                      text: "scientific_certificates".tr),
+                                  spaceY(5.sp),
+                                  primaryButton(
+                                      onTap: () async {
+                                        FilePickerResult? result =
+                                            await FilePicker.platform.pickFiles(
+                                          allowMultiple: false,
+                                          allowedExtensions: [
+                                            'png',
+                                            'jpg',
+                                            'jpeg',
+                                            'pdf',
+                                            'doc',
+                                            'docx',
+                                          ],
+                                          type: FileType.custom,
+                                        );
+                                        if (result != null) {
+                                          scientificButton =
+                                              result.files.single.name;
+
+                                          if (widget.employeeToEdit != null) {
+                                            widget.employeeToEdit!
+                                                    .scientificCertificate =
+                                                result.files.single;
+                                          } else {
+                                            employeeToCreate
+                                                    .scientificCertificate =
+                                                result.files.single;
+                                          }
+
+                                          setState(() {});
+                                        }
+
+                                        // XFile? image =
+                                        //     await Utils().selectImageSheet();
+
+                                        // if (image != null) {
+                                        //   passportButton = image.name;
+                                        //   passportPath = image.path;
+                                        //   if (widget.employeeToEdit != null) {
+                                        //     widget.employeeToEdit!
+                                        //         .passportImege = image;
+                                        //   } else {
+                                        //     employeeToCreate.passportImege =
+                                        //         image;
+                                        //   }
+
+                                        //   setState(() {});
+                                        // }
+                                      },
+                                      color: const Color(0xffF5F5F5),
+                                      width: 100.0.w,
+                                      height: 55,
+                                      radius: 10,
+                                      text: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              spaceX(10),
+                                              Icon(
+                                                EvaIcons.fileOutline,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 18.0.sp,
+                                              ),
+                                              spaceX(10),
+                                              SizedBox(
+                                                width: 60.w,
+                                                child: coloredText(
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  text: scientificButton,
+                                                  color:
+                                                      const Color(0xff919191),
+                                                  fontSize: 13.0.sp,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_forward,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 20.0.sp,
+                                              ),
+                                              spaceX(10),
+                                            ],
+                                          ),
+                                        ],
+                                      )),
+                                  spaceY(10.sp),
+                                  coloredText(
+                                      text: "expiriment_certificates".tr),
+                                  spaceY(5.sp),
+                                  primaryButton(
+                                      onTap: () async {
+                                        FilePickerResult? result =
+                                            await FilePicker.platform.pickFiles(
+                                          allowMultiple: false,
+                                          allowedExtensions: [
+                                            'png',
+                                            'jpg',
+                                            'jpeg',
+                                            'pdf',
+                                            'doc',
+                                            'docx',
+                                          ],
+                                          type: FileType.custom,
+                                        );
+                                        if (result != null) {
+                                          expirimentButton =
+                                              result.files.single.name;
+
+                                          if (widget.employeeToEdit != null) {
+                                            widget.employeeToEdit!
+                                                    .expirementCertificate =
+                                                result.files.single;
+                                          } else {
+                                            employeeToCreate
+                                                    .expirementCertificate =
+                                                result.files.single;
+                                          }
+
+                                          setState(() {});
+                                        }
+
+                                        // XFile? image =
+                                        //     await Utils().selectImageSheet();
+
+                                        // if (image != null) {
+                                        //   passportButton = image.name;
+                                        //   passportPath = image.path;
+                                        //   if (widget.employeeToEdit != null) {
+                                        //     widget.employeeToEdit!
+                                        //         .passportImege = image;
+                                        //   } else {
+                                        //     employeeToCreate.passportImege =
+                                        //         image;
+                                        //   }
+
+                                        //   setState(() {});
+                                        // }
+                                      },
+                                      color: const Color(0xffF5F5F5),
+                                      width: 100.0.w,
+                                      height: 55,
+                                      radius: 10,
+                                      text: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              spaceX(10),
+                                              Icon(
+                                                EvaIcons.fileOutline,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 18.0.sp,
+                                              ),
+                                              spaceX(10),
+                                              SizedBox(
+                                                width: 60.w,
+                                                child: coloredText(
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  text: expirimentButton,
+                                                  color:
+                                                      const Color(0xff919191),
+                                                  fontSize: 13.0.sp,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_forward,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 20.0.sp,
+                                              ),
+                                              spaceX(10),
+                                            ],
+                                          ),
+                                        ],
+                                      )),
+                                  spaceY(10.sp),
+                                  coloredText(
                                       text: "knowledge_of_languages".tr),
                                   spaceY(5.sp),
                                   Theme(
@@ -1939,14 +2401,15 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       ),
                                       chipDisplay:
                                           MultiSelectChipDisplay<String>.none(),
-                                      initialValue: selectedLangs,
+                                      // initialValue: selectedLangs,
                                       onConfirm: (values) {
                                         selectedLangs =
                                             List<LanguageModel>.from(values);
                                         if (widget.employeeToEdit != null) {
-                                          if (selectedLangs.isNotEmpty)
+                                          if (selectedLangs.isNotEmpty) {
                                             widget.employeeToEdit!.languages =
                                                 selectedLangs;
+                                          }
                                         } else {
                                           employeeToCreate.languages =
                                               selectedLangs;
@@ -2211,8 +2674,8 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
   initFormIfEdit() {
     if (widget.employeeToEdit != null) {
-      // selectedJobs = List.from(widget.employeeToEdit!.jobs!);
-      // selectedLangs = List.from(widget.employeeToEdit!.languages!);
+      selectedJobs = List.from(widget.employeeToEdit!.jobs!);
+      selectedLangs = List.from(widget.employeeToEdit!.languages!);
       _dateController.text = DateFormat('y/MM/dd')
           .format(DateTime.parse(widget.employeeToEdit!.dateOfBirth!));
       _issuedateController.text = DateFormat('y/MM/dd')
@@ -2221,10 +2684,34 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
           .format(DateTime.parse(widget.employeeToEdit!.passportExpiryDate!));
       _fullNameArController.text = widget.employeeToEdit!.nameAr!;
       _fullNameEnController.text = widget.employeeToEdit!.nameEn!;
+      if (!widget.employeeToEdit!.passportImege.toString().contains("null")) {
+        passportButton = basename(widget.employeeToEdit!.passportImege);
+      }
+      if (!widget.employeeToEdit!.drivingLicense.toString().contains("null")) {
+        drivingButton = basename(widget.employeeToEdit!.drivingLicense);
+      }
+      if (!widget.employeeToEdit!.scientificCertificate
+          .toString()
+          .contains("null")) {
+        scientificButton =
+            basename(widget.employeeToEdit!.scientificCertificate);
+      }
+      if (!widget.employeeToEdit!.expirementCertificate
+          .toString()
+          .contains("null")) {
+        expirimentButton =
+            basename(widget.employeeToEdit!.expirementCertificate);
+      }
 
-      passportButton = "passport.png";
       imageToEdit = widget.employeeToEdit!.image!;
-      imageWidget = null;
+      personalImage1ToEdit = widget.employeeToEdit!.personalImege2!;
+      personalImage2ToEdit = widget.employeeToEdit!.personalImege3!;
+
+      if (!imageToEdit.toString().contains("null")) mainImagewidget = null;
+      if (!personalImage1ToEdit.toString().contains("null"))
+        personalImage1 = null;
+      if (!personalImage2ToEdit.toString().contains("null"))
+        personalImage2 = null;
       _passportNoController.text = widget.employeeToEdit!.passportNum!;
       if (widget.employeeToEdit!.isOffer == 1) {
         _amountAfterDiscountController.text =

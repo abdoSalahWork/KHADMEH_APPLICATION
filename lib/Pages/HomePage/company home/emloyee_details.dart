@@ -1,6 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_image_viewer/gallery_image_viewer.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/company%20home/add_employee_page.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
@@ -8,22 +9,30 @@ import 'package:khedma/Pages/HomePage/controllers/employees_controller.dart';
 import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/widgets/zero_app_bar.dart';
+import 'package:path/path.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EmployeeDetailsPage extends StatelessWidget {
   EmployeeDetailsPage({super.key, required this.employee});
   final EmployeeModel employee;
+
   final ExpandableController _expandableController =
       ExpandableController(initialExpanded: true);
+
   final ExpandableController _expandable2Controller =
       ExpandableController(initialExpanded: false);
+
   final ExpandableController _expandable3Controller =
       ExpandableController(initialExpanded: false);
+
   final ExpandableController _expandable4Controller =
       ExpandableController(initialExpanded: false);
 
   final GlobalController _globalController = Get.find();
+
   final EmployeesController _employeesController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -249,6 +258,56 @@ class EmployeeDetailsPage extends StatelessWidget {
                                         : e.nameAr!)
                                 .first,
                           ),
+                          spaceY(12.sp),
+                          coloredText(text: "personal_photos".tr),
+                          spaceY(5.sp),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  final imageProvider =
+                                      Image.network(employee.personalImege2)
+                                          .image;
+                                  showImageViewer(context, imageProvider,
+                                      useSafeArea: true,
+                                      swipeDismissible: true,
+                                      immersive: false, onViewerDismissed: () {
+                                    print("dismissed");
+                                  });
+                                },
+                                child: Image(
+                                  width: 40.w,
+                                  height: 40.w,
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(
+                                    employee.personalImege2,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  final imageProvider =
+                                      Image.network(employee.personalImege3)
+                                          .image;
+                                  showImageViewer(context, imageProvider,
+                                      useSafeArea: true,
+                                      swipeDismissible: true,
+                                      immersive: false, onViewerDismissed: () {
+                                    print("dismissed");
+                                  });
+                                },
+                                child: Image(
+                                  width: 40.w,
+                                  height: 40.w,
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(
+                                    employee.personalImege3,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -326,10 +385,49 @@ class EmployeeDetailsPage extends StatelessWidget {
                                     color: Colors.black,
                                     fontSize: 13.sp),
                                 spaceY(5.sp),
-                                Image(
-                                  image: NetworkImage(employee.passportImege!),
-                                  width: 50.w,
-                                ),
+                                employee.passportImege
+                                        .toString()
+                                        .endsWith("pdf")
+                                    ? GestureDetector(
+                                        onTap: () async {
+                                          Uri tmp =
+                                              Uri.parse(employee.passportImege);
+                                          await launchUrl(tmp);
+                                        },
+                                        child: SizedBox(
+                                          width: 80.w,
+                                          child: coloredText(
+                                              overflow: TextOverflow.ellipsis,
+                                              text: basename(
+                                                  employee.passportImege),
+                                              color: Colors.blue,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          final imageProvider = Image.network(
+                                                  employee.passportImege)
+                                              .image;
+                                          showImageViewer(
+                                              context, imageProvider,
+                                              useSafeArea: true,
+                                              swipeDismissible: true,
+                                              immersive: false,
+                                              onViewerDismissed: () {
+                                            print("dismissed");
+                                          });
+                                        },
+                                        child: Image(
+                                          width: 100.w,
+                                          height: 50.w,
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                            employee.passportImege,
+                                          ),
+                                        ),
+                                      )
                               ],
                             ),
                           )
@@ -390,6 +488,59 @@ class EmployeeDetailsPage extends StatelessWidget {
                                 .toList()
                                 .join(", "),
                           ),
+                          spaceY(12.sp),
+                          if (!employee.drivingLicense
+                              .toString()
+                              .contains("null"))
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                coloredText(text: "driving_license".tr),
+                                employee.drivingLicense
+                                        .toString()
+                                        .endsWith("pdf")
+                                    ? GestureDetector(
+                                        onTap: () async {
+                                          Uri tmp = Uri.parse(
+                                              employee.drivingLicense);
+                                          await launchUrl(tmp);
+                                        },
+                                        child: SizedBox(
+                                          width: 80.w,
+                                          child: coloredText(
+                                              overflow: TextOverflow.ellipsis,
+                                              text: basename(
+                                                  employee.drivingLicense),
+                                              color: Colors.blue,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          final imageProvider = Image.network(
+                                                  employee.drivingLicense)
+                                              .image;
+                                          showImageViewer(
+                                              context, imageProvider,
+                                              useSafeArea: true,
+                                              swipeDismissible: true,
+                                              immersive: false,
+                                              onViewerDismissed: () {
+                                            print("dismissed");
+                                          });
+                                        },
+                                        child: Image(
+                                          width: 100.w,
+                                          height: 50.w,
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                            employee.drivingLicense,
+                                          ),
+                                        ),
+                                      )
+                              ],
+                            ),
                           spaceY(12.sp),
                           DetailsItemWidget(
                             width1: 80.w,
@@ -477,6 +628,114 @@ class EmployeeDetailsPage extends StatelessWidget {
                                         : e.nameAr!)
                                 .first,
                           ),
+                          if (!employee.scientificCertificate
+                              .toString()
+                              .contains("null"))
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                spaceY(12.sp),
+                                coloredText(text: "scientific_certificates".tr),
+                                employee.scientificCertificate
+                                        .toString()
+                                        .endsWith("pdf")
+                                    ? GestureDetector(
+                                        onTap: () async {
+                                          Uri tmp = Uri.parse(
+                                              employee.scientificCertificate);
+                                          await launchUrl(tmp);
+                                        },
+                                        child: SizedBox(
+                                          width: 80.w,
+                                          child: coloredText(
+                                              overflow: TextOverflow.ellipsis,
+                                              text: basename(employee
+                                                  .scientificCertificate),
+                                              color: Colors.blue,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          final imageProvider = Image.network(
+                                                  employee
+                                                      .scientificCertificate)
+                                              .image;
+                                          showImageViewer(
+                                              context, imageProvider,
+                                              useSafeArea: true,
+                                              swipeDismissible: true,
+                                              immersive: false,
+                                              onViewerDismissed: () {
+                                            print("dismissed");
+                                          });
+                                        },
+                                        child: Image(
+                                          width: 100.w,
+                                          height: 50.w,
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                            employee.scientificCertificate,
+                                          ),
+                                        ),
+                                      )
+                              ],
+                            ),
+                          if (!employee.expirementCertificate
+                              .toString()
+                              .contains("null"))
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                spaceY(12.sp),
+                                coloredText(text: "expiriment_certificates".tr),
+                                employee.expirementCertificate
+                                        .toString()
+                                        .endsWith("pdf")
+                                    ? GestureDetector(
+                                        onTap: () async {
+                                          Uri tmp = Uri.parse(
+                                              employee.expirementCertificate);
+                                          await launchUrl(tmp);
+                                        },
+                                        child: SizedBox(
+                                          width: 80.w,
+                                          child: coloredText(
+                                              overflow: TextOverflow.ellipsis,
+                                              text: basename(employee
+                                                  .expirementCertificate),
+                                              color: Colors.blue,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          final imageProvider = Image.network(
+                                                  employee
+                                                      .expirementCertificate)
+                                              .image;
+                                          showImageViewer(
+                                              context, imageProvider,
+                                              useSafeArea: true,
+                                              swipeDismissible: true,
+                                              immersive: false,
+                                              onViewerDismissed: () {
+                                            print("dismissed");
+                                          });
+                                        },
+                                        child: Image(
+                                          width: 100.w,
+                                          height: 50.w,
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                            employee.expirementCertificate,
+                                          ),
+                                        ),
+                                      )
+                              ],
+                            ),
                           spaceY(12.sp),
                           DetailsItemWidget(
                             width1: 80.w,

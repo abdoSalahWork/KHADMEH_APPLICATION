@@ -1300,6 +1300,8 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                   companyRegisterData.unifiedNumber = s;
                 },
                 validator: (String? value) {
+                  if (value != null && value.length < 3)
+                    return "must be 3 numbers at least";
                   if (errors['unified_number'] != null) {
                     String tmp = "";
                     tmp = errors['unified_number'].join("\n");

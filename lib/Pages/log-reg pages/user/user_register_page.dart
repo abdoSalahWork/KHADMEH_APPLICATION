@@ -621,12 +621,15 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                           return null;
                         },
                         onChanged: (p0) {
-                          city = p0!;
+                          DropDownValueModel d = p0;
+
+                          city = d.name;
                           errors["city_id"] = null;
                           setState(() {});
                           userRegisterData.cityId = c.cities
                               .where((element) =>
-                                  element.nameEn == p0 || element.nameAr == p0)
+                                  element.nameEn == d.name ||
+                                  element.nameAr == d.name)
                               .first
                               .id
                               .toString();

@@ -917,7 +917,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                                           child: Get.locale ==
                                                                   const Locale(
                                                                       'en',
-                                                                      'uS')
+                                                                      'US')
                                                               ? coloredText(
                                                                   text: globalController.userHomePage.employees![index].nameEn!.length >
                                                                           12

@@ -8,7 +8,9 @@ import 'package:dotted_border/dotted_border.dart' as db;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:gallery_image_viewer/gallery_image_viewer.dart';
 import 'package:get/get.dart';
 import 'package:khedma/Pages/HomePage/company%20home/emloyee_details.dart';
 import 'package:khedma/Pages/HomePage/company%20home/models/employee_model.dart';
@@ -18,11 +20,13 @@ import 'package:khedma/Pages/invooice/invoice_page.dart';
 import 'package:khedma/Pages/personal%20page/submit_files_page.dart';
 import 'package:khedma/web_view_container.dart';
 import 'package:khedma/widgets/underline_text_field.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Utils/utils.dart';
 
@@ -1028,7 +1032,7 @@ class _EmployeePageState extends State<EmployeePage> {
           // spaceY(1.0.h),
           Expanded(
             child: ListView(
-              primary: false,
+              // primary: false,
               padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               children: [
                 coloredText(
@@ -1141,6 +1145,62 @@ class _EmployeePageState extends State<EmployeePage> {
                           : e.nameAr!)
                       .first,
                 ),
+                coloredText(text: "personal_photos".tr),
+                spaceY(10.sp),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        final imageProvider =
+                            Image.network(widget.employeeModel.personalImege2)
+                                .image;
+                        showImageViewer(context, imageProvider,
+                            useSafeArea: true,
+                            swipeDismissible: true,
+                            immersive: false, onViewerDismissed: () {
+                          print("dismissed");
+                          SystemChrome.setEnabledSystemUIMode(
+                              SystemUiMode.manual,
+                              overlays: SystemUiOverlay.values);
+                        });
+                      },
+                      child: Image(
+                        width: 40.w,
+                        height: 40.w,
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                          widget.employeeModel.personalImege2,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final imageProvider =
+                            Image.network(widget.employeeModel.personalImege3)
+                                .image;
+                        showImageViewer(context, imageProvider,
+                            useSafeArea: true,
+                            swipeDismissible: true,
+                            immersive: false, onViewerDismissed: () {
+                          print("dismissed");
+                          SystemChrome.setEnabledSystemUIMode(
+                              SystemUiMode.manual,
+                              overlays: SystemUiOverlay.values);
+                        });
+                      },
+                      child: Image(
+                        width: 40.w,
+                        height: 40.w,
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                          widget.employeeModel.personalImege3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
                 spaceY(10.sp),
                 Divider(),
                 coloredText(
@@ -1161,6 +1221,57 @@ class _EmployeePageState extends State<EmployeePage> {
                       .toList()
                       .join(", "),
                 ),
+                spaceY(12.sp),
+                if (!widget.employeeModel.drivingLicense
+                    .toString()
+                    .contains("null"))
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      coloredText(text: "driving_license".tr),
+                      widget.employeeModel.drivingLicense
+                              .toString()
+                              .endsWith("pdf")
+                          ? GestureDetector(
+                              onTap: () async {
+                                Uri tmp = Uri.parse(
+                                    widget.employeeModel.drivingLicense);
+                                await launchUrl(tmp);
+                              },
+                              child: SizedBox(
+                                width: 80.w,
+                                child: coloredText(
+                                    overflow: TextOverflow.ellipsis,
+                                    text: basename(
+                                        widget.employeeModel.drivingLicense),
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline),
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                final imageProvider = Image.network(
+                                        widget.employeeModel.drivingLicense)
+                                    .image;
+                                showImageViewer(context, imageProvider,
+                                    useSafeArea: true,
+                                    swipeDismissible: true,
+                                    immersive: false, onViewerDismissed: () {
+                                  print("dismissed");
+                                });
+                              },
+                              child: Image(
+                                width: 100.w,
+                                height: 50.w,
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                  widget.employeeModel.drivingLicense,
+                                ),
+                              ),
+                            )
+                    ],
+                  ),
+
                 spaceY(12.sp),
                 DetailsItemWidget(
                   title1: "contract_duration".tr,
@@ -1223,7 +1334,106 @@ class _EmployeePageState extends State<EmployeePage> {
                       .toList()
                       .join(", "),
                 ),
-
+                if (!widget.employeeModel.scientificCertificate
+                    .toString()
+                    .contains("null"))
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      spaceY(12.sp),
+                      coloredText(text: "scientific_certificates".tr),
+                      widget.employeeModel.scientificCertificate
+                              .toString()
+                              .endsWith("pdf")
+                          ? GestureDetector(
+                              onTap: () async {
+                                Uri tmp = Uri.parse(
+                                    widget.employeeModel.scientificCertificate);
+                                await launchUrl(tmp);
+                              },
+                              child: SizedBox(
+                                width: 80.w,
+                                child: coloredText(
+                                    overflow: TextOverflow.ellipsis,
+                                    text: basename(widget
+                                        .employeeModel.scientificCertificate),
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline),
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                final imageProvider = Image.network(widget
+                                        .employeeModel.scientificCertificate)
+                                    .image;
+                                showImageViewer(context, imageProvider,
+                                    useSafeArea: true,
+                                    swipeDismissible: true,
+                                    immersive: false, onViewerDismissed: () {
+                                  print("dismissed");
+                                });
+                              },
+                              child: Image(
+                                width: 100.w,
+                                height: 50.w,
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                  widget.employeeModel.scientificCertificate,
+                                ),
+                              ),
+                            )
+                    ],
+                  ),
+                if (!widget.employeeModel.expirementCertificate
+                    .toString()
+                    .contains("null"))
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      spaceY(12.sp),
+                      coloredText(text: "expiriment_certificates".tr),
+                      widget.employeeModel.expirementCertificate
+                              .toString()
+                              .endsWith("pdf")
+                          ? GestureDetector(
+                              onTap: () async {
+                                Uri tmp = Uri.parse(
+                                    widget.employeeModel.expirementCertificate);
+                                await launchUrl(tmp);
+                              },
+                              child: SizedBox(
+                                width: 80.w,
+                                child: coloredText(
+                                    overflow: TextOverflow.ellipsis,
+                                    text: basename(widget
+                                        .employeeModel.expirementCertificate),
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline),
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                final imageProvider = Image.network(widget
+                                        .employeeModel.expirementCertificate)
+                                    .image;
+                                showImageViewer(context, imageProvider,
+                                    useSafeArea: true,
+                                    swipeDismissible: true,
+                                    immersive: false, onViewerDismissed: () {
+                                  print("dismissed");
+                                });
+                              },
+                              child: Image(
+                                width: 100.w,
+                                height: 50.w,
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                  widget.employeeModel.expirementCertificate,
+                                ),
+                              ),
+                            )
+                    ],
+                  ),
                 widget.employeeModel.desc == null ? Container() : spaceY(10.sp),
                 widget.employeeModel.desc == null
                     ? Container()
@@ -1232,7 +1442,7 @@ class _EmployeePageState extends State<EmployeePage> {
                         title1: "more_details".tr,
                         subTitle1: widget.employeeModel.desc),
 
-                spaceY(10.sp),
+                spaceY(12.sp),
                 // Row(
                 //   crossAxisAlignment: CrossAxisAlignment.start,
                 //   children: [

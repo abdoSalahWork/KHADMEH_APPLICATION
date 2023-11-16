@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as d;
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
@@ -190,14 +191,40 @@ class EmployeesController extends GetxController {
       Utils.circularIndicator();
       final body = d.FormData.fromMap(employee.toJson());
       XFile? image = employee.image;
-      XFile? passportImage = employee.passportImege;
+      XFile? personalImage2 = employee.personalImege2;
+      XFile? personalImage3 = employee.personalImege3;
+
+      PlatformFile? passportImage = employee.passportImege;
+      PlatformFile? drivingLicense = employee.drivingLicense;
+      PlatformFile? scientificCertificate = employee.scientificCertificate;
+      PlatformFile? expirementCertificate = employee.expirementCertificate;
 
       if (image != null) {
         body.files.add(MapEntry(
-          "image",
+          "personal_image",
           await d.MultipartFile.fromFile(
             image.path,
             filename: image.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (personalImage2 != null) {
+        body.files.add(MapEntry(
+          "personal_image_2",
+          await d.MultipartFile.fromFile(
+            personalImage2.path,
+            filename: personalImage2.name,
+            contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (personalImage3 != null) {
+        body.files.add(MapEntry(
+          "personal_image_3",
+          await d.MultipartFile.fromFile(
+            personalImage3.path,
+            filename: personalImage3.name,
             contentType: MediaType('image', '*'),
           ),
         ));
@@ -206,9 +233,39 @@ class EmployeesController extends GetxController {
         body.files.add(MapEntry(
           "passport_image",
           await d.MultipartFile.fromFile(
-            passportImage.path,
+            passportImage.path!,
             filename: passportImage.name,
-            contentType: MediaType('image', '*'),
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (drivingLicense != null) {
+        body.files.add(MapEntry(
+          "driving_license",
+          await d.MultipartFile.fromFile(
+            drivingLicense.path!,
+            filename: drivingLicense.name,
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (expirementCertificate != null) {
+        body.files.add(MapEntry(
+          "expirement_certificate",
+          await d.MultipartFile.fromFile(
+            expirementCertificate.path!,
+            filename: expirementCertificate.name,
+            // contentType: MediaType('image', '*'),
+          ),
+        ));
+      }
+      if (scientificCertificate != null) {
+        body.files.add(MapEntry(
+          "scientific_certificate",
+          await d.MultipartFile.fromFile(
+            scientificCertificate.path!,
+            filename: scientificCertificate.name,
+            // contentType: MediaType('image', '*'),
           ),
         ));
       }
@@ -253,7 +310,6 @@ class EmployeesController extends GetxController {
           },
         ),
       );
-
       if (indicator) Get.back();
       return EmployeeModel.fromJson(res.data['data']);
     } on DioException catch (e) {
@@ -298,7 +354,7 @@ class EmployeesController extends GetxController {
 
         if (image != null) {
           body.files.add(MapEntry(
-            "image",
+            "personal_image",
             await d.MultipartFile.fromFile(
               image.path,
               filename: image.name,
@@ -307,29 +363,115 @@ class EmployeesController extends GetxController {
           ));
         }
       }
-      XFile? passportImage;
-      if (employee.passportImege.runtimeType != String) {
-        passportImage = employee.image;
+      XFile? personalImage2;
+      if (employee.personalImege2.runtimeType != String) {
+        image = employee.personalImege2;
 
-        if (passportImage != null) {
+        if (image != null) {
           body.files.add(MapEntry(
-            "passport_image",
+            "personal_image_2",
             await d.MultipartFile.fromFile(
-              passportImage.path,
-              filename: passportImage.name,
+              image.path,
+              filename: image.name,
               contentType: MediaType('image', '*'),
             ),
           ));
         }
       }
+      XFile? personalImage3;
+      if (employee.personalImege3.runtimeType != String) {
+        image = employee.personalImege3;
+
+        if (personalImage3 != null) {
+          body.files.add(MapEntry(
+            "personal_image_3",
+            await d.MultipartFile.fromFile(
+              personalImage3.path,
+              filename: personalImage3.name,
+              contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
+      }
+      PlatformFile? passportImage;
+      if (employee.passportImege.runtimeType != String) {
+        passportImage = employee.passportImege;
+
+        if (passportImage != null) {
+          body.files.add(MapEntry(
+            "passport_image",
+            await d.MultipartFile.fromFile(
+              passportImage.path!,
+              filename: passportImage.name,
+              // contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
+      }
+      PlatformFile? drivingLicense;
+      if (employee.drivingLicense.runtimeType != String) {
+        drivingLicense = employee.drivingLicense;
+
+        if (drivingLicense != null) {
+          body.files.add(MapEntry(
+            "driving_license",
+            await d.MultipartFile.fromFile(
+              drivingLicense.path!,
+              filename: drivingLicense.name,
+              // contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
+      }
+      PlatformFile? expirementCertificate;
+      if (employee.expirementCertificate.runtimeType != String) {
+        expirementCertificate = employee.expirementCertificate;
+
+        if (expirementCertificate != null) {
+          body.files.add(MapEntry(
+            "expirement_certificate",
+            await d.MultipartFile.fromFile(
+              expirementCertificate.path!,
+              filename: expirementCertificate.name,
+              // contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
+      }
+      PlatformFile? scientificCertificate;
+      if (employee.scientificCertificate.runtimeType != String) {
+        scientificCertificate = employee.scientificCertificate;
+
+        if (scientificCertificate != null) {
+          body.files.add(MapEntry(
+            "scientific_certificate",
+            await d.MultipartFile.fromFile(
+              scientificCertificate.path!,
+              filename: scientificCertificate.name,
+              // contentType: MediaType('image', '*'),
+            ),
+          ));
+        }
+      }
+      body.files.forEach((element) {
+        logSuccess(element.key);
+      });
       String? token = await Utils.readToken();
       logSuccess(employee.toJson());
-      await dio.post(EndPoints.updateEmployee(employee.id!),
-          data: body,
-          options: Options(headers: {
-            "Accept": "application/json",
-            "Authorization": "Bearer $token"
-          }));
+      await dio.post(
+        EndPoints.updateEmployee(employee.id!),
+        data: body,
+        options: Options(headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token"
+        }),
+        onSendProgress: (count, total) {
+          logWarning("${count}/${total}");
+        },
+        onReceiveProgress: (count, total) {
+          logError("${count}/${total}");
+        },
+      );
 
       await getCompanyEmployees();
       Get.back();
@@ -418,6 +560,7 @@ class EmployeesController extends GetxController {
           },
         ),
       );
+      logSuccess(res.data);
 
       if (indicator) Get.back();
       return EmployeeModel.fromJson(res.data['data']);

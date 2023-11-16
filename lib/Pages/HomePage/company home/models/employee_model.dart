@@ -27,6 +27,12 @@ class EmployeeModel {
 
   var image;
   var passportImege;
+  var drivingLicense;
+  var scientificCertificate;
+  var expirementCertificate;
+  var personalImege2;
+  var personalImege3;
+
   String? passportNum;
   RecruuitmentBooking? status;
   String? passportIssueDate;
@@ -78,6 +84,11 @@ class EmployeeModel {
     this.durationOfEmployment,
     this.image,
     this.passportImege,
+    this.drivingLicense,
+    this.expirementCertificate,
+    this.scientificCertificate,
+    this.personalImege2,
+    this.personalImege3,
     this.passportNum,
     this.status,
     this.desc,
@@ -132,9 +143,41 @@ class EmployeeModel {
     contractDuration = json['contract_duration'];
     previousWorkAbroad = json['previous_work_abroad'];
     durationOfEmployment = json['duration_of_employment'];
-    image = "https://khdmah.online/api/images/employee/${json['image']}";
-    passportImege =
-        "https://khdmah.online/api/images/employee/passport/${json['passport_image']}";
+    image = json['personal_image']
+            .toString()
+            .startsWith("https://khdmah.online/api/images/employee/")
+        ? json['personal_image']
+        : "https://khdmah.online/api/images/employee/${json['personal_image']}";
+    personalImege2 = json['personal_image_2']
+            .toString()
+            .startsWith("https://khdmah.online/api/images/employee/")
+        ? json['personal_image_2']
+        : "https://khdmah.online/api/images/employee/${json['personal_image_2']}";
+    personalImege3 = json['personal_image_3']
+            .toString()
+            .startsWith("https://khdmah.online/api/images/employee/")
+        ? json['personal_image_3']
+        : "https://khdmah.online/api/images/employee/${json['personal_image_3']}";
+    passportImege = json['passport_image']
+            .toString()
+            .startsWith("https://khdmah.online/api/images/employee/passport/")
+        ? json['passport_image']
+        : "https://khdmah.online/api/images/employee/passport/${json['passport_image']}";
+    drivingLicense = json['driving_license']
+            .toString()
+            .startsWith("https://khdmah.online/api/images/employee/")
+        ? json['driving_license']
+        : "https://khdmah.online/api/images/employee/passport/${json['driving_license']}";
+    scientificCertificate = json['scientific_certificate']
+            .toString()
+            .startsWith("https://khdmah.online/api/images/employee/")
+        ? json['scientific_certificate']
+        : "https://khdmah.online/api/images/employee/passport/${json['scientific_certificate']}";
+    expirementCertificate = json['expirement_certificate']
+            .toString()
+            .startsWith("https://khdmah.online/api/images/employee/")
+        ? json['expirement_certificate']
+        : "https://khdmah.online/api/images/employee/passport/${json['expirement_certificate']}";
     passportNum = json['passport_num'];
     passportIssueDate = json['passport_issue_date'];
     passportExpiryDate = json['passport_expiry_date'];

@@ -1,3 +1,4 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -63,15 +64,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               .where((element) => element.id == userInformation.cityId)
               .first
               .nameAr!;
-      region = Get.locale == const Locale('en', 'US')
-          ? _globalController.regions
-              .where((element) => element.id == userInformation.regionId)
-              .first
-              .nameEn!
-          : _globalController.regions
-              .where((element) => element.id == userInformation.regionId)
-              .first
-              .nameAr!;
+      // region = Get.locale == const Locale('en', 'US')
+      //     ? _globalController.regions
+      //         .where((element) => element.id == userInformation.regionId)
+      //         .first
+      //         .nameEn!
+      //     : _globalController.regions
+      //         .where((element) => element.id == userInformation.regionId)
+      //         .first
+      //         .nameAr!;
     }
 
     _jobNameController.text = userInformation.jobName!;
@@ -166,7 +167,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               //
             ),
             spaceY(15.0.sp), coloredText(text: "nationality".tr),
-            CustomDropDownMenuButton(
+            SearchableDropDown(
               hintPadding: 0, focusNode: _focusNodes[3],
               value: nationality == "" ? null : nationality,
               hint: "${"nationality".tr} (${"optional".tr})",
@@ -181,27 +182,27 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 return null;
               },
               onChanged: (p0) {
-                nationality = p0!;
+                DropDownValueModel d = p0;
+
+                nationality = d.name;
                 errors['nationality_id'] = null;
                 setState(() {});
                 userInformation.nationalityId = _globalController.countries
                     .where((element) =>
-                        element.nameEn == p0 || element.nameAr == p0)
+                        element.nameEn == d.name || element.nameAr == d.name)
                     .first
                     .id;
               },
               width: 100.w,
               items: _globalController.countries
                   .map(
-                    (e) => DropdownMenuItem<String>(
+                    (e) => DropDownValueModel(
                       value: Get.locale == const Locale('en', 'US')
                           ? e.nameEn!
                           : e.nameAr,
-                      child: coloredText(
-                          text: Get.locale == const Locale('en', 'US')
-                              ? e.nameEn!
-                              : e.nameAr!,
-                          color: Colors.black),
+                      name: Get.locale == const Locale('en', 'US')
+                          ? e.nameEn!
+                          : e.nameAr!,
                     ),
                   )
                   .toList(),
@@ -218,7 +219,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 size: 20.0.sp,
               ),
               // borderc: Border.all(color: const Color(0xffE3E3E3)),
-              borderRadius: BorderRadius.circular(8),
+              // borderRadius: BorderRadius.circular(8),
               // padding:
               //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
             ),
@@ -233,16 +234,119 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             //     size: 15.0.sp,
             //   ),
             // ),
+            spaceY(15.0.sp),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //todo:langs needs to be fixed
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                coloredText(text: "city".tr),
+                SearchableDropDown(
+                  hint: "city".tr,
+                  value: city == "" ? null : city,
+                  hintPadding: 0,
+                  border: const UnderlineInputBorder(),
+                  width: 100.0.w,
+                  prefix: const SizedBox(width: 10),
+                  items: _globalController.cities
+                      .map((e) => DropDownValueModel(
+                            value: Get.locale == const Locale('en', 'US')
+                                ? e.nameEn!
+                                : e.nameAr,
+                            name: Get.locale == const Locale('en', 'US')
+                                ? e.nameEn!
+                                : e.nameAr!,
+                          ))
+                      .toList(),
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (String? value) {
+                    if (errors['city_id'] != null) {
+                      String tmp = "";
+                      tmp = errors['city_id'].join("\n");
+
+                      return tmp;
+                    }
+                    return null;
+                  },
+                  onChanged: (p0) {
+                    DropDownValueModel d = p0;
+                    city = d.name;
+                    errors["city_id"] = null;
+                    setState(() {});
+                    userInformation.cityId = _globalController.cities
+                        .where((element) =>
+                            element.nameEn == d.name ||
+                            element.nameAr == d.name)
+                        .first
+                        .id!;
+                  },
+                ),
+              ],
+            ),
+            // //todo:langs need to be fixed
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     coloredText(text: "region".tr),
+            //     CustomDropDownMenuButton(
+            //       hint: "region".tr,
+            //       border: const UnderlineInputBorder(),
+            //       width: 40.0.w,
+            //       hintPadding: 0,
+            //       value: region == "" ? null : region,
+            //       items: _globalController.regions
+            //           .map((e) => DropdownMenuItem<String>(
+            //                 value: Get.locale == const Locale('en', 'US')
+            //                     ? e.nameEn!
+            //                     : e.nameAr,
+            //                 child: coloredText(
+            //                   text: Get.locale == const Locale('en', 'US')
+            //                       ? e.nameEn!
+            //                       : e.nameAr!,
+            //                   fontSize: 17,
+            //                 ),
+            //               ))
+            //           .toList(),
+            //       autovalidateMode: AutovalidateMode.always,
+            //       validator: (String? value) {
+            //         if (errors['region_id'] != null) {
+            //           String tmp = "";
+            //           tmp = errors['region_id'].join("\n");
+
+            //           return tmp;
+            //         }
+            //         return null;
+            //       },
+            //       onChanged: (p0) {
+            //         region = p0!;
+            //         errors["region_id"] = null;
+            //         setState(() {});
+            //         userInformation.regionId = _globalController.regions
+            //             .where((element) =>
+            //                 element.nameEn == p0 || element.nameAr == p0)
+            //             .first
+            //             .id!;
+            //         ;
+            //       },
+            //     ),
+            //   ],
+            // ),
+            //   ],
+            // ),
+
             spaceY(15.0.sp), coloredText(text: "job".tr),
             UnderlinedCustomTextField(
               focusNode: _focusNodes[2],
               hintText: "job".tr,
               controller: _jobNameController,
               keyBoardType: TextInputType.text,
-              prefixIcon: Icon(
-                EvaIcons.briefcaseOutline,
-                size: 15.0.sp,
-              ),
+              padding: EdgeInsets.zero,
+              // prefixIcon: Icon(
+              //   EvaIcons.briefcaseOutline,
+              //   size: 15.0.sp,
+              // ),
               onchanged: (s) {
                 errors['job_name'] = null;
                 setState(() {});
@@ -257,107 +361,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 }
                 return null;
               },
-            ),
-            spaceY(15.0.sp),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                //todo:langs needs to be fixed
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    coloredText(text: "phone_number".tr),
-                    CustomDropDownMenuButton(
-                      hint: "city".tr,
-                      value: city == "" ? null : city,
-                      hintPadding: 0,
-                      border: const UnderlineInputBorder(),
-                      width: 40.0.w,
-                      items: _globalController.cities
-                          .map((e) => DropdownMenuItem<String>(
-                                value: Get.locale == const Locale('en', 'US')
-                                    ? e.nameEn!
-                                    : e.nameAr,
-                                child: coloredText(
-                                  text: Get.locale == const Locale('en', 'US')
-                                      ? e.nameEn!
-                                      : e.nameAr!,
-                                  fontSize: 17,
-                                ),
-                              ))
-                          .toList(),
-                      autovalidateMode: AutovalidateMode.always,
-                      validator: (String? value) {
-                        if (errors['city_id'] != null) {
-                          String tmp = "";
-                          tmp = errors['city_id'].join("\n");
-
-                          return tmp;
-                        }
-                        return null;
-                      },
-                      onChanged: (p0) {
-                        city = p0!;
-                        errors["city_id"] = null;
-                        setState(() {});
-                        userInformation.cityId = _globalController.cities
-                            .where((element) =>
-                                element.nameEn == p0 || element.nameAr == p0)
-                            .first
-                            .id!;
-                      },
-                    ),
-                  ],
-                ),
-                //todo:langs need to be fixed
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    coloredText(text: "region".tr),
-                    CustomDropDownMenuButton(
-                      hint: "region".tr,
-                      border: const UnderlineInputBorder(),
-                      width: 40.0.w,
-                      hintPadding: 0,
-                      value: region == "" ? null : region,
-                      items: _globalController.regions
-                          .map((e) => DropdownMenuItem<String>(
-                                value: Get.locale == const Locale('en', 'US')
-                                    ? e.nameEn!
-                                    : e.nameAr,
-                                child: coloredText(
-                                  text: Get.locale == const Locale('en', 'US')
-                                      ? e.nameEn!
-                                      : e.nameAr!,
-                                  fontSize: 17,
-                                ),
-                              ))
-                          .toList(),
-                      autovalidateMode: AutovalidateMode.always,
-                      validator: (String? value) {
-                        if (errors['region_id'] != null) {
-                          String tmp = "";
-                          tmp = errors['region_id'].join("\n");
-
-                          return tmp;
-                        }
-                        return null;
-                      },
-                      onChanged: (p0) {
-                        region = p0!;
-                        errors["region_id"] = null;
-                        setState(() {});
-                        userInformation.regionId = _globalController.regions
-                            .where((element) =>
-                                element.nameEn == p0 || element.nameAr == p0)
-                            .first
-                            .id!;
-                        ;
-                      },
-                    ),
-                  ],
-                ),
-              ],
             ),
             spaceY(15.0.sp), coloredText(text: "piece_num".tr),
             UnderlinedCustomTextField(

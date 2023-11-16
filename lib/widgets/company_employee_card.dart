@@ -46,20 +46,24 @@ class CompanyEmployeeCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Get.locale == const Locale('en', 'US')
-                            ? coloredText(
-                                text: employee.nameEn != null
-                                    ? employee.nameEn!.length > 8
-                                        ? "${employee.nameEn!.substring(0, 8)}..."
-                                        : employee.nameEn!
-                                    : 'lorem ipsun',
-                                fontSize: 13.0.sp)
-                            : coloredText(
-                                text: employee.nameAr != null
-                                    ? employee.nameAr!.length > 8
-                                        ? "${employee.nameAr!.substring(0, 8)}..."
-                                        : employee.nameAr!
-                                    : 'lorem ipsun',
-                                fontSize: 13.0.sp),
+                            ? SizedBox(
+                                width: 60.w,
+                                child: coloredText(
+                                    overflow: TextOverflow.ellipsis,
+                                    text: employee.nameEn != null
+                                        ? employee.nameEn!
+                                        : 'lorem ipsun',
+                                    fontSize: 13.0.sp),
+                              )
+                            : SizedBox(
+                                width: 60.w,
+                                child: coloredText(
+                                    overflow: TextOverflow.ellipsis,
+                                    text: employee.nameAr != null
+                                        ? employee.nameAr!
+                                        : 'lorem ipsun',
+                                    fontSize: 13.0.sp),
+                              ),
                         spaceY(5.sp),
                         Row(
                           children: [
