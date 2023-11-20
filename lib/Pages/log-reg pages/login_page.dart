@@ -361,8 +361,14 @@ class _LoginPageState extends State<LoginPage> {
                                         Get.offAll(
                                           () => const CompanyHomePage(),
                                         );
-                                      } else {
+                                      } else if (_globalController
+                                              .me.userType ==
+                                          "admin") {
                                         Get.offAll(() => const AdminHomePage());
+                                      } else {
+                                        Utils.showSnackBar(
+                                            message:
+                                                "Something went wrong, try again later");
                                       }
                                     } else if (state ==
                                         LoginStates.needsVerify) {

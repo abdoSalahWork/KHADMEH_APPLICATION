@@ -11,6 +11,7 @@ import 'package:khedma/Pages/log-reg%20pages/login_page.dart';
 import 'package:khedma/Pages/personal%20page/about_page.dart';
 import 'package:khedma/Pages/personal%20page/company_profile_edit.dart';
 import 'package:khedma/Pages/personal%20page/contact_us_page.dart';
+import 'package:khedma/models/me.dart';
 import 'package:khedma/widgets/dropdown_menu_button.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:sizer/sizer.dart';
@@ -398,6 +399,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                                 Get.offAll(() => const LoginPage());
                                 AuthController _authController = Get.find();
                                 _authController.handleSignOut();
+                                _globalController.me = Me();
                               }
                             },
                             text: coloredText(
