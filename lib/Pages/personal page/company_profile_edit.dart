@@ -206,7 +206,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
             //todo:langs needs to be fixed
             coloredText(text: "city".tr),
             SearchableDropDown(
-              // hintPadding: 10,
+              hintPadding: 10,
               hint: "city".tr, hintSize: 25,
               border: const UnderlineInputBorder(),
               // width: 40.0.w,
