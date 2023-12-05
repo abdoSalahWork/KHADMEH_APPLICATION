@@ -37,12 +37,12 @@ class _CompanyDocsPageState extends State<CompanyDocsPage> {
       contractFiles.addAll([
         ContractFiles(
           contractFileType: ContractFileType.localFile,
-          file: "${_globalController.tempDir!.path}/contract_myfatoorah.pdf",
+          file: "${_globalController.tempDir?.path}/contract_myfatoorah.pdf",
           name: "Myfatoorah Contract".tr,
         ),
         ContractFiles(
           contractFileType: ContractFileType.localFile,
-          file: "${_globalController.tempDir!.path}/contract_khedmah.pdf",
+          file: "${_globalController.tempDir?.path}/contract_khedmah.pdf",
           name: "khedmah Contract".tr,
         ),
         ContractFiles(
@@ -52,11 +52,11 @@ class _CompanyDocsPageState extends State<CompanyDocsPage> {
         ContractFiles(
             contractFileType: ContractFileType.networkFile,
             file: _globalController
-                .me.companyInformation!.signatureAuthorization!,
+                .me.companyInformation?.signatureAuthorization!,
             name: "signiture_auth".tr),
         ContractFiles(
           contractFileType: ContractFileType.networkFile,
-          file: _globalController.me.companyInformation!.articlesOfAssociation!,
+          file: _globalController.me.companyInformation?.articlesOfAssociation!,
           name: "articles_of_association".tr,
         ),
       ]);
@@ -64,26 +64,31 @@ class _CompanyDocsPageState extends State<CompanyDocsPage> {
       contractFiles.addAll([
         ContractFiles(
           contractFileType: ContractFileType.networkFile,
-          file: _globalController.me.companyInformation!.contractMyfatoorah!,
+          file:
+              _globalController.me.companyInformation?.contractMyfatoorah ?? "",
           name: "Myfatoorah Contract".tr,
         ),
         ContractFiles(
           contractFileType: ContractFileType.networkFile,
-          file: _globalController.me.companyInformation!.contractKhedmah!,
+          file: _globalController.me.companyInformation?.contractKhedmah ?? "",
           name: "khedmah Contract".tr,
         ),
         ContractFiles(
             contractFileType: ContractFileType.networkFile,
-            file: _globalController.me.companyInformation!.commercialLicense!,
+            file: _globalController.me.companyInformation?.commercialLicense ??
+                "",
             name: "commercial_license".tr),
         ContractFiles(
             contractFileType: ContractFileType.networkFile,
             file: _globalController
-                .me.companyInformation!.signatureAuthorization!,
+                    .me.companyInformation?.signatureAuthorization ??
+                "",
             name: "signiture_auth".tr),
         ContractFiles(
           contractFileType: ContractFileType.networkFile,
-          file: _globalController.me.companyInformation!.articlesOfAssociation!,
+          file:
+              _globalController.me.companyInformation?.articlesOfAssociation ??
+                  "",
           name: "articles_of_association".tr,
         ),
       ]);
@@ -205,7 +210,7 @@ class _CompanyDocsPageState extends State<CompanyDocsPage> {
           SizedBox(
             height: widget.readOnly ? 80.h : 65.h,
             child: GridView.count(
-              childAspectRatio: 0.50,
+              
               mainAxisSpacing: 10,
               crossAxisSpacing: 10.w,
               crossAxisCount: 2,

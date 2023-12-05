@@ -210,9 +210,8 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                                 FocusScope.of(context).unfocus();
                                 Get.back();
                               },
-                              width: 40.0.w,
-                              height: 50,
                               radius: 10.w,
+                              height: 6.h,
                               color: Colors.black,
                               text: coloredText(
                                 text: "save".tr,
@@ -227,18 +226,18 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                               coloredText(text: "currency".tr),
                               spaceY(5.sp),
                               CustomDropDownMenuButtonV2(
-                                hintPadding: 0,
                                 focusNode: FocusNode(),
                                 value: _globalController.currencySymbol.key,
                                 fillColor: const Color(0xffF8F8F8),
-                                filled: true,
-                                width: 100.w,
                                 items: _globalController.currencySymbols
                                     .map(
                                       (e) => DropdownMenuItem<String>(
                                         value: e.key,
                                         child: coloredText(
-                                            text: e.value, color: Colors.black),
+                                            fontSize: 30,
+                                            overflow: TextOverflow.visible,
+                                            text: e.value,
+                                            color: Colors.black),
                                       ),
                                     )
                                     .toList(),
@@ -263,7 +262,7 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                         ),
                         spaceX(10),
                         coloredText(
-                          color: const Color(0xff919191),
+                          color: Colors.black,
                           text: "currency".tr,
                         ),
                       ],
@@ -274,9 +273,14 @@ class _PersonalSettingsState extends State<PersonalSettings> {
                 if (_globalController.me.userType == 'company')
                   primaryBorderedButton(
                     onTap: () {
-                      Get.to(() => const CompanyDocsPage(
-                            readOnly: true,
-                          ));
+                      if (_globalController
+                              .me.companyInformation?.approveAdmin ==
+                          1) {
+                        Get.to(() => const CompanyDocsPage(
+                              readOnly: true,
+                            ));
+                      }
+                      ;
                     },
                     width: 100.w,
                     text: Row(

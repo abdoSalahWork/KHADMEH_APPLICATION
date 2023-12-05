@@ -207,7 +207,7 @@ class _CompanyProfileEditPageState extends State<CompanyProfileEditPage> {
             coloredText(text: "city".tr),
             SearchableDropDown(
               hintPadding: 10,
-              hint: "city".tr,
+              hint: "city".tr, hintSize: 25,
               border: const UnderlineInputBorder(),
               // width: 40.0.w,
               value: city == "" ? null : city,

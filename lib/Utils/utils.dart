@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -397,10 +398,12 @@ class Utils {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
+           
             title: title,
             content: SizedBox(
-              width: 100.w,
-              child: content,
+              
+              width:100.w,
+             child: content,
             ),
             actions: actions,
             surfaceTintColor: Colors.white,
@@ -998,20 +1001,22 @@ Text coloredText(
     text,
     textAlign: textAlign,
     softWrap: true,
+    
     textDirection: textDirection,
-    overflow: overflow,
+    overflow: TextOverflow.visible,
     style: textstyle ??
         (Get.locale == const Locale('en', 'US')
             ? GoogleFonts.poppins(
                 color: color ?? Colors.black,
-                fontSize: fontSize ?? 13.0.sp,
+                fontSize: fontSize ?? 10.sp,
                 fontWeight: fontWeight,
-                decoration: decoration,
+              
+                
                 decorationColor: color,
               )
             : GoogleFonts.cairo(
                 color: color ?? Colors.black,
-                fontSize: fontSize ?? 13.0.sp,
+                fontSize: fontSize ?? 25,
                 fontWeight: fontWeight,
                 decoration: decoration,
                 decorationColor: color,

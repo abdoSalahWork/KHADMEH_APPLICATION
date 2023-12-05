@@ -105,7 +105,7 @@ class _CompanyEmployeesSearchPageState
                   ],
                 ),
               ),
-              spaceY(2.0.h),
+              spaceY(5.0.h),
               Expanded(
                 child: GetBuilder<EmployeesController>(builder: (c) {
                   return c.getCompanyEmployeesFlag
@@ -118,7 +118,7 @@ class _CompanyEmployeesSearchPageState
                               itemBuilder: (context, index) =>
                                   CompanyEmployeeCard(
                                 trailing: Theme(
-                                  data: ThemeData(primaryColor: Colors.white),
+                                  data: ThemeData(primaryColor: ( Colors.white)),
                                   child: PopupMenuButton(
                                     constraints: BoxConstraints(
                                       minWidth: 2.0 * 56.0,
@@ -216,7 +216,7 @@ class _CompanyEmployeesSearchPageState
                                 children: [
                                   spaceY(1.0.h),
                                   const Divider(
-                                    color: Color(0xffEBEBEB),
+                                    color: Color.fromARGB(255, 203, 203, 203),
                                     thickness: 1,
                                   ),
                                   spaceY(1.0.h),

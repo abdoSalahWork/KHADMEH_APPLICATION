@@ -77,8 +77,9 @@ class _CompanyEmployeesFilterPageState
               ),
             ),
             child: MultiSelectDialogField(
+              
                 buttonText: coloredText(
-                    text: "choose".tr, color: Colors.grey, fontSize: 15),
+                    text: "choose".tr, color: Colors.grey, fontSize: 25),
                 items: jobs.map((e) => MultiSelectItem(e, e)).toList(),
                 listType: MultiSelectListType.CHIP,
                 // selectedColor: Theme.of(context).colorScheme.secondary,
@@ -98,6 +99,7 @@ class _CompanyEmployeesFilterPageState
                   border: Border.all(
                     color: const Color(0xffE3E3E3),
                   ),
+                  
                   borderRadius: BorderRadius.circular(10),
                 ),
                 chipDisplay: MultiSelectChipDisplay<String>.none(),
@@ -166,6 +168,7 @@ class _CompanyEmployeesFilterPageState
           GetBuilder<GlobalController>(builder: (c) {
             return CustomDropDownMenuButton(
               value: nationality == "" ? null : nationality,
+              hintSize: 25,
               items: c.countries
                   .map(
                     (e) => DropdownMenuItem<String>(
@@ -201,6 +204,7 @@ class _CompanyEmployeesFilterPageState
           GetBuilder<GlobalController>(builder: (c) {
             return CustomDropDownMenuButton(
               value: status == "" ? null : status,
+              hintSize: 25,
               items: [
                 "booked".tr,
                 "not_booked".tr,
@@ -258,7 +262,7 @@ class _CompanyEmployeesFilterPageState
                 _employeesController.applyCompanyFilter();
                 Get.back();
               },
-              height: 50,
+             height: 8.h,
               width: 50.0.w,
               gradient: LinearGradient(
                 begin: AlignmentDirectional.centerStart,
@@ -272,6 +276,7 @@ class _CompanyEmployeesFilterPageState
                 text: "apply".tr,
                 color: Colors.white,
                 fontSize: 15.0.sp,
+                
               ),
               radius: 15)
         ],

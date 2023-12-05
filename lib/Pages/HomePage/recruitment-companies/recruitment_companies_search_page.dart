@@ -74,6 +74,7 @@ class _RecruitmentCompaniesPageSSearchtate
                                 ? e.nameEn!
                                 : e.nameAr!,
                             child: coloredText(
+                                fontSize: 25,
                                 text: Get.locale == const Locale('en', 'US')
                                     ? e.nameEn!
                                     : e.nameAr!,
@@ -86,11 +87,12 @@ class _RecruitmentCompaniesPageSSearchtate
                           city: p0!);
                     },
                     hint: "city".tr,
+                    
+                    hintSize: 25,
+                    padding: EdgeInsets.all(10),
                     borderc: Border.all(color: const Color(0xffE3E3E3)),
                     borderRadius: BorderRadius.circular(8),
-                    padding:
-                        const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                  ),
+                  )
                 ],
               ),
               // ChipsChoice<String>.multiple(

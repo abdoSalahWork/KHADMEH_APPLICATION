@@ -54,12 +54,11 @@ class SelectLanguagePage extends StatelessWidget {
                 () => const LoginPage(),
               );
             },
-            width: 75.0.w,
-            height: 55,
+
             color: Theme.of(context).colorScheme.secondary,
             text: coloredText(
               text: "English",
-              fontSize: 18.0.sp,
+              fontSize: 15.0.sp,
               color: Theme.of(context).colorScheme.secondary,
             ),
           ),
@@ -72,8 +71,7 @@ class SelectLanguagePage extends StatelessWidget {
                 () => const LoginPage(),
               );
             },
-            width: 75.0.w,
-            height: 55,
+           
             color: Theme.of(context).primaryColor,
             text: coloredText(
                 text: "العربية", fontSize: 18.0.sp, color: Colors.white),

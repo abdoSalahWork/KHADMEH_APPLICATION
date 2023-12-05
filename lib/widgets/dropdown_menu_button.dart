@@ -207,12 +207,13 @@ class CustomDropDownMenuButtonV2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       validator: validator,
+      
       autovalidateMode: autovalidateMode,
       padding: EdgeInsetsDirectional.only(start: contentPadding),
       value: value,
       dropdownColor: Colors.white,
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(10),
+       
         fillColor: fillColor ?? const Color(0xffF1F1F1),
         filled: true,
         enabledBorder: wholeBorder ??
@@ -248,19 +249,20 @@ class CustomDropDownMenuButtonV2 extends StatelessWidget {
         suffix: suffix,
         hintText: hintText,
         hintStyle: GoogleFonts.cairo(
-          fontSize: 13.0.sp,
+          fontSize: 8.0.sp,
           color: Colors.grey,
         ),
       ),
       isExpanded: true,
       items: items,
+      
       hint: Row(
         children: [
           spaceX(hintPadding),
           coloredText(
               text: hint ?? "select".tr,
               color: Colors.grey,
-              fontSize: hintSize ?? 13.sp),
+              fontSize: hintSize ?? 8.sp),
         ],
       ),
       onChanged: onChanged,

@@ -115,6 +115,7 @@ class _RecruitmentCompaniesPageSSearchtate
                       );
                     },
                     hint: "city".tr,
+                    hintSize: 25,
                     borderc: Border.all(color: const Color(0xffE3E3E3)),
                     borderRadius: BorderRadius.circular(8),
                     padding:
@@ -143,6 +144,7 @@ class _RecruitmentCompaniesPageSSearchtate
                         companyType: companyType,
                       );
                     },
+                    hintSize: 25,
                     hint: "type".tr,
                     borderc: Border.all(color: const Color(0xffE3E3E3)),
                     borderRadius: BorderRadius.circular(8),

@@ -68,7 +68,7 @@ class _SplashPageState extends State<SplashPage>
     _companyTypesController.getCompanyTypes();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     Future.delayed(
-      const Duration(seconds: 2),
+      const Duration(seconds: 1),
       () async {
         String? rem = await Utils.readRemmemberMe();
         String? lang = await Utils.readLanguage();

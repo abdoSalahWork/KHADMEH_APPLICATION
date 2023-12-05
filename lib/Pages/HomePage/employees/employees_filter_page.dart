@@ -93,6 +93,8 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                         ? e.nameEn!
                         : e.nameAr!,
                     child: coloredText(
+                      overflow: TextOverflow.visible,
+                      fontSize: 25,
                         text: Get.locale == const Locale('en', 'US')
                             ? e.nameEn!
                             : e.nameAr!,
@@ -111,6 +113,7 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                       .id;
             },
             value: nationality == "" ? null : nationality,
+            hintSize: 25,
             borderc: Border.all(color: const Color(0xffE3E3E3)),
             borderRadius: BorderRadius.circular(8),
             padding: const EdgeInsetsDirectional.symmetric(horizontal: 10),
@@ -359,13 +362,14 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
           spaceY(20),
           Align(
             child: primaryButton(
+
                 onTap: () {
                   _employeesController.employeesFilter.langs = selectedLangs;
 
                   _employeesController.applyFilter();
                   Get.back();
                 },
-                height: 50,
+                height: 60,
                 width: 50.0.w,
                 gradient: LinearGradient(
                   begin: AlignmentDirectional.centerStart,
@@ -378,7 +382,7 @@ class _EmployeesFilterPageState extends State<EmployeesFilterPage> {
                 text: coloredText(
                   text: "apply".tr,
                   color: Colors.white,
-                  fontSize: 15.0.sp,
+                  fontSize: 12.0.sp,
                 ),
                 radius: 15),
           )

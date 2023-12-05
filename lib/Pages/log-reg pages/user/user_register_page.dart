@@ -476,6 +476,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                         borderRadius: 8,
                         // padding:
                         //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                        hintSize: 25,
                         hint: "${"nationality".tr} (${"optional".tr})",
                         prefixIcon: Icon(
                           EvaIcons.globe2Outline,
@@ -597,6 +598,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                           //todo:langs needs to be fixed
                           SearchableDropDown(
                         hint: "city".tr,
+                        hintSize: 25,
                         value: city == "" ? null : city,
                         hintPadding: 0,
                         border: const UnderlineInputBorder(),

@@ -420,7 +420,7 @@ class _LoginPageState extends State<LoginPage> {
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
-                                children: [
+                                children: <Widget>[
                                   GestureDetector(
                                     onTap: () async {
                                       Utils.showDialogBox(
@@ -594,7 +594,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                   ),
-                                  //                                 GestureDetector(
+                                  //                                GestureDetector(
                                   //                                   onTap: () async {
                                   //                                     Utils.showToast(message: "Facebook soon");
 
@@ -644,30 +644,41 @@ class _LoginPageState extends State<LoginPage> {
                                   //                                     ),
                                   //                                   ),
                                   //                                 ),
-                                  //                                 GestureDetector(
-                                  //                                   onTap: () {
-                                  //                                     Utils.showToast(message: "Apple soon");
-                                  //                                   },
-                                  //                                   child: Container(
-                                  //                                     width: 40.0.sp,
-                                  //                                     height: 40.0.sp,
-                                  //                                     decoration: BoxDecoration(
-                                  //                                         border: Border.all(
-                                  //                                             color:
-                                  //                                                 Colors.grey.withOpacity(0.2)),
-                                  //                                         shape: BoxShape.circle,
-                                  //                                         color: Colors.grey.withOpacity(0.1)),
-                                  //                                     child: Center(
-                                  //                                       child: Image(
-                                  //                                         width: 20.0.sp,
-                                  //                                         height: 20.0.sp,
-                                  //                                         image: const AssetImage(
-                                  //                                             "assets/images/apple.png"),
-                                  //                                         fit: BoxFit.contain,
-                                  //                                       ),
-                                  //                                     ),
-                                  //                                   ),
-                                  //                                 ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      Get.back();
+
+                                      String? token = await _authController
+                                          .handleAppleSignIn(
+                                              saveToken: _rememberMeFlag,
+                                              login: false);
+
+                                      if (token != null) {
+                                        Get.off(
+                                          () => const CompanyHomePage(),
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 40.0.sp,
+                                      height: 40.0.sp,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color:
+                                                  Colors.grey.withOpacity(0.2)),
+                                          shape: BoxShape.circle,
+                                          color: Colors.grey.withOpacity(0.1)),
+                                      child: Center(
+                                        child: Image(
+                                          width: 20.0.sp,
+                                          height: 20.0.sp,
+                                          image: const AssetImage(
+                                              "assets/images/apple.png"),
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                               spaceY(10.0.sp),

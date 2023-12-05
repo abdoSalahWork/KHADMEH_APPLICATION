@@ -200,7 +200,7 @@ class _AccountStatmentFilterPageState extends State<AccountStatmentFilterPage> {
           ),
           spaceY(10.sp),
           coloredText(
-            fontSize: 14.0.sp,
+            fontSize: 13.0.sp,
             text: "deposit_type".tr,
           ),
           spaceY(10),
@@ -221,6 +221,7 @@ class _AccountStatmentFilterPageState extends State<AccountStatmentFilterPage> {
               status = p0!;
               _adminController.accountStatmentFilter.status = p0;
             },
+            hintSize: 7.sp,
             value: status == "" ? null : status,
             borderc: Border.all(color: const Color(0xffE3E3E3)),
             borderRadius: BorderRadius.circular(8),

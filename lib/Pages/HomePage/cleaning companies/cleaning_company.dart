@@ -124,8 +124,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
               // clipper: OvalBottomBorderClipper(),
               clipper: Clipp(),
               child: Container(
-                padding: EdgeInsetsDirectional.only(
-                    start: 8.0.sp, end: 8.0.sp, top: 25.0.sp, bottom: 8.0.sp),
+               
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
                   begin: AlignmentDirectional.bottomStart,
@@ -363,7 +362,7 @@ class _CleaningCompanyState extends State<CleaningCompany> {
                         },
                         child: Container(
                           // width: 45.0.w,
-                          height: 40,
+                       
                           margin: EdgeInsets.symmetric(horizontal: 2.0.w),
                           padding: EdgeInsets.symmetric(horizontal: 6.w),
                           decoration: BoxDecoration(

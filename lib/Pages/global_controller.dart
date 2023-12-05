@@ -43,8 +43,9 @@ import 'package:path_provider/path_provider.dart';
 class GlobalController extends GetxController {
   Directory? tempDir;
   Future getTempDir() async {
-    tempDir = await getExternalStorageDirectory();
-    // tempDir = Directory('/storage/emulated/0/Download');
+    tempDir =  Platform.isAndroid
+    ? await getExternalStorageDirectory() //FOR ANDROID
+    :  await getApplicationSupportDirectory();
   }
 
   bool guest = false;
@@ -686,7 +687,7 @@ class GlobalController extends GetxController {
     } on DioException catch (e) {
       getCountriesFlag = false;
       update();
-      logError(e.response!.data);
+      logError(e.response?.data);
       logError("countries failed");
     }
   }
@@ -1805,7 +1806,7 @@ class GlobalController extends GetxController {
       await FlutterHtmlToPdf.convertFromHtmlContent(
           htmlContent2.data, tempDir!.path, "contract_myfatoorah");
     } on DioException catch (e) {
-      logError(e.response!.data);
+      logError(e.response?.data);
       logError("contracts failed");
     }
   }

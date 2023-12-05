@@ -105,7 +105,7 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
               ],
             )),
             width: 100.0.w,
-            height: 43.0.h,
+            height: 45.0.h,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -315,7 +315,7 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                     },
                     child: Container(
                       width: 40.0.w,
-                      height: 40,
+                      height: 5.0.h,
                       margin: EdgeInsets.symmetric(horizontal: 1.0.w),
                       decoration: BoxDecoration(
                           color: !tags.contains(item.label)
@@ -331,7 +331,7 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                         child: coloredText(
                             text: item.label.tr,
                             color: !tags.contains(item.label)
-                                ? const Color(0xffF1F1F1)
+                                ? Color.fromARGB(255, 255, 255, 255)
                                 : Colors.white,
                             fontSize: 12.0.sp),
                       ),
@@ -398,8 +398,9 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                     tabController.length,
                     (index) => Tab(
                       child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: coloredText(
+                            fontSize: 10.sp,
                             text: tabs[index].tr,
                             color: selectedTabIndex == index
                                 ? Colors.black
@@ -416,7 +417,7 @@ class _RecruitmentCompanyState extends State<RecruitmentCompany>
                       (index) => employeesToShow.isEmpty
                           ? const NoItemsWidget()
                           : ListView.separated(
-                              padding: const EdgeInsets.all(20),
+                              padding: EdgeInsets.all(30),
                               itemBuilder: (context, index) => Visibility(
                                 visible: employeesToShow[index]
                                     .jobs!

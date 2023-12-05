@@ -170,7 +170,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             SearchableDropDown(
               hintPadding: 0, focusNode: _focusNodes[3],
               value: nationality == "" ? null : nationality,
-              hint: "${"nationality".tr} (${"optional".tr})",
+              hintSize: 25, hint: "${"nationality".tr} (${"optional".tr})",
               autovalidateMode: AutovalidateMode.always,
               validator: (String? value) {
                 if (errors['nationality_id'] != null) {
@@ -245,6 +245,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 coloredText(text: "city".tr),
                 SearchableDropDown(
                   hint: "city".tr,
+                  hintSize: 25,
                   value: city == "" ? null : city,
                   hintPadding: 0,
                   border: const UnderlineInputBorder(),

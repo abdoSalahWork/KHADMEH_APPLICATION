@@ -349,6 +349,7 @@ class _PersonalPageState extends State<PersonalPage>
                           child: Container(
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: coloredText(
+                              fontSize: 35,
                                 text: tabs[index].tr,
                                 color: selectedTabIndex == index
                                     ? Colors.black

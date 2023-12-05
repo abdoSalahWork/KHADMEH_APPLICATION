@@ -251,6 +251,7 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                   spaceY(3.0.h),
                   ChipsChoice<String>.multiple(
                     padding: EdgeInsets.zero,
+                    
                     value: tags,
                     onChanged: (val) {},
                     choiceItems: C2Choice.listFrom<String, String>(
@@ -272,7 +273,7 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                       },
                       child: Container(
                         width: 43.0.w,
-                        height: 40,
+                        height: 4.h,
                         margin: EdgeInsets.symmetric(horizontal: 1.0.w),
                         padding: EdgeInsets.symmetric(horizontal: 1.0.w),
                         decoration: BoxDecoration(
@@ -291,7 +292,7 @@ class _CompanyPersonalPageState extends State<CompanyPersonalPage>
                               color: !tags.contains(item.label)
                                   ? const Color(0xffF1F1F1)
                                   : Colors.white,
-                              fontSize: 12.0.sp),
+                              fontSize: 10.0.sp),
                         ),
                       ),
                     ),

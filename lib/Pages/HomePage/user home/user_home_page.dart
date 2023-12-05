@@ -1285,6 +1285,7 @@ class _UserHomePageState extends State<UserHomePage> {
                       //todo:langs needs to be fixed
                       CustomDropDownMenuButton(
                         hint: "city".tr,
+                        hintSize: 25,
                         value: city == "" ? null : city,
                         hintPadding: 0,
                         border: const UnderlineInputBorder(),
@@ -1322,6 +1323,7 @@ class _UserHomePageState extends State<UserHomePage> {
                       ),
                       //todo:langs need to be fixed
                       CustomDropDownMenuButton(
+                        hintSize: 25,
                         hint: "region".tr,
                         border: const UnderlineInputBorder(),
                         width: 40.0.w,

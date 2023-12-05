@@ -129,7 +129,7 @@ class _AdminMainPageState extends State<AdminMainPage>
         return Column(
           children: [
             SizedBox(
-              height: 45.h,
+              height: 55.h,
               width: 100.w,
               child: Stack(
                 children: [
@@ -236,7 +236,7 @@ class _AdminMainPageState extends State<AdminMainPage>
                                 ],
                               );
                             }),
-                            spaceY(10.sp),
+                            spaceY(1.h),
                             c.getAdminHomePageflag
                                 ? const SizedBox(
                                     width: 40,
@@ -250,9 +250,8 @@ class _AdminMainPageState extends State<AdminMainPage>
                                         "${_adminHomeController.adminHomePageModel.totalBalance!.toStringAsFixed(2)} ${"kwd".tr}",
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20.sp,
+                                    fontSize: 15.sp,
                                   ),
-                            spaceY(2.sp),
                             coloredText(
                               text: "total_balance".tr,
                               color: const Color(0xffE1E1E1),
@@ -265,9 +264,9 @@ class _AdminMainPageState extends State<AdminMainPage>
                     ),
                   ),
                   Positioned(
-                    bottom: 0.h,
+                    top:30.h,
                     child: SizedBox(
-                      height: 130.sp,
+                      height: 25.h,
                       width: 100.w,
                       child: ListView.separated(
                         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -280,14 +279,18 @@ class _AdminMainPageState extends State<AdminMainPage>
                             spaceX(20),
                       ),
                     ),
-                  )
+                  ),
+                  spaceY(10.h),
                 ],
               ),
             ),
             Expanded(
+             
               child: GetBuilder<AdminController>(builder: (c) {
+                
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                   child: ListView(
                     primary: true,
                     // crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,8 +349,7 @@ class _AdminMainPageState extends State<AdminMainPage>
                       switchIndex == 1
                           ? Container()
                           : Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
+                              padding: EdgeInsets.all(0),
                               child: TabBar(
                                   dividerColor: Colors.grey,
                                   // indicatorColor:
@@ -379,7 +381,7 @@ class _AdminMainPageState extends State<AdminMainPage>
                                             horizontal: 5),
                                         child: coloredText(
                                           text: tabs[index],
-                                          fontSize: 13.sp,
+                                          fontSize: 10.sp,
                                           color: selectedTabIndex == index
                                               ? Theme.of(context)
                                                   .colorScheme
@@ -657,8 +659,8 @@ class StatisticBoxWidget extends StatelessWidget {
       onTap: statisticBoxMdel.onTap,
       child: Container(
         margin: const EdgeInsets.all(5),
-        width: 140.sp,
-        height: 140.sp,
+        width: 35.w,
+        height: 100.sp,
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(20)),

@@ -3,6 +3,7 @@ class EndPoints {
   static const String _adminBaseURL = "https://khdmah.online/admin";
 
   static String get loginGoogle => "$_baseURL/login/google";
+  static String get loginApple => "$_baseURL/login/apple";
   static String get loginFacebook => "$_baseURL/login/facebook";
   static String get login => "$_baseURL/login";
   static String get me => "$_baseURL/me";

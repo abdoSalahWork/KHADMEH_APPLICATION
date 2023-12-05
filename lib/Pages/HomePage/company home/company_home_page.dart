@@ -535,7 +535,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                                       },
                                                       child: coloredText(
                                                           text: "contracts".tr,
-                                                          fontSize: 12.sp,
+                                                          fontSize: 13.sp,
                                                           decoration:
                                                               TextDecoration
                                                                   .underline),
@@ -707,7 +707,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                                               child: Container(
                                                 margin:
                                                     const EdgeInsets.symmetric(
-                                                        horizontal: 5),
+                                                        horizontal: 15),
                                                 child: coloredText(
                                                     fontSize: 10.sp,
                                                     text:
@@ -1002,7 +1002,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                 borderRadius: 8,
                 // padding:
                 //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                hint: "nationality".tr,
+                hintSize: 25, hint: "nationality".tr,
                 prefixIcon: Icon(
                   EvaIcons.globe2Outline,
                   size: 20.0.sp,
@@ -1506,7 +1506,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
               spaceY(10.0.sp),
               SearchableDropDown(
                 hintPadding: 10,
-                hint: "city".tr,
+                hint: "city".tr, hintSize: 25,
                 border: const UnderlineInputBorder(),
                 // width: 40.0.w,
                 value: city == "" ? null : city,
@@ -2395,7 +2395,7 @@ class _CompanyHomePageState extends State<CompanyHomePage>
                 ListView(padding: EdgeInsets.zero, primary: false, children: [
               CustomDropDownMenuButton(
                 hintPadding: 0, focusNode: _focusNodes[20],
-                hint: "bank_name".tr,
+                hintSize: 25, hint: "bank_name".tr,
                 autovalidateMode: AutovalidateMode.always,
                 validator: (String? value) {
                   if (errors['bank_id'] != null) {

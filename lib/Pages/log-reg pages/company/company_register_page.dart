@@ -495,7 +495,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 borderRadius: 8,
                 // padding:
                 //     const EdgeInsetsDirectional.symmetric(horizontal: 10),
-                hint: "${"nationality".tr} (${"optional".tr})",
+                hintSize: 25, hint: "${"nationality".tr} (${"optional".tr})",
                 prefixIcon: Icon(
                   EvaIcons.globe2Outline,
                   size: 20.0.sp,
@@ -1027,7 +1027,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
               //   children: [
               SearchableDropDown(
                 hintPadding: 10,
-                hint: "city".tr,
+                hint: "city".tr, hintSize: 25,
                 border: const UnderlineInputBorder(),
                 // width: 40.0.w,
                 value: city == "" ? null : city,
@@ -1834,7 +1834,7 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                 ListView(padding: EdgeInsets.zero, primary: false, children: [
               CustomDropDownMenuButton(
                 hintPadding: 0, focusNode: _focusNodes[20],
-                hint: "bank_name".tr,
+                hintSize: 25, hint: "bank_name".tr,
                 autovalidateMode: AutovalidateMode.always,
                 validator: (String? value) {
                   if (errors['bank_id'] != null) {

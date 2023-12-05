@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:khedma/Pages/log-reg%20pages/company/company_register_page.dart';
 import 'package:khedma/Pages/log-reg%20pages/user/user_register_page.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../Utils/utils.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 class UserTypePage extends StatelessWidget {
   const UserTypePage({super.key});
@@ -57,9 +57,17 @@ class UserTypePage extends StatelessWidget {
                       ),
                       spaceY(5.0.h),
                       primaryBorderedButton(
-                        onTap: () => Get.to(
-                          () => const CompanyRegisterPage(),
-                        ),
+                        onTap: () async {
+                          if (await AppTrackingTransparency
+                                  .requestTrackingAuthorization() ==
+                              TrackingStatus.authorized) {
+                            Get.to(
+                              () => const CompanyRegisterPage(),
+                            );
+                          } else {
+                            Get.back();
+                          }
+                        },
                         width: 75.0.w,
                         height: 40.sp,
                         text: coloredText(
@@ -69,17 +77,24 @@ class UserTypePage extends StatelessWidget {
                       ),
                       spaceY(2.0.h),
                       primaryBorderedButton(
-                        width: 75.0.w,
-                        height: 40.sp,
-                        text: coloredText(
-                          text: "user".tr,
+                          width: 75.0.w,
+                          height: 40.sp,
+                          text: coloredText(
+                            text: "user".tr,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
                           color: Theme.of(context).colorScheme.tertiary,
-                        ),
-                        color: Theme.of(context).colorScheme.tertiary,
-                        onTap: () => Get.to(
-                          () => const UserRegisterPage(),
-                        ),
-                      )
+                          onTap: () async {
+                            if (await AppTrackingTransparency
+                                    .requestTrackingAuthorization() ==
+                                TrackingStatus.authorized) {
+                              Get.to(
+                                () => const UserRegisterPage(),
+                              );
+                            } else {
+                              Get.back();
+                            }
+                          })
                     ],
                   ),
                 ),

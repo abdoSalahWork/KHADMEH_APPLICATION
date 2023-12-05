@@ -16,6 +16,7 @@ import 'package:khedma/Pages/global_controller.dart';
 import 'package:khedma/Utils/utils.dart';
 import 'package:khedma/firebase_api.dart';
 import 'package:path/path.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../Utils/end_points.dart';
 import '../models/company_register_model.dart';
@@ -31,8 +32,9 @@ class AuthController extends GetxController {
     // "https://www.googleapis.com/auth/user.birthday.read",
   ];
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: _scopes,
-  );
+      scopes: _scopes,
+      clientId:
+          'com.googleusercontent.apps.861823949799-vc35cprkp249096uujjn0vvnmcvjppkn');
   GoogleSignInAccount? _currentUser;
   bool _isAuthorized = false; // has granted permissions?
   GoogleSignInAccount? get currentUser => _currentUser;
@@ -84,6 +86,55 @@ class AuthController extends GetxController {
       }
     } on DioException catch (error) {
       logError(error.response!.data);
+      return null;
+    }
+  }
+
+  Future handleAppleSignIn(
+      {required bool saveToken, required bool login}) async {
+    try {
+      await FirebaseApi().initNotifications(_notificationController);
+
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      Get.dialog(const Center(
+        child: CircularProgressIndicator(),
+      ));
+
+      String? fcsToken = await Utils.readFBToken();
+      logError("accessToken: " + credential.toString());
+      print("catt1 ${credential.authorizationCode.toString()}");
+      print("catt2 ${credential.email.toString()}");
+      print("catt3 ${credential.familyName.toString()}");
+      print("catt4 ${credential.identityToken.toString()}");
+      print("catt5 ${credential.givenName.toString()}");
+      print("catt6 ${credential.toString()}");
+      var res = await dio.post(EndPoints.loginApple,
+          options: Options(headers: {
+            "accessToken": credential.identityToken,
+            "fcsToken": fcsToken,
+          }));
+      String token = res.data["access_token"];
+      logError(res.data);
+      await Utils.saveToken(token: token);
+      GlobalController g = Get.find();
+      if (login) await g.getMe();
+
+      if (saveToken) {
+        await Utils.saveRemmemberMe(rem: saveToken ? "yes" : "no");
+        // String? x = await Utils.readRemmemberMe();
+      }
+      // await handleSignOut();
+      Get.back();
+
+      return token;
+    } catch (error) {
+      logError(error.toString());
       return null;
     }
   }

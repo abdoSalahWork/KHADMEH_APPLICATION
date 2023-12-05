@@ -396,7 +396,7 @@ class LocaleString extends Translations {
           "driving_license": "رخصة القيادة",
           "personal_photos": "الصور الشخصية",
           "pending_notice":
-              "هذا النبلغ هو رسوم الحجز وطباعة الأوراق وليس له علاقة برسوم العمالة",
+              "هذا المبلغ هو رسوم الحجز وطباعة الأوراق وليس له علاقة برسوم العمالة",
           "desc": "الوصف",
           "file": "الملف",
           "unified_number": "الرقم الموحد",

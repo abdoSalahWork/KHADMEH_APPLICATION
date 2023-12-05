@@ -118,7 +118,7 @@ class ProfileCard extends StatelessWidget {
               ),
               spaceY(10),
               SizedBox(
-                height: 30,
+                height: 5.h,
                 child: ListView.separated(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,

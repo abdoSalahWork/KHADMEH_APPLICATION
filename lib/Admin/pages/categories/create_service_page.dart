@@ -116,7 +116,7 @@ class _AdminCreateServiceState extends State<AdminCreateService> {
                 // hintPadding: 5,
                 width: 100.0.w,
                 height: 38.sp,
-                hint: "select".tr,
+                hintSize: 25, hint: "select".tr,
                 borderRadius: BorderRadius.circular(10),
                 value: companyType == "" ? null : companyType,
                 items: companyTypesController.companyTypes

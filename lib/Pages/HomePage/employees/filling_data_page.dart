@@ -308,7 +308,7 @@ class _FillingDataPageState extends State<FillingDataPage> {
                 },
                 child: Container(
                   width: 100.0.w,
-                  height: 50,
+                  height: 6.h,
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),

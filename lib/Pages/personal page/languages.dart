@@ -50,8 +50,7 @@ class LanguagesPage extends StatelessWidget {
               await _globalController.setLocale();
               Get.back();
             },
-            width: 75.0.w,
-            height: 55,
+            
             color: Theme.of(context).colorScheme.secondary,
             text: coloredText(
               text: "English",
@@ -66,8 +65,7 @@ class LanguagesPage extends StatelessWidget {
               await _globalController.setLocale();
               Get.back();
             },
-            width: 75.0.w,
-            height: 55,
+           
             color: Theme.of(context).primaryColor,
             text: coloredText(
                 text: "العربية", fontSize: 18.0.sp, color: Colors.white),

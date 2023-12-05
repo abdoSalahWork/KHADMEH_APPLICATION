@@ -37,7 +37,7 @@ class AddEmployeePage extends StatefulWidget {
 }
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
-  String passportButton = "upload".tr;
+  String passportButton="upload".tr;
   String drivingButton = "upload".tr;
   String expirimentButton = "upload".tr;
   String scientificButton = "upload".tr;
@@ -898,6 +898,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                   coloredText(text: "complexion".tr),
                                   spaceY(5.sp),
                                   CustomDropDownMenuButtonV2(
+                                   
                                     hintPadding: 0,
                                     padding: const EdgeInsetsDirectional.only(
                                         start: 10),
@@ -1350,7 +1351,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       },
                                       color: const Color(0xffF5F5F5),
                                       width: 100.0.w,
-                                      height: 55,
+                                      height: 5.h,
                                       radius: 10,
                                       text: Row(
                                         mainAxisAlignment:
@@ -1366,7 +1367,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .secondary,
-                                                size: 18.0.sp,
+                                                size: 14.0.sp,
                                               ),
                                               spaceX(10),
                                               SizedBox(
@@ -1377,7 +1378,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                   text: passportButton,
                                                   color:
                                                       const Color(0xff919191),
-                                                  fontSize: 13.0.sp,
+                                                  fontSize: 10.0.sp,
                                                 ),
                                               ),
                                             ],
@@ -1649,7 +1650,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       },
                                       color: const Color(0xffF5F5F5),
                                       width: 100.0.w,
-                                      height: 55,
+                                      height: 5.h,
                                       radius: 10,
                                       text: Row(
                                         mainAxisAlignment:
@@ -1665,7 +1666,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .secondary,
-                                                size: 18.0.sp,
+                                                size: 14.0.sp,
                                               ),
                                               spaceX(10),
                                               SizedBox(
@@ -1676,7 +1677,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                   text: drivingButton,
                                                   color:
                                                       const Color(0xff919191),
-                                                  fontSize: 13.0.sp,
+                                                  fontSize: 10.0.sp,
                                                 ),
                                               ),
                                             ],
@@ -2163,7 +2164,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       },
                                       color: const Color(0xffF5F5F5),
                                       width: 100.0.w,
-                                      height: 55,
+                                      height: 5.h,
                                       radius: 10,
                                       text: Row(
                                         mainAxisAlignment:
@@ -2179,7 +2180,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .secondary,
-                                                size: 18.0.sp,
+                                                size: 15.0.sp,
                                               ),
                                               spaceX(10),
                                               SizedBox(
@@ -2190,7 +2191,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                   text: scientificButton,
                                                   color:
                                                       const Color(0xff919191),
-                                                  fontSize: 13.0.sp,
+                                                  fontSize: 10.0.sp,
                                                 ),
                                               ),
                                             ],
@@ -2264,7 +2265,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                       },
                                       color: const Color(0xffF5F5F5),
                                       width: 100.0.w,
-                                      height: 55,
+                                      height: 5.h,
                                       radius: 10,
                                       text: Row(
                                         mainAxisAlignment:
@@ -2280,7 +2281,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .secondary,
-                                                size: 18.0.sp,
+                                                size: 15.0.sp,
                                               ),
                                               spaceX(10),
                                               SizedBox(
@@ -2291,7 +2292,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                                                   text: expirimentButton,
                                                   color:
                                                       const Color(0xff919191),
-                                                  fontSize: 13.0.sp,
+                                                  fontSize: 10.0.sp,
                                                 ),
                                               ),
                                             ],

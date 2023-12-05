@@ -97,7 +97,7 @@ class CompanyEmployeeCard extends StatelessWidget {
                 ),
                 spaceY(10),
                 SizedBox(
-                  height: 30,
+                  height: 4.h,
                   child: ListView.separated(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
@@ -116,22 +116,22 @@ class CompanyEmployeeCard extends StatelessWidget {
                             ? employee.jobs![index].nameEn!
                             : employee.jobs![index].nameAr!,
                         color: const Color(0xff787878),
-                        fontSize: 11.0.sp,
+                        fontSize: 8.0.sp,
                       ),
                     ),
                     itemCount: employee.jobs!.length,
                     separatorBuilder: (BuildContext context, int index) =>
-                        spaceX(5),
+                        spaceX(2.w),
                   ),
                 ),
-                spaceY(10),
+                spaceY(2.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Icon(
                       EvaIcons.pin,
                       color: Theme.of(context).colorScheme.secondary,
-                      size: 15.0.sp,
+                      size: 13.0.sp,
                     ),
                     spaceX(3),
                     coloredText(
@@ -143,7 +143,7 @@ class CompanyEmployeeCard extends StatelessWidget {
                               : e.nameAr!)
                           .first,
                       color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 13.0.sp,
+                      fontSize: 10.0.sp,
                     ),
                   ],
                 ),

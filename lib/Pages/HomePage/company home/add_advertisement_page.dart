@@ -390,7 +390,7 @@ class _AddAdvertismentPageState extends State<AddAdvertismentPage> {
                         .secondary
                         .withOpacity(0.1),
                     width: 35.0.w,
-                    height: 45,
+                    height: 5.h,
                     radius: 8,
                     text: coloredText(
                         text: "$price ${'kwd'.tr}",
